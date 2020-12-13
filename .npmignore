@@ -1,0 +1,6 @@
+.DS_Store
+.nyc_output
+.travis.yml
+node_modules/
+rollup/
+test/
