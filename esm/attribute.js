@@ -1,20 +1,19 @@
-import {Type} from './common.js';
+import {escape} from 'html-escaper';
+
+import {ATTRIBUTE_NODE} from './constants.js';
+import {String} from './utils.js';
 import {Node} from './node.js';
 
-export const ATTRIBUTE_NODE = Type.Attribute;
-
 export class Attribute extends Node {
-  /**
-   * @param {string} localName the attribute localName
-   * @param {string} value the attribute value
-   */
-  constructor(localName, value) {
-    super(ATTRIBUTE_NODE, localName);
-    this.value = value;
+
+  constructor(ownerDocument, name, value) {
+    super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
+    this.name = String(name);
+    this.value = String(value);
+    this.ownerElement = null;
   }
 
   toString() {
-    const {name, value} = this;
-    return value ? `${name}="${value}"` : name;
+    return `${this.name}="${escape(this.value)}"`;
   }
-};
+}

@@ -1,18 +1,15 @@
-import {Type} from './common.js';
-import {Node} from './node.js';
+import {escape} from 'html-escaper';
 
-export const TEXT_NODE = Type.Text;
+import {TEXT_NODE} from './constants.js';
+import {NodeText} from './node.js';
 
-export class Text extends Node {
-  /**
-   * @param {string} value 
-   */
-  constructor(value) {
-    super(TEXT_NODE, '#text');
-    this.value = value;
+export class Text extends NodeText {
+
+  constructor(ownerDocument, textContent) {
+    super(ownerDocument, '#text', textContent, TEXT_NODE);
   }
 
   toString() {
-    return this.value;
+    return escape(this.textContent);
   }
-};
+}

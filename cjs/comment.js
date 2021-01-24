@@ -1,21 +1,17 @@
 'use strict';
-const {Type} = require('./common.js');
-const {Node} = require('./node.js');
+const {escape} = require('html-escaper');
 
-const COMMENT_NODE = Type.Comment;
-exports.COMMENT_NODE = COMMENT_NODE;
+const {COMMENT_NODE} = require('./constants.js');
+const {NodeText} = require('./node.js');
 
-class Comment extends Node {
-  /**
-   * @param {string} value 
-   */
-  constructor(value) {
-    super(COMMENT_NODE, '#comment');
-    this.value = value;
+class Comment extends NodeText {
+
+  constructor(ownerDocument, textContent) {
+    super(ownerDocument, '#comment', textContent, COMMENT_NODE);
   }
 
   toString() {
-    return `<!--${this.value}-->`;
+    return `<!--${escape(this.textContent)}-->`;
   }
 }
-exports.Comment = Comment;
+exports.Comment = Comment

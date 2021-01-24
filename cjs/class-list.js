@@ -1,33 +1,31 @@
 'use strict';
-const index = ({classes, element}, name) => ({
-  i: classes.indexOf(name),
-  classes,
-  update() {
-    element.setAttribute('class', classes.join(' '));
-  }
-});
+const update = self => {
+  self._ownerElement.setAttribute('class', [...self].join(' '));
+};
 
-class ClassList {
-  constructor(element) {
-    this.element = element;
-    this.classes = [];
+class ClassList extends Set {
+
+  constructor(_ownerElement) {
+    super();
+    this._ownerElement = _ownerElement;
   }
-  add(name) {
-    const {i, classes, update} = index(this, name);
-    if (i < 0) {
-      classes.push(name);
-      update();
+
+  add(...names) {
+    for (const name of names) {
+      if (name)
+        super.add(name);
     }
+    update(this);
   }
+
   contains(name) {
-    return -1 < index(this, name).i;
+    return this.has(name);
   }
-  remove(name) {
-    const {i, classes, update} = index(this, name);
-    if (-1 < i) {
-      classes.splice(i, 1);
-      update();
-    }
+
+  remove(...names) {
+    for (const name of names)
+      this.delete(name);
+    update(this);
   }
 }
 exports.ClassList = ClassList;

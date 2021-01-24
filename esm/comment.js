@@ -1,18 +1,15 @@
-import {Type} from './common.js';
-import {Node} from './node.js';
+import {escape} from 'html-escaper';
 
-export const COMMENT_NODE = Type.Comment;
+import {COMMENT_NODE} from './constants.js';
+import {NodeText} from './node.js';
 
-export class Comment extends Node {
-  /**
-   * @param {string} value 
-   */
-  constructor(value) {
-    super(COMMENT_NODE, '#comment');
-    this.value = value;
+export class Comment extends NodeText {
+
+  constructor(ownerDocument, textContent) {
+    super(ownerDocument, '#comment', textContent, COMMENT_NODE);
   }
 
   toString() {
-    return `<!--${this.value}-->`;
+    return `<!--${escape(this.textContent)}-->`;
   }
-};
+}

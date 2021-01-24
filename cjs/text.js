@@ -1,21 +1,17 @@
 'use strict';
-const {Type} = require('./common.js');
-const {Node} = require('./node.js');
+const {escape} = require('html-escaper');
 
-const TEXT_NODE = Type.Text;
-exports.TEXT_NODE = TEXT_NODE;
+const {TEXT_NODE} = require('./constants.js');
+const {NodeText} = require('./node.js');
 
-class Text extends Node {
-  /**
-   * @param {string} value 
-   */
-  constructor(value) {
-    super(TEXT_NODE, '#text');
-    this.value = value;
+class Text extends NodeText {
+
+  constructor(ownerDocument, textContent) {
+    super(ownerDocument, '#text', textContent, TEXT_NODE);
   }
 
   toString() {
-    return this.value;
+    return escape(this.textContent);
   }
 }
-exports.Text = Text;
+exports.Text = Text

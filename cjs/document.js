@@ -1,141 +1,112 @@
 'use strict';
+const {DOCUMENT_NODE} = require('./constants.js');
+
+const {Mime} = require('./utils.js');
+
+const {NonElementParentNode, ParentNode} = require('./mixins.js');
+
 const {Attribute} = require('./attribute.js');
 const {Comment} = require('./comment.js');
-const {Element, ELEMENT_NODE} = require('./element.js');
+const {Element} = require('./element.js');
 const {Fragment} = require('./fragment.js');
 const {Node} = require('./node.js');
 const {Text} = require('./text.js');
-const {Mime, Type, invalidOperation, link} = require('./common.js');
-
-const DOCUMENT_NODE = Type.Document;
-exports.DOCUMENT_NODE = DOCUMENT_NODE;
 
 class Document extends Node {
-  /**
-   * @param {string} kind the kind of document: html, xml, svg
-   */
-  constructor(mimeType) {
-    super(DOCUMENT_NODE, '#document');
-    mimeType = mimeType.toLowerCase();
-    const {docType, ignoreCase, voidElements} = Mime[mimeType];
-    this.docType = docType;
-    this.ignoreCase = ignoreCase;
-    this.voidElements = voidElements;
-    if (mimeType === 'image/svg+xml') {
-      this.root = this.createElement('svg');
-      this.root.setAttribute('version', '1.1');
-      this.root.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    }
+
+  constructor(type) {
+    super(null, '#document', DOCUMENT_NODE);
+    this._mime = Mime[type];
+    this.root = null;
   }
 
-  /**
-   * @returns {Element?} the root element or `null` if none is present.
-   */
-  get root() {
-    return this.next;
+  // <NonElementParentNode>
+  getElementById(id) {
+    const {root} = this;
+    return root && NonElementParentNode.getElementById(root, id);
+  }
+  // </NonElementParentNode>
+
+  // <ParentNode>
+  get children() {
+    const {root} = this;
+    return root ? [root] : [];
   }
 
-  /**
-   * @param {Element?} root the root element to be set or `null` to clean up.
-   */
-  set root(root) {
-    if (root) {
-      if (root.nodeType !== ELEMENT_NODE)
-        invalidOperation();
-      const {parentNode} = root;
-      if (parentNode && parentNode.nodeType === ELEMENT_NODE)
-        parentNode.removeChild(root);
-      link(this, root);
-      root.parentNode = this;
-    }
-    else {
-      const {next} = this;
-      if (next) {
-        next.prev = null;
-        next.parentNode = null;
-        this.next = null;
-      }
-    }
+  get firstElementChild() {
+    return this.root;
   }
+
+  get lastElementChild() {
+    return this.root;
+  }
+
+  get childElementCount() {
+    return this.root ? 1 : 0;
+  }
+
+  prepend(...nodes) {
+    throw new Error('Cannot have more than one Element child of a Document');
+  }
+
+  append(...nodes) {
+    throw new Error('Cannot have more than one Element child of a Document');
+  }
+
+  replaceChildren(...nodes) {
+    throw new Error('Cannot have more than one Element child of a Document');
+  }
+
+  querySelector(selectors) {
+    const {root} = this;
+    return root && ParentNode.querySelector({_next: root}, selectors);
+  }
+
+  querySelectorAll(selectors) {
+    const {root} = this;
+    return root ? ParentNode.querySelectorAll({_next: root}, selectors) : [];
+  }
+  // </ParentNode>
 
   createAttribute(name) {
-    const attribute = new Attribute(name, '');
-    attribute.ownerDocument = this;
-    return attribute;
+    return new Attribute(this, name, '');
   }
 
-  createComment(value) {
-    const comment = new Comment(value);
-    comment.ownerDocument = this;
-    return comment;
-  }
-
-  createDocumentFragment() {
-    const fragment = new Fragment;
-    fragment.ownerDocument = this;
-    return fragment;
-  }
-
-  createElement(name, options = {}) {
-    const element = new Element(name, this.voidElements.test(name));
-    element.ownerDocument = this;
+  createElement(localName, options = {}) {
+    const element = new Element(this, localName);
     if (options.is)
       element.setAttribute('is', options.is);
     return element;
   }
 
-  createTextNode(value) {
-    const text = new Text(value);
-    text.ownerDocument = this;
-    return text;
+  createComment(textContent) {
+    return new Comment(this, textContent);
   }
 
-  getElementById(id) {
-    let {next} = this;
-    while (next) {
-      if (next.nodeType === ELEMENT_NODE && next.id === id)
-        return next;
-      next = next.next;
-    }
-    return null;
+  createTextNode(textContent) {
+    return new Text(this, textContent);
   }
 
-  getElementsByClassName(name) {
-    const {ignoreCase} = this;
-    if (ignoreCase)
-      name = name.toLowerCase();
-    const out = [];
-    let {next} = this;
-    while (next) {
-      if (
-        next.nodeType === ELEMENT_NODE &&
-        next.classList.contains(name)
-      )
-        out.push(next);
-      next = next.next;
-    }
-    return out;
+  createDocumentFragment() {
+    return new Fragment(this);
+  }
+
+  toString() {
+    return this._mime.docType + (this.root || '').toString();
   }
 
   getElementsByTagName(name) {
-    const {ignoreCase} = this;
-    if (ignoreCase)
-      name = name.toLowerCase();
-    const out = [];
-    let {next} = this;
-    while (next) {
-      if (next.nodeType === ELEMENT_NODE) {
-        if ((ignoreCase ? next.name.toLowerCase() : next.name) === name)
-          out.push(next);
-      }
-      next = next.next;
-    }
-    return out;
+    const {root} = this;
+    return root ? root.getElementsByTagName(name) : [];
   }
 
-  // TODO: make XML possible if doctype is not html
-  toString() {
-    return `${this.docType}${this.next || ''}`;
+  getElementsByTagNameNS(_, name) {
+    return this.getElementsByTagName(name);
+  }
+
+  getElementsByClassName(className) {
+    const {root} = this;
+    return root ? root.getElementsByClassName(className) : [];
   }
 }
-exports.Document = Document;
+exports.Document = Document

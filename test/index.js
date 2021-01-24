@@ -1,172 +1,111 @@
-const {HTMLDocument, SVGDocument, XMLDocument} = require('../cjs');
+const {DOMParser, HTMLDocument, SVGDocument, XMLDocument} = require('../cjs');
+
+const assert = (expression, message) => {
+  console.assert(expression, message);
+  if (!expression)
+    process.exit(1);
+};
+
+const svgDocument = new SVGDocument;
+const xmlDocument = new XMLDocument;
+
+svgDocument.root = svgDocument.createElement('Svg');
+assert(svgDocument.root.tagName === 'Svg', 'XML names are case-sensitive');
 
 let document = new HTMLDocument;
+assert(!document.documentElement.classList.has('live'), 'html: no live class');
+document.documentElement.classList.add('live');
+assert(document.documentElement.className === 'live', 'html: live class');
 
-console.assert(document.toString() === '<!DOCTYPE html>', 'correct doctype');
+assert(document.documentElement.tagName === 'HTML', 'HTML names are case-insensitive');
 
-let root = document.createElement('html', {is: 'fake-news'});
-let html = root.appendChild(document.createElement('html'));
+document.documentElement.id = 'html';
+assert(
+  document.documentElement.matches('html') &&
+  document.documentElement.matches('.live') &&
+  document.documentElement.matches('#html')
+);
 
-console.assert(root.getAttribute('is') === 'fake-news', 'options is works');
-console.assert(!root.classList.contains('nope'), 'empty classList is empty');
-root.classList.remove('nope');
-root.classList.add('nope');
-console.assert(root.classList.contains('nope'), 'classList is not empty');
-root.classList.add('nope');
-console.assert(root.getAttribute('class') === 'nope', 'classList is correct');
-root.classList.remove('nope');
+assert(document.querySelector('html') === document.documentElement, 'document.querySelector');
+assert(document.querySelectorAll('html')[0] === document.documentElement, 'document.querySelectorAll');
 
-console.assert(!html.hasAttribute('lang'), 'lang attribute absent');
+document.documentElement.append(
+  document.createComment('<hello>'),
+  document.createTextNode('<hello>')
+);
 
-html.setAttribute('lang', 'en');
-console.assert(html.hasAttribute('lang'), 'lang attribute set');
-console.assert(html.getAttribute('lang') === 'en', 'lang attribute correct');
-let lang = html.getAttributeNode('lang');
-html.setAttributeNode(lang);
-html.removeAttribute('lang');
-console.assert(!html.hasAttribute('lang'), 'removeAttribute works');
-html.setAttributeNode(lang);
-console.assert(html.hasAttribute('lang'), 'setAttributeNode works');
+assert(document.toString() === '<!DOCTYPE html><html id="html" class="live"><!--&lt;hello&gt;-->&lt;hello&gt;</html>', 'escaped content');
 
-let attr = document.createAttribute('contenteditable');
-html.setAttributeNode(attr);
+document.documentElement.innerHTML = '<div /><input><p />';
+assert(document.toString() === '<!DOCTYPE html><html><div></div><input><p></p></html>', 'innerHTML + sanitizer');
 
-console.assert(html.lastChild == null, 'html has no nodes');
+document.documentElement.setAttribute('lang', 'en');
+assert(document.documentElement.cloneNode(true).outerHTML === '<html lang="en"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
+assert(document.documentElement.cloneNode(false).outerHTML === '<html lang="en"></html>', 'cloneNode().outerHTML');
 
-document.root = html;
-console.assert(document.root === html, 'document.root works');
-console.assert(html.parentNode === document, 'document.root set parent');
-document.root = null;
-console.assert(document.root == null, 'document.root can be empty');
-document.root = null;
-console.assert(document.root == null, 'document.root is still empty');
-try {
-  document.root = {shena: 'nigan'};
-  process.exit(1);
-}
-catch (expected) {}
-document.root = html;
+process.exit(0);
 
-console.assert(document.toString() === '<!DOCTYPE html><html contenteditable lang="en"></html>', 'correct html render');
 
-let head = document.createElement('head');
-let body = document.createElement('body');
-let fragment = document.createDocumentFragment();
-fragment.append(head, body);
+// OLD TESTS
+const fragment = document.createDocumentFragment();
+const div = document.createElement('div');
 
-body.id = 'da-body';
-console.assert(fragment.firstChild == head, 'fragment has a head');
-console.assert(fragment.lastChild == body, 'fragment has a body');
+div.setAttribute('test', 'value');
+div.setAttribute('other', 'value');
+div.setAttribute('test', 'new');
 
-html.append(fragment);
-console.assert(document.toString() === `<!DOCTYPE html><html contenteditable lang="en"><head></head><body id="da-body"></body></html>`, 'document looks OK');
-console.assert(html.firstChild == head, 'html has a head');
-console.assert(html.lastChild == body, 'html has a body');
-console.assert(fragment.firstChild == null && fragment.lastChild == null, 'fragment has no nodes');
+console.log('matches', div.matches('[test]'));
 
-body.appendChild(document.createTextNode('Hello Flat World'));
-console.assert(body.toString() === `<body id="da-body">Hello Flat World</body>`, 'body has text nodes');
+const p = document.createElement('p');
+p.appendChild(document.createTextNode('OK'));
+p.classList.add('a', 'b');
 
-body.appendChild(document.createComment('comment'));
-console.assert(body.toString() === `<body id="da-body">Hello Flat World<!--comment--></body>`, 'body has comments nodes');
+div.append(
+  'Test',
+  p,
+  document.createElement('input')
+);
 
-console.assert(document.getElementsByTagName('body')[0] === body, 'getElementsByTagName("body")');
-console.assert(document.ignoreCase, 'html has ignoreCase true by default');
-document.ignoreCase = true;
-console.assert(document.getElementsByTagName('nope').length === 0, 'getElementsByTagName("nope")');
-console.assert(document.getElementsByClassName('nope').length === 0, 'getElementsByClassName("nope")');
+console.log('isConnected', div.isConnected, 'contains', document.documentElement.contains(div));
+document.documentElement.appendChild(div);
+console.log('isConnected', div.isConnected, 'contains', document.documentElement.contains(div));
 
-try {
-  body.appendChild({shena: 'nigan'});
-  process.exit(1);
-}
-catch (expected) {}
+console.log(document.toString());
+console.log('');
 
-let input = document.createElement('input');
-body.appendChild(input).void = true;
-console.assert(body.toString() === `<body id="da-body">Hello Flat World<!--comment--><input /></body>`, 'body has void nodes');
+console.log(div.innerHTML);
+console.log('');
 
-console.assert(document.getElementById('da-body') === body, 'getElementById("da-body")');
-console.assert(document.getElementById('nope') == null, 'getElementById("nope")');
-body.classList.add('yup');
-document.ignoreCase = false;
-console.assert(document.getElementsByClassName('yup').length === 1, 'getElementsByClassName("yup")');
+console.log(div.tagName);
+console.log('');
 
-let p = document.createElement('p');
-let text = document.createTextNode('text');
-let div = document.createElement('div');
+console.log(div.childNodes.join('\n'));
+console.log('');
 
-console.assert(!div.hasChildNodes(), 'hasChildNodes returns false when no nodes are found');
-console.assert(div.ownerDocument === document, 'ownerDocument is present on non live nodes');
+console.log(div.children.join('\n'));
+console.log('');
 
-fragment.append(p, text);
-div.append(fragment);
-console.assert(fragment.parentNode === null, 'fragments never have a parent');
-console.assert(p.parentNode === div && text.parentNode === div, 'correct parentNode');
-console.assert(div.children.length === 1 && div.children[0] === p, 'no element are considered in children');
-console.assert(div.lastChild === text, 'correct lastChild');
+console.log(div.attributes.join('\n'));
+console.log('');
 
-document.createElement('div').append(p, text);
-console.assert(p.parentNode !== div && text.parentNode !== div, 'correct new parentNode');
+console.log(p.previousSibling.localName);
 
-console.assert(div.getAttributeNode('b') === null, 'getAttributeNode without node works');
+const ps = [
+  document.createElement('span').appendChild(document.createTextNode('a')).parentNode,
+  document.createElement('span').appendChild(document.createTextNode('b')).parentNode,
+  document.createElement('span').appendChild(document.createTextNode('c')).parentNode,
+  document.createElement('span').appendChild(document.createTextNode('d')).parentNode
+];
 
-try {
-  div.setAttributeNode({key: 'value'});
-  process.exit(1);
-}
-catch (expected) {}
+fragment.prepend(...ps);
+console.log(fragment.localName, fragment.children.length, fragment.firstChild === ps[0], fragment.lastChild === ps[3]);
+console.log('');
 
-div.setAttribute('a', 'a');
-div.setAttribute('b', 'b');
-div.setAttribute('c', 'c');
-console.assert(div.getAttributeNode('b').value === 'b', 'getAttributeNode works');
+fragment.replaceChild(document.createElement('br'), fragment.lastChild);
 
-div.removeAttribute('b');
-console.assert(!div.hasAttribute('b'), 'hasAttribute works');
+p.appendChild(fragment);
+console.log(div.toString());
 
-try {
-  div.insertBefore(document.createComment('nope'), document.createElement('nope'));
-  process.exit(1);
-}
-catch (expected) {}
+console.log(fragment.localName, fragment.children.length, fragment.firstChild === ps[0], fragment.lastChild === ps[3]);
 
-try {
-  div.removeChild(document.createElement('nope'));
-  process.exit(1);
-}
-catch (expected) {}
-
-div.appendChild(document.createElement('p'));
-
-div.insertBefore(div.firstChild);
-console.assert(div.toString() === '<div c="c" a="a"><p></p></div>', 'moving nodes around works');
-
-// TODO: this is broken
-// div.insertBefore(document.createElement('el'), div.firstChild);
-// console.log(div.toString());
-
-/*
-div.lastChild.next = {};
-try {
-  div.toString();
-  process.exit(1);
-}
-catch (expected) {}
-*/
-
-// end
-document = new HTMLDocument;
-console.assert(document.head, 'auto head works as expected');
-console.assert(document.body, 'auto body works as expected');
-console.assert(document.documentElement, 'auto body works as expected');
-console.assert(document.head, 'auto head works as expected');
-console.assert(document.body, 'auto body works as expected');
-console.assert(document.documentElement, 'auto body works as expected');
-
-document = new XMLDocument;
-console.assert(!document.ignoreCase, 'xml constructor works as expected');
-
-document = new SVGDocument;
-console.assert(!document.ignoreCase, 'svg constructor works as expected');
-console.assert(document.getElementsByTagName('svg')[0] === document.root);
+fragment.replaceChildren(...ps);

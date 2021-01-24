@@ -1,23 +1,21 @@
 'use strict';
-const {Type} = require('./common.js');
+const {escape} = require('html-escaper');
+
+const {ATTRIBUTE_NODE} = require('./constants.js');
+const {String} = require('./utils.js');
 const {Node} = require('./node.js');
 
-const ATTRIBUTE_NODE = Type.Attribute;
-exports.ATTRIBUTE_NODE = ATTRIBUTE_NODE;
-
 class Attribute extends Node {
-  /**
-   * @param {string} localName the attribute localName
-   * @param {string} value the attribute value
-   */
-  constructor(localName, value) {
-    super(ATTRIBUTE_NODE, localName);
-    this.value = value;
+
+  constructor(ownerDocument, name, value) {
+    super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
+    this.name = String(name);
+    this.value = String(value);
+    this.ownerElement = null;
   }
 
   toString() {
-    const {name, value} = this;
-    return value ? `${name}="${value}"` : name;
+    return `${this.name}="${escape(this.value)}"`;
   }
 }
-exports.Attribute = Attribute;
+exports.Attribute = Attribute
