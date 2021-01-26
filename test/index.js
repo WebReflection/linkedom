@@ -43,6 +43,11 @@ document.documentElement.setAttribute('lang', 'en');
 assert(document.documentElement.cloneNode(true).outerHTML === '<html lang="en"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
 assert(document.documentElement.cloneNode(false).outerHTML === '<html lang="en"></html>', 'cloneNode().outerHTML');
 
+document.documentElement.append('a', 'b');
+let {length} = document.documentElement.childNodes;
+document.documentElement.normalize();
+assert(document.documentElement.childNodes.length === (length - 1), 'normalize merged text nodes');
+
 process.exit(0);
 
 

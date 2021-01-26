@@ -238,7 +238,21 @@ class NodeElement extends Node {
     return node;
   }
 
-  normalize() {}
+  normalize() {
+    let {_next, _end} = this;
+    while (_next !== _end) {
+      const {_next: next, _prev, nodeType} = _next;
+      if (nodeType === TEXT_NODE) {
+        if (!_next.textContent)
+          _next.remove();
+        else if (_prev && _prev.nodeType === TEXT_NODE) {
+          _prev.textContent += _next.textContent;
+          _next.remove();
+        }
+      }
+      _next = next;
+    }
+  }
 
   removeChild(node) {
     if (node.parentNode !== this)

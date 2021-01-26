@@ -39,6 +39,14 @@ const onContent = async (createDocument, html, times) => {
   console.log();
 
   try {
+    bench('html.normalize()', () => { document.documentElement.normalize(); }, 1);
+  }
+  catch (o_O) {
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to normalize html: ${o_O.message}`));
+  }
+  console.log();
+
+  try {
     console.log('total childNodes', bench('crawling childNodes', () => crawl(document.documentElement, 'childNodes'), times));
   }
   catch (o_O) {
