@@ -9,25 +9,51 @@ import {NodeList} from './interfaces.js';
 
 import {findNext, getEnd} from './utils.js';
 
+const asFragment = (ownerDocument, nodes) => {
+  const fragment = ownerDocument.createDocumentFragment();
+  fragment.append(...nodes);
+  return fragment;
+};
+
+const asNode = (ownerDocument, node) =>
+                node[DOM] ? node : ownerDocument.createTextNode(node);
+
 // https://dom.spec.whatwg.org/#childnode
 export const ChildNode = {
 
-  before(node, ...nodes) {
-    throw new Error('before not implemented');
-  },
-
-  after(node, ...nodes) {
-    throw new Error('after not implemented');
+  /**
+   * @param {Node} node
+   * @param  {Node[]} nodes
+   */
+  before(node, nodes) {
+    const {ownerDocument, parentNode} = node;
+    if (parentNode)
+      parentNode.insertBefore(asFragment(ownerDocument, nodes), node);
   },
 
   /**
-   * @param {Node} node 
-   * @param  {...Nodes} nodes 
+   * @param {Node} node
+   * @param  {Node[]} nodes
    */
-  replaceWith(node, ...nodes) {
-    const fragment = node.ownerDocument.createDocumentFragment();
-    fragment.append(...nodes);
-    node.parentNode.replaceChild(fragment, node);
+  after(node, nodes) {
+    const {ownerDocument, parentNode} = node;
+    if (parentNode) {
+      const {_next} = getEnd(node);
+      parentNode.insertBefore(asFragment(ownerDocument, nodes), _next);
+    }
+  },
+
+  /**
+   * @param {Node} node
+   * @param  {Node[]} nodes
+   */
+  replaceWith(node, nodes) {
+    const {ownerDocument, parentNode} = node;
+    if (parentNode) {
+      for (const any of nodes)
+        parentNode.insertBefore(asNode(ownerDocument, any), node);
+      node.remove();
+    }
   },
 
   /**
@@ -106,15 +132,12 @@ export const NonElementParentNode = {
 
 /**
  * @param {Element} element
- * @param  {...Nodes} nodes
+ * @param  {Node[]} nodes
  */
-const append = (element, ...nodes) => {
+const append = (element, nodes) => {
   const {ownerDocument, _end} = element;
   for (const node of nodes)
-    element.insertBefore(
-      (node && node[DOM]) ? node : ownerDocument.createTextNode(node),
-      _end
-    );
+    element.insertBefore(asNode(ownerDocument, node), _end);
 };
 
 // https://dom.spec.whatwg.org/#parentnode
@@ -169,9 +192,9 @@ export const ParentNode = {
 
   /**
    * @param {Element} element
-   * @param  {...Nodes} nodes
+   * @param  {Node[]} nodes
    */
-  prepend(element, ...nodes) {
+  prepend(element, nodes) {
     const {ownerDocument, firstChild} = element;
     for (const node of nodes)
       element.insertBefore(
@@ -184,16 +207,16 @@ export const ParentNode = {
 
   /**
    * @param {Element} element
-   * @param  {...Nodes} nodes
+   * @param  {Node[]} nodes
    */
-  replaceChildren(element, ...nodes) {
+  replaceChildren(element, nodes) {
     let {_next, _end} = element;
     while (_next !== _end) {
       const next = getEnd(_next)._next;
       _next.remove();
       _next = next;
     }
-    append(element, ...nodes);
+    append(element, nodes);
   },
 
   /**
@@ -225,6 +248,8 @@ export const ParentNode = {
     return elements;
   }
 };
+
+// ... and one eternity later ... //
 
 // https://dom.spec.whatwg.org/#slotable
 export const Slottable = {

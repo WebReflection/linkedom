@@ -58,6 +58,24 @@ export class Node extends EventTarget {
     this._next = null;
   }
 
+  // <ChildNode>
+  before(...nodes) {
+    ChildNode.before(this, nodes);
+  }
+
+  after(...nodes) {
+    ChildNode.after(this, nodes);
+  }
+
+  replaceWith(...nodes) {
+    ChildNode.replaceWith(this, nodes);
+  }
+
+  remove() {
+    ChildNode.remove(this);
+  }
+  // </ChildNode>
+
   get [DOM]() { return true; }
 
   get isConnected() {
@@ -132,20 +150,18 @@ export class Node extends EventTarget {
         clone._end._prev = $next;
         $next._next = clone._end;
         return clone;
-      case ATTRIBUTE_NODE:
-        const attribute = ownerDocument.createAttribute(this.name);
-        attribute.value = this.value;
-        return attribute;
       case TEXT_NODE:
         return ownerDocument.createTextNode(this.textContent);
       case COMMENT_NODE:
         return ownerDocument.createComment(this.textContent);
-      case DOCUMENT_FRAGMENT_NODE:
+      case ATTRIBUTE_NODE:
+        const attribute = ownerDocument.createAttribute(this.name);
+        attribute.value = this.value;
+        return attribute;
+      default:
         const fragment = ownerDocument.createDocumentFragment();
         fragment.append(...this.childNodes.map(child => child.cloneNode(deep)));
         return fragment;
-      default:
-        throw new Error('unable to clone this node');
     }
   }
 
@@ -176,10 +192,6 @@ export class Node extends EventTarget {
    */
   isSameNode(node) {
     return this === node;
-  }
-
-  remove() {
-    ChildNode.remove(this);
   }
 }
 

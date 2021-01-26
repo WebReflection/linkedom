@@ -48,6 +48,15 @@ let {length} = document.documentElement.childNodes;
 document.documentElement.normalize();
 assert(document.documentElement.childNodes.length === (length - 1), 'normalize merged text nodes');
 
+let node = document.getElementsByTagName('div')[0];
+
+node.before('before');
+node.after('after');
+assert(document.toString() === '<!DOCTYPE html><html lang="en">before<div></div>after<input><p></p>ab</html>', '.before() and after()');
+
+node.replaceWith(document.createTextNode('&'));
+assert(document.toString() === '<!DOCTYPE html><html lang="en">before&amp;after<input><p></p>ab</html>', '.before() and after()');
+
 process.exit(0);
 
 

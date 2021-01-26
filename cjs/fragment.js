@@ -52,24 +52,24 @@ class DocumentFragment extends NodeElement {
   }
 
   /**
-   * @param  {...Nodes} nodes 
+   * @param  {Node[]} nodes 
    */
   prepend(...nodes) {
-    return ParentNode.prepend(this, ...nodes);
+    return ParentNode.prepend(this, nodes);
   }
 
   /**
-   * @param  {...Nodes} nodes 
+   * @param  {Node[]} nodes 
    */
   append(...nodes) {
-    return ParentNode.append(this, ...nodes);
+    return ParentNode.append(this, nodes);
   }
 
   /**
-   * @param  {...Nodes} nodes 
+   * @param  {Node[]} nodes 
    */
   replaceChildren(...nodes) {
-    return ParentNode.replaceChildren(this, ...nodes);
+    return ParentNode.replaceChildren(this, nodes);
   }
   // </ParentNode>
 }

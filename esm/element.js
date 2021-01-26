@@ -49,21 +49,21 @@ export class Element extends NodeElement {
    * @param  {...Node|string} nodes 
    */
   prepend(...nodes) {
-    return ParentNode.prepend(this, ...nodes);
+    return ParentNode.prepend(this, nodes);
   }
 
   /**
    * @param  {...Node|string} nodes 
    */
   append(...nodes) {
-    return ParentNode.append(this, ...nodes);
+    return ParentNode.append(this, nodes);
   }
 
   /**
    * @param  {...Node|string} nodes 
    */
   replaceChildren(...nodes) {
-    return ParentNode.replaceChildren(this, ...nodes);
+    return ParentNode.replaceChildren(this, nodes);
   }
   // </ParentNode>
 
