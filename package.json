@@ -1,32 +1,25 @@
 {
   "name": "linkedom",
   "version": "0.0.2",
-  "description": "Andrea Giammarchi",
+  "description": "A triple-linked lists based DOM",
   "main": "./cjs/index.js",
   "scripts": {
-    "build": "npm run cjs && npm run rollup:es && npm run rollup:babel && npm run min && npm run fix:default && npm run test",
+    "benchmark": "node test/benchmark-linkedom.js",
+    "benchmark:w3c": "node test/benchmark-linkedom.js --w3c; node test/benchmark-basichtml.js --w3c; node test/benchmark-jsdom.js --w3c",
+    "benchmark:dom": "node test/benchmark-linkedom.js --dom; node test/benchmark-basichtml.js --dom; node test/benchmark-jsdom.js --dom",
+    "benchmark:html": "node test/benchmark-linkedom.js --html; node test/benchmark-basichtml.js --html; node test/benchmark-jsdom.js --html",
+    "build": "npm run cjs && npm run test",
     "cjs": "ascjs --no-default esm cjs",
-    "rollup:es": "rollup --config rollup/es.config.js && sed -i.bck 's/^var /self./' es.js && rm -rf es.js.bck",
-    "rollup:babel": "rollup --config rollup/babel.config.js && sed -i.bck 's/^var /self./' index.js && rm -rf index.js.bck",
-    "min": "terser index.js --comments='/^!/' -c -m -o min.js",
-    "fix:default": "sed -i 's/({})/({}).default/' index.js && sed -i 's/({})/({}).default/' es.js && sed -i 's/({})/({}).default/' min.js",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "test": "nyc node test/index.js"
+    "coveralls": "c8 report --reporter=text-lcov | coveralls",
+    "test": "c8 node test/index.js"
   },
   "keywords": [],
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
-    "@rollup/plugin-babel": "^5.2.2",
-    "@rollup/plugin-node-resolve": "^11.0.0",
     "ascjs": "^4.0.3",
-    "coveralls": "^3.1.0",
-    "nyc": "^15.1.0",
-    "rollup": "^2.34.2",
-    "rollup-plugin-terser": "^7.0.2",
-    "terser": "^5.5.1"
+    "c8": "^7.4.0",
+    "coveralls": "^3.1.0"
   },
   "module": "./esm/index.js",
   "type": "module",
@@ -37,5 +30,20 @@
     },
     "./package.json": "./package.json"
   },
-  "unpkg": "min.js"
+  "dependencies": {
+    "@ungap/event": "^0.2.2",
+    "@ungap/event-target": "^0.2.2",
+    "css-select": "^3.1.2",
+    "html-escaper": "^3.0.0",
+    "htmlparser2": "^6.0.0",
+    "uhyphen": "^0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebReflection/linkedom.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WebReflection/linkedom/issues"
+  },
+  "homepage": "https://github.com/WebReflection/linkedom#readme"
 }
