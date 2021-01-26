@@ -4,18 +4,25 @@ import {Mime} from './utils.js';
 
 import {NonElementParentNode, ParentNode} from './mixins.js';
 
-import {Attribute} from './attribute.js';
+import {Attr} from './attribute.js';
 import {Comment} from './comment.js';
 import {Element} from './element.js';
-import {Fragment} from './fragment.js';
+import {DocumentFragment} from './fragment.js';
 import {Node} from './node.js';
 import {Text} from './text.js';
 
+/**
+ * @implements globalThis.Document
+ */
 export class Document extends Node {
 
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
     this._mime = Mime[type];
+
+    /**
+     * @type {HTMLElement?}
+     */
     this.root = null;
   }
 
@@ -68,7 +75,7 @@ export class Document extends Node {
   // </ParentNode>
 
   createAttribute(name) {
-    return new Attribute(this, name, '');
+    return new Attr(this, name, '');
   }
 
   createElement(localName, options = {}) {
@@ -87,22 +94,36 @@ export class Document extends Node {
   }
 
   createDocumentFragment() {
-    return new Fragment(this);
+    return new DocumentFragment(this);
   }
 
   toString() {
     return this._mime.docType + (this.root || '').toString();
   }
 
+  /**
+   * @param {string} name
+   * @returns {NodeList}
+   */
   getElementsByTagName(name) {
     const {root} = this;
     return root ? root.getElementsByTagName(name) : [];
   }
 
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} className
+   * @returns {NodeList}
+   */
   getElementsByTagNameNS(_, name) {
     return this.getElementsByTagName(name);
   }
 
+  /**
+   * @param {string} className
+   * @returns {NodeList}
+   */
   getElementsByClassName(className) {
     const {root} = this;
     return root ? root.getElementsByClassName(className) : [];

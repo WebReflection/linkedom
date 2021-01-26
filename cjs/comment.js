@@ -4,6 +4,9 @@ const {escape} = require('html-escaper');
 const {COMMENT_NODE} = require('./constants.js');
 const {NodeText} = require('./node.js');
 
+/**
+ * @implements globalThis.Comment
+ */
 class Comment extends NodeText {
 
   constructor(ownerDocument, textContent) {

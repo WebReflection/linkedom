@@ -21,12 +21,19 @@ const ChildNode = {
     throw new Error('after not implemented');
   },
 
+  /**
+   * @param {Node} node 
+   * @param  {...Nodes} nodes 
+   */
   replaceWith(node, ...nodes) {
     const fragment = node.ownerDocument.createDocumentFragment();
     fragment.append(...nodes);
     node.parentNode.replaceChild(fragment, node);
   },
 
+  /**
+   * @param {Node} node 
+   */
   remove(node) {
     let {_prev, _next, nodeType} = node;
     let _end = node;
@@ -44,6 +51,10 @@ exports.ChildNode = ChildNode;
 // https://dom.spec.whatwg.org/#nondocumenttypechildnode
 const NonDocumentTypeChildNode = {
 
+  /**
+   * @param {Node} node
+   * @returns {Element?}
+   */
   previousElementSibling({_prev}) {
     while (_prev) {
       switch (_prev.nodeType) {
@@ -59,6 +70,10 @@ const NonDocumentTypeChildNode = {
     return null;
   },
 
+  /**
+   * @param {Node} node
+   * @returns {Element?}
+   */
   nextElementSibling({_next}) {
     while (_next) {
       switch (_next.nodeType) {
@@ -77,6 +92,11 @@ exports.NonDocumentTypeChildNode = NonDocumentTypeChildNode;
 // https://dom.spec.whatwg.org/#nonelementparentnode
 const NonElementParentNode = {
 
+  /**
+   * @param {Node} node
+   * @param {string} id
+   * @returns {Element?}
+   */
   getElementById({_next}, id) {
     while (_next) {
       if (_next.nodeType === ELEMENT_NODE && _next.id === id)
@@ -88,6 +108,10 @@ const NonElementParentNode = {
 };
 exports.NonElementParentNode = NonElementParentNode;
 
+/**
+ * @param {Element} element
+ * @param  {...Nodes} nodes
+ */
 const append = (element, ...nodes) => {
   const {ownerDocument, _end} = element;
   for (const node of nodes)
@@ -100,6 +124,10 @@ const append = (element, ...nodes) => {
 // https://dom.spec.whatwg.org/#parentnode
 const ParentNode = {
 
+  /**
+   * @param {Element} element
+   * @returns {NodeList}
+   */
   children(element) {
     const children = new NodeList;
     let {_next, _end} = findNext(element);
@@ -113,12 +141,20 @@ const ParentNode = {
     return children;
   },
 
+  /**
+   * @param {Element} element
+   * @returns {Element?}
+   */
   firstElementChild({_next, _end}) {
     while (_next !== _end && _next.nodeType !== ELEMENT_NODE)
       _next = _next._next;
     return _next === _end ? null : _next;
   },
 
+  /**
+   * @param {Element} element
+   * @returns {Element?}
+   */
   lastElementChild({lastChild}) {
     if (lastChild) {
       if (lastChild.nodeType !== ELEMENT_NODE)
@@ -127,10 +163,18 @@ const ParentNode = {
     return lastChild;
   },
 
+  /**
+   * @param {Element} element
+   * @returns {number}
+   */
   childElementCount({children}) {
     return children.length;
   },
 
+  /**
+   * @param {Element} element
+   * @param  {...Nodes} nodes
+   */
   prepend(element, ...nodes) {
     const {ownerDocument, firstChild} = element;
     for (const node of nodes)
@@ -142,6 +186,10 @@ const ParentNode = {
 
   append,
 
+  /**
+   * @param {Element} element
+   * @param  {...Nodes} nodes
+   */
   replaceChildren(element, ...nodes) {
     let {_next, _end} = element;
     while (_next !== _end) {
@@ -152,6 +200,11 @@ const ParentNode = {
     append(element, ...nodes);
   },
 
+  /**
+   * @param {Element} element
+   * @param  {string} selectors
+   * @returns {Element?}
+   */
   querySelector({_next}, selectors) {
     while (_next) {
       if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
@@ -161,6 +214,11 @@ const ParentNode = {
     return null;
   },
 
+  /**
+   * @param {Element} element
+   * @param  {string} selectors
+   * @returns {NodeList}
+   */
   querySelectorAll({_next}, selectors) {
     const elements = new NodeList;
     while (_next) {

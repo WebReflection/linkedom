@@ -4,7 +4,7 @@
 
 A triple-linked lists based DOM with the following goals:
 
-  * **avoid** maximum callstack/recursion **crashes**, even under heaviest conditions.
+  * **avoid** maximum callstack/recursion or **crashes**, even under heaviest conditions.
   * guarantee **linear performance** from small to big documents.
   * be **close to the** current **DOM standard**, but not too close.
   * replace [basicHTML](https://github.com/WebReflection/basicHTML#readme) (long term goal).

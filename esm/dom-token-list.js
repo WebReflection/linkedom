@@ -2,6 +2,9 @@ const update = ({_ownerElement, value}) => {
   _ownerElement.setAttribute('class', value);
 };
 
+/**
+ * @implements globalThis.DOMTokenList
+ */
 export class DOMTokenList extends Set {
 
   constructor(_ownerElement) {
@@ -13,6 +16,9 @@ export class DOMTokenList extends Set {
     return [...this].join(' ');
   }
 
+  /**
+   * @param  {...string} tokens 
+   */
   add(...tokens) {
     for (const token of tokens) {
       if (token)
@@ -21,16 +27,26 @@ export class DOMTokenList extends Set {
     update(this);
   }
 
+  /**
+   * @param {string} token 
+   */
   contains(token) {
     return this.has(token);
   }
 
+  /**
+   * @param  {...string} tokens 
+   */
   remove(...tokens) {
     for (const token of tokens)
       this.delete(token);
     update(this);
   }
 
+  /**
+   * @param {string} token 
+   * @param {boolean?} force 
+   */
   toggle(token, force) {
     if (this.has(token)) {
       if (force)
@@ -46,6 +62,10 @@ export class DOMTokenList extends Set {
     return false;
   }
 
+  /**
+   * @param {string} token 
+   * @param {string} newToken 
+   */
   replace(token, newToken) {
     if (this.has(token)) {
       this.delete(token);
@@ -56,7 +76,10 @@ export class DOMTokenList extends Set {
     return false;
   }
 
+  /**
+   * @param {string} token 
+   */
   supports(token) {
     return true;
   }
-};
+}

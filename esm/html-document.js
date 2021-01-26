@@ -1,5 +1,8 @@
 import {Document} from './document.js';
 
+/**
+ * @implements globalThis.HTMLDocument
+ */
 export class HTMLDocument extends Document {
 
   constructor() {
@@ -8,7 +11,10 @@ export class HTMLDocument extends Document {
     this.root.parentNode = this;
   }
 
+  /**
+   * @type HTMLHtmlElement
+   */
   get documentElement() {
     return this.root;
   }
-};
+}

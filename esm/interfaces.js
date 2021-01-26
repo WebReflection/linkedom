@@ -3,7 +3,10 @@ import EventTarget from '@ungap/event-target';
 
 export {Event, EventTarget};
 
-export class CustomEvent extends Event {
+/**
+ * @implements globalThis.CustomEvent
+ */
+class CustomEvent extends Event {
   constructor(type, eventInitDict = {}) {
     super(type, eventInitDict);
     this.detail = eventInitDict.detail;
@@ -11,6 +14,9 @@ export class CustomEvent extends Event {
 }
 
 // https://dom.spec.whatwg.org/#nodelist
+/**
+ * @implements globalThis.NodeList
+ */
 export class NodeList extends Array {
   item(i) {
     return i < this.length ? this[i] : null;

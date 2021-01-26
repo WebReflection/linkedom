@@ -10,14 +10,15 @@ import {DOMTokenList} from './dom-token-list.js';
 
 import matches from './matches.js';
 
-const {getPrototypeOf} = Object;
-
 const attributesHandler = {
   get(target, key) {
     return key in target ? target[key] : target.find(({name}) => name === key);
   }
 };
 
+/**
+ * @implements globalThis.Element
+ */
 export class Element extends NodeElement {
 
   constructor(ownerDocument, localName) {
@@ -44,14 +45,23 @@ export class Element extends NodeElement {
     return ParentNode.childElementCount(this);
   }
 
+  /**
+   * @param  {...Node|string} nodes 
+   */
   prepend(...nodes) {
     return ParentNode.prepend(this, ...nodes);
   }
 
+  /**
+   * @param  {...Node|string} nodes 
+   */
   append(...nodes) {
     return ParentNode.append(this, ...nodes);
   }
 
+  /**
+   * @param  {...Node|string} nodes 
+   */
   replaceChildren(...nodes) {
     return ParentNode.replaceChildren(this, ...nodes);
   }
@@ -75,18 +85,30 @@ export class Element extends NodeElement {
     classList.add(...value.split(/\s+/));
   }
 
+  /**
+   * @type {string}
+   */
   get nodeName() {
     return localCase(this);
   }
 
+  /**
+   * @type {string}
+   */
   get tagName() {
     return localCase(this);
   }
 
+  /**
+   * @type {DOMTokenList}
+   */
   get classList() {
     return this._classList || (this._classList = new DOMTokenList(this));
   }
 
+  /**
+   * @type {DOMStringMap}
+   */
   get dataset() {
     return this._dataset || (this._dataset = new DOMStringMap(this));
   }
@@ -111,6 +133,9 @@ export class Element extends NodeElement {
     this.parentNode.replaceChild(template.firstElementChild, this);
   }
 
+  /**
+   * @type {Attr[]}
+   */
   get attributes() {
     const attributes = [];
     let {_next} = this;
@@ -121,22 +146,38 @@ export class Element extends NodeElement {
     return new Proxy(attributes, attributesHandler);
   }
 
+  /**
+   * @type {Node?}
+   */
   get nextSibling() {
     return this._end._next;
   }
 
+  /**
+   * @type {Node?}
+   */
   get previousSibling() {
     return this._prev;
   }
 
+  /**
+   * @type {Element?}
+   */
   get nextElementSibling() {
     return NonDocumentTypeChildNode.nextElementSibling(this._end);
   }
 
+  /**
+   * @type {Element?}
+   */
   get previousElementSibling() {
     return NonDocumentTypeChildNode.previousElementSibling(this);
   }
 
+  /**
+   * @param {string} name
+   * @returns {Attr?}
+   */
   getAttributeNode(name) {
     let {_next} = this;
     while (_next.nodeType === ATTRIBUTE_NODE) {
@@ -147,6 +188,9 @@ export class Element extends NodeElement {
     return null;
   }
 
+  /**
+   * @param {Attr} attribute
+   */
   removeAttributeNode(attribute) {
     let {_next} = this;
     while (_next.nodeType === ATTRIBUTE_NODE) {
@@ -162,6 +206,9 @@ export class Element extends NodeElement {
     throw new Error('Node was not found');
   }
 
+  /**
+   * @param {Attr} attribute 
+   */
   setAttributeNode(attribute) {
     const previously = this.getAttributeNode(attribute.name);
     if (previously !== attribute) {
@@ -179,10 +226,18 @@ export class Element extends NodeElement {
     return previously;
   }
 
+  /**
+   * @param {string} name 
+   */
   hasAttribute(name) {
     return !!this.getAttributeNode(name);
   }
 
+  /**
+   * @deprecated
+   * @param {string} namespace 
+   * @param {string} name 
+   */
   hasAttributeNS(_, name) {
     return this.hasAttribute(name);
   }
@@ -195,15 +250,28 @@ export class Element extends NodeElement {
     return this.attributes.map(({name}) => name);
   }
 
+  /**
+   * @param {string} name
+   * @returns {string?}
+   */
   getAttribute(name) {
     const attribute = this.getAttributeNode(name);
     return attribute && attribute.value;
   }
 
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} name
+   * @returns {string?}
+   */
   getAttributeNS(_, name) {
     return this.getAttribute(name);
   }
 
+  /**
+   * @param {string} name 
+   */
   removeAttribute(name) {
     let {_next} = this;
     while (_next.nodeType === ATTRIBUTE_NODE) {
@@ -215,10 +283,19 @@ export class Element extends NodeElement {
     }
   }
 
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} name
+   */
   removeAttributeNS(_, name) {
     this.removeAttribute(name);
   }
 
+  /**
+   * @param {string} name
+   * @param {string|any} value casted, if not string
+   */
   setAttribute(name, value) {
     let attribute = this.getAttributeNode(name);
     if (attribute)
@@ -230,10 +307,20 @@ export class Element extends NodeElement {
     }
   }
 
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} name
+   * @param {string|any} value casted, if not string
+   */
   setAttributeNS(_, name, value) {
     this.setAttribute(name, value);
   }
 
+  /**
+   * @param {string} name 
+   * @param {boolean?} force 
+   */
   toggleAttribute(name, force) {
     if (this.hasAttribute(name)) {
       if (!force) {
@@ -281,6 +368,9 @@ export class Element extends NodeElement {
     return out.join('');
   }
 
+  /**
+   * @param {string} name 
+   */
   getElementsByTagName(name) {
     const elements = new NodeList;
     let {_next} = this;
@@ -294,10 +384,18 @@ export class Element extends NodeElement {
     return elements;
   }
 
+  /**
+   * @deprecated
+   * @param {string} namespace 
+   * @param {string} name 
+   */
   getElementsByTagNameNS(_, name) {
     return this.getElementsByTagName(name);
   }
 
+  /**
+   * @param {string} className 
+   */
   getElementsByClassName(className) {
     const elements = new NodeList;
     let {_next} = this;
@@ -313,6 +411,10 @@ export class Element extends NodeElement {
     return elements;
   }
 
+  /**
+   * @param {string} selectors
+   * @returns {boolean}
+   */
   matches(selectors) {
     return matches(this, selectors);
   }

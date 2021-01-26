@@ -1,6 +1,9 @@
 'use strict';
 const {Document} = require('./document.js');
 
+/**
+ * @implements globalThis.HTMLDocument
+ */
 class HTMLDocument extends Document {
 
   constructor() {
@@ -9,8 +12,11 @@ class HTMLDocument extends Document {
     this.root.parentNode = this;
   }
 
+  /**
+   * @type HTMLHtmlElement
+   */
   get documentElement() {
     return this.root;
   }
 }
-exports.HTMLDocument = HTMLDocument;
+exports.HTMLDocument = HTMLDocument

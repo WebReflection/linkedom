@@ -4,7 +4,15 @@ const {HTMLDocument} = require('./html-document.js');
 const {SVGDocument} = require('./svg-document.js');
 const {XMLDocument} = require('./xml-document.js');
 
+/**
+ * @implements globalThis.DOMParser
+ */
 module.exports = class DOMParser {
+  /**
+   * @param {string} markupLanguage 
+   * @param {string} mimeType
+   * @returns {Document}
+   */
   parseFromString(markupLanguage, mimeType) {
     let isHTML = false, document;
     if (mimeType === 'text/html') {

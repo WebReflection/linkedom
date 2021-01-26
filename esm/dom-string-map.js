@@ -33,9 +33,17 @@ const handler = {
   }
 };
 
-export function DOMStringMap(value) {'use strict';
-  return new Proxy(
-    defineProperty(this, '_', {value}),
-    handler
-  );
+/**
+ * @implements globalThis.DOMStringMap
+ */
+export class DOMStringMap {
+  /**
+   * @param {Element} value
+   */
+  constructor(value) {
+    return new Proxy(
+      defineProperty(this, '_', {value}),
+      handler
+    );
+  }
 }

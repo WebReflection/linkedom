@@ -20,6 +20,9 @@ const {
   getEnd
 } = require('./utils.js');
 
+/**
+ * @implements globalThis.Node
+ */
 class Node extends EventTarget {
 
   static get ELEMENT_NODE() { return ELEMENT_NODE; }
@@ -31,9 +34,25 @@ class Node extends EventTarget {
 
   constructor(ownerDocument, localName, nodeType) {
     super();
+
+    /**
+     * @type {Document}
+     */
     this.ownerDocument = ownerDocument;
+
+    /**
+     * @type {string}
+     */
     this.localName = localName;
+
+    /**
+     * @type {number}
+     */
     this.nodeType = nodeType;
+
+    /**
+     * @type {Element?}
+     */
     this.parentNode = null;
 
     this._prev = null;
@@ -53,6 +72,9 @@ class Node extends EventTarget {
     return false;
   }
 
+  /**
+   * @type {Element?}
+   */
   get parentElement() {
     let {parentNode} = this;
     if (parentNode) {
@@ -66,6 +88,10 @@ class Node extends EventTarget {
   }
 
   // it's huge, but it should never suffer a maximum callstack issue
+  /**
+   * @param {boolean?} deep
+   * @returns {Node}
+   */
   cloneNode(deep = false) {
     const {ownerDocument, nodeType, localName} = this;
     switch (nodeType) {
@@ -124,6 +150,10 @@ class Node extends EventTarget {
     }
   }
 
+  /**
+   * @type {Node}
+   * @returns {boolean}
+   */
   isEqualNode(node) {
     const {nodeType} = this;
     if (nodeType === node.nodeType) {
@@ -142,6 +172,9 @@ class Node extends EventTarget {
   }
 
   // meh
+  /**
+   * @type {Node}
+   */
   isSameNode(node) {
     return this === node;
   }
@@ -154,11 +187,17 @@ exports.Node = Node
 
 class NodeElement extends Node {
 
+  /**
+   * @type {Node?}
+   */
   get firstChild() {
     const {_next, _end} = findNext(this);
     return _next === _end ? null : _next;
   }
 
+  /**
+   * @type {Node?}
+   */
   get lastChild() {
     const {_prev} = this._end;
     switch (_prev.nodeType) {
@@ -181,10 +220,17 @@ class NodeElement extends Node {
     return childNodes;
   }
 
+  /**
+   * @returns {Element}
+   */
   getRootNode() {
     return this.ownerDocument.root;
   }
 
+  /**
+   * @param {Node} node
+   * @returns {boolean}
+   */
   contains(node) {
     let {parentNode} = node;
     while (parentNode && parentNode !== this)
@@ -196,10 +242,18 @@ class NodeElement extends Node {
     return !!this.lastChild;
   }
 
+  /**
+   * @param {Node} node
+   */
   appendChild(node) {
     return this.insertBefore(node, this._end);
   }
 
+  /**
+   * @param {Node} node
+   * @param {Node?} node
+   * @returns {Node}
+   */
   insertBefore(node, before) {
     const _end = before || this._end;
     const {_prev} = _end;
@@ -254,6 +308,10 @@ class NodeElement extends Node {
     }
   }
 
+  /**
+   * @param {Node} node
+   * @returns {Node}
+   */
   removeChild(node) {
     if (node.parentNode !== this)
       throw new Error('node is not a child');
@@ -261,6 +319,11 @@ class NodeElement extends Node {
     return node;
   }
 
+  /**
+   * @param {Node} node
+   * @param {Node} replaced
+   * @returns {Node}
+   */
   replaceChild(node, replaced) {
     const {_prev, _next} = getBoundaries(replaced);
     replaced.remove();
@@ -274,10 +337,18 @@ class NodeElement extends Node {
     return replaced;
   }
 
+  /**
+   * @param {string} selectors
+   * @returns {Element?}
+   */
   querySelector(selectors) {
     return ParentNode.querySelector(this, selectors);
   }
 
+  /**
+   * @param {string} selectors
+   * @returns {NodeList}
+   */
   querySelectorAll(selectors) {
     return ParentNode.querySelectorAll(this, selectors);
   }
@@ -293,22 +364,45 @@ class NodeText extends Node {
 
   get nodeValue() { return this.textContent; }
 
+  /**
+   * @type {null}
+   */
   get firstChild() { return null; }
+
+  /**
+   * @type {null}
+   */
   get lastChild() { return null; }
+
+  /**
+   * @type {NodeList}
+   */
   get childNodes() { return []; }
 
+  /**
+   * @type {Node?}
+   */
   get nextSibling() {
     return this._next;
   }
 
+  /**
+   * @type {Node?}
+   */
   get previousSibling() {
     return this._prev;
   }
 
+  /**
+   * @type {Element?}
+   */
   get nextElementSibling() {
     return NonDocumentTypeChildNode.nextElementSibling(this);
   }
 
+  /**
+   * @type {Element?}
+   */
   get previousElementSibling() {
     return NonDocumentTypeChildNode.previousElementSibling(this);
   }

@@ -5,15 +5,20 @@ const EventTarget = (m => m.__esModule ? /* istanbul ignore next */ m.default : 
 exports.Event = Event;
 exports.EventTarget = EventTarget;
 
+/**
+ * @implements globalThis.CustomEvent
+ */
 class CustomEvent extends Event {
   constructor(type, eventInitDict = {}) {
     super(type, eventInitDict);
     this.detail = eventInitDict.detail;
   }
 }
-exports.CustomEvent = CustomEvent
 
 // https://dom.spec.whatwg.org/#nodelist
+/**
+ * @implements globalThis.NodeList
+ */
 class NodeList extends Array {
   item(i) {
     return i < this.length ? this[i] : null;

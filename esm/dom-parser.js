@@ -3,7 +3,15 @@ import {HTMLDocument} from './html-document.js';
 import {SVGDocument} from './svg-document.js';
 import {XMLDocument} from './xml-document.js';
 
+/**
+ * @implements globalThis.DOMParser
+ */
 export default class DOMParser {
+  /**
+   * @param {string} markupLanguage 
+   * @param {string} mimeType
+   * @returns {Document}
+   */
   parseFromString(markupLanguage, mimeType) {
     let isHTML = false, document;
     if (mimeType === 'text/html') {

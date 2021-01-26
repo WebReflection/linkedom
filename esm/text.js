@@ -3,6 +3,9 @@ import {escape} from 'html-escaper';
 import {TEXT_NODE} from './constants.js';
 import {NodeText} from './node.js';
 
+/**
+ * @implements globalThis.Text
+ */
 export class Text extends NodeText {
 
   constructor(ownerDocument, textContent) {
