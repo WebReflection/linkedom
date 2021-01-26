@@ -26,6 +26,8 @@ const sleep = ms => new Promise($ => setTimeout($, ms));
 
 const onContent = async (createDocument, html, times) => {
 
+  console.time(clean('\x1b[1mtotal benchmark time\x1b[0m'));
+
   let document;
   try {
     console.time(clean('parsing \x1b[2mcold\x1b[0m'));
@@ -54,7 +56,7 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  await sleep(300);
+  await sleep(100);
 
   try {
     console.log('total children', bench('crawling children', () => crawl(document.documentElement, 'children'), times));
@@ -65,7 +67,7 @@ const onContent = async (createDocument, html, times) => {
   console.log();
 
   //* uncomment to make most alternative explode with html.html test
-  await sleep(300);
+  await sleep(100);
 
   try {
     const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
@@ -80,7 +82,7 @@ const onContent = async (createDocument, html, times) => {
   console.log();
   //*/
 
-  await sleep(300);
+  await sleep(100);
 
   try {
     console.log('total div', bench('querySelectorAll("div")', () => document.documentElement.querySelectorAll('div').length, times));
@@ -90,7 +92,7 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  await sleep(300);
+  await sleep(100);
 
   try {
     console.log('total p', bench('getElementsByTagName("p")', () => document.documentElement.getElementsByTagName('p').length, times));
@@ -100,7 +102,7 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  await sleep(300);
+  await sleep(100);
 
   try {
     const divs = document.documentElement.querySelectorAll('div');
@@ -115,7 +117,7 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  await sleep(300);
+  await sleep(100);
 
   try {
     console.log('total div', bench('div count', () => document.documentElement.getElementsByTagName('div').length, 1));
@@ -125,7 +127,7 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  await sleep(300);
+  await sleep(100);
 
   try {
     console.log('total p', bench('p count', () => document.documentElement.getElementsByTagName('p').length, 1));
@@ -136,7 +138,7 @@ const onContent = async (createDocument, html, times) => {
   console.log();
 
   //* maybe OK here
-  await sleep(300);
+  await sleep(100);
 
   try {
     const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
@@ -150,6 +152,8 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
   //*/
+
+  console.timeEnd(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 };
 
 try {

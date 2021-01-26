@@ -11,6 +11,8 @@ A triple-linked lists based DOM with the following goals:
   * be **close to the** current **DOM standard**, but not too close.
   * replace [basicHTML](https://github.com/WebReflection/basicHTML#readme) (long term goal).
 
+
+
 ## Work in progress
 
 Until there is a badge with 100% code coverage, consider this project highly experimental, or a playground, to see where and how a linked-list based DOM can shine, and how difficult it would be to reach at least feature-parity with *basicHTML*.
@@ -47,6 +49,23 @@ document.querySelectorAll('form, input[name], button');
 // the NodeList of elements
 // CSS Selector via CSSselect
 ```
+
+
+
+## Parsing VS Node Types
+
+This module parses, and works, only with the following `nodeType`:
+
+  * `ELEMENT_NODE`
+  * `ATTRIBUTE_NODE`
+  * `TEXT_NODE`
+  * `COMMENT_NODE`
+  * `DOCUMENT_NODE`
+  * `DOCUMENT_FRAGMENT_NODE`
+
+Everything else, at least for the time being, is considered *YAGNI*, and it won't likely ever land in this project, as there's no goal to replicate deprecated features of this aged Web.
+
+
 
 ## Benchmarks
 
