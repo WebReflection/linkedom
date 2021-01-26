@@ -1,6 +1,6 @@
 'use strict';
 const {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} = require('./constants.js');
-const {ignoreCase, isVoidElement, localCase, parseFromString} = require('./utils.js');
+const {String, ignoreCase, isVoidElement, localCase, parseFromString} = require('./utils.js');
 
 const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
@@ -9,7 +9,7 @@ const {NodeElement, NodeElementEnd} = require('./node.js');
 const {DOMStringMap} = require('./dom-string-map.js');
 const {DOMTokenList} = require('./dom-token-list.js');
 
-const matches = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('./matches.js'));
+const matches = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('./matches.js'));
 
 const attributesHandler = {
   get(target, key) {
@@ -300,10 +300,10 @@ class Element extends NodeElement {
   setAttribute(name, value) {
     let attribute = this.getAttributeNode(name);
     if (attribute)
-      attribute.value = value;
+      attribute.value = String(value);
     else {
       attribute = this.ownerDocument.createAttribute(name);
-      attribute.value = value;
+      attribute.value = String(value);
       this.setAttributeNode(attribute);
     }
   }

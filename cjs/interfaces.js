@@ -1,6 +1,6 @@
 'use strict';
-const Event = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('@ungap/event'));
-const EventTarget = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('@ungap/event-target'));
+const Event = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('@ungap/event'));
+const EventTarget = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('@ungap/event-target'));
 
 exports.Event = Event;
 exports.EventTarget = EventTarget;

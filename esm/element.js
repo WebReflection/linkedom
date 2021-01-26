@@ -1,5 +1,5 @@
 import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
-import {ignoreCase, isVoidElement, localCase, parseFromString} from './utils.js';
+import {String, ignoreCase, isVoidElement, localCase, parseFromString} from './utils.js';
 
 import {NodeList} from './interfaces.js';
 import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
@@ -299,10 +299,10 @@ export class Element extends NodeElement {
   setAttribute(name, value) {
     let attribute = this.getAttributeNode(name);
     if (attribute)
-      attribute.value = value;
+      attribute.value = String(value);
     else {
       attribute = this.ownerDocument.createAttribute(name);
-      attribute.value = value;
+      attribute.value = String(value);
       this.setAttributeNode(attribute);
     }
   }

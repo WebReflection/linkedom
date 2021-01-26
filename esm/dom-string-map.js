@@ -1,35 +1,23 @@
 import uhyphen from 'uhyphen';
 
-const {defineProperty} = Object;
+const refs = new WeakMap;
 
 const key = name => `data-${uhyphen(name)}`;
 
 const handler = {
-  ownKeys({_: element}) {
-    const keys = [];
-    for (const {name} of element.attributes) {
-      if (/^data-/.test(name))
-        keys.push(name);
-    }
-    return keys;
+  get(self, name) {
+    return refs.get(self).getAttribute(key(name));
   },
 
-  has({_: element}, name) {
-    return element.hasAttribute(key(name));
-  },
-
-  deleteProperty({_: element}, name) {
-    element.removeAttribute(key(name));
+  set(self, name, value) {
+    refs.get(self).setAttribute(key(name), value);
+    self[name] = value;
     return true;
   },
 
-  get({_: element}, name) {
-    return element.getAttribute(key(name));
-  },
-
-  set({_: element}, name, value) {
-    element.setAttribute(key(name), value);
-    return true;
+  deleteProperty(self, name) {
+    refs.get(self).removeAttribute(key(name));
+    return delete self[name];
   }
 };
 
@@ -41,9 +29,9 @@ export class DOMStringMap {
    * @param {Element} value
    */
   constructor(value) {
-    return new Proxy(
-      defineProperty(this, '_', {value}),
-      handler
-    );
+    refs.set(this, value);
+    return new Proxy(this, handler);
   }
 }
+
+Object.setPrototypeOf(DOMStringMap.prototype, null);

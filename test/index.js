@@ -92,69 +92,32 @@ assert(document.toString() === '<!DOCTYPE html><html lang="en">before&amp;after<
 
 assert(document.createElement('button', {is: 'special-case'}).getAttribute('is') === 'special-case', 'createElement with extra options');
 
-process.exit(0);
+assert(Object.keys(node.dataset).length === 0, 'empty dataset');
+assert(node.dataset.testValue === null, 'no testValue');
+node.dataset.testValue = 123;
+assert(Object.keys(node.dataset).length === 1, 'not empty dataset');
+assert(node.getAttribute('data-test-value') === '123', 'dataset.testValue');
+delete node.dataset.testValue;
+assert(Object.keys(node.dataset).length === 0, 'empty dataset again');
 
-
-// OLD TESTS
-const fragment = document.createDocumentFragment();
-const div = document.createElement('div');
-
-div.setAttribute('test', 'value');
-div.setAttribute('other', 'value');
-div.setAttribute('test', 'new');
-
-console.log('matches', div.matches('[test]'));
-
-const p = document.createElement('p');
-p.appendChild(document.createTextNode('OK'));
-p.classList.add('a', 'b');
-
-div.append(
-  'Test',
-  p,
-  document.createElement('input')
-);
-
-console.log('isConnected', div.isConnected, 'contains', document.documentElement.contains(div));
-document.documentElement.appendChild(div);
-console.log('isConnected', div.isConnected, 'contains', document.documentElement.contains(div));
-
-console.log(document.toString());
-console.log('');
-
-console.log(div.innerHTML);
-console.log('');
-
-console.log(div.tagName);
-console.log('');
-
-console.log(div.childNodes.join('\n'));
-console.log('');
-
-console.log(div.children.join('\n'));
-console.log('');
-
-console.log(div.attributes.join('\n'));
-console.log('');
-
-console.log(p.previousSibling.localName);
-
-const ps = [
-  document.createElement('span').appendChild(document.createTextNode('a')).parentNode,
-  document.createElement('span').appendChild(document.createTextNode('b')).parentNode,
-  document.createElement('span').appendChild(document.createTextNode('c')).parentNode,
-  document.createElement('span').appendChild(document.createTextNode('d')).parentNode
-];
-
-fragment.prepend(...ps);
-console.log(fragment.localName, fragment.children.length, fragment.firstChild === ps[0], fragment.lastChild === ps[3]);
-console.log('');
-
-fragment.replaceChild(document.createElement('br'), fragment.lastChild);
-
-p.appendChild(fragment);
-console.log(div.toString());
-
-console.log(fragment.localName, fragment.children.length, fragment.firstChild === ps[0], fragment.lastChild === ps[3]);
-
-fragment.replaceChildren(...ps);
+assert(node.className === '', 'no class name');
+assert(node.classList.contains('test') === false, 'no test class');
+node.classList.add('a', 'test', 'b');
+assert(node.classList.value === 'a test b', 'correct .value');
+assert(node.classList.contains('test') === true, 'test class');
+node.classList.toggle('test');
+assert(node.classList.contains('test') === false, 'no test class again');
+node.classList.toggle('test', false);
+assert(node.classList.contains('test') === false, 'no test class again 2');
+node.classList.toggle('test');
+assert(node.classList.contains('test') === true, 'test class in');
+node.classList.toggle('test', true);
+assert(node.classList.contains('test') === true, 'test class still in');
+node.classList.toggle('test', false);
+node.classList.toggle('test', true);
+node.classList.remove('test');
+assert(node.classList.contains('test') === false, 'no test class one more time');
+assert(node.classList.replace('b', 'c') === true, 'replace happened');
+assert(node.classList.value === 'a c', 'correct .value again');
+assert(node.classList.replace('b', 'c') === false, 'replace did not happen');
+assert(node.classList.supports('whatever'), 'whatever');
