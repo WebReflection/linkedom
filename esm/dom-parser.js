@@ -9,8 +9,8 @@ import {XMLDocument} from './xml-document.js';
 export default class DOMParser {
   /**
    * @param {string} markupLanguage 
-   * @param {string} mimeType
-   * @returns {Document}
+   * @param {"text/html"|"image/svg+xml"|"text/xml"} mimeType
+   * @returns {HTMLDocument|SVGDocument|XMLDocument}
    */
   parseFromString(markupLanguage, mimeType) {
     let isHTML = false, document;

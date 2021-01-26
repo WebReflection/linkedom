@@ -16,6 +16,9 @@ import {Text} from './text.js';
  */
 export class Document extends Node {
 
+  /**
+   * @param {string} type the document mime-type
+   */
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
     this._mime = Mime[type];
@@ -39,10 +42,16 @@ export class Document extends Node {
     return root ? [root] : [];
   }
 
+  /**
+   * @type {Element?}
+   */
   get firstElementChild() {
     return this.root;
   }
 
+  /**
+   * @type {Element?}
+   */
   get lastElementChild() {
     return this.root;
   }
@@ -63,11 +72,19 @@ export class Document extends Node {
     throw new Error('Cannot have more than one Element child of a Document');
   }
 
+  /**
+   * @param {string} selectors
+   * @returns {Element?}
+   */
   querySelector(selectors) {
     const {root} = this;
     return root && ParentNode.querySelector({_next: root}, selectors);
   }
 
+  /**
+   * @param {string} selectors
+   * @returns {NodeList}
+   */
   querySelectorAll(selectors) {
     const {root} = this;
     return root ? ParentNode.querySelectorAll({_next: root}, selectors) : [];
@@ -78,6 +95,10 @@ export class Document extends Node {
     return new Attr(this, name, '');
   }
 
+  /**
+   * @param {string} localName
+   * @param {object?} options
+   */
   createElement(localName, options = {}) {
     const element = new Element(this, localName);
     if (options.is)
@@ -85,10 +106,16 @@ export class Document extends Node {
     return element;
   }
 
+  /**
+   * @param {string} textContent 
+   */
   createComment(textContent) {
     return new Comment(this, textContent);
   }
 
+  /**
+   * @param {string} textContent 
+   */
   createTextNode(textContent) {
     return new Text(this, textContent);
   }
@@ -112,8 +139,8 @@ export class Document extends Node {
 
   /**
    * @deprecated
-   * @param {string} namespace
-   * @param {string} className
+   * @param {string} _
+   * @param {string} name
    * @returns {NodeList}
    */
   getElementsByTagNameNS(_, name) {
