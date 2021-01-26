@@ -1,6 +1,6 @@
 'use strict';
 const {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} = require('./constants.js');
-const {isHTML, isVoidElement, localCase, parseFromString} = require('./utils.js');
+const {ignoreCase, isVoidElement, localCase, parseFromString} = require('./utils.js');
 
 const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
@@ -67,7 +67,7 @@ class Element extends NodeElement {
   }
 
   get className() {
-    return [...this.classList].join(' ');
+    return this.classList.value;
   }
 
   set className(value) {
@@ -98,7 +98,7 @@ class Element extends NodeElement {
 
   set innerHTML(html) {
     const {constructor} = this.ownerDocument;
-    const document = parseFromString(new constructor, isHTML(this), html);
+    const document = parseFromString(new constructor, ignoreCase(this), html);
     this.replaceChildren(...document.documentElement.childNodes);
   }
 
@@ -263,7 +263,7 @@ class Element extends NodeElement {
           break;
         case ELEMENT_NODE_END:
           if (isOpened && isVoidElement(_next))
-            out.push(isHTML(_next) ? '>' : ' />');
+            out.push(ignoreCase(_next) ? '>' : ' />');
           else
             out.push(`${isOpened ? '>' : ''}</${_next.localName}>`);
           isOpened = false;
@@ -303,7 +303,11 @@ class Element extends NodeElement {
     const elements = new NodeList;
     let {_next} = this;
     while (_next) {
-      if (_next.nodeType === ELEMENT_NODE && _next.classList.has(className))
+      if (
+        _next.nodeType === ELEMENT_NODE &&
+        _next.hasAttribute('class') &&
+        _next.classList.has(className)
+      )
         elements.push(_next);
       _next = _next._next;
     }

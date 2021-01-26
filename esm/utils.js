@@ -51,10 +51,6 @@ export const getBoundaries = node => ({
 export const getEnd = node => node.nodeType === ELEMENT_NODE ?
                       node._end : node;
 
-export const isHTML = ({ownerDocument}) => {
-  return ownerDocument._mime.ignoreCase;
-};
-
 export const isVoidElement = ({localName, ownerDocument}) => {
   return ownerDocument._mime.voidElements.test(localName);
 };

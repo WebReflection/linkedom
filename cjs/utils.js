@@ -56,11 +56,6 @@ const getEnd = node => node.nodeType === ELEMENT_NODE ?
                       node._end : node;
 exports.getEnd = getEnd;
 
-const isHTML = ({ownerDocument}) => {
-  return ownerDocument._mime.ignoreCase;
-};
-exports.isHTML = isHTML;
-
 const isVoidElement = ({localName, ownerDocument}) => {
   return ownerDocument._mime.voidElements.test(localName);
 };
