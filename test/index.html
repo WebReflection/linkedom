@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>linkedom</title>
+  <script type="module">
+  import(
+    /^(?:localhost|[::1]|127(?:.d+){3})$/.test(location.hostname) ?
+    '../esm/index.js' :
+    'https://unpkg.com/linkedom?module'
+  )
+  .then((module) => {
+    console.log(module);
+  });
+  </script>
+</head>
+<body></body>
+</html>
