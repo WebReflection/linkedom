@@ -1,4 +1,6 @@
-# linkedom
+# 🔗 linkedom
+
+<sup>**Social Media Photo by [JJ Ying](https://unsplash.com/@jjying) on [Unsplash](https://unsplash.com/)**</sup>
 
 A triple-linked lists based DOM with the following goals:
 
