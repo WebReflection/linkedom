@@ -15,9 +15,6 @@ const asFragment = (ownerDocument, nodes) => {
   return fragment;
 };
 
-const asNode = (ownerDocument, node) =>
-                node[DOM] ? node : ownerDocument.createTextNode(node);
-
 // https://dom.spec.whatwg.org/#childnode
 export const ChildNode = {
 
@@ -50,8 +47,7 @@ export const ChildNode = {
   replaceWith(node, nodes) {
     const {ownerDocument, parentNode} = node;
     if (parentNode) {
-      for (const any of nodes)
-        parentNode.insertBefore(asNode(ownerDocument, any), node);
+      parentNode.insertBefore(asFragment(ownerDocument, nodes), node);
       node.remove();
     }
   },
@@ -137,7 +133,10 @@ export const NonElementParentNode = {
 const append = (element, nodes) => {
   const {ownerDocument, _end} = element;
   for (const node of nodes)
-    element.insertBefore(asNode(ownerDocument, node), _end);
+    element.insertBefore(
+      node[DOM] ? node : ownerDocument.createTextNode(node),
+      _end
+    );
 };
 
 // https://dom.spec.whatwg.org/#parentnode
