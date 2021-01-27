@@ -6,7 +6,7 @@ import {XMLDocument} from './xml-document.js';
 /**
  * @implements globalThis.DOMParser
  */
-export default class DOMParser {
+export class DOMParser {
   /**
    * @param {string} markupLanguage 
    * @param {"text/html"|"image/svg+xml"|"text/xml"} mimeType

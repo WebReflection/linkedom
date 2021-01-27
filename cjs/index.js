@@ -1,10 +1,18 @@
 'use strict';
-const DOMParser = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('./dom-parser.js'));
-const {HTMLDocument} = require('./html-document.js');
-const {SVGDocument} = require('./svg-document.js');
-const {XMLDocument} = require('./xml-document.js');
-
-exports.DOMParser = DOMParser;
-exports.HTMLDocument = HTMLDocument;
-exports.SVGDocument = SVGDocument;
-exports.XMLDocument = XMLDocument;
+(m => {
+  exports.DOMParser = m.DOMParser;
+})(require('./dom-parser.js'));
+(m => {
+  exports.HTMLDocument = m.HTMLDocument;
+})(require('./html-document.js'));
+(m => {
+  exports.SVGDocument = m.SVGDocument;
+})(require('./svg-document.js'));
+(m => {
+  exports.XMLDocument = m.XMLDocument;
+})(require('./xml-document.js'));
+(m => {
+  exports.CustomEvent = m.CustomEvent;
+  exports.Event = m.Event;
+  exports.EventTarget = m.EventTarget;
+})(require('./interfaces.js'));

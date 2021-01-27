@@ -6,7 +6,7 @@ export {Event, EventTarget};
 /**
  * @implements globalThis.CustomEvent
  */
-class CustomEvent extends Event {
+export class CustomEvent extends Event {
   constructor(type, eventInitDict = {}) {
     super(type, eventInitDict);
     this.detail = eventInitDict.detail;

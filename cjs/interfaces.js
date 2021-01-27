@@ -14,6 +14,7 @@ class CustomEvent extends Event {
     this.detail = eventInitDict.detail;
   }
 }
+exports.CustomEvent = CustomEvent
 
 // https://dom.spec.whatwg.org/#nodelist
 /**

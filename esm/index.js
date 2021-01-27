@@ -1,11 +1,9 @@
-import DOMParser from './dom-parser.js';
-import {HTMLDocument} from './html-document.js';
-import {SVGDocument} from './svg-document.js';
-import {XMLDocument} from './xml-document.js';
-
+export {DOMParser} from './dom-parser.js';
+export {HTMLDocument} from './html-document.js';
+export {SVGDocument} from './svg-document.js';
+export {XMLDocument} from './xml-document.js';
 export {
-  DOMParser,
-  HTMLDocument,
-  SVGDocument,
-  XMLDocument
-};
+  CustomEvent,
+  Event,
+  EventTarget
+} from './interfaces.js';

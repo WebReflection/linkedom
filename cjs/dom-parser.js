@@ -7,7 +7,7 @@ const {XMLDocument} = require('./xml-document.js');
 /**
  * @implements globalThis.DOMParser
  */
-module.exports = class DOMParser {
+class DOMParser {
   /**
    * @param {string} markupLanguage 
    * @param {"text/html"|"image/svg+xml"|"text/xml"} mimeType
@@ -26,3 +26,4 @@ module.exports = class DOMParser {
     return parseFromString(document, isHTML, markupLanguage);
   }
 }
+exports.DOMParser = DOMParser

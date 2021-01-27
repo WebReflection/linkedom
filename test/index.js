@@ -1,4 +1,4 @@
-const {DOMParser, XMLDocument} = require('../cjs');
+const {CustomEvent, DOMParser, XMLDocument} = require('../cjs');
 
 const assert = (expression, message) => {
   console.assert(expression, message);
@@ -122,15 +122,16 @@ assert(node.classList.value === 'a c', 'correct .value again');
 assert(node.classList.replace('b', 'c') === false, 'replace did not happen');
 assert(node.classList.supports('whatever'), 'whatever');
 
-// fragment.js
 node = document.createDocumentFragment();
 assert(node.getElementById('any') === null, 'no element by id');
 assert(node.querySelector('div[id="any"]') === null, 'no querySelector');
+assert(node.querySelectorAll('div[id="any"]').item(0) === null, 'no NodeList.item()');
 assert(node.children.length === 0, 'no children');
 assert(node.childElementCount === 0, 'childElementCount is 0');
 node.appendChild(document.createElement('div')).id = 'any';
 assert(node.querySelector('div[id="any"]') === node.firstElementChild, 'yes querySelector');
 assert(node.querySelectorAll('div[id="any"]').length === 1, 'yes querySelectorAll');
+assert(node.querySelectorAll('div[id="any"]').item(0) === node.firstElementChild, 'yes NodeList.item()');
 assert(node.getElementById('any') === node.firstElementChild, 'element by id');
 assert(node.childElementCount === 1, 'childElementCount is 1');
 assert(node.children.length === 1, 'children');
@@ -148,3 +149,11 @@ assert(node.toString() === '<input>', 'expected content');
 node = document.createElement('div');
 node.innerHTML = '<!--comment--><input type="password" />OK';
 assert(node.outerHTML === '<div><!--comment--><input type="password">OK</div>', 'comment and attributes parsed');
+
+let triggered = false;
+node.addEventListener('click', event => {
+  assert(event.type === 'click' && event.detail === 123, 'click listener');
+  triggered = true;
+}, {once: true});
+node.dispatchEvent(new CustomEvent('click', {detail: 123}));
+assert(triggered, 'the click event triggered');
