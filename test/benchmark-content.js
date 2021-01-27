@@ -24,15 +24,20 @@ const crawl = (element, kind) => {
 
 const sleep = ms => new Promise($ => setTimeout($, ms));
 
-const onContent = async (createDocument, html, times) => {
+const onContent = async (createDocument, html, times, logHeap = () => {}) => {
 
   console.time(clean('\x1b[1mtotal benchmark time\x1b[0m'));
+
+  logHeap('initial heap');
+  console.log();
 
   let document;
   try {
     console.time(clean('parsing \x1b[2mcold\x1b[0m'));
     document = createDocument(html.toString());
     console.timeEnd(clean('parsing \x1b[2mcold\x1b[0m'));
+    console.log();
+    logHeap('document heap');
   }
   catch (o_O) {
     console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`));
@@ -66,7 +71,9 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  //* uncomment to make most alternative explode with html.html test
+  logHeap('after crawling heap');
+  console.log();
+
   await sleep(100);
 
   try {
@@ -80,7 +87,9 @@ const onContent = async (createDocument, html, times) => {
     console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
   }
   console.log();
-  //*/
+
+  logHeap('after cloning heap');
+  console.log();
 
   await sleep(100);
 
@@ -100,6 +109,9 @@ const onContent = async (createDocument, html, times) => {
   catch (o_O) {
     console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
   }
+  console.log();
+
+  logHeap('after querying heap');
   console.log();
 
   await sleep(100);
@@ -137,8 +149,10 @@ const onContent = async (createDocument, html, times) => {
   }
   console.log();
 
-  //* maybe OK here
   await sleep(100);
+
+  logHeap('after removing divs heap');
+  console.log();
 
   try {
     const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
@@ -151,7 +165,6 @@ const onContent = async (createDocument, html, times) => {
     console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
   }
   console.log();
-  //*/
 
   console.timeEnd(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 };

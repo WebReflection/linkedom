@@ -82,3 +82,9 @@ npm i
 
 npm run benchmark
 ```
+
+### benchmark:dom
+![benchmark output example](./linkedom-benchmark-dom.jpg)
+
+### benchmark:html
+![benchmark output example](./linkedom-benchmark-html.jpg)

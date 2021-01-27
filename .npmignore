@@ -5,3 +5,4 @@ coverage/
 node_modules/
 rollup/
 test/
+linkedom-benchmark.jpg
