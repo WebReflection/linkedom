@@ -51,11 +51,15 @@ export const getBoundaries = node => ({
 export const getEnd = node => node.nodeType === ELEMENT_NODE ?
                       node._end : node;
 
+export const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
+
+export const invalidate = element => {
+  element._childNodes = element._children = null;
+};
+
 export const isVoidElement = ({localName, ownerDocument}) => {
   return ownerDocument._mime.voidElements.test(localName);
 };
-
-export const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 
 export const localCase = ({localName, ownerDocument}) => {
   return ownerDocument._mime.ignoreCase ? localName.toUpperCase() : localName;

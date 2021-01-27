@@ -17,7 +17,8 @@ const {
   String,
   findNext,
   getBoundaries,
-  getEnd
+  getEnd,
+  invalidate
 } = require('./utils.js');
 
 /**
@@ -228,15 +229,26 @@ class Node extends EventTarget {
 }
 exports.Node = Node
 
+const getChildNodes = element => {
+  const childNodes = new NodeList;
+  let {_next, _end} = findNext(element);
+  while (_next !== _end) {
+    childNodes.push(_next);
+    _next = getEnd(_next)._next;
+  }
+  return childNodes;
+};
+
 class NodeElement extends Node {
 
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
+    invalidate(this);
   }
 
   // <ParentNode>
   get children() {
-    return ParentNode.children(this);
+    return this._children || (this._children = ParentNode.children(this));
   }
 
   /**
@@ -306,13 +318,7 @@ class NodeElement extends Node {
   }
 
   get childNodes() {
-    const childNodes = new NodeList;
-    let {_next, _end} = findNext(this);
-    while (_next !== _end) {
-      childNodes.push(_next);
-      _next = getEnd(_next)._next;
-    }
-    return childNodes;
+    return this._childNodes || (this._childNodes = getChildNodes(this));
   }
 
   /**
@@ -336,6 +342,7 @@ class NodeElement extends Node {
    * @param {Node} node
    */
   appendChild(node) {
+    invalidate(this);
     return this.insertBefore(node, this._end);
   }
 
@@ -345,6 +352,7 @@ class NodeElement extends Node {
    * @returns {Node}
    */
   insertBefore(node, before) {
+    invalidate(this);
     const _end = before || this._end;
     const {_prev} = _end;
     switch (node.nodeType) {
@@ -358,6 +366,7 @@ class NodeElement extends Node {
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
+        invalidate(node);
         let {firstChild, lastChild} = node;
         if (firstChild) {
           _prev._next = firstChild;
@@ -391,19 +400,25 @@ class NodeElement extends Node {
   }
 
   normalize() {
+    let invalidated = false;
     let {_next, _end} = this;
     while (_next !== _end) {
       const {_next: next, _prev, nodeType} = _next;
       if (nodeType === TEXT_NODE) {
-        if (!_next.textContent)
+        if (!_next.textContent) {
+          invalidated = true;
           _next.remove();
+        }
         else if (_prev && _prev.nodeType === TEXT_NODE) {
+          invalidated = true;
           _prev.textContent += _next.textContent;
           _next.remove();
         }
       }
       _next = next;
     }
+    if (invalidated)
+      invalidate(this);
   }
 
   /**
@@ -413,6 +428,7 @@ class NodeElement extends Node {
   removeChild(node) {
     if (node.parentNode !== this)
       throw new Error('node is not a child');
+    invalidate(this);
     node.remove();
     return node;
   }
@@ -424,6 +440,7 @@ class NodeElement extends Node {
    */
   replaceChild(node, replaced) {
     const {_prev, _next} = getBoundaries(replaced);
+    invalidate(this);
     replaced.remove();
     node.remove();
     _prev._next = node;

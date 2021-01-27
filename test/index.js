@@ -339,7 +339,7 @@ template.innerHTML = '<p>template</p>';
 assert(template.content === template.content, 'template.content');
 assert(template.innerHTML === '<p>template</p>', 'template.innerHTML');
 document.documentElement.appendChild(template.content);
-assert(template.innerHTML === '', 'template.innerHTML');
+assert(template.innerHTML === '', 'empty template.innerHTML');
 
 let range = document.createRange();
 template.innerHTML = '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>';

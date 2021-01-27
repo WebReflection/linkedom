@@ -56,13 +56,18 @@ const getEnd = node => node.nodeType === ELEMENT_NODE ?
                       node._end : node;
 exports.getEnd = getEnd;
 
+const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
+exports.ignoreCase = ignoreCase;
+
+const invalidate = element => {
+  element._childNodes = element._children = null;
+};
+exports.invalidate = invalidate;
+
 const isVoidElement = ({localName, ownerDocument}) => {
   return ownerDocument._mime.voidElements.test(localName);
 };
 exports.isVoidElement = isVoidElement;
-
-const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
-exports.ignoreCase = ignoreCase;
 
 const localCase = ({localName, ownerDocument}) => {
   return ownerDocument._mime.ignoreCase ? localName.toUpperCase() : localName;
