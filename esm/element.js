@@ -425,5 +425,5 @@ export class Element extends NodeElement {
     this.setAttribute(name, value);
   }
 
-  /* c8 ignore end */
+  /* c8 ignore stop */
 }

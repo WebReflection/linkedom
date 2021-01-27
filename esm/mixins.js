@@ -250,6 +250,8 @@ export const ParentNode = {
 
 // ... and one eternity later ... //
 
+/* c8 ignore start */
+
 // https://dom.spec.whatwg.org/#slotable
 export const Slottable = {
 
@@ -273,3 +275,5 @@ export const XPathEvaluatorBase = {
     throw new Error('evaluate not implemented');
   }
 };
+
+/* c8 ignore stop */

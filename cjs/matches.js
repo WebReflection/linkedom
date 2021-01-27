@@ -77,7 +77,7 @@ const findOne = (test, nodes) => {
       return node;
   return null;
 };
-/* c8 ignore end */
+/* c8 ignore stop */
 
 module.exports = (element, selectors) => {
   return CSSselect.is(element, selectors, {

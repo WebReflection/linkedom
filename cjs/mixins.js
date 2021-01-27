@@ -255,6 +255,8 @@ exports.ParentNode = ParentNode;
 
 // ... and one eternity later ... //
 
+/* c8 ignore start */
+
 // https://dom.spec.whatwg.org/#slotable
 const Slottable = {
 
@@ -280,3 +282,5 @@ const XPathEvaluatorBase = {
   }
 };
 exports.XPathEvaluatorBase = XPathEvaluatorBase;
+
+/* c8 ignore stop */
