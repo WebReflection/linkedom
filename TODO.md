@@ -1,8 +1,13 @@
 # TODO
 
-- [ ] `element.style` special case
-- [ ] `Image` class
-- [ ] `Image` class
-- [ ] generic *HTMLxxx* elements
+### Mandatory
+
+- [ ] `document.createRange` utility
+- [ ] `document.createTreeWalker` utility
+- [ ] `element.style` special accessor case
 
 
+### Nice to have
+- [ ] common *HTMLxxx* elements
+- [ ] `Image` class
+- [ ] `element.insertAdjacentHTML` shenanigan

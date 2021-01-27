@@ -2,6 +2,7 @@
 (m => {
   exports.DOMParser = m.DOMParser;
 })(require('./dom-parser.js'));
+
 (m => {
   exports.HTMLDocument = m.HTMLDocument;
 })(require('./html-document.js'));
@@ -11,6 +12,11 @@
 (m => {
   exports.XMLDocument = m.XMLDocument;
 })(require('./xml-document.js'));
+
+(m => {
+  exports.HTMLElement = m.HTMLElement;
+})(require('./html-element.js'));
+
 (m => {
   exports.CustomEvent = m.CustomEvent;
   exports.Event = m.Event;

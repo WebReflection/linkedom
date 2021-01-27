@@ -11,6 +11,9 @@ import {DocumentFragment} from './fragment.js';
 import {Node} from './node.js';
 import {Text} from './text.js';
 
+import {HTMLElement} from './html-element.js';
+import {HTMLTemplateElement} from './html-template-element.js';
+
 /**
  * @implements globalThis.Document
  */
@@ -24,7 +27,7 @@ export class Document extends Node {
     this._mime = Mime[type];
 
     /**
-     * @type {HTMLElement?}
+     * @type {Element?}
      */
     this.root = null;
   }
@@ -100,9 +103,22 @@ export class Document extends Node {
    * @param {object?} options
    */
   createElement(localName, options = {}) {
-    const element = new Element(this, localName);
-    if (options.is)
-      element.setAttribute('is', options.is);
+    let element;
+    if (this._mime.ignoreCase) {
+      switch (localName) {
+        case 'template':
+        case 'TEMPLATE':
+          element = new HTMLTemplateElement(this);
+          break;
+        default:
+          element = new HTMLElement(localName, this);
+          break;
+      }
+      if (options.is)
+        element.setAttribute('is', options.is);
+    }
+    else
+      element = new Element(this, localName);
     return element;
   }
 
