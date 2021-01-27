@@ -230,9 +230,15 @@ exports.Node = Node
 
 class NodeElement extends Node {
 
+  constructor(ownerDocument, localName, nodeType) {
+    super(ownerDocument, localName, nodeType);
+    this._childNodes = null;
+    this._children = null;
+  }
+
   // <ParentNode>
   get children() {
-    return ParentNode.children(this);
+    return this._children || (this._children = ParentNode.children(this));
   }
 
   /**
@@ -302,13 +308,15 @@ class NodeElement extends Node {
   }
 
   get childNodes() {
+    if (this._childNodes)
+      return this._childNodes;
     const childNodes = new NodeList;
     let {_next, _end} = findNext(this);
     while (_next !== _end) {
       childNodes.push(_next);
       _next = getEnd(_next)._next;
     }
-    return childNodes;
+    return (this._childNodes = childNodes);
   }
 
   /**
@@ -326,10 +334,13 @@ class NodeElement extends Node {
     return !!this.lastChild;
   }
 
+  // Element Mutations
+
   /**
    * @param {Node} node
    */
   appendChild(node) {
+    this._childNodes = this._children = null;
     return this.insertBefore(node, this._end);
   }
 
@@ -339,6 +350,7 @@ class NodeElement extends Node {
    * @returns {Node}
    */
   insertBefore(node, before) {
+    this._childNodes = this._children = null;
     const _end = before || this._end;
     const {_prev} = _end;
     switch (node.nodeType) {
@@ -385,6 +397,7 @@ class NodeElement extends Node {
   }
 
   normalize() {
+    this._childNodes = this._children = null;
     let {_next, _end} = this;
     while (_next !== _end) {
       const {_next: next, _prev, nodeType} = _next;
@@ -405,6 +418,7 @@ class NodeElement extends Node {
    * @returns {Node}
    */
   removeChild(node) {
+    this._childNodes = this._children = null;
     if (node.parentNode !== this)
       throw new Error('node is not a child');
     node.remove();
@@ -417,6 +431,7 @@ class NodeElement extends Node {
    * @returns {Node}
    */
   replaceChild(node, replaced) {
+    this._childNodes = this._children = null;
     const {_prev, _next} = getBoundaries(replaced);
     replaced.remove();
     node.remove();
