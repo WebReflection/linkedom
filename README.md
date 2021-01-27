@@ -15,7 +15,7 @@ A triple-linked lists based DOM with the following goals:
 
 ## Work in progress
 
-Until there is a badge with 100% code coverage, consider this project highly experimental, or a playground, to see where and how a linked-list based DOM can shine, and how difficult it would be to reach at least feature-parity with *basicHTML*.
+Until there is a badge with 100% code coverage, and *npm* version is `0.1.x`, consider this project highly experimental, or a playground, to see where and how a linked-list based DOM can shine, and how difficult it would be to reach at least feature-parity with *basicHTML*.
 
 ```js
 import {DOMParser} from 'linkedom';
