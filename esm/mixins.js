@@ -7,7 +7,11 @@ import {
 
 import {NodeList} from './interfaces.js';
 
-import {findNext, getEnd, invalidate} from './utils.js';
+import {
+  findNext,
+  getEnd,
+  // invalidate
+} from './utils.js';
 
 const asFragment = (ownerDocument, nodes) => {
   const fragment = ownerDocument.createDocumentFragment();
@@ -65,8 +69,7 @@ export const ChildNode = {
     if (_prev) _prev._next = _next;
     if (_next) _next._prev = _prev;
     node.parentNode = node._prev = _end._next = null;
-    if (parentNode)
-      invalidate(parentNode);
+    // if (parentNode) invalidate(parentNode);
   }
 };
 
@@ -133,7 +136,7 @@ export const NonElementParentNode = {
  * @param  {Node[]} nodes
  */
 const append = (element, nodes) => {
-  invalidate(element);
+  // invalidate(element);
   const {ownerDocument, _end} = element;
   for (const node of nodes)
     element.insertBefore(
@@ -197,7 +200,7 @@ export const ParentNode = {
    * @param  {Node[]} nodes
    */
   prepend(element, nodes) {
-    invalidate(element);
+    // invalidate(element);
     const {ownerDocument, firstChild} = element;
     for (const node of nodes)
       element.insertBefore(
@@ -213,7 +216,7 @@ export const ParentNode = {
    * @param  {Node[]} nodes
    */
   replaceChildren(element, nodes) {
-    invalidate(element);
+    // invalidate(element);
     let {_next, _end} = element;
     while (_next !== _end) {
       const next = getEnd(_next)._next;

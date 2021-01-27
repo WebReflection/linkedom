@@ -59,10 +59,7 @@ exports.getEnd = getEnd;
 const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 exports.ignoreCase = ignoreCase;
 
-const invalidate = element => {
-  element._childNodes = element._children = null;
-};
-exports.invalidate = invalidate;
+// export const invalidate = $ => { $._childNodes = $._children = null; };
 
 const isVoidElement = ({localName, ownerDocument}) => {
   return ownerDocument._mime.voidElements.test(localName);

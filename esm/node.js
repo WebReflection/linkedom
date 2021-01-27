@@ -17,7 +17,7 @@ import {
   findNext,
   getBoundaries,
   getEnd,
-  invalidate
+  // invalidate
 } from './utils.js';
 
 /**
@@ -241,16 +241,18 @@ export class NodeElement extends Node {
 
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
-    invalidate(this);
+    // invalidate(this);
   }
 
   get childNodes() {
-    return this._childNodes || (this._childNodes = getChildNodes(this));
+    return getChildNodes(this);
+    // return this._childNodes || (this._childNodes = getChildNodes(this));
   }
 
   // <ParentNode>
   get children() {
-    return this._children || (this._children = ParentNode.children(this));
+    return ParentNode.children(this);
+    // return this._children || (this._children = ParentNode.children(this));
   }
 
   /**
@@ -340,7 +342,7 @@ export class NodeElement extends Node {
    * @param {Node} node
    */
   appendChild(node) {
-    invalidate(this);
+    // invalidate(this);
     return this.insertBefore(node, this._end);
   }
 
@@ -350,7 +352,7 @@ export class NodeElement extends Node {
    * @returns {Node}
    */
   insertBefore(node, before) {
-    invalidate(this);
+    // invalidate(this);
     const _end = before || this._end;
     const {_prev} = _end;
     switch (node.nodeType) {
@@ -364,7 +366,7 @@ export class NodeElement extends Node {
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
-        invalidate(node);
+        // invalidate(node);
         let {firstChild, lastChild} = node;
         if (firstChild) {
           _prev._next = firstChild;
@@ -415,8 +417,7 @@ export class NodeElement extends Node {
       }
       _next = next;
     }
-    if (shouldInvalidate)
-      invalidate(this);
+    // if (shouldInvalidate) invalidate(this);
   }
 
   /**
@@ -437,7 +438,7 @@ export class NodeElement extends Node {
    */
   replaceChild(node, replaced) {
     const {_prev, _next} = getBoundaries(replaced);
-    invalidate(this);
+    // invalidate(this);
     replaced.remove();
     node.remove();
     _prev._next = node;
