@@ -244,6 +244,10 @@ export class NodeElement extends Node {
     invalidate(this);
   }
 
+  get childNodes() {
+    return this._childNodes || (this._childNodes = getChildNodes(this));
+  }
+
   // <ParentNode>
   get children() {
     return this._children || (this._children = ParentNode.children(this));
@@ -313,10 +317,6 @@ export class NodeElement extends Node {
       default:
         return _prev === this ? null : _prev;
     }
-  }
-
-  get childNodes() {
-    return this._childNodes || (this._childNodes = getChildNodes(this));
   }
 
   /**
@@ -398,24 +398,24 @@ export class NodeElement extends Node {
   }
 
   normalize() {
-    let invalidated = false;
+    let shouldInvalidate = false;
     let {_next, _end} = this;
     while (_next !== _end) {
       const {_next: next, _prev, nodeType} = _next;
       if (nodeType === TEXT_NODE) {
         if (!_next.textContent) {
-          invalidated = true;
+          shouldInvalidate = true;
           _next.remove();
         }
         else if (_prev && _prev.nodeType === TEXT_NODE) {
-          invalidated = true;
+          shouldInvalidate = true;
           _prev.textContent += _next.textContent;
           _next.remove();
         }
       }
       _next = next;
     }
-    if (invalidated)
+    if (shouldInvalidate)
       invalidate(this);
   }
 
@@ -426,7 +426,6 @@ export class NodeElement extends Node {
   removeChild(node) {
     if (node.parentNode !== this)
       throw new Error('node is not a child');
-    invalidate(this);
     node.remove();
     return node;
   }
