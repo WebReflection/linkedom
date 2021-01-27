@@ -3,6 +3,7 @@ import {DOCUMENT_NODE} from './constants.js';
 import {Mime} from './utils.js';
 
 import {NonElementParentNode, ParentNode} from './mixins.js';
+import {Event, CustomEvent} from './interfaces.js';
 
 import {Attr} from './attr.js';
 import {Comment} from './comment.js';
@@ -13,6 +14,8 @@ import {Text} from './text.js';
 import {Range} from './range.js';
 import {HTMLElement} from './html-element.js';
 import {HTMLTemplateElement} from './html-template-element.js';
+
+const {create, defineProperties} = Object;
 
 /**
  * @implements globalThis.Document
@@ -32,7 +35,13 @@ export class Document extends Node {
     this.root = null;
   }
 
+  get defaultView() { return globalThis; }
+
   // <NonElementParentNode>
+  /**
+   * @param {string} id
+   * @returns {Element?}
+   */
   getElementById(id) {
     const {root} = this;
     return root && NonElementParentNode.getElementById(root, id);
@@ -63,14 +72,23 @@ export class Document extends Node {
     return this.root ? 1 : 0;
   }
 
+  /**
+   * This throws on Document instances.
+   */
   prepend(...nodes) {
     throw new Error('Cannot have more than one Element child of a Document');
   }
 
+  /**
+   * This throws on Document instances.
+   */
   append(...nodes) {
     throw new Error('Cannot have more than one Element child of a Document');
   }
 
+  /**
+   * This throws on Document instances.
+   */
   replaceChildren(...nodes) {
     throw new Error('Cannot have more than one Element child of a Document');
   }
@@ -94,6 +112,10 @@ export class Document extends Node {
   }
   // </ParentNode>
 
+  /**
+   * @param {string} name
+   * @returns {Attr}
+   */
   createAttribute(name) {
     return new Attr(this, name, '');
   }
@@ -123,6 +145,29 @@ export class Document extends Node {
   }
 
   /**
+   * @deprecated
+   * @param {"Event"|"CustomEvent"} name
+   * @returns {Event|CustomEvent}
+   */
+  createEvent(name) {
+    const event = create(name === 'Event' ? new Event('') : new CustomEvent(''));
+    event.initEvent = event.initCustomEvent = (
+      type,
+      canBubble = false,
+      cancelable = false,
+      detail
+    ) => {
+      defineProperties(event, {
+        type: {value: type},
+        canBubble: {value: canBubble},
+        cancelable: {value: cancelable},
+        detail: {value: detail}
+      });
+    };
+    return event;
+  }
+
+  /**
    * @param {string} textContent
    */
   createComment(textContent) {
@@ -146,6 +191,14 @@ export class Document extends Node {
 
   toString() {
     return this._mime.docType + (this.root || '').toString();
+  }
+
+  /**
+   * @param {Node} node 
+   * @param {boolean?} deep 
+   */
+  importNode(node, deep = false) {
+    return node.cloneNode(deep);
   }
 
   /**

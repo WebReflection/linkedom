@@ -365,3 +365,14 @@ node.replaceChildren();
 node.appendChild(range.cloneContents());
 assert(template.innerHTML === '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>', 'extractContents');
 assert(node.toString() === '<p>b</p><p>c</p><p>d</p>', 'append cloned content');
+
+assert(document.importNode(node, true).toString() === '<p>b</p><p>c</p><p>d</p>', 'importNode');
+
+let event = document.createEvent('Event');
+event.initEvent('test-event');
+
+let customEvent = document.createEvent('CustomEvent');
+customEvent.initCustomEvent('test-custom-event', false, false, 123);
+
+assert(document.defaultView === globalThis);
+
