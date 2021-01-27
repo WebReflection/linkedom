@@ -10,7 +10,7 @@ import {Element} from './element.js';
 import {DocumentFragment} from './fragment.js';
 import {Node} from './node.js';
 import {Text} from './text.js';
-
+import {Range} from './range.js';
 import {HTMLElement} from './html-element.js';
 import {HTMLTemplateElement} from './html-template-element.js';
 
@@ -123,7 +123,7 @@ export class Document extends Node {
   }
 
   /**
-   * @param {string} textContent 
+   * @param {string} textContent
    */
   createComment(textContent) {
     return new Comment(this, textContent);
@@ -138,6 +138,10 @@ export class Document extends Node {
 
   createDocumentFragment() {
     return new DocumentFragment(this);
+  }
+
+  createRange() {
+    return new Range;
   }
 
   toString() {

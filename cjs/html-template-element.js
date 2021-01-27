@@ -11,7 +11,7 @@ class HTMLTemplateElement extends HTMLElement {
   }
 
   get innerHTML() {
-    return this.content.childNodes.join('');
+    return this.content.toString();
   }
 
   set innerHTML(value) {

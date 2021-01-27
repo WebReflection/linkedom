@@ -11,7 +11,7 @@ const {Element} = require('./element.js');
 const {DocumentFragment} = require('./fragment.js');
 const {Node} = require('./node.js');
 const {Text} = require('./text.js');
-
+const {Range} = require('./range.js');
 const {HTMLElement} = require('./html-element.js');
 const {HTMLTemplateElement} = require('./html-template-element.js');
 
@@ -124,7 +124,7 @@ class Document extends Node {
   }
 
   /**
-   * @param {string} textContent 
+   * @param {string} textContent
    */
   createComment(textContent) {
     return new Comment(this, textContent);
@@ -139,6 +139,10 @@ class Document extends Node {
 
   createDocumentFragment() {
     return new DocumentFragment(this);
+  }
+
+  createRange() {
+    return new Range;
   }
 
   toString() {

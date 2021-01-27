@@ -340,3 +340,28 @@ assert(template.content === template.content, 'template.content');
 assert(template.innerHTML === '<p>template</p>', 'template.innerHTML');
 document.documentElement.appendChild(template.content);
 assert(template.innerHTML === '', 'template.innerHTML');
+
+let range = document.createRange();
+template.innerHTML = '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>';
+range.setStartBefore(template.content.childNodes[1]);
+range.setEndAfter(template.content.childNodes[3]);
+node.replaceChildren();
+node.appendChild(range.cloneRange().extractContents());
+assert(node.toString() === '<p>b</p><p>c</p><p>d</p>', 'append extracted content');
+assert(template.innerHTML === '<p>a</p><p>e</p>', 'extractContents');
+
+template.innerHTML = '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>';
+range = document.createRange();
+range.setStartBefore(template.content.childNodes[1]);
+range.setEndAfter(template.content.childNodes[3]);
+range.deleteContents();
+assert(template.innerHTML === '<p>a</p><p>e</p>', 'extractContents');
+
+template.innerHTML = '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>';
+range = document.createRange();
+range.setStartBefore(template.content.childNodes[1]);
+range.setEndAfter(template.content.childNodes[3]);
+node.replaceChildren();
+node.appendChild(range.cloneContents());
+assert(template.innerHTML === '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>', 'extractContents');
+assert(node.toString() === '<p>b</p><p>c</p><p>d</p>', 'append cloned content');
