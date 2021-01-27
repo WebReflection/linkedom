@@ -5,6 +5,7 @@ import {ignoreCase} from './utils.js';
 
 const {isArray} = Array;
 
+/* c8 ignore start */
 const isTag = ({nodeType}) => nodeType === ELEMENT_NODE;
 
 const existsOne = (test, elements) => elements.some(
@@ -75,6 +76,7 @@ const findOne = (test, nodes) => {
       return node;
   return null;
 };
+/* c8 ignore end */
 
 export default (element, selectors) => {
   return CSSselect.is(element, selectors, {
