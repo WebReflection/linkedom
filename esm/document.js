@@ -4,7 +4,7 @@ import {Mime} from './utils.js';
 
 import {NonElementParentNode, ParentNode} from './mixins.js';
 
-import {Attr} from './attribute.js';
+import {Attr} from './attr.js';
 import {Comment} from './comment.js';
 import {Element} from './element.js';
 import {DocumentFragment} from './fragment.js';

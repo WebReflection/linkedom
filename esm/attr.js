@@ -1,14 +1,13 @@
-'use strict';
-const {escape} = require('html-escaper');
+import {escape} from 'html-escaper';
 
-const {ATTRIBUTE_NODE} = require('./constants.js');
-const {String} = require('./utils.js');
-const {ChildLess} = require('./node.js');
+import {ATTRIBUTE_NODE} from './constants.js';
+import {String} from './utils.js';
+import {NodeLess} from './node.js';
 
 /**
  * @implements globalThis.Attr
  */
-class Attr extends ChildLess {
+export class Attr extends NodeLess {
 
   constructor(ownerDocument, name, value) {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
@@ -26,4 +25,3 @@ class Attr extends ChildLess {
     return value ? `${name}="${escape(this.value)}"` : name;
   }
 }
-exports.Attr = Attr

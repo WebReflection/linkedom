@@ -380,7 +380,7 @@ export class NodeElement extends Node {
   }
 }
 
-export class ChildLess extends Node {
+export class NodeLess extends Node {
 
   /**
    * @type {null}
@@ -434,7 +434,7 @@ export class ChildLess extends Node {
   removeChild() { throw new Error('invalid operation'); }
 }
 
-export class NodeText extends ChildLess {
+export class NodeText extends NodeLess {
 
   constructor(ownerDocument, localName, textContent, NODE) {
     super(ownerDocument, localName, NODE);

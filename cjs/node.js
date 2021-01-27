@@ -383,7 +383,7 @@ class NodeElement extends Node {
 }
 exports.NodeElement = NodeElement
 
-class ChildLess extends Node {
+class NodeLess extends Node {
 
   /**
    * @type {null}
@@ -436,9 +436,9 @@ class ChildLess extends Node {
   replaceChild() { throw new Error('invalid operation'); }
   removeChild() { throw new Error('invalid operation'); }
 }
-exports.ChildLess = ChildLess
+exports.NodeLess = NodeLess
 
-class NodeText extends ChildLess {
+class NodeText extends NodeLess {
 
   constructor(ownerDocument, localName, textContent, NODE) {
     super(ownerDocument, localName, NODE);

@@ -5,7 +5,7 @@ const {Mime} = require('./utils.js');
 
 const {NonElementParentNode, ParentNode} = require('./mixins.js');
 
-const {Attr} = require('./attribute.js');
+const {Attr} = require('./attr.js');
 const {Comment} = require('./comment.js');
 const {Element} = require('./element.js');
 const {DocumentFragment} = require('./fragment.js');
