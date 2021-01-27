@@ -78,6 +78,22 @@ export class Node extends EventTarget {
 
   get [DOM]() { return true; }
 
+  // <to-be-overwritten>
+  get childNodes() { return []; }
+  get firstChild() { return null; }
+  get lastChild() { return null; }
+  get nextSibling() { return null; }
+  get previousSibling() { return null; }
+  get nextElementSibling() { return null; }
+  get previousElementSibling() { return null; }
+  normalize() {}
+  hasChildNodes() { return false; }
+  insertBefore() { throw new Error('invalid operation'); }
+  appendChild() { throw new Error('invalid operation'); }
+  replaceChild() { throw new Error('invalid operation'); }
+  removeChild() { throw new Error('invalid operation'); }
+  // </to-be-overwritten>
+
   get isConnected() {
     const {ownerDocument} = this;
     let {parentNode} = this;
@@ -211,6 +227,54 @@ export class Node extends EventTarget {
 }
 
 export class NodeElement extends Node {
+
+  // <ParentNode>
+  get children() {
+    return ParentNode.children(this);
+  }
+
+  /**
+   * @returns {Element?}
+   */
+  get firstElementChild() {
+    return ParentNode.firstElementChild(this);
+  }
+
+  /**
+   * @returns {Element?}
+   */
+  get lastElementChild() {
+    return ParentNode.lastElementChild(this);
+  }
+
+  /**
+   * @returns {number}
+   */
+  get childElementCount() {
+    return ParentNode.childElementCount(this);
+  }
+
+  /**
+   * @param  {Node[]} nodes 
+   */
+  prepend(...nodes) {
+    return ParentNode.prepend(this, nodes);
+  }
+
+  /**
+   * @param  {Node[]} nodes 
+   */
+  append(...nodes) {
+    return ParentNode.append(this, nodes);
+  }
+
+  /**
+   * @param  {Node[]} nodes 
+   */
+  replaceChildren(...nodes) {
+    return ParentNode.replaceChildren(this, nodes);
+  }
+  // </ParentNode>
 
   /**
    * @type {Node?}
@@ -380,61 +444,7 @@ export class NodeElement extends Node {
   }
 }
 
-export class NodeLess extends Node {
-
-  /**
-   * @type {null}
-   */
-  get firstChild() { return null; }
-
-  /**
-   * @type {null}
-   */
-  get lastChild() { return null; }
-
-  /**
-   * @type {NodeList}
-   */
-  get childNodes() { return []; }
-
-  /**
-   * @type {null}
-   */
-  get nextSibling() {
-    return null;
-  }
-
-  /**
-   * @type {null}
-   */
-  get previousSibling() {
-    return null;
-  }
-
-  /**
-   * @type {null}
-   */
-  get nextElementSibling() {
-    return null;
-  }
-
-  /**
-   * @type {null}
-   */
-  get previousElementSibling() {
-    return null;
-  }
-
-  normalize() {}
-  hasChildNodes() { return false; }
-
-  insertBefore() { throw new Error('invalid operation'); }
-  appendChild() { throw new Error('invalid operation'); }
-  replaceChild() { throw new Error('invalid operation'); }
-  removeChild() { throw new Error('invalid operation'); }
-}
-
-export class NodeText extends NodeLess {
+export class NodeText extends Node {
 
   constructor(ownerDocument, localName, textContent, NODE) {
     super(ownerDocument, localName, NODE);

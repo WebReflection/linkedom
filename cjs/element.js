@@ -29,45 +29,6 @@ class Element extends NodeElement {
     this._next = this._end = new NodeElementEnd(this);
   }
 
-  // <ParentNode>
-  get children() {
-    return ParentNode.children(this);
-  }
-
-  get firstElementChild() {
-    return ParentNode.firstElementChild(this);
-  }
-
-  get lastElementChild() {
-    return ParentNode.lastElementChild(this);
-  }
-
-  get childElementCount() {
-    return ParentNode.childElementCount(this);
-  }
-
-  /**
-   * @param  {...Node|string} nodes 
-   */
-  prepend(...nodes) {
-    return ParentNode.prepend(this, nodes);
-  }
-
-  /**
-   * @param  {...Node|string} nodes 
-   */
-  append(...nodes) {
-    return ParentNode.append(this, nodes);
-  }
-
-  /**
-   * @param  {...Node|string} nodes 
-   */
-  replaceChildren(...nodes) {
-    return ParentNode.replaceChildren(this, nodes);
-  }
-  // </ParentNode>
-
   get id() {
     return this.getAttribute('id') || '';
   }

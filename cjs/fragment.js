@@ -24,54 +24,6 @@ class DocumentFragment extends NodeElement {
   }
   // </NonElementParentNode>
 
-  // <ParentNode>
-  get children() {
-    return ParentNode.children(this);
-  }
-
-  /**
-   * @returns {Element?}
-   */
-  get firstElementChild() {
-    return ParentNode.firstElementChild(this);
-  }
-
-  /**
-   * @returns {Element?}
-   */
-  get lastElementChild() {
-    return ParentNode.lastElementChild(this);
-  }
-
-  /**
-   * @returns {number}
-   */
-  get childElementCount() {
-    return ParentNode.childElementCount(this);
-  }
-
-  /**
-   * @param  {Node[]} nodes 
-   */
-  prepend(...nodes) {
-    return ParentNode.prepend(this, nodes);
-  }
-
-  /**
-   * @param  {Node[]} nodes 
-   */
-  append(...nodes) {
-    return ParentNode.append(this, nodes);
-  }
-
-  /**
-   * @param  {Node[]} nodes 
-   */
-  replaceChildren(...nodes) {
-    return ParentNode.replaceChildren(this, nodes);
-  }
-  // </ParentNode>
-
   toString() {
     return this.childNodes.join('');
   }

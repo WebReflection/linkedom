@@ -3,12 +3,12 @@ const {escape} = require('html-escaper');
 
 const {ATTRIBUTE_NODE} = require('./constants.js');
 const {String} = require('./utils.js');
-const {NodeLess} = require('./node.js');
+const {Node} = require('./node.js');
 
 /**
  * @implements globalThis.Attr
  */
-class Attr extends NodeLess {
+class Attr extends Node {
 
   constructor(ownerDocument, name, value) {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
