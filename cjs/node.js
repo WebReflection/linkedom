@@ -111,6 +111,7 @@ class Node extends EventTarget {
    * @returns {Node}
    */
   cloneNode(deep = false) {
+    /* c8 ignore start */
     const {ownerDocument, nodeType, localName} = this;
     switch (nodeType) {
       case ELEMENT_NODE:
@@ -164,6 +165,17 @@ class Node extends EventTarget {
         fragment.append(...this.childNodes.map(child => child.cloneNode(deep)));
         return fragment;
     }
+    /* c8 ignore stop */
+  }
+
+  /**
+   * @returns {Node}
+   */
+  getRootNode() {
+    let root = this;
+    while (root.parentNode)
+      root = root.parentNode;
+    return root.nodeType === DOCUMENT_NODE ? root.root : root;
   }
 
   /**
@@ -171,12 +183,14 @@ class Node extends EventTarget {
    * @returns {boolean}
    */
   isEqualNode(node) {
+    /* c8 ignore start */
     const {nodeType} = this;
     if (nodeType === node.nodeType) {
       switch (nodeType) {
         case ELEMENT_NODE:
-          return this.outerHTML === node.outerHTML;
         case ATTRIBUTE_NODE:
+        case TEXT_NODE:
+        case COMMENT_NODE:
           return this.toString() === node.toString();
         default:
           const aNodes = this.childNodes;
@@ -185,6 +199,7 @@ class Node extends EventTarget {
       }
     }
     return false;
+    /* c8 ignore stop */
   }
 
   // meh
@@ -233,13 +248,6 @@ class NodeElement extends Node {
   }
 
   /**
-   * @returns {Element}
-   */
-  getRootNode() {
-    return this.ownerDocument.root;
-  }
-
-  /**
    * @param {Node} node
    * @returns {boolean}
    */
@@ -276,10 +284,11 @@ class NodeElement extends Node {
         _end._prev = node._end;
         node._prev = _prev;
         node._end._next = _end;
+        node.parentNode = this;
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
-        const {firstChild, lastChild} = node;
+        let {firstChild, lastChild} = node;
         if (firstChild) {
           _prev._next = firstChild;
           firstChild._prev = _prev;
@@ -289,6 +298,13 @@ class NodeElement extends Node {
           // reset fragment
           node._next = node._end;
           node._end._prev = node;
+          // set parent node
+          do {
+            firstChild.parentNode = this;
+          } while (
+            firstChild !== lastChild &&
+            (firstChild = firstChild._next)
+          );
         }
         break;
       }
@@ -297,10 +313,10 @@ class NodeElement extends Node {
         _prev._next = _end._prev = node;
         node._prev = _prev;
         node._next = _end;
+        node.parentNode = this;
         break;
       }
     }
-    node.parentNode = this;
     return node;
   }
 
@@ -367,14 +383,7 @@ class NodeElement extends Node {
 }
 exports.NodeElement = NodeElement
 
-class NodeText extends Node {
-
-  constructor(ownerDocument, localName, textContent, NODE) {
-    super(ownerDocument, localName, NODE);
-    this.textContent = String(textContent);
-  }
-
-  get nodeValue() { return this.textContent; }
+class ChildLess extends Node {
 
   /**
    * @type {null}
@@ -390,6 +399,53 @@ class NodeText extends Node {
    * @type {NodeList}
    */
   get childNodes() { return []; }
+
+  /**
+   * @type {null}
+   */
+  get nextSibling() {
+    return null;
+  }
+
+  /**
+   * @type {null}
+   */
+  get previousSibling() {
+    return null;
+  }
+
+  /**
+   * @type {null}
+   */
+  get nextElementSibling() {
+    return null;
+  }
+
+  /**
+   * @type {null}
+   */
+  get previousElementSibling() {
+    return null;
+  }
+
+  normalize() {}
+  hasChildNodes() { return false; }
+
+  insertBefore() { throw new Error('invalid operation'); }
+  appendChild() { throw new Error('invalid operation'); }
+  replaceChild() { throw new Error('invalid operation'); }
+  removeChild() { throw new Error('invalid operation'); }
+}
+exports.ChildLess = ChildLess
+
+class NodeText extends ChildLess {
+
+  constructor(ownerDocument, localName, textContent, NODE) {
+    super(ownerDocument, localName, NODE);
+    this.textContent = String(textContent);
+  }
+
+  get nodeValue() { return this.textContent; }
 
   /**
    * @type {Node?}
@@ -418,14 +474,6 @@ class NodeText extends Node {
   get previousElementSibling() {
     return NonDocumentTypeChildNode.previousElementSibling(this);
   }
-
-  normalize() {}
-  hasChildNodes() { return false; }
-
-  insertBefore() { throw new Error('invalid operation'); }
-  appendChild() { throw new Error('invalid operation'); }
-  replaceChild() { throw new Error('invalid operation'); }
-  removeChild() { throw new Error('invalid operation'); }
 }
 exports.NodeText = NodeText
 

@@ -75,7 +75,7 @@ assert(document.toString() === '<!DOCTYPE html><html><div></div><input><p></p></
 
 document.documentElement.setAttribute('lang', 'en');
 assert(document.documentElement.cloneNode(true).outerHTML === '<html lang="en"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
-assert(document.documentElement.cloneNode(false).outerHTML === '<html lang="en"></html>', 'cloneNode().outerHTML');
+assert(document.documentElement.cloneNode().outerHTML === '<html lang="en"></html>', 'cloneNode().outerHTML');
 
 document.documentElement.append('a', 'b');
 let {length} = document.documentElement.childNodes;
@@ -130,6 +130,7 @@ assert(node.querySelectorAll('div[id="any"]').item(0) === null, 'no NodeList.ite
 assert(node.children.length === 0, 'no children');
 assert(node.childElementCount === 0, 'childElementCount is 0');
 node.appendChild(document.createElement('div')).id = 'any';
+assert(node.isEqualNode(node.cloneNode(true)), 'isEqualNode');
 assert(node.querySelector('div[id="any"]') === node.firstElementChild, 'yes querySelector');
 assert(node.querySelectorAll('div[id="any"]').length === 1, 'yes querySelectorAll');
 assert(node.querySelectorAll('div[id="any"]').item(0) === node.firstElementChild, 'yes NodeList.item()');
@@ -148,6 +149,11 @@ node.replaceChild(document.createElement('input'), node.firstChild);
 assert(node.toString() === '<input>', 'expected content');
 
 node = document.createElement('div');
+assert(node.firstChild === null);
+assert(node.lastChild === null, 'lastChild with attribute');
+node.setAttribute('tmp', '');
+assert(node.lastChild === null, 'lastChild with attribute');
+assert(!node.isEqualNode(document), 'no node is equal to the document');
 node.innerHTML = '<!--comment--><input type="password" />OK';
 assert(node.outerHTML === '<div><!--comment--><input type="password">OK</div>', 'comment and attributes parsed');
 
@@ -199,6 +205,13 @@ assert(node.previousElementSibling !== null, 'yes previousElementSibling');
 let {class: klass} = node.attributes;
 assert(node.hasAttributes(), 'hasAttributes');
 assert(node.getAttributeNames().join(',') === 'class,id', 'getAttributeNames');
+assert(klass.isEqualNode(klass.cloneNode(true)), 'attribute.isEqualNode()');
+assert(klass.firstChild === null, 'attribute.firstChild');
+assert(klass.lastChild === null, 'attribute.lastChild');
+assert(klass.previousSibling === null, 'attribute.previousSibling');
+assert(klass.nextSibling === null, 'attribute.nextSibling');
+assert(klass.previousElementSibling === null, 'attribute.previousElementSibling');
+assert(klass.nextElementSibling === null, 'attribute.nextElementSibling');
 node.removeAttribute('id');
 node.removeAttribute('class');
 try {
@@ -236,3 +249,78 @@ assert(document.getElementById('outer-html') === document.documentElement.childN
 assert(document.documentElement.childElementCount, 'childElementCount');
 document.documentElement.setAttributeNode(klass);
 assert(document.documentElement.className === 'b c', 'moved attribute');
+
+let text = document.createTextNode('text');
+node.innerHTML = '<p></p>';
+document.documentElement.appendChild(node);
+text.before(node.firstChild);
+text.after(node.firstChild);
+assert(node.toString() === '<div><p></p></div>', 'before after not affected');
+assert(!text.isConnected, '!isConnected');
+assert(!text.parentElement, '!parentElement');
+assert(!node.contains(text), '!contains');
+node.firstChild.appendChild(text);
+assert(text.getRootNode() === document.documentElement, 'getRootNode');
+assert(node.contains(text), 'contains');
+assert(text.isConnected, 'isConnected');
+assert(text.parentElement === node.firstChild, 'parentElement');
+document.documentElement.cloneNode(true);
+assert(node.toString() === '<div><p>text</p></div>', 'appended');
+text.replaceWith(document.createComment('comment'));
+assert(!text.isConnected, '!isConnected');
+assert(node.toString() === '<div><p><!--comment--></p></div>', 'replaceWith');
+document.documentElement.cloneNode(true);
+node.firstChild.firstChild.cloneNode(true);
+node.firstChild.firstChild.cloneNode();
+assert(!node.firstChild.firstChild.isEqualNode(text), 'isEqualNode');
+assert(node.firstChild.firstChild.isEqualNode(node.firstChild.firstChild.cloneNode(true)), 'isEqualNode');
+node.firstChild.removeChild(node.firstChild.firstChild);
+assert(node.isEqualNode(node.cloneNode(true)), 'isEqualNode');
+assert(node.toString() === '<div><p></p></div>', 'remove');
+assert(text.isEqualNode(text.cloneNode(true)), 'isEqualNode');
+assert(text.isSameNode(text), 'isSameNode');
+assert(text.nodeValue === text.textContent, 'nodeValue');
+assert(text.firstChild === null, 'firstChild');
+assert(text.lastChild === null, 'lastChild');
+assert(text.nextSibling === null, 'nextSibling');
+assert(text.previousSibling === null, 'previousSibling');
+assert(text.nextElementSibling === null, 'nextElementSibling');
+assert(text.previousElementSibling === null, 'previousElementSibling');
+text.normalize();
+assert(node.hasChildNodes(), 'hasChildNodes');
+assert(!text.hasChildNodes(), '!hasChildNodes');
+assert(text.getRootNode() === text, 'getRootNode');
+assert(document.documentElement.parentElement === null, 'html.parentElement');
+document.documentElement.insertBefore(text, null);
+assert(document.documentElement.lastChild === text, 'insertBefore(node, null)');
+node = document.createDocumentFragment();
+node.append('a', 'b', 'c');
+document.documentElement.insertBefore(node, text);
+node.append('a', '');
+node.normalize();
+assert(node.childNodes.length === 1, 'normalize() empty text');
+try {
+  node.removeChild(text);
+  assert(false, 'removeChild');
+}
+catch (OK) {}
+try {
+  text.insertBefore();
+  assert(false, 'insertBefore');
+}
+catch (OK) {}
+try {
+  text.appendChild();
+  assert(false, 'appendChild');
+}
+catch (OK) {}
+try {
+  text.replaceChild();
+  assert(false, 'replaceChild');
+}
+catch (OK) {}
+try {
+  text.removeChild();
+  assert(false, 'removeChild');
+}
+catch (OK) {}
