@@ -128,7 +128,7 @@ export class Element extends NodeElement {
   }
 
   set outerHTML(html) {
-    const template = document.createElement('<>');
+    const template = this.ownerDocument.createElement('<>');
     template.innerHTML = html;
     this.parentNode.replaceChild(template.firstElementChild, this);
   }
@@ -195,10 +195,12 @@ export class Element extends NodeElement {
     let {_next} = this;
     while (_next.nodeType === ATTRIBUTE_NODE) {
       if (_next === attribute) {
-        const {_prev, _next} = attribute;
+        const {_prev, _next, name} = attribute;
         _prev._next = _next;
         _next._prev = _prev;
         attribute.ownerElement = attribute._prev = attribute._next = null;
+        if (name === 'class')
+          this._classList = null;
         return;
       }
       _next = _next._next;
@@ -222,6 +224,8 @@ export class Element extends NodeElement {
       attribute._prev = this;
       attribute._next = _next;
       this._next = _next._prev = attribute;
+      if (attribute.name === 'class')
+        this.className = attribute.value;
     }
     return previously;
   }
@@ -231,15 +235,6 @@ export class Element extends NodeElement {
    */
   hasAttribute(name) {
     return !!this.getAttributeNode(name);
-  }
-
-  /**
-   * @deprecated
-   * @param {string} namespace 
-   * @param {string} name 
-   */
-  hasAttributeNS(_, name) {
-    return this.hasAttribute(name);
   }
 
   hasAttributes() {
@@ -260,16 +255,6 @@ export class Element extends NodeElement {
   }
 
   /**
-   * @deprecated
-   * @param {string} namespace
-   * @param {string} name
-   * @returns {string?}
-   */
-  getAttributeNS(_, name) {
-    return this.getAttribute(name);
-  }
-
-  /**
    * @param {string} name 
    */
   removeAttribute(name) {
@@ -281,15 +266,6 @@ export class Element extends NodeElement {
       }
       _next = _next._next;
     }
-  }
-
-  /**
-   * @deprecated
-   * @param {string} namespace
-   * @param {string} name
-   */
-  removeAttributeNS(_, name) {
-    this.removeAttribute(name);
   }
 
   /**
@@ -305,16 +281,6 @@ export class Element extends NodeElement {
       attribute.value = String(value);
       this.setAttributeNode(attribute);
     }
-  }
-
-  /**
-   * @deprecated
-   * @param {string} namespace
-   * @param {string} name
-   * @param {string|any} value casted, if not string
-   */
-  setAttributeNS(_, name, value) {
-    this.setAttribute(name, value);
   }
 
   /**
@@ -385,15 +351,6 @@ export class Element extends NodeElement {
   }
 
   /**
-   * @deprecated
-   * @param {string} namespace 
-   * @param {string} name 
-   */
-  getElementsByTagNameNS(_, name) {
-    return this.getElementsByTagName(name);
-  }
-
-  /**
    * @param {string} className 
    */
   getElementsByClassName(className) {
@@ -418,4 +375,55 @@ export class Element extends NodeElement {
   matches(selectors) {
     return matches(this, selectors);
   }
+
+  /* c8 ignore start */
+
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} name
+   * @returns {string?}
+   */
+  getAttributeNS(_, name) {
+    return this.getAttribute(name);
+  }
+
+  /**
+   * @deprecated
+   * @param {string} namespace 
+   * @param {string} name 
+   */
+  getElementsByTagNameNS(_, name) {
+    return this.getElementsByTagName(name);
+  }
+
+  /**
+   * @deprecated
+   * @param {string} namespace 
+   * @param {string} name 
+   */
+  hasAttributeNS(_, name) {
+    return this.hasAttribute(name);
+  }
+
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} name
+   */
+  removeAttributeNS(_, name) {
+    this.removeAttribute(name);
+  }
+
+  /**
+   * @deprecated
+   * @param {string} namespace
+   * @param {string} name
+   * @param {string|any} value casted, if not string
+   */
+  setAttributeNS(_, name, value) {
+    this.setAttribute(name, value);
+  }
+
+  /* c8 ignore end */
 }

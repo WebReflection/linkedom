@@ -22,7 +22,8 @@ class Attr extends Node {
   }
 
   toString() {
-    return `${this.name}="${escape(this.value)}"`;
+    const {name, value} = this;
+    return value ? `${name}="${escape(this.value)}"` : name;
   }
 }
 exports.Attr = Attr

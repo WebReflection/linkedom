@@ -8,6 +8,7 @@ const assert = (expression, message) => {
 
 const svgDocument = (new DOMParser).parseFromString('<svg><rect /></svg>', 'image/svg+xml');
 let xmlDocument = (new DOMParser).parseFromString('<svg><rect /></svg>', 'text/xml');
+assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?><svg><rect /></svg>', 'xml toString');
 
 svgDocument.root = svgDocument.createElement('Svg');
 assert(svgDocument.root.tagName === 'Svg', 'XML names are case-sensitive');
@@ -157,3 +158,81 @@ node.addEventListener('click', event => {
 }, {once: true});
 node.dispatchEvent(new CustomEvent('click', {detail: 123}));
 assert(triggered, 'the click event triggered');
+
+assert(node.children.length === 1, 'no children');
+assert(node.childNodes.length === 3, 'no children');
+assert(node.children[0] === node.firstElementChild, 'firstElementChild & children');
+assert(node.children[0] === node.lastElementChild, 'lastElementChild & children');
+assert(node.childNodes[0] === node.firstChild, 'firstChild & childNodes');
+assert(node.childNodes[2] === node.lastChild, 'lastChild & childNodes');
+node.prepend('before');
+node.append('after');
+node.replaceChildren('a', 'b', 'c');
+assert(node.innerHTML === 'abc');
+assert(node.childNodes.length === 3, 'replaceChildren & childNodes');
+node.normalize();
+assert(node.childNodes.length === 1, 'element normalize()');
+assert(node.innerHTML === 'abc', 'normalized');
+assert(node.id === '', 'no id');
+assert(!node.hasAttribute('id'), 'no id');
+node.id = 'test';
+assert(node.hasAttribute('id'), 'yes id');
+assert(node.className === '', 'no className');
+node.className = ' a b ';
+assert(node.className === 'a b', 'yes className');
+assert(node.nodeName === 'DIV', 'nodeName');
+assert(node.tagName === 'DIV', 'tagName');
+assert(node.attributes.length === 2, 'attributes');
+assert(node.attributes.id.value === 'test', 'attributes.id');
+assert(node.attributes.class.value === 'a b', 'attributes.class');
+assert(node.getAttributeNode('id') === node.attributes.id, 'getAttributeNode');
+assert(node.getAttributeNode('nope') === null, 'getAttributeNode');
+assert(node.attributes.nope === void 0, 'attributes.nope');
+assert(node.nextSibling === null, 'no nextSibling');
+assert(node.previousSibling === null, 'no previousSibling');
+assert(node.nextElementSibling === null, 'no nextElementSibling');
+assert(node.previousElementSibling === null, 'no previousElementSibling');
+document.documentElement.append(node, document.createElement('p'));
+assert(node.nextElementSibling !== null, 'yes nextElementSibling');
+assert(node.previousElementSibling !== null, 'yes previousElementSibling');
+
+let {class: klass} = node.attributes;
+assert(node.hasAttributes(), 'hasAttributes');
+assert(node.getAttributeNames().join(',') === 'class,id', 'getAttributeNames');
+node.removeAttribute('id');
+node.removeAttribute('class');
+try {
+  node.removeAttributeNode(klass);
+  assert(false, 'removeAttributeNode should have thrown');
+}
+catch (OK) {}
+assert(!node.hasAttributes(), 'hasAttributes');
+assert(!node.hasAttribute('class'), 'removeAttributeNode');
+assert(node.className === '', 'removeAttributeNode');
+node.setAttributeNode(klass);
+assert(node.className === 'a b', 'setAttributeNode');
+klass = document.createAttribute('class');
+klass.value = 'b c';
+node.setAttributeNode(klass);
+assert(node.className === 'b c', 'setAttributeNode');
+assert(!node.matches('[disabled]'), 'no matches');
+node.toggleAttribute('disabled');
+assert(node.toString() === '<div disabled class="b c">abc</div>', 'toggle');
+node.toggleAttribute('disabled', true);
+assert(node.toString() === '<div disabled class="b c">abc</div>', 'toggle');
+node.toggleAttribute('disabled', false);
+assert(node.toString() === '<div class="b c">abc</div>', 'toggle');
+node.toggleAttribute('disabled', false);
+node.toggleAttribute('disabled', true);
+assert(node.toString() === '<div disabled class="b c">abc</div>', 'toggle');
+assert(node.matches('[disabled]'), 'yes matches');
+node.toggleAttribute('disabled');
+assert(node.toString() === '<div class="b c">abc</div>', 'toggle');
+assert(document.getElementsByClassName('b')[0] === node, 'getElementsByClassName');
+let index = document.documentElement.childNodes.indexOf(node);
+node.outerHTML = '<p id="outer-html"></p>';
+assert(document.documentElement.childNodes.indexOf(node) < 0, 'outerHTML removed the node');
+assert(document.getElementById('outer-html') === document.documentElement.childNodes[index]);
+assert(document.documentElement.childElementCount, 'childElementCount');
+document.documentElement.setAttributeNode(klass);
+assert(document.documentElement.className === 'b c', 'moved attribute');
