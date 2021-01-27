@@ -26,6 +26,18 @@ assert(xmlDocument.childElementCount === 0, 'childElementCount as 0');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?>', 'mime type only');
 
 let document = (new DOMParser).parseFromString('', 'text/html');
+
+assert(document.defaultView === globalThis);
+
+assert(document.title, 'document.title');
+assert(document.body, 'document.body');
+assert(document.all.length > 0, 'document.all');
+
+assert(document.toString() === '<!DOCTYPE html><html><head><title></title></head><body></body></html>', 'document sanity');
+
+document = (new DOMParser).parseFromString('', 'text/html');
+
+
 assert(document.querySelector('nope') === null, 'no element selected');
 assert(document.querySelectorAll('nope').length === 0, 'empty NodeList');
 assert(document.getElementsByTagName('nope').length === 0, 'empty NodeList');
@@ -373,6 +385,3 @@ event.initEvent('test-event');
 
 let customEvent = document.createEvent('CustomEvent');
 customEvent.initCustomEvent('test-custom-event', false, false, 123);
-
-assert(document.defaultView === globalThis);
-

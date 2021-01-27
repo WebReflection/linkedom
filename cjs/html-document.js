@@ -1,4 +1,5 @@
 'use strict';
+const {getEnd} = require('./utils.js');
 const {Document} = require('./document.js');
 
 /**
@@ -17,6 +18,57 @@ class HTMLDocument extends Document {
    */
   get documentElement() {
     return this.root;
+  }
+
+  /**
+   * @type HTMLAllCollection
+   */
+  get all() {
+    const all = [this.root];
+    let {_next, _end} = all[0];
+    while (_next !== _end) {
+      all.push(_next);
+      _next = getEnd(_next)._next;
+    }
+    return all;
+  }
+
+  /**
+   * @type HTMLHeadElement
+   */
+  get head() {
+    let {firstElementChild} = this.root;
+    // whatever
+    if (!firstElementChild) {
+      firstElementChild = this.createElement('head');
+      this.root.prepend(firstElementChild);
+    }
+    return firstElementChild;
+  }
+
+  /**
+   * @type HTMLBodyElement
+   */
+  get body() {
+    let {nextElementSibling} = this.head;
+    // whatever
+    if (!nextElementSibling) {
+      nextElementSibling = this.createElement('body');
+      this.head.after(nextElementSibling);
+    }
+    return nextElementSibling;
+  }
+
+  /**
+   * @type HTMLTitleElement
+   */
+  get title() {
+    let title = this.head.getElementsByTagName('title').shift();
+    if (!title) {
+      title = this.createElement('title');
+      this.head.prepend(title);
+    }
+    return title;
   }
 }
 exports.HTMLDocument = HTMLDocument
