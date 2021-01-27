@@ -18,9 +18,8 @@ export class DocumentFragment extends NodeElement {
    * @returns {Element?}
    */
   getElementById(id) {
-    return this.children.find(
-      _next => NonElementParentNode.getElementById({_next}, id)
-    );
+    const {_next, _end} = this;
+    return _next === _end ? null : NonElementParentNode.getElementById(this, id);
   }
   // </NonElementParentNode>
 
@@ -71,4 +70,8 @@ export class DocumentFragment extends NodeElement {
     return ParentNode.replaceChildren(this, nodes);
   }
   // </ParentNode>
+
+  toString() {
+    return this.childNodes.join('');
+  }
 }

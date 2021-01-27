@@ -121,3 +121,22 @@ assert(node.classList.replace('b', 'c') === true, 'replace happened');
 assert(node.classList.value === 'a c', 'correct .value again');
 assert(node.classList.replace('b', 'c') === false, 'replace did not happen');
 assert(node.classList.supports('whatever'), 'whatever');
+
+// fragment.js
+node = document.createDocumentFragment();
+assert(node.getElementById('any') === null, 'no element by id');
+assert(node.children.length === 0, 'no children');
+assert(node.childElementCount === 0, 'childElementCount is 0');
+node.appendChild(document.createElement('div')).id = 'any';
+assert(node.getElementById('any') === node.firstElementChild, 'element by id');
+assert(node.childElementCount === 1, 'childElementCount is 1');
+assert(node.children.length === 1, 'children');
+assert(node.firstElementChild === node.lastElementChild, 'element child');
+node.prepend('a');
+node.append('b');
+assert(node.toString() === 'a<div id="any"></div>b', 'expected content');
+node.replaceChildren('c', 'd');
+assert(node.toString() === 'cd', 'expected content');
+node.normalize();
+assert(node.childNodes.length === 1, 'normalize()');
+
