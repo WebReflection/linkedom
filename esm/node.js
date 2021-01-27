@@ -17,6 +17,7 @@ import {
   findNext,
   getBoundaries,
   getEnd,
+  getNext,
   // invalidate
 } from './utils.js';
 
@@ -480,7 +481,7 @@ export class NodeText extends Node {
    * @type {Node?}
    */
   get nextSibling() {
-    return this._next;
+    return getNext(this);
   }
 
   /**

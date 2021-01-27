@@ -10,3 +10,11 @@ export const DOCUMENT_FRAGMENT_NODE = 11;
  * A symbol classifier for DOM nodes.
  */
 export const DOM = Symbol('DOM');
+
+/**
+ * TreeWalker related
+ */
+
+export const SHOW_ALL = -1;
+export const SHOW_COMMENT = 128;
+export const SHOW_ELEMENT = 1;

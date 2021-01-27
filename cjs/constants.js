@@ -19,3 +19,14 @@ exports.DOCUMENT_FRAGMENT_NODE = DOCUMENT_FRAGMENT_NODE;
  */
 const DOM = Symbol('DOM');
 exports.DOM = DOM;
+
+/**
+ * TreeWalker related
+ */
+
+const SHOW_ALL = -1;
+exports.SHOW_ALL = SHOW_ALL;
+const SHOW_COMMENT = 128;
+exports.SHOW_COMMENT = SHOW_COMMENT;
+const SHOW_ELEMENT = 1;
+exports.SHOW_ELEMENT = SHOW_ELEMENT;

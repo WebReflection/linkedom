@@ -1,6 +1,7 @@
 import {Parser} from 'htmlparser2';
 
 import {
+  ELEMENT_NODE_END,
   ELEMENT_NODE,
   ATTRIBUTE_NODE
 } from './constants.js';
@@ -50,6 +51,12 @@ export const getBoundaries = node => ({
 
 export const getEnd = node => node.nodeType === ELEMENT_NODE ?
                       node._end : node;
+
+export const getNext = ({_next}) => {
+  while (_next && _next.nodeType === ELEMENT_NODE_END)
+    _next = _next._next;
+  return _next;
+};
 
 export const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 

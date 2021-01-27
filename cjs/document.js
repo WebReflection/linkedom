@@ -3,18 +3,25 @@ const {DOCUMENT_NODE} = require('./constants.js');
 
 const {Mime} = require('./utils.js');
 
+// mixins & interfaces
 const {NonElementParentNode, ParentNode} = require('./mixins.js');
 const {Event, CustomEvent} = require('./interfaces.js');
 
+// nodes
 const {Attr} = require('./attr.js');
 const {Comment} = require('./comment.js');
 const {Element} = require('./element.js');
 const {DocumentFragment} = require('./fragment.js');
 const {Node} = require('./node.js');
 const {Text} = require('./text.js');
-const {Range} = require('./range.js');
+
+// node extends
 const {HTMLElement} = require('./html-element.js');
 const {HTMLTemplateElement} = require('./html-template-element.js');
+
+// extras
+const {Range} = require('./range.js');
+const {TreeWalker} = require('./tree-walker.js');
 
 const {create, defineProperties} = Object;
 
@@ -180,6 +187,14 @@ class Document extends Node {
    */
   createTextNode(textContent) {
     return new Text(this, textContent);
+  }
+
+  /**
+   * @param {Element} root 
+   * @param {number?} whatToShow 
+   */
+  createTreeWalker(root, whatToShow) {
+    return new TreeWalker(root, whatToShow);
   }
 
   createDocumentFragment() {

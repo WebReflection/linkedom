@@ -2,18 +2,25 @@ import {DOCUMENT_NODE} from './constants.js';
 
 import {Mime} from './utils.js';
 
+// mixins & interfaces
 import {NonElementParentNode, ParentNode} from './mixins.js';
 import {Event, CustomEvent} from './interfaces.js';
 
+// nodes
 import {Attr} from './attr.js';
 import {Comment} from './comment.js';
 import {Element} from './element.js';
 import {DocumentFragment} from './fragment.js';
 import {Node} from './node.js';
 import {Text} from './text.js';
-import {Range} from './range.js';
+
+// node extends
 import {HTMLElement} from './html-element.js';
 import {HTMLTemplateElement} from './html-template-element.js';
+
+// extras
+import {Range} from './range.js';
+import {TreeWalker} from './tree-walker.js';
 
 const {create, defineProperties} = Object;
 
@@ -179,6 +186,14 @@ export class Document extends Node {
    */
   createTextNode(textContent) {
     return new Text(this, textContent);
+  }
+
+  /**
+   * @param {Element} root 
+   * @param {number?} whatToShow 
+   */
+  createTreeWalker(root, whatToShow) {
+    return new TreeWalker(root, whatToShow);
   }
 
   createDocumentFragment() {

@@ -385,3 +385,31 @@ event.initEvent('test-event');
 
 let customEvent = document.createEvent('CustomEvent');
 customEvent.initCustomEvent('test-custom-event', false, false, 123);
+
+let treeWalker = document.createTreeWalker(node);
+assert(treeWalker.nextNode() === node.childNodes[0], 'first treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[0].childNodes[0], 'second treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[1], 'third treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[1].childNodes[0], 'fourth treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[2], 'fifth treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[2].childNodes[0], 'sixth treeWalker');
+assert(treeWalker.nextNode() === null, 'end of treeWalker');
+
+treeWalker = document.createTreeWalker(node, 128);
+assert(treeWalker.nextNode() === null, 'no comments for treeWalker');
+
+treeWalker = document.createTreeWalker(node, 7357);
+assert(treeWalker.nextNode() === null, 'no fancy numbers for treeWalker');
+
+treeWalker = document.createTreeWalker(node, 1);
+assert(treeWalker.nextNode() === node.childNodes[0], 'first treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[1], 'second treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[2], 'third treeWalker');
+assert(treeWalker.nextNode() === null, 'end of treeWalker');
+
+node.appendChild(document.createComment('ok'));
+
+treeWalker = document.createTreeWalker(node, 128);
+assert(treeWalker.nextNode() === node.lastChild, 'yes comments for treeWalker');
+assert(treeWalker.nextNode() === null, 'end of treeWalker');
+

@@ -1,5 +1,5 @@
 import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
-import {String, ignoreCase, isVoidElement, localCase, parseFromString} from './utils.js';
+import {String, getNext, ignoreCase, isVoidElement, localCase, parseFromString} from './utils.js';
 
 import {NodeList} from './interfaces.js';
 import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
@@ -131,7 +131,7 @@ export class Element extends NodeElement {
    * @type {Node?}
    */
   get nextSibling() {
-    return this._end._next;
+    return getNext(this._end);
   }
 
   /**

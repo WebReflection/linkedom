@@ -2,6 +2,7 @@
 const {Parser} = require('htmlparser2');
 
 const {
+  ELEMENT_NODE_END,
   ELEMENT_NODE,
   ATTRIBUTE_NODE
 } = require('./constants.js');
@@ -55,6 +56,13 @@ exports.getBoundaries = getBoundaries;
 const getEnd = node => node.nodeType === ELEMENT_NODE ?
                       node._end : node;
 exports.getEnd = getEnd;
+
+const getNext = ({_next}) => {
+  while (_next && _next.nodeType === ELEMENT_NODE_END)
+    _next = _next._next;
+  return _next;
+};
+exports.getNext = getNext;
 
 const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 exports.ignoreCase = ignoreCase;
