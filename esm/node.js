@@ -242,7 +242,7 @@ export class NodeElement extends Node {
 
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
-    // invalidate(this);
+    // DO_NOT_REMOVE invalidate(this);
   }
 
   get childNodes() {
@@ -343,7 +343,7 @@ export class NodeElement extends Node {
    * @param {Node} node
    */
   appendChild(node) {
-    // invalidate(this);
+    // DO_NOT_REMOVE invalidate(this);
     return this.insertBefore(node, this._end);
   }
 
@@ -353,7 +353,7 @@ export class NodeElement extends Node {
    * @returns {Node}
    */
   insertBefore(node, before) {
-    // invalidate(this);
+    // DO_NOT_REMOVE invalidate(this);
     const _end = before || this._end;
     const {_prev} = _end;
     switch (node.nodeType) {
@@ -367,7 +367,7 @@ export class NodeElement extends Node {
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
-        // invalidate(node);
+        // DO_NOT_REMOVE invalidate(node);
         let {firstChild, lastChild} = node;
         if (firstChild) {
           _prev._next = firstChild;
@@ -418,7 +418,7 @@ export class NodeElement extends Node {
       }
       _next = next;
     }
-    // if (shouldInvalidate) invalidate(this);
+    // DO_NOT_REMOVE if (shouldInvalidate) invalidate(this);
   }
 
   /**
@@ -439,7 +439,7 @@ export class NodeElement extends Node {
    */
   replaceChild(node, replaced) {
     const {_prev, _next} = getBoundaries(replaced);
-    // invalidate(this);
+    // DO_NOT_REMOVE invalidate(this);
     replaced.remove();
     node.remove();
     _prev._next = node;

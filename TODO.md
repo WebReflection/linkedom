@@ -2,7 +2,6 @@
 
 ### Mandatory
 
-- [ ] `document.createTreeWalker` utility
 - [ ] `element.style` special accessor case
 
 
