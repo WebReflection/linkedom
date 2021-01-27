@@ -69,6 +69,7 @@ document.documentElement.append(
 );
 
 assert(document.toString() === '<!DOCTYPE html><html id="html" class="live"><!--&lt;hello&gt;-->&lt;hello&gt;</html>', 'escaped content');
+assert(document.documentElement.textContent === '<hello>', 'textContent read');
 
 document.documentElement.innerHTML = '<div /><input><p />';
 assert(document.toString() === '<!DOCTYPE html><html><div></div><input><p></p></html>', 'innerHTML + sanitizer');
@@ -257,6 +258,10 @@ document.documentElement.appendChild(node);
 text.before(node.firstChild);
 text.after(node.firstChild);
 assert(node.toString() === '<div><p></p></div>', 'before after not affected');
+node.firstChild.textContent = 'test';
+assert(node.toString() === '<div><p>test</p></div>', 'before after not affected');
+node.firstChild.textContent = '';
+assert(node.toString() === '<div><p></p></div>', 'before after not affected');
 assert(!text.isConnected, '!isConnected');
 assert(!text.parentElement, '!parentElement');
 assert(!node.contains(text), '!contains');
@@ -273,6 +278,8 @@ assert(node.toString() === '<div><p><!--comment--></p></div>', 'replaceWith');
 document.documentElement.cloneNode(true);
 node.firstChild.firstChild.cloneNode(true);
 node.firstChild.firstChild.cloneNode();
+assert(node.firstChild.closest('p') === node.firstChild, 'closest(sameNode)');
+assert(node.firstChild.closest('nope') === null, 'closest(nope)');
 assert(!node.firstChild.firstChild.isEqualNode(text), 'isEqualNode');
 assert(node.firstChild.firstChild.isEqualNode(node.firstChild.firstChild.cloneNode(true)), 'isEqualNode');
 node.firstChild.removeChild(node.firstChild.firstChild);

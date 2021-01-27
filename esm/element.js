@@ -74,6 +74,26 @@ export class Element extends NodeElement {
     return this._dataset || (this._dataset = new DOMStringMap(this));
   }
 
+  /**
+   * @type {string}
+   */
+  get textContent() {
+    const text = [];
+    let {_next, _end} = this;
+    while (_next !== _end) {
+      if (_next.nodeType === TEXT_NODE)
+        text.push(_next.textContent);
+      _next = _next._next;
+    }
+    return text.join('');
+  }
+
+  set textContent(text) {
+    this.replaceChildren();
+    if (text)
+      this.appendChild(this.ownerDocument.createTextNode(text));
+  }
+
   get innerHTML() {
     return this.childNodes.join('');
   }
@@ -133,6 +153,13 @@ export class Element extends NodeElement {
    */
   get previousElementSibling() {
     return NonDocumentTypeChildNode.previousElementSibling(this);
+  }
+
+  closest(selectors) {
+    let parentElement = this;
+    while (parentElement && !parentElement.matches(selectors))
+      parentElement = parentElement.parentElement;
+    return parentElement;
   }
 
   /**
