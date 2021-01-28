@@ -138,7 +138,7 @@ export class Node extends EventTarget {
     const {ownerDocument: OD, nodeType, localName} = this;
     switch (nodeType) {
       case ELEMENT_NODE:
-        const {SVGElement} = ownerDocument[DOM];
+        const {SVGElement} = OD[DOM];
         const addNext = _next => {
           _next.parentNode = parentNode;
           _next._prev = $next;

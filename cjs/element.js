@@ -443,6 +443,14 @@ class Element extends NodeElement {
     this.setAttribute(name, value);
   }
 
+  /**
+   * @deprecated
+   * @param {Attr} attr
+   */
+  setAttributeNodeNS(attr) {
+    return this.setAttributeNode(attr);
+  }
+
   /* c8 ignore stop */
 }
 exports.Element = Element

@@ -268,5 +268,15 @@ class Document extends Node {
     const {root} = this;
     return root ? root.getElementsByClassName(className) : [];
   }
+
+  /* c8 ignore start */
+  createAttributeNS(_, name) {
+    return this.createAttribute(name);
+  }
+
+  createElementNS(_, localName, options) {
+    return this.createElement(localName, options);
+  }
+  /* c8 ignore stop */
 }
 exports.Document = Document
