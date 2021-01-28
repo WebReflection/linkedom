@@ -1,5 +1,5 @@
 'use strict';
-const {DOCUMENT_NODE} = require('./constants.js');
+const {DOCUMENT_NODE, DOM} = require('./constants.js');
 
 const {Mime} = require('./utils.js');
 
@@ -16,6 +16,7 @@ const {Node} = require('./node.js');
 const {Text} = require('./text.js');
 
 // node extends
+const {SVGElement} = require('./svg-element.js');
 const {HTMLElement} = require('./html-element.js');
 const {HTMLTemplateElement} = require('./html-template-element.js');
 
@@ -44,6 +45,14 @@ const defaultView = new Proxy(globalThis, {
  * @implements globalThis.Document
  */
 class Document extends Node {
+
+  get [DOM]() {
+    return {
+      SVGElement,
+      HTMLElement,
+      HTMLTemplateElement
+    };
+  }
 
   /**
    * @param {string} type the document mime-type

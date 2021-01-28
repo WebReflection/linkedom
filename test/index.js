@@ -25,7 +25,14 @@ assert(xmlDocument.lastElementChild === null, 'no lastElementChild');
 assert(xmlDocument.childElementCount === 0, 'childElementCount as 0');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?>', 'mime type only');
 
-let document = (new DOMParser).parseFromString('', 'text/html');
+let document = (new DOMParser).parseFromString('<div><svg><rect /></svg></div>', 'text/html');
+let svg = document.querySelector('svg');
+assert('ownerSVGElement' in svg, '<svg> ownerSVGElement');
+assert(svg.ownerSVGElement === null, '<svg> ownerSVGElement is null');
+assert(svg.firstChild.ownerSVGElement === svg, '<rect> has an ownerSVGElement');
+assert(document.toString() === '<!DOCTYPE html><html><div><svg><rect /></svg></div></html>', 'svg nodes are OK');
+
+document = (new DOMParser).parseFromString('', 'text/html');
 
 assert(document.defaultView.parseInt, 'defaultView');
 

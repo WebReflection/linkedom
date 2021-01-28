@@ -6,7 +6,8 @@ const {
   ELEMENT_NODE,
   ATTRIBUTE_NODE,
   TEXT_NODE,
-  COMMENT_NODE
+  COMMENT_NODE,
+  DOM
 } = require('./constants.js');
 
 const $String = String;
@@ -85,11 +86,6 @@ exports.ignoreCase = ignoreCase;
 
 // DO_NOTE_REMOVE export const invalidate = $ => { $._childNodes = $._children = null; };
 
-const isVoidElement = ({localName, ownerDocument}) => {
-  return ownerDocument._mime.voidElements.test(localName);
-};
-exports.isVoidElement = isVoidElement;
-
 const localCase = ({localName, ownerDocument}) => {
   return ownerDocument._mime.ignoreCase ? localName.toUpperCase() : localName;
 };
@@ -101,9 +97,22 @@ const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');
 const VOID_SANITIZER = (_, $1, $2) => `<${$1}${$2}${/\/$/.test($2) ? '' : ' /'}>`;
 const voidSanitizer = html => html.replace(VOID_ELEMENTS, VOID_SANITIZER);
 const parseFromString = (document, isHTML, markupLanguage) => {
+  const {SVGElement} = document[DOM];
   let node = document.root || document.createElement('root');
+  let ownerSVGElement = null;
   const content = new Parser({
     onopentagname(name) {
+      if (isHTML) {
+        if (ownerSVGElement) {
+          node = node.appendChild(new SVGElement(document, name, ownerSVGElement));
+          return;
+        }
+        else if (name === 'svg' || name === 'SVG') {
+          ownerSVGElement = new SVGElement(document, name);
+          node = node.appendChild(ownerSVGElement);
+          return;
+        }
+      }
       node = node.appendChild(document.createElement(name));
     },
     onattribute(name, value) {
@@ -116,6 +125,8 @@ const parseFromString = (document, isHTML, markupLanguage) => {
       node.appendChild(document.createTextNode(text));
     },
     onclosetag() {
+      if (isHTML && node === ownerSVGElement)
+        ownerSVGElement = null;
       node = node.parentNode;
     }
   }, {

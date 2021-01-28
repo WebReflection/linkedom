@@ -1,4 +1,4 @@
-import {DOCUMENT_NODE} from './constants.js';
+import {DOCUMENT_NODE, DOM} from './constants.js';
 
 import {Mime} from './utils.js';
 
@@ -15,6 +15,7 @@ import {Node} from './node.js';
 import {Text} from './text.js';
 
 // node extends
+import {SVGElement} from './svg-element.js';
 import {HTMLElement} from './html-element.js';
 import {HTMLTemplateElement} from './html-template-element.js';
 
@@ -43,6 +44,14 @@ const defaultView = new Proxy(globalThis, {
  * @implements globalThis.Document
  */
 export class Document extends Node {
+
+  get [DOM]() {
+    return {
+      SVGElement,
+      HTMLElement,
+      HTMLTemplateElement
+    };
+  }
 
   /**
    * @param {string} type the document mime-type

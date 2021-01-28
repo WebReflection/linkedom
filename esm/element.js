@@ -1,5 +1,5 @@
 import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
-import {String, getNext, getPrev, ignoreCase, isVoidElement, localCase, parseFromString} from './utils.js';
+import {String, getNext, getPrev, ignoreCase, localCase, parseFromString} from './utils.js';
 
 import {NodeList} from './interfaces.js';
 import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
@@ -16,6 +16,10 @@ const attributesHandler = {
   get(target, key) {
     return key in target ? target[key] : target.find(({name}) => name === key);
   }
+};
+
+const isVoidElement = ({localName, ownerDocument}) => {
+  return ownerDocument._mime.voidElements.test(localName);
 };
 
 /**
@@ -325,7 +329,9 @@ export class Element extends NodeElement {
           }
           break;
         case ELEMENT_NODE_END:
-          if (isOpened && isVoidElement(_next))
+          if (isOpened && ('ownerSVGElement' in _next._start))
+            out.push(' />');
+          else if (isOpened && isVoidElement(_next))
             out.push(ignoreCase(_next) ? '>' : ' />');
           else
             out.push(`${isOpened ? '>' : ''}</${_next.localName}>`);
