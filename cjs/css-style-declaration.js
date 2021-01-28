@@ -40,17 +40,19 @@ const handler = {
     if (name === 'cssText')
       style[name] = value;
     else {
-      const attr = updateKeys(style);
+      let attr = updateKeys(style);
       if (value == null)
         style.delete(uhyphen(name));
       else
         style.set(uhyphen(name), value);
-      if (attr) {
-        attr._value = style.toString();
-        attr._changed = false;
+      if (!attr) {
+        const element = refs.get(style);
+        attr = element.ownerDocument.createAttribute('style');
+        element.setAttributeNode(attr);
+        style.set(DOM, attr);
       }
-      else
-        style.cssText = style.toString();
+      attr._value = style.toString();
+      attr._changed = false;
     }
     return true;
   }
@@ -77,7 +79,8 @@ class CSSStyleDeclaration extends Map {
     refs.get(this).setAttribute('style', value);
   }
 
-  toString() {
+  get[DOM]() {
+    updateKeys(this);
     const cssText = [];
     this.forEach((value, key) => {
       if (key !== DOM)
@@ -85,6 +88,8 @@ class CSSStyleDeclaration extends Map {
     });
     return cssText.join(';');
   }
+
+  toString() { return this[DOM]; }
 }
 exports.CSSStyleDeclaration = CSSStyleDeclaration
 

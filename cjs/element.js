@@ -315,13 +315,7 @@ class Element extends NodeElement {
       _next = _next._next;
       switch (_next.nodeType) {
         case ATTRIBUTE_NODE:
-          if (_next.name === 'style') {
-            const value = _next.toString();
-            if (value !== 'style')
-              out.push(' ' + value);
-          }
-          else
-            out.push(' ' + _next);
+          out.push(' ' + _next);
           break;
         case ELEMENT_NODE_END:
           if (isOpened && isVoidElement(_next))

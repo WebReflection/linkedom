@@ -30,9 +30,7 @@ class Attr extends Node {
   }
 
   toString() {
-    let {ownerElement, name, _value} = this;
-    if (name === 'style' && ownerElement)
-      _value = ownerElement.style.cssText;
+    let {name, _value} = this;
     return _value ? `${name}="${escape(_value)}"` : name;
   }
 }
