@@ -44,6 +44,9 @@ assert(document.all.length > 0, 'document.all');
 assert(document.toString() === '<!DOCTYPE html><html><head><title></title></head><body></body></html>', 'document sanity');
 
 document = (new DOMParser).parseFromString('', 'text/html');
+assert(document.documentElement.attachShadow({mode: 'closed'}) === document.documentElement, 'closed shadowRoot');
+assert(document.documentElement.attachShadow({mode: 'open'}) === document.documentElement, 'open shadowRoot');
+assert(document.documentElement.shadowRoot === document.documentElement, 'shadowRoot');
 
 assert(document.querySelector('nope') === null, 'no element selected');
 assert(document.querySelectorAll('nope').length === 0, 'empty NodeList');
@@ -459,3 +462,19 @@ assert(node.toString() === '<div></div>', 'setter as null');
 node.id = '';
 node.className = '';
 assert(node.toString() === '<div></div>', 'setter as null');
+
+node = document.createElement('div');
+node.setAttribute('test', 'value');
+let {attributes} = node;
+let attr = node.getAttributeNode('test');
+assert(attributes.getNamedItem('test') === node.getAttributeNode('test'), 'NamedMap.getNamedItem');
+attributes.removeNamedItem('test');
+assert(!node.hasAttribute('test'), 'NamedMap.removeNamedItem');
+attributes.setNamedItem(attr);
+assert(attributes.getNamedItem('test') === node.getAttributeNode('test'), 'NamedMap.setNamedItem');
+assert(attributes.length === 1, 'NamedMap.length');
+assert(attributes.item(0) === attr, 'NamedMap.item');
+assert(attributes.item(10) === null, 'NamedMap.item');
+
+node.append('a', 'b', 'c');
+assert(node.childNodes[1].wholeText === 'abc', 'Text.wholeText');

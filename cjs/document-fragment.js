@@ -1,14 +1,15 @@
-import {DOCUMENT_FRAGMENT_NODE} from './constants.js';
-import {NonElementParentNode, ParentNode} from './mixins.js';
-import {NodeElement, NodeElementEnd} from './node.js';
+'use strict';
+const {DOCUMENT_FRAGMENT_NODE} = require('./constants.js');
+const {NonElementParentNode, ParentNode} = require('./mixins.js');
+const {NodeElement, NodeElementEnd} = require('./node.js');
 
 /**
  * @implements globalThis.DocumentFragment
  */
-export class DocumentFragment extends NodeElement {
+class DocumentFragment extends NodeElement {
 
   constructor(ownerDocument) {
-    super(ownerDocument, '#fragment', DOCUMENT_FRAGMENT_NODE);
+    super(ownerDocument, '#document-fragment', DOCUMENT_FRAGMENT_NODE);
     this._next = this._end = new NodeElementEnd(this);
   }
 
@@ -27,3 +28,4 @@ export class DocumentFragment extends NodeElement {
     return this.childNodes.join('');
   }
 }
+exports.DocumentFragment = DocumentFragment

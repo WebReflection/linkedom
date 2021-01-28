@@ -483,6 +483,8 @@ export class NodeText extends Node {
     this.textContent = String(textContent);
   }
 
+  get data() { return this.textContent; }
+
   get nodeValue() { return this.textContent; }
 
   /**

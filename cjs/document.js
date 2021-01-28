@@ -11,7 +11,7 @@ const {Event, CustomEvent} = require('./interfaces.js');
 const {Attr} = require('./attr.js');
 const {Comment} = require('./comment.js');
 const {Element} = require('./element.js');
-const {DocumentFragment} = require('./fragment.js');
+const {DocumentFragment} = require('./document-fragment.js');
 const {Node} = require('./node.js');
 const {Text} = require('./text.js');
 

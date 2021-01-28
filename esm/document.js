@@ -10,7 +10,7 @@ import {Event, CustomEvent} from './interfaces.js';
 import {Attr} from './attr.js';
 import {Comment} from './comment.js';
 import {Element} from './element.js';
-import {DocumentFragment} from './fragment.js';
+import {DocumentFragment} from './document-fragment.js';
 import {Node} from './node.js';
 import {Text} from './text.js';
 

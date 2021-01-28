@@ -6,6 +6,7 @@ const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
 
 const {NodeElement, NodeElementEnd} = require('./node.js');
+const {NamedNodeMap} = require('./named-node-map.js');
 
 const {DOMStringMap} = require('./dom-string-map.js');
 const {DOMTokenList} = require('./dom-token-list.js');
@@ -30,6 +31,7 @@ class Element extends NodeElement {
 
   constructor(ownerDocument, localName) {
     super(ownerDocument, localName, ELEMENT_NODE);
+    this.shadowRoot = null;
     this._classList = null;
     this._dataset = null;
     this._style = null;
@@ -138,7 +140,7 @@ class Element extends NodeElement {
    * @type {Attr[]}
    */
   get attributes() {
-    const attributes = [];
+    const attributes = new NamedNodeMap(this);
     let {_next} = this;
     while (_next.nodeType === ATTRIBUTE_NODE) {
       attributes.push(_next);
@@ -173,6 +175,14 @@ class Element extends NodeElement {
    */
   get previousElementSibling() {
     return NonDocumentTypeChildNode.previousElementSibling(this);
+  }
+
+  // TODO: make creation of shadow dom reflect on the page, once DSD is out
+  /**
+   * @param {object} init either `{mode: "open"}` or `{mode: "closed"}`
+   */
+  attachShadow(init) {
+    return init.mode === 'open' ? (this.shadowRoot = this) : this;
   }
 
   closest(selectors) {
