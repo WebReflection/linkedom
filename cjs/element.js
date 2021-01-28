@@ -315,7 +315,15 @@ class Element extends NodeElement {
       _next = _next._next;
       switch (_next.nodeType) {
         case ATTRIBUTE_NODE:
-          out.push(' ' + _next);
+          const attr = ' ' + _next;
+          switch (attr) {
+            case ' id':
+            case ' class':
+            case ' style':
+              break;
+            default:
+              out.push(attr);
+          }
           break;
         case ELEMENT_NODE_END:
           if (isOpened && isVoidElement(_next))

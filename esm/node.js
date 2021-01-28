@@ -129,7 +129,6 @@ export class Node extends EventTarget {
    * @returns {Node}
    */
   cloneNode(deep = false) {
-    /* c8 ignore start */
     const {ownerDocument, nodeType, localName} = this;
     switch (nodeType) {
       case ELEMENT_NODE:
@@ -183,6 +182,7 @@ export class Node extends EventTarget {
         fragment.append(...this.childNodes.map(child => child.cloneNode(deep)));
         return fragment;
     }
+    /* c8 ignore start */
     /* c8 ignore stop */
   }
 
@@ -201,7 +201,6 @@ export class Node extends EventTarget {
    * @returns {boolean}
    */
   isEqualNode(node) {
-    /* c8 ignore start */
     const {nodeType} = this;
     if (nodeType === node.nodeType) {
       switch (nodeType) {
@@ -215,6 +214,7 @@ export class Node extends EventTarget {
           const bNodes = node.childNodes;
           return aNodes.length === bNodes.length && aNodes.every((node, i) => node.isEqualNode(bNodes[i]));
       }
+      /* c8 ignore start */
     }
     return false;
     /* c8 ignore stop */
