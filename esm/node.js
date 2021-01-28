@@ -18,6 +18,7 @@ import {
   getBoundaries,
   getEnd,
   getNext,
+  getPrev,
   // invalidate
 } from './utils.js';
 
@@ -247,13 +248,13 @@ export class NodeElement extends Node {
 
   get childNodes() {
     return getChildNodes(this);
-    // return this._childNodes || (this._childNodes = getChildNodes(this));
+    // DO_NOT_REMOVE return this._childNodes || (this._childNodes = getChildNodes(this));
   }
 
   // <ParentNode>
   get children() {
     return ParentNode.children(this);
-    // return this._children || (this._children = ParentNode.children(this));
+    // DO_NOT_REMOVE return this._children || (this._children = ParentNode.children(this));
   }
 
   /**
@@ -488,7 +489,7 @@ export class NodeText extends Node {
    * @type {Node?}
    */
   get previousSibling() {
-    return this._prev;
+    return getPrev(this);
   }
 
   /**

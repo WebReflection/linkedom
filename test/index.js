@@ -91,6 +91,7 @@ assert(document.documentElement.cloneNode(true).outerHTML === '<html lang="en"><
 assert(document.documentElement.cloneNode().outerHTML === '<html lang="en"></html>', 'cloneNode().outerHTML');
 
 document.documentElement.append('a', 'b');
+assert(document.documentElement.lastChild.previousSibling.textContent === 'a', 'previousSibling text');
 let {length} = document.documentElement.childNodes;
 document.documentElement.normalize();
 assert(document.documentElement.childNodes.length === (length - 1), 'normalize merged text nodes');
@@ -162,12 +163,15 @@ node.replaceChild(document.createElement('input'), node.firstChild);
 assert(node.toString() === '<input>', 'expected content');
 
 node = document.createElement('div');
+assert(node.previousSibling === null, 'previousSibling null');
 assert(node.firstChild === null);
 assert(node.lastChild === null, 'lastChild with attribute');
 node.setAttribute('tmp', '');
 assert(node.lastChild === null, 'lastChild with attribute');
 assert(!node.isEqualNode(document), 'no node is equal to the document');
 node.innerHTML = '<!--comment--><input type="password" />OK';
+assert(node.childNodes[1].previousSibling === node.firstChild, 'previousSibling comment');
+assert(node.firstChild.previousSibling === null, 'previousSibling null');
 assert(node.outerHTML === '<div><!--comment--><input type="password">OK</div>', 'comment and attributes parsed');
 
 let triggered = false;
@@ -413,3 +417,5 @@ treeWalker = document.createTreeWalker(node, 128);
 assert(treeWalker.nextNode() === node.lastChild, 'yes comments for treeWalker');
 assert(treeWalker.nextNode() === null, 'end of treeWalker');
 
+assert(node.childNodes[1].previousSibling === node.childNodes[0], 'previousSibling element');
+assert(node.childNodes[0].previousSibling === null, 'previousSibling nope');

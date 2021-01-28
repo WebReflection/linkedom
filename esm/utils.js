@@ -3,7 +3,9 @@ import {Parser} from 'htmlparser2';
 import {
   ELEMENT_NODE_END,
   ELEMENT_NODE,
-  ATTRIBUTE_NODE
+  ATTRIBUTE_NODE,
+  TEXT_NODE,
+  COMMENT_NODE
 } from './constants.js';
 
 const $String = String;
@@ -50,12 +52,25 @@ export const getBoundaries = node => ({
 });
 
 export const getEnd = node => node.nodeType === ELEMENT_NODE ?
-                      node._end : node;
+                              node._end : node;
 
 export const getNext = ({_next}) => {
   while (_next && _next.nodeType === ELEMENT_NODE_END)
     _next = _next._next;
   return _next;
+};
+
+export const getPrev = ({_prev}) => {
+  if (_prev) {
+    switch (_prev.nodeType) {
+      case ELEMENT_NODE_END:
+        return _prev._start;
+      case TEXT_NODE:
+      case COMMENT_NODE:
+        return _prev;
+    }
+  }
+  return null;
 };
 
 export const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;

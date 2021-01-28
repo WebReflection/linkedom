@@ -1,6 +1,6 @@
 'use strict';
 const {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} = require('./constants.js');
-const {String, getNext, ignoreCase, isVoidElement, localCase, parseFromString} = require('./utils.js');
+const {String, getNext, getPrev, ignoreCase, isVoidElement, localCase, parseFromString} = require('./utils.js');
 
 const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
@@ -139,7 +139,7 @@ class Element extends NodeElement {
    * @type {Node?}
    */
   get previousSibling() {
-    return this._prev;
+    return getPrev(this);
   }
 
   /**

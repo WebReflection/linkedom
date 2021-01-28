@@ -4,7 +4,9 @@ const {Parser} = require('htmlparser2');
 const {
   ELEMENT_NODE_END,
   ELEMENT_NODE,
-  ATTRIBUTE_NODE
+  ATTRIBUTE_NODE,
+  TEXT_NODE,
+  COMMENT_NODE
 } = require('./constants.js');
 
 const $String = String;
@@ -54,7 +56,7 @@ const getBoundaries = node => ({
 exports.getBoundaries = getBoundaries;
 
 const getEnd = node => node.nodeType === ELEMENT_NODE ?
-                      node._end : node;
+                              node._end : node;
 exports.getEnd = getEnd;
 
 const getNext = ({_next}) => {
@@ -63,6 +65,20 @@ const getNext = ({_next}) => {
   return _next;
 };
 exports.getNext = getNext;
+
+const getPrev = ({_prev}) => {
+  if (_prev) {
+    switch (_prev.nodeType) {
+      case ELEMENT_NODE_END:
+        return _prev._start;
+      case TEXT_NODE:
+      case COMMENT_NODE:
+        return _prev;
+    }
+  }
+  return null;
+};
+exports.getPrev = getPrev;
 
 const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 exports.ignoreCase = ignoreCase;
