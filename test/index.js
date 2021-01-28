@@ -31,6 +31,7 @@ assert('ownerSVGElement' in svg, '<svg> ownerSVGElement');
 assert(svg.ownerSVGElement === null, '<svg> ownerSVGElement is null');
 assert(svg.firstChild.ownerSVGElement === svg, '<rect> has an ownerSVGElement');
 assert(document.toString() === '<!DOCTYPE html><html><div><svg><rect /></svg></div></html>', 'svg nodes are OK');
+assert(document.documentElement.cloneNode(true).outerHTML === '<html><div><svg><rect /></svg></div></html>', 'svg cloned');
 
 document = (new DOMParser).parseFromString('', 'text/html');
 
