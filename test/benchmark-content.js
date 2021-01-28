@@ -24,7 +24,7 @@ const crawl = (element, kind) => {
 
 const sleep = ms => new Promise($ => setTimeout($, ms));
 
-const onContent = async (createDocument, html, times, logHeap = () => {}) => {
+const onContent = async (createDocument, html, times, logHeap = () => {}, cloneBench = true) => {
 
   console.time(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 
@@ -74,22 +74,24 @@ const onContent = async (createDocument, html, times, logHeap = () => {}) => {
   logHeap('after crawling heap');
   console.log();
 
-  await sleep(100);
+  if (cloneBench) {
+    await sleep(100);
 
-  try {
-    const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
-    console.log('cloning: OK');
-    if (html.outerHTML.length !== document.documentElement.outerHTML.length)
-      throw new Error('invalid output');
-    console.log('outcome: OK');
-  }
-  catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
-  }
-  console.log();
+    try {
+      const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
+      console.log('cloning: OK');
+      if (html.outerHTML.length !== document.documentElement.outerHTML.length)
+        throw new Error('invalid output');
+      console.log('outcome: OK');
+    }
+    catch (o_O) {
+      console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
+    }
+    console.log();
 
-  logHeap('after cloning heap');
-  console.log();
+    logHeap('after cloning heap');
+    console.log();
+  }
 
   await sleep(100);
 
@@ -154,22 +156,24 @@ const onContent = async (createDocument, html, times, logHeap = () => {}) => {
   logHeap('after removing divs heap');
   console.log();
 
-  try {
-    const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
-    console.log('cloneNode: OK');
+  if (cloneBench) {
+    try {
+      const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
+      console.log('cloneNode: OK');
+      console.log();
+
+      await sleep(100);
+      const outerHTML = bench('html.outerHTML', () => html.outerHTML, times);
+
+      if (outerHTML.length !== document.documentElement.outerHTML.length)
+        throw new Error('invalid output');
+      console.log('outerHTML: OK');
+    }
+    catch (o_O) {
+      console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
+    }
     console.log();
-
-    await sleep(100);
-    const outerHTML = bench('html.outerHTML', () => html.outerHTML, times);
-
-    if (outerHTML.length !== document.documentElement.outerHTML.length)
-      throw new Error('invalid output');
-    console.log('outerHTML: OK');
   }
-  catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
-  }
-  console.log();
 
   console.timeEnd(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 };

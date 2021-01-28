@@ -8,6 +8,7 @@
     "benchmark:w3c": "node test/benchmark-linkedom.js --w3c; node test/benchmark-basichtml.js --w3c; node test/benchmark-jsdom.js --w3c",
     "benchmark:dom": "node test/benchmark-linkedom.js --dom; node test/benchmark-basichtml.js --dom; node test/benchmark-jsdom.js --dom",
     "benchmark:html": "node test/benchmark-linkedom.js --html; node test/benchmark-basichtml.js --html; node test/benchmark-jsdom.js --html",
+    "benchmark:html:nc": "node test/benchmark-linkedom.js --html --no-clone; node test/benchmark-basichtml.js --html --no-clone; node test/benchmark-jsdom.js --html --no-clone",
     "build": "npm run cjs && npm run test",
     "cjs": "ascjs --no-default esm cjs",
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
