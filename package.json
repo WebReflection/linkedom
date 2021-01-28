@@ -1,6 +1,6 @@
 {
   "name": "linkedom",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "description": "A triple-linked lists based DOM implementation",
   "main": "./cjs/index.js",
   "scripts": {
@@ -14,7 +14,13 @@
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
     "test": "c8 node test/index.js"
   },
-  "keywords": ["DOM", "JSDOM", "alternative", "performance", "lightweight"],
+  "keywords": [
+    "DOM",
+    "JSDOM",
+    "alternative",
+    "performance",
+    "lightweight"
+  ],
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
