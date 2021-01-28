@@ -22,6 +22,12 @@ import {
   // invalidate
 } from './utils.js';
 
+const create = (ownerDocument, element, localName, SVGElement)  => (
+  'ownerSVGElement' in element ?
+    new SVGElement(ownerDocument, localName, element.ownerSVGElement) :
+    ownerDocument.createElement(localName)
+);
+
 /**
  * @implements globalThis.Node
  */
@@ -129,15 +135,16 @@ export class Node extends EventTarget {
    * @returns {Node}
    */
   cloneNode(deep = false) {
-    const {ownerDocument, nodeType, localName} = this;
+    const {ownerDocument: OD, nodeType, localName} = this;
     switch (nodeType) {
       case ELEMENT_NODE:
+        const {SVGElement} = ownerDocument[DOM];
         const addNext = _next => {
           _next.parentNode = parentNode;
           _next._prev = $next;
           $next = ($next._next = _next);
         };
-        const clone = ownerDocument.createElement(localName);
+        const clone = create(OD, this, localName, SVGElement);
         let parentNode = clone, $next = clone;
         let {_next, _end} = this;
         while (_next !== _end && (deep || _next.nodeType === ATTRIBUTE_NODE)) {
@@ -148,20 +155,20 @@ export class Node extends EventTarget {
               parentNode = parentNode.parentNode;
               break;
             case ELEMENT_NODE:
-              const node = ownerDocument.createElement(_next.localName);
+              const node = create(OD, _next, _next.localName, SVGElement);
               addNext(node);
               parentNode = node;
               break;
             case ATTRIBUTE_NODE:
-              const attribute = ownerDocument.createAttribute(_next.name);
+              const attribute = OD.createAttribute(_next.name);
               attribute.value = _next.value;
               addNext(attribute);
               break;
             case TEXT_NODE:
-              addNext(ownerDocument.createTextNode(_next.textContent));
+              addNext(OD.createTextNode(_next.textContent));
               break;
             case COMMENT_NODE:
-              addNext(ownerDocument.createComment(_next.textContent));
+              addNext(OD.createComment(_next.textContent));
               break;
           }
           _next = _next._next;
@@ -170,15 +177,15 @@ export class Node extends EventTarget {
         $next._next = clone._end;
         return clone;
       case TEXT_NODE:
-        return ownerDocument.createTextNode(this.textContent);
+        return OD.createTextNode(this.textContent);
       case COMMENT_NODE:
-        return ownerDocument.createComment(this.textContent);
+        return OD.createComment(this.textContent);
       case ATTRIBUTE_NODE:
-        const attribute = ownerDocument.createAttribute(this.name);
+        const attribute = OD.createAttribute(this.name);
         attribute.value = this.value;
         return attribute;
       default:
-        const fragment = ownerDocument.createDocumentFragment();
+        const fragment = OD.createDocumentFragment();
         fragment.append(...this.childNodes.map(child => child.cloneNode(deep)));
         return fragment;
     }

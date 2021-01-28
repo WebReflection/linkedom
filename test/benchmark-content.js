@@ -80,7 +80,12 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     try {
       const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
       console.log('cloning: OK');
-      if (html.outerHTML.length !== document.documentElement.outerHTML.length)
+
+      const {outerHTML: cloned} = html;
+      const {outerHTML: original} = document.documentElement;
+      console.log('outerHTML: OK');
+
+      if (cloned.length !== original.length)
         throw new Error('invalid output');
       console.log('outcome: OK');
     }
@@ -167,7 +172,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
 
       if (outerHTML.length !== document.documentElement.outerHTML.length)
         throw new Error('invalid output');
-      console.log('outerHTML: OK');
+      console.log('outcome: OK');
     }
     catch (o_O) {
       console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));

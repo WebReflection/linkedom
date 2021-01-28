@@ -22,6 +22,12 @@ const {
   getPrev
 } = require('./utils.js');
 
+const cloneElement = (ownerDocument, element, localName, SVGElement)  => (
+  'ownerSVGElement' in element ?
+    new SVGElement(ownerDocument, localName, element.ownerSVGElement) :
+    ownerDocument.createElement(localName)
+);
+
 /**
  * @implements globalThis.Node
  */
@@ -130,6 +136,7 @@ class Node extends EventTarget {
    */
   cloneNode(deep = false) {
     const {ownerDocument, nodeType, localName} = this;
+    const {SVGElement} = ownerDocument[DOM];
     switch (nodeType) {
       case ELEMENT_NODE:
         const addNext = _next => {
@@ -137,7 +144,7 @@ class Node extends EventTarget {
           _next._prev = $next;
           $next = ($next._next = _next);
         };
-        const clone = ownerDocument.createElement(localName);
+        const clone = cloneElement(ownerDocument, this, localName, SVGElement);
         let parentNode = clone, $next = clone;
         let {_next, _end} = this;
         while (_next !== _end && (deep || _next.nodeType === ATTRIBUTE_NODE)) {
@@ -148,7 +155,9 @@ class Node extends EventTarget {
               parentNode = parentNode.parentNode;
               break;
             case ELEMENT_NODE:
-              const node = ownerDocument.createElement(_next.localName);
+              const node = cloneElement(
+                ownerDocument, _next, _next.localName, SVGElement
+              );
               addNext(node);
               parentNode = node;
               break;
