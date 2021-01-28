@@ -6,19 +6,19 @@ const refs = new WeakMap;
 const key = name => `data-${uhyphen(name)}`;
 
 const handler = {
-  get(self, name) {
-    return refs.get(self).getAttribute(key(name));
+  get(dataset, name) {
+    return refs.get(dataset).getAttribute(key(name));
   },
 
-  set(self, name, value) {
-    refs.get(self).setAttribute(key(name), value);
-    self[name] = value;
+  set(dataset, name, value) {
+    refs.get(dataset).setAttribute(key(name), value);
+    dataset[name] = value;
     return true;
   },
 
-  deleteProperty(self, name) {
-    refs.get(self).removeAttribute(key(name));
-    return delete self[name];
+  deleteProperty(dataset, name) {
+    refs.get(dataset).removeAttribute(key(name));
+    return delete dataset[name];
   }
 };
 

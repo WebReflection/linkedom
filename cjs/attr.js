@@ -13,7 +13,8 @@ class Attr extends Node {
   constructor(ownerDocument, name, value) {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
     this.name = String(name);
-    this.value = String(value);
+    this._value = String(value);
+    this._changed = false;
 
     /**
      * @type {HTMLElement?}
@@ -21,9 +22,18 @@ class Attr extends Node {
     this.ownerElement = null;
   }
 
+  get value() { return this._value; }
+
+  set value(value) {
+    this._changed = true;
+    this._value = String(value);
+  }
+
   toString() {
-    const {name, value} = this;
-    return value ? `${name}="${escape(this.value)}"` : name;
+    let {ownerElement, name, _value} = this;
+    if (name === 'style' && ownerElement)
+      _value = ownerElement.style.cssText;
+    return _value ? `${name}="${escape(_value)}"` : name;
   }
 }
 exports.Attr = Attr

@@ -65,12 +65,20 @@ assert(document.documentElement.className === 'live', 'html: live class');
 
 assert(document.documentElement.tagName === 'HTML', 'HTML names are case-insensitive');
 
+assert(!document.documentElement.hasAttribute('id'), '!hasAttribute');
 document.documentElement.id = 'html';
+assert(document.documentElement.hasAttribute('id'), 'hasAttribute');
+document.documentElement.id = null;
+assert(!document.documentElement.hasAttribute('id'), '!hasAttribute again');
+document.documentElement.id = 'html';
+assert(document.documentElement.getAttribute('id') === 'html', 'getAttribute');
+
 assert(
   document.documentElement.matches('html') &&
   document.documentElement.matches('.live') &&
   document.documentElement.matches('#html')
 );
+
 
 assert(document.querySelector('html') === document.documentElement, 'document.querySelector');
 assert(document.querySelectorAll('html')[0] === document.documentElement, 'document.querySelectorAll');
@@ -81,7 +89,7 @@ document.documentElement.append(
 );
 
 assert(document.toString() === '<!DOCTYPE html><html id="html" class="live"><!--&lt;hello&gt;-->&lt;hello&gt;</html>', 'escaped content');
-assert(document.documentElement.textContent === '<hello>', 'textContent read');
+assert(document.documentElement.innerText === '<hello>', 'textContent read');
 
 document.documentElement.innerHTML = '<div /><input><p />';
 assert(document.toString() === '<!DOCTYPE html><html><div></div><input><p></p></html>', 'innerHTML + sanitizer');
@@ -419,3 +427,21 @@ assert(treeWalker.nextNode() === null, 'end of treeWalker');
 
 assert(node.childNodes[1].previousSibling === node.childNodes[0], 'previousSibling element');
 assert(node.childNodes[0].previousSibling === null, 'previousSibling nope');
+
+node = document.createElement('div');
+assert(node.style.cssText === '', 'empty style');
+node.style.cssText = 'background-color: blue';
+assert(node.style.backgroundColor === 'blue', 'style getter');
+assert(node.toString() === '<div style="background-color:blue"></div>', 'cssText setter');
+node.getAttributeNode('style').value = 'color: red';
+assert(node.toString() === '<div style="color:red"></div>', 'cssText indirect setter');
+let style = document.createAttribute('style');
+node.setAttributeNode(style);
+assert(node.toString() === '<div></div>', 'cssText cleanup');
+node.style.backgroundColor = 'green';
+assert(node.toString() === '<div style="background-color:green"></div>', 'cssText indirect property');
+node.removeAttributeNode(style);
+node.style.color = 'green';
+assert(node.toString() === '<div style="color:green"></div>', 'cssText indirect setter');
+node.style.color = null;
+assert(node.toString() === '<div></div>', 'setter as null');

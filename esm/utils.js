@@ -75,7 +75,7 @@ export const getPrev = ({_prev}) => {
 
 export const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 
-// export const invalidate = $ => { $._childNodes = $._children = null; };
+// DO_NOTE_REMOVE export const invalidate = $ => { $._childNodes = $._children = null; };
 
 export const isVoidElement = ({localName, ownerDocument}) => {
   return ownerDocument._mime.voidElements.test(localName);

@@ -6,8 +6,10 @@ const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
 
 const {NodeElement, NodeElementEnd} = require('./node.js');
+
 const {DOMStringMap} = require('./dom-string-map.js');
 const {DOMTokenList} = require('./dom-token-list.js');
+const {CSSStyleDeclaration} = require('./css-style-declaration.js');
 
 const matches = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('./matches.js'));
 
@@ -26,6 +28,7 @@ class Element extends NodeElement {
     super(ownerDocument, localName, ELEMENT_NODE);
     this._classList = null;
     this._dataset = null;
+    this._style = null;
     this._next = this._end = new NodeElementEnd(this);
   }
 
@@ -34,7 +37,10 @@ class Element extends NodeElement {
   }
 
   set id(value) {
-    this.setAttribute('id', value);
+    if (value == null)
+      this.removeAttribute('id');
+    else
+      this.setAttribute('id', value);
   }
 
   get className() {
@@ -74,6 +80,15 @@ class Element extends NodeElement {
   get dataset() {
     return this._dataset || (this._dataset = new DOMStringMap(this));
   }
+
+  /**
+   * @type {CSSStyleDeclaration}
+   */
+  get style() {
+    return this._style || (this._style = new CSSStyleDeclaration(this));
+  }
+
+  get innerText() { return this.textContent; }
 
   /**
    * @type {string}
@@ -198,7 +213,7 @@ class Element extends NodeElement {
   }
 
   /**
-   * @param {Attr} attribute 
+   * @param {Attr} attribute
    */
   setAttributeNode(attribute) {
     const previously = this.getAttributeNode(attribute.name);
@@ -220,7 +235,7 @@ class Element extends NodeElement {
   }
 
   /**
-   * @param {string} name 
+   * @param {string} name
    */
   hasAttribute(name) {
     return !!this.getAttributeNode(name);
@@ -244,7 +259,7 @@ class Element extends NodeElement {
   }
 
   /**
-   * @param {string} name 
+   * @param {string} name
    */
   removeAttribute(name) {
     let {_next} = this;
@@ -273,8 +288,8 @@ class Element extends NodeElement {
   }
 
   /**
-   * @param {string} name 
-   * @param {boolean?} force 
+   * @param {string} name
+   * @param {boolean?} force
    */
   toggleAttribute(name, force) {
     if (this.hasAttribute(name)) {
@@ -300,7 +315,13 @@ class Element extends NodeElement {
       _next = _next._next;
       switch (_next.nodeType) {
         case ATTRIBUTE_NODE:
-          out.push(' ' + _next);
+          if (_next.name === 'style') {
+            const value = _next.toString();
+            if (value !== 'style')
+              out.push(' ' + value);
+          }
+          else
+            out.push(' ' + _next);
           break;
         case ELEMENT_NODE_END:
           if (isOpened && isVoidElement(_next))
