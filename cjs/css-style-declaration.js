@@ -5,6 +5,8 @@ const {DOM} = require('./constants.js');
 
 const refs = new WeakMap;
 
+const getKeys = style => [...style.keys()].filter(key => key !== DOM);
+
 const updateKeys = style => {
   const attr = refs.get(style).getAttributeNode('style');
   if (!attr || attr._changed || style.get(DOM) !== attr) {
@@ -22,8 +24,6 @@ const updateKeys = style => {
         }
       }
     }
-    else
-      style.delete(DOM);
   }
   return attr;
 };
@@ -33,6 +33,10 @@ const handler = {
     if (name in prototype)
       return style[name];
     updateKeys(style);
+    if (name === 'length')
+      return getKeys(style).length;
+    if (/^\d+$/.test(name))
+      return getKeys(style)[name];
     return style.get(uhyphen(name));
   },
 
@@ -71,7 +75,6 @@ class CSSStyleDeclaration extends Map {
   }
 
   get cssText() {
-    updateKeys(this);
     return this.toString();
   }
 
@@ -79,17 +82,30 @@ class CSSStyleDeclaration extends Map {
     refs.get(this).setAttribute('style', value);
   }
 
-  get[DOM]() {
-    updateKeys(this);
+  [Symbol.iterator]() {
+    const keys = getKeys(this[DOM]);
+    const {length} = keys;
+    let i = 0;
+    return {
+      next() {
+        const done = i === length;
+        return {done, value: done ? null : keys[i++]};
+      }
+    };
+  }
+
+  get[DOM]() { return this; }
+
+  toString() {
+    const self = this[DOM];
+    updateKeys(self);
     const cssText = [];
-    this.forEach((value, key) => {
+    self.forEach((value, key) => {
       if (key !== DOM)
         cssText.push(`${key}:${value}`);
     });
     return cssText.join(';');
   }
-
-  toString() { return this[DOM]; }
 }
 exports.CSSStyleDeclaration = CSSStyleDeclaration
 
