@@ -27,7 +27,7 @@ assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?>', 'mim
 
 let document = (new DOMParser).parseFromString('', 'text/html');
 
-assert(document.defaultView === globalThis);
+assert(document.defaultView.parseInt, 'defaultView');
 
 assert(document.title, 'document.title');
 assert(document.body, 'document.body');
@@ -36,7 +36,6 @@ assert(document.all.length > 0, 'document.all');
 assert(document.toString() === '<!DOCTYPE html><html><head><title></title></head><body></body></html>', 'document sanity');
 
 document = (new DOMParser).parseFromString('', 'text/html');
-
 
 assert(document.querySelector('nope') === null, 'no element selected');
 assert(document.querySelectorAll('nope').length === 0, 'empty NodeList');

@@ -1,8 +1,9 @@
 # TODO
 
-### Mandatory
+### Priorities
 
-- [ ] `element.style` special accessor case
+- [ ] MutationObserver
+- [ ] CustomElements
 
 
 ### Nice to have

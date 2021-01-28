@@ -24,6 +24,21 @@ import {TreeWalker} from './tree-walker.js';
 
 const {create, defineProperties} = Object;
 
+const defaultView = new Proxy(globalThis, {
+  /* c8 ignore start */
+  get(globalThis, name) {
+    switch (name) {
+      case 'Event':
+        return Event;
+      case 'CustomEvent':
+        return CustomEvent;
+      default:
+        return globalThis[name];
+    }
+  }
+  /* c8 ignore stop */
+});
+
 /**
  * @implements globalThis.Document
  */
@@ -42,7 +57,7 @@ export class Document extends Node {
     this.root = null;
   }
 
-  get defaultView() { return globalThis; }
+  get defaultView() { return defaultView; }
 
   // <NonElementParentNode>
   /**
