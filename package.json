@@ -14,7 +14,7 @@
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
     "test": "c8 node test/index.js"
   },
-  "keywords": [],
+  "keywords": ["DOM", "JSDOM", "alternative", "performance", "lightweight"],
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
