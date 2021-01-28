@@ -161,7 +161,7 @@ class Node extends EventTarget {
               break;
             case ATTRIBUTE_NODE:
               const attribute = OD.createAttribute(_next.name);
-              attribute.value = _next.value;
+              attribute._value = _next.value;
               addNext(attribute);
               break;
             case TEXT_NODE:
@@ -182,7 +182,7 @@ class Node extends EventTarget {
         return OD.createComment(this.textContent);
       case ATTRIBUTE_NODE:
         const attribute = OD.createAttribute(this.name);
-        attribute.value = this.value;
+        attribute._value = this.value;
         return attribute;
       default:
         const fragment = OD.createDocumentFragment();
@@ -249,10 +249,12 @@ const getChildNodes = element => {
 
 class NodeElement extends Node {
 
+  /*
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
     // DO_NOT_REMOVE invalidate(this);
   }
+  */
 
   get childNodes() {
     return getChildNodes(this);
@@ -373,6 +375,8 @@ class NodeElement extends Node {
         node._prev = _prev;
         node._end._next = _end;
         node.parentNode = this;
+        if (node._custom && node.connectedCallback)
+          node.connectedCallback();
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
@@ -390,6 +394,8 @@ class NodeElement extends Node {
           // set parent node
           do {
             firstChild.parentNode = this;
+            if (firstChild._custom && firstChild.connectedCallback)
+              firstChild.connectedCallback();
           } while (
             firstChild !== lastChild &&
             (firstChild = firstChild._next)

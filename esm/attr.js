@@ -1,7 +1,7 @@
 import {escape} from 'html-escaper';
 
 import {ATTRIBUTE_NODE} from './constants.js';
-import {String} from './utils.js';
+import {String, attributeChangedCallback} from './utils.js';
 import {Node} from './node.js';
 
 /**
@@ -24,8 +24,11 @@ export class Attr extends Node {
   get value() { return this._value; }
 
   set value(value) {
+    const {ownerElement, name, _value} = this;
     this._changed = true;
-    this._value = String(value);
+    attributeChangedCallback(
+      ownerElement, name, _value, this._value = String(value)
+    );
   }
 
   toString() {

@@ -5,9 +5,9 @@ const {HTMLElement} = require('./html-element.js');
  * @implements globalThis.HTMLTemplateElement
  */
 class HTMLTemplateElement extends HTMLElement {
-  constructor(ownerDocument = globalThis.document) {
-    super('template', ownerDocument);
-    this.content = ownerDocument.createDocumentFragment();
+  constructor(ownerDocument) {
+    super(ownerDocument, 'template');
+    this.content = this.ownerDocument.createDocumentFragment();
   }
 
   get innerHTML() {

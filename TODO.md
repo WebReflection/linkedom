@@ -2,11 +2,10 @@
 
 ### Priorities
 
+- [ ] common *HTMLxxx* elements
 - [ ] MutationObserver
-- [ ] CustomElements
 
 
 ### Nice to have
-- [ ] common *HTMLxxx* elements
 - [ ] `Image` class
 - [ ] `element.insertAdjacentHTML` shenanigan

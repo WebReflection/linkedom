@@ -41,6 +41,17 @@ export const Mime = {
   }
 };
 
+export const attributeChangedCallback = (element, name, oldValue, newValue) => {
+  if (
+    element &&
+    element._custom &&
+    element.attributeChangedCallback &&
+    element.constructor.observedAttributes.includes(name)
+  ) {
+    element.attributeChangedCallback(name, oldValue, newValue);
+  }
+};
+
 export const findNext = ({_next, _end}) => {
   while (_next.nodeType === ATTRIBUTE_NODE)
     _next = _next._next;
@@ -88,6 +99,8 @@ const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');
 const VOID_SANITIZER = (_, $1, $2) => `<${$1}${$2}${/\/$/.test($2) ? '' : ' /'}>`;
 const voidSanitizer = html => html.replace(VOID_ELEMENTS, VOID_SANITIZER);
 export const parseFromString = (document, isHTML, markupLanguage) => {
+  if (!markupLanguage)
+    return document;
   const {SVGElement} = document[DOM];
   let node = document.root || document.createElement('root');
   let ownerSVGElement = null;

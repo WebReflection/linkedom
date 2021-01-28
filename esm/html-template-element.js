@@ -4,9 +4,9 @@ import {HTMLElement} from './html-element.js';
  * @implements globalThis.HTMLTemplateElement
  */
 export class HTMLTemplateElement extends HTMLElement {
-  constructor(ownerDocument = globalThis.document) {
-    super('template', ownerDocument);
-    this.content = ownerDocument.createDocumentFragment();
+  constructor(ownerDocument) {
+    super(ownerDocument, 'template');
+    this.content = this.ownerDocument.createDocumentFragment();
   }
 
   get innerHTML() {

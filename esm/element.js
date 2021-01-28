@@ -1,9 +1,16 @@
 import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
-import {String, getNext, getPrev, ignoreCase, localCase, parseFromString} from './utils.js';
+import {
+  String,
+  attributeChangedCallback,
+  getNext, getPrev,
+  ignoreCase, localCase,
+  parseFromString
+} from './utils.js';
 
 import {NodeList} from './interfaces.js';
 import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
 
+import {Attr} from './attr.js';
 import {NodeElement, NodeElementEnd} from './node.js';
 import {NamedNodeMap} from './named-node-map.js';
 
@@ -218,6 +225,9 @@ export class Element extends NodeElement {
         attribute.ownerElement = attribute._prev = attribute._next = null;
         if (name === 'class')
           this._classList = null;
+        attributeChangedCallback(
+          this, name, attribute._value, null
+        );
         return;
       }
       _next = _next._next;
@@ -229,7 +239,8 @@ export class Element extends NodeElement {
    * @param {Attr} attribute
    */
   setAttributeNode(attribute) {
-    const previously = this.getAttributeNode(attribute.name);
+    const {name} = attribute;
+    const previously = this.getAttributeNode(name);
     if (previously !== attribute) {
       if (previously)
         this.removeAttributeNode(previously);
@@ -241,8 +252,11 @@ export class Element extends NodeElement {
       attribute._prev = this;
       attribute._next = _next;
       this._next = _next._prev = attribute;
-      if (attribute.name === 'class')
-        this.className = attribute.value;
+      if (name === 'class')
+        this.className = attribute._value;
+      attributeChangedCallback(
+        this, name, null, attribute._value
+      );
     }
     return previously;
   }
@@ -259,7 +273,13 @@ export class Element extends NodeElement {
   }
 
   getAttributeNames() {
-    return this.attributes.map(({name}) => name);
+    const attributes = [];
+    let {_next} = this;
+    while (_next.nodeType === ATTRIBUTE_NODE) {
+      attributes.push(_next.name);
+      _next = _next._next;
+    }
+    return attributes;
   }
 
   /**
@@ -293,11 +313,8 @@ export class Element extends NodeElement {
     let attribute = this.getAttributeNode(name);
     if (attribute)
       attribute.value = String(value);
-    else {
-      attribute = this.ownerDocument.createAttribute(name);
-      attribute.value = String(value);
-      this.setAttributeNode(attribute);
-    }
+    else
+      this.setAttributeNode(new Attr(this.ownerDocument, name, value));
   }
 
   /**
