@@ -112,3 +112,60 @@ npm run benchmark
 
 ### benchmark:html
 ![benchmark output example](./linkedom-benchmark-html.jpg)
+
+
+
+## How does it work?
+
+All nodes are linked on both side and all elements consist of 2 nodes, also linked in between.
+
+Attributes are always at the beginning of an element, while zero or more can be found before the end node.
+
+A fragment is a special element without boundaries or parent node.
+
+```
+Node:             ← node →
+Attr<Node>:       ← attr →          ↑ ownerElement
+Text<Node>:       ← text →          ↑ parentNode
+Comment<Node>:    ← comment →       ↑ parentNode
+Element<Node>:    ← start ↔ end →   ↑ parentNode
+
+Fragment<Element>:  start ↔ end
+
+Element example:
+
+          parentNode?
+              ↑
+              ├────────────────────────────────────────────┐
+              │                                            ↓
+    node? ← start → attr* → text* → comment* → element* → end → node?
+              ↑                                            │
+              └────────────────────────────────────────────┘
+
+
+Fragment example:
+
+              ┌────────────────────────────────────────────┐
+              │                                            ↓
+            start → attr* → text* → comment* → element* → end
+              ↑                                            │
+              └────────────────────────────────────────────┘
+```
+
+### Why is this better?
+
+Moving *N* nodes from a container, either *Element* or *Fragment*, requires these steps:
+
+  * update the first *left* link of the moved segment
+  * update the last *right* link of the moved segment
+  * connect the *left* side, if any, of the moved node at the beginning of the segment, with the *right* side, if any, of the node at the end of such segment
+  * update the *parentNode* of the segment to either *null*, or the new *parentNode*
+
+As result, no array operations, no memory operations, everything is kept in sync by updating a few properties, so that removing `3714` sparse `<div>` elements, in a *12M* document, takes as little as *3ms*, while appending a whole fragment takes close to *0ms*.
+
+This structure also allows developers to avoid issues such as "*Maximum call stack size exceeded*" or "*JavaScript heap out of memory*" crashes, thanks to its reduced usage of memory, zero stacks involved, hence scaling better from small, to very big, documents.
+
+### Are *childNodes* and *children* always computed?
+
+At this point, even if this module is ready to cache results when no mutations happen, and since repeated crawling is not a too common pattern, but it can always be cached in user-land, the core always crawl *left* to *right* or *right* to *left* so that it guarantees it's always in sync with the current DOM state.
+
