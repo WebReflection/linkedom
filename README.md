@@ -39,11 +39,26 @@ const document = (new DOMParser).parseFromString(`
   'text/html'
 );
 
-document.toString();
-// the parsed HTML document
+// retrieve related "globals" (not global) utilities and classes
+const {
+  Event, CustomEvent,
+  HTMLElement,
+  customElements
+} = document.defaultView;
 
-document.documentElement;
-// the <html> element
+// builtin extends compatible too 👍
+customElements.define('custom-element', class extends HTMLElement {
+  connectedCallback() {
+    console.log('it works 🥳');
+  }
+});
+
+document.body.appendChild(
+  document.createElement('custom-element')
+);
+
+document.toString();
+// the SSR ready document
 
 document.querySelectorAll('form, input[name], button');
 // the NodeList of elements
