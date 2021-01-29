@@ -2,7 +2,7 @@
 const {escape} = require('html-escaper');
 
 const {ATTRIBUTE_NODE} = require('./constants.js');
-const {String} = require('./utils.js');
+const {String, attributeChangedCallback} = require('./utils.js');
 const {Node} = require('./node.js');
 
 /**
@@ -25,8 +25,11 @@ class Attr extends Node {
   get value() { return this._value; }
 
   set value(value) {
+    const {ownerElement, name, _value} = this;
     this._changed = true;
-    this._value = String(value);
+    attributeChangedCallback(
+      ownerElement, name, _value, this._value = String(value)
+    );
   }
 
   toString() {

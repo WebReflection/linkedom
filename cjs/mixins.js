@@ -60,7 +60,7 @@ const ChildNode = {
    * @param {Node} node 
    */
   remove(node) {
-    let {_prev, _next, nodeType, parentNode} = node;
+    let {_prev, _next, nodeType} = node;
     let _end = node;
     if (nodeType === ELEMENT_NODE) {
       _end = node._end;
@@ -69,6 +69,8 @@ const ChildNode = {
     if (_prev) _prev._next = _next;
     if (_next) _next._prev = _prev;
     node.parentNode = node._prev = _end._next = null;
+    if (node._custom && node.disconnectedCallback)
+      node.disconnectedCallback();
     // DO_NOT_REMOVE if (parentNode) invalidate(parentNode);
   }
 };

@@ -10,7 +10,7 @@ import {Event, CustomEvent} from './interfaces.js';
 import {Attr} from './attr.js';
 import {Comment} from './comment.js';
 import {Element} from './element.js';
-import {DocumentFragment} from './fragment.js';
+import {DocumentFragment} from './document-fragment.js';
 import {Node} from './node.js';
 import {Text} from './text.js';
 
@@ -22,28 +22,34 @@ import {HTMLTemplateElement} from './html-template-element.js';
 // extras
 import {Range} from './range.js';
 import {TreeWalker} from './tree-walker.js';
+import {CustomElementRegistry} from './custom-element-registry.js';
 
 const {create, defineProperties} = Object;
 
-const defaultView = new Proxy(globalThis, {
-  /* c8 ignore start */
-  get(globalThis, name) {
-    switch (name) {
-      case 'Event':
-        return Event;
-      case 'CustomEvent':
-        return CustomEvent;
-      default:
-        return globalThis[name];
-    }
-  }
-  /* c8 ignore stop */
-});
+const defaultViewExports = {
+  Event, CustomEvent,
+  HTMLElement,
+  HTMLTemplateElement
+};
 
 /**
  * @implements globalThis.Document
  */
 export class Document extends Node {
+
+  /**
+   * @param {string} type the document mime-type
+   */
+  constructor(type) {
+    super(null, '#document', DOCUMENT_NODE);
+    this._mime = Mime[type];
+    this._customElements = {_active: false};
+
+    /**
+     * @type {Element?}
+     */
+    this.root = null;
+  }
 
   get [DOM]() {
     return {
@@ -53,20 +59,22 @@ export class Document extends Node {
     };
   }
 
-  /**
-   * @param {string} type the document mime-type
-   */
-  constructor(type) {
-    super(null, '#document', DOCUMENT_NODE);
-    this._mime = Mime[type];
-
-    /**
-     * @type {Element?}
-     */
-    this.root = null;
+  get defaultView() {
+    if (!this._customElements.define)
+      this._customElements = new CustomElementRegistry(this);
+    return new Proxy(globalThis, {
+      /* c8 ignore start */
+      get: (globalThis, name) => {
+        switch (name) {
+          case 'customElements':
+            return this._customElements;
+          default:
+            return defaultViewExports[name] || globalThis[name];
+        }
+      }
+      /* c8 ignore stop */
+    });
   }
-
-  get defaultView() { return defaultView; }
 
   // <NonElementParentNode>
   /**
@@ -155,19 +163,32 @@ export class Document extends Node {
    * @param {string} localName
    * @param {object?} options
    */
-  createElement(localName, options = {}) {
+  createElement(localName, options) {
     let element;
     if (this._mime.ignoreCase) {
+      const builtin = !!(options && options.is);
       switch (localName) {
         case 'template':
         case 'TEMPLATE':
-          element = new HTMLTemplateElement(this);
-          break;
+          if (!builtin) {
+            element = new HTMLTemplateElement(this);
+            break;
+          }
         default:
-          element = new HTMLElement(localName, this);
+          const {_customElements} = this;
+          if (_customElements._active) {
+            const ce = builtin ? options.is : localName;
+            if (_customElements._registry.has(ce)) {
+              const {Class} = _customElements._registry.get(ce);
+              element = new Class(this, localName);
+              element._custom = true;
+              break;
+            }
+          }
+          element = new HTMLElement(this, localName);
           break;
       }
-      if (options.is)
+      if (builtin)
         element.setAttribute('is', options.is);
     }
     else
