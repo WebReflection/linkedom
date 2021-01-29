@@ -154,8 +154,11 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
       if (isHTML && _active && name === 'is' && _registry.has(value)) {
         const {Class} = _registry.get(value);
         const custom = new Class;
-        for (const attribute of node.attributes)
-          custom.setAttributeNode(attribute);
+        const {_end} = custom;
+        for (const attribute of node.attributes) {
+          attribute.ownerElement = custom;
+          setBoundaries(_end._prev, attribute, _end);
+        }
         node.replaceWith(custom);
         node = custom;
       }

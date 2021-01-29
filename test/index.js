@@ -734,6 +734,7 @@ args.splice(0);
 document.documentElement.appendChild(outer);
 
 assert(args.splice(0).join(',') === 'connected: outer-test,connected: button[is="inner-button"]', 'inner builtin elements get connected too');
+assert(outer.querySelector('button').toString() === '<button is="inner-button" test="123">OK</button>', 'button with the correct content');
 
 
 
