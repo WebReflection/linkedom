@@ -2,7 +2,8 @@ import {ELEMENT_NODE} from "../cjs/constants";
 
 const {keys, setPrototypeOf} = Object;
 
-export const classes = new WeakMap;
+export const Classes = new WeakMap;
+export const customElements = new WeakMap;
 
 const shouldTrigger = element => {
   const {_active, _hold} = element.ownerDocument._customElements;
@@ -11,7 +12,7 @@ const shouldTrigger = element => {
 
 export const attributeChangedCallback = (element, name, oldValue, newValue) => {
   if (
-    element._custom &&
+    customElements.has(element) &&
     element.attributeChangedCallback &&
     element.constructor.observedAttributes.includes(name)
   ) {
@@ -20,7 +21,7 @@ export const attributeChangedCallback = (element, name, oldValue, newValue) => {
 };
 
 const triggerConnected = element => {
-  if (element._custom && element.connectedCallback && element.isConnected)
+  if (customElements.has(element) && element.connectedCallback && element.isConnected)
     element.connectedCallback();
 };
 
@@ -37,7 +38,7 @@ export const connectedCallback = element => {
 };
 
 const triggerDisconnected = element => {
-  if (element._custom && element.disconnectedCallback && !element.isConnected)
+  if (customElements.has(element) && element.disconnectedCallback && !element.isConnected)
     element.disconnectedCallback();
 };
 
@@ -77,10 +78,10 @@ export class CustomElementRegistry {
   define(localName, Class, options = {}) {
     const {_ownerDocument, _registry, _waiting} = this;
 
-    if (_registry.has(localName) || classes.has(Class))
+    if (_registry.has(localName) || Classes.has(Class))
       throw new Error('unable to redefine ' + localName);
 
-    if (classes.has(Class))
+    if (Classes.has(Class))
       /* c8 ignore next */
       throw new Error('unable to redefine the same class: ' + Class);
 
@@ -88,7 +89,7 @@ export class CustomElementRegistry {
 
     const {extends: extend} = options;
 
-    classes.set(Class, {
+    Classes.set(Class, {
       ownerDocument: _ownerDocument,
       options: {is: extend ? localName : ''},
       localName: extend || localName
@@ -115,7 +116,7 @@ export class CustomElementRegistry {
    * @param {Element} element
    */
   upgrade(element) {
-    if (element._custom)
+    if (customElements.has(element))
       return;
     const {_registry} = this;
     const ce = element.getAttribute('is') || element.localName;
@@ -132,8 +133,9 @@ export class CustomElementRegistry {
           upgrade[key] = value;
         }
         setPrototypeOf(element, upgrade);
-        element._custom = true;
-        if (element.isConnected)
+        const {isConnected} = element;
+        customElements.set(element, {connected: isConnected});
+        if (isConnected)
           connectedCallback(element);
       }
     }

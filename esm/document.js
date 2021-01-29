@@ -89,7 +89,7 @@ import {HTMLMarqueeElement} from './html/html-marquee-element.js';
 // extras
 import {Range} from './range.js';
 import {TreeWalker} from './tree-walker.js';
-import {CustomElementRegistry} from './custom-element-registry.js';
+import {CustomElementRegistry, customElements} from './custom-element-registry.js';
 
 const {create, defineProperties} = Object;
 const {toString} = Element.prototype;
@@ -361,7 +361,7 @@ export class Document extends Node {
             if (_customElements._registry.has(ce)) {
               const {Class} = _customElements._registry.get(ce);
               element = new Class(this, localName);
-              element._custom = true;
+              customElements.set(element, {connected: false});
               break;
             }
           }

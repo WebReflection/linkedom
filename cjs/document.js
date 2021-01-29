@@ -90,7 +90,7 @@ const {HTMLMarqueeElement} = require('./html/html-marquee-element.js');
 // extras
 const {Range} = require('./range.js');
 const {TreeWalker} = require('./tree-walker.js');
-const {CustomElementRegistry} = require('./custom-element-registry.js');
+const {CustomElementRegistry, customElements} = require('./custom-element-registry.js');
 
 const {create, defineProperties} = Object;
 const {toString} = Element.prototype;
@@ -362,7 +362,7 @@ class Document extends Node {
             if (_customElements._registry.has(ce)) {
               const {Class} = _customElements._registry.get(ce);
               element = new Class(this, localName);
-              element._custom = true;
+              customElements.set(element, {connected: false});
               break;
             }
           }
