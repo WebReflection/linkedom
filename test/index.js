@@ -26,6 +26,7 @@ assert(xmlDocument.childElementCount === 0, 'childElementCount as 0');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?>', 'mime type only');
 
 let document = (new DOMParser).parseFromString('<div><svg><rect /></svg></div>', 'text/html');
+
 let svg = document.querySelector('svg');
 assert('ownerSVGElement' in svg, '<svg> ownerSVGElement');
 assert(svg.ownerSVGElement === null, '<svg> ownerSVGElement is null');

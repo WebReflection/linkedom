@@ -1,7 +1,7 @@
 {
   "type": "commonjs",
   "devDependencies": {
-    "basichtml": "^2.4.4",
+    "basichtml": "^2.4.5",
     "jsdom": "^16.4.0"
   }
 }

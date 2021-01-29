@@ -54,8 +54,7 @@ export class Document extends Node {
   get [DOM]() {
     return {
       SVGElement,
-      HTMLElement,
-      HTMLTemplateElement
+      HTMLElement
     };
   }
 
