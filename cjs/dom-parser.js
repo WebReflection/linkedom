@@ -1,6 +1,6 @@
 'use strict';
 const {parseFromString} = require('./utils.js');
-const {HTMLDocument} = require('./html-document.js');
+const {HTMLDocument} = require('./html/html-document.js');
 const {SVGDocument} = require('./svg-document.js');
 const {XMLDocument} = require('./xml-document.js');
 

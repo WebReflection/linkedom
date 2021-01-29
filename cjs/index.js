@@ -5,7 +5,7 @@
 
 (m => {
   exports.HTMLElement = m.HTMLElement;
-})(require('./html-element.js'));
+})(require('./html/html-element.js'));
 
 (m => {
   exports.CustomEvent = m.CustomEvent;

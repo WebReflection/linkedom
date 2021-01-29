@@ -1,13 +1,12 @@
-'use strict';
-const {Element} = require('./element.js');
-const {classes} = require('./custom-element-registry.js');
+import {Element} from '../element.js';
+import {classes} from '../custom-element-registry.js';
 
 const empty = [];
 
 /**
  * @implements globalThis.HTMLElement
  */
-class HTMLElement extends Element {
+export class HTMLElement extends Element {
 
   static get observedAttributes() { return empty; }
 
@@ -27,4 +26,3 @@ class HTMLElement extends Element {
     }
   }
 }
-exports.HTMLElement = HTMLElement

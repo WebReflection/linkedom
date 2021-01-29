@@ -1,11 +1,10 @@
-'use strict';
-const {getEnd} = require('./utils.js');
-const {Document} = require('./document.js');
+import {getEnd} from '../utils.js';
+import {Document} from '../document.js';
 
 /**
  * @implements globalThis.HTMLDocument
  */
-class HTMLDocument extends Document {
+export class HTMLDocument extends Document {
 
   constructor() {
     super('text/html');
@@ -71,4 +70,3 @@ class HTMLDocument extends Document {
     return title;
   }
 }
-exports.HTMLDocument = HTMLDocument

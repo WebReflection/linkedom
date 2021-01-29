@@ -1,5 +1,5 @@
 import {parseFromString} from './utils.js';
-import {HTMLDocument} from './html-document.js';
+import {HTMLDocument} from './html/html-document.js';
 import {SVGDocument} from './svg-document.js';
 import {XMLDocument} from './xml-document.js';
 
