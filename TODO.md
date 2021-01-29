@@ -1,11 +1,5 @@
 # TODO
 
-### Priorities
-
-- [ ] common *HTMLxxx* elements
 - [ ] MutationObserver
-
-
-### Nice to have
-- [ ] `Image` class
+- [ ] `Image` class (proper canvas too?)
 - [ ] `element.insertAdjacentHTML` shenanigan

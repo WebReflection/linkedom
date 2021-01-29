@@ -569,6 +569,7 @@ try {
 catch (ok) {}
 
 customElements.define('c-e', CE);
+assert(customElements.get('c-e') === CE, 'correctly defined');
 
 try {
   customElements.define('c-e', class extends HTMLElement {});
@@ -669,7 +670,7 @@ assert((new TemplateExtend).toString() === '<template is="custom-template"></tem
 
 assert(HTMLElement.observedAttributes.length === 0, 'default observedAttributes has length 0');
 
-
+const {voidElements} = document._mime;
 [
   HTMLHtmlElement,
   HTMLScriptElement,
@@ -738,5 +739,13 @@ assert(HTMLElement.observedAttributes.length === 0, 'default observedAttributes 
   HTMLTrackElement,
   HTMLMarqueeElement
 ].forEach(Class => {
-  console.log(new Class(document).toString());
+  const element = new Class(document);
+  const string = new Class(document).toString();
+  const {localName} = element;
+  assert(
+    voidElements.test(localName) ?
+      (string === `<${localName}>`) :
+      (string === `<${localName}></${localName}>`),
+    'unexpected string representation'
+  );
 });

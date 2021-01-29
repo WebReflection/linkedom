@@ -26,8 +26,13 @@ export class CustomElementRegistry {
    */
   define(localName, Class, options = {}) {
     const {_ownerDocument, _registry, _waiting} = this;
+
     if (_registry.has(localName) || classes.has(Class))
-      throw new Error('unable to re-define ' + localName);
+      throw new Error('unable to redefine ' + localName);
+
+    if (classes.has(Class))
+      /* c8 ignore next */
+      throw new Error('unable to redefine the same class: ' + Class);
 
     this._active = true;
 

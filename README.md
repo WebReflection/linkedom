@@ -39,12 +39,21 @@ const document = (new DOMParser).parseFromString(`
   'text/html'
 );
 
-// retrieve related "globals" (not global) utilities and classes
+// retrieve the document.defaultView, a global proxy that does *not*
+// pollute the global environment (you are in charge of doing it)
+const {defaultView: window} = document;
+
+// the window proxy exposes all globals + classes from this module
 const {
+  // provided by this module, could be native too
   Event, CustomEvent,
+  // all HTML classes, such as HTMLButtonElement and others, are available
   HTMLElement,
+  // the CustomElementRegistry is defined once *per document*
+  // multiple documents require multiple custom elements definition
+  // but classes can be reused
   customElements
-} = document.defaultView;
+} = window;
 
 // builtin extends compatible too 👍
 customElements.define('custom-element', class extends HTMLElement {
