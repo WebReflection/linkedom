@@ -1,6 +1,6 @@
-import {DOCUMENT_NODE, DOM} from './constants.js';
+import {DOCUMENT_NODE, TEXT_NODE, DOM} from './constants.js';
 
-import {Mime} from './utils.js';
+import {Mime, setBoundaries} from './utils.js';
 
 // mixins & interfaces
 import {NonElementParentNode, ParentNode} from './mixins.js';
@@ -92,6 +92,54 @@ import {TreeWalker} from './tree-walker.js';
 import {CustomElementRegistry} from './custom-element-registry.js';
 
 const {create, defineProperties} = Object;
+const {toString} = Element.prototype;
+
+const textOnlyDescriptors = {
+  _updateTextContent: {
+    value(content, createNode) {
+      this.replaceChildren();
+      const {ownerDocument, _end} = this;
+      const text = createNode ? ownerDocument.createTextNode(content) : content;
+      text.parentNode = this;
+      setBoundaries(this, text, this._end);
+    }
+  },
+  innerHTML : {
+    get() {
+      return this.textContent;
+    },
+    set(html) {
+      this.textContent = html;
+    }
+  },
+  textContent: {
+    get() {
+      const {firstChild} = this;
+      return firstChild ? firstChild.textContent : '';
+    },
+    set(content) {
+      this._updateTextContent(content, true);
+    }
+  },
+  // TODO: this is not perfect, although I don't think there are
+  //       real world use cases to make it perfect 🤷‍♂️
+  //       if there are though, this node should accept nodes *but*
+  //       use these as `textContent` only
+  insertBefore: {
+    value(node) {
+      node.remove();
+      this._updateTextContent(node, node.nodeType !== TEXT_NODE);
+      node.parentNode = this;
+      return node;
+    }
+  },
+  toString: {
+    value() {
+      const outerHTML = toString.call(this.cloneNode());
+      return outerHTML.replace(/></, `>${this.textContent}<`);
+    }
+  }
+};
 
 const defaultViewExports = {
   Event, CustomEvent,
@@ -176,7 +224,7 @@ export class Document extends Node {
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
     this._mime = Mime[type];
-    this._customElements = {_active: false};
+    this._customElements = {_active: false, _hold: false};
 
     /**
      * @type {Element?}
@@ -322,6 +370,8 @@ export class Document extends Node {
       }
       if (builtin)
         element.setAttribute('is', options.is);
+      if (this._mime.textOnly.test(localName))
+        defineProperties(element, textOnlyDescriptors);
     }
     else
       element = new Element(this, localName);

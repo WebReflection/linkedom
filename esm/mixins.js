@@ -7,9 +7,13 @@ import {
 
 import {NodeList} from './interfaces.js';
 
+import {disconnectedCallback} from './custom-element-registry.js';
+
 import {
   findNext,
   getEnd,
+  setAdjacent,
+  setBoundaries
   // invalidate
 } from './utils.js';
 
@@ -60,18 +64,16 @@ export const ChildNode = {
    * @param {Node} node 
    */
   remove(node) {
-    let {_prev, _next, nodeType} = node;
-    let _end = node;
-    if (nodeType === ELEMENT_NODE) {
-      _end = node._end;
-      _next = _end._next;
+    const {_prev} = node;
+    const {_next} = getEnd(node);
+    if (_prev || _next || node.parentNode) {
+      node.parentNode = null;
+      setAdjacent(_prev, _next);
+      setBoundaries(null, node, null);
+      if (node.nodeType === ELEMENT_NODE)
+        disconnectedCallback(node);
+      // DO_NOT_REMOVE if (parentNode) invalidate(parentNode);
     }
-    if (_prev) _prev._next = _next;
-    if (_next) _next._prev = _prev;
-    node.parentNode = node._prev = _end._next = null;
-    if (node._custom && node.disconnectedCallback)
-      node.disconnectedCallback();
-    // DO_NOT_REMOVE if (parentNode) invalidate(parentNode);
   }
 };
 

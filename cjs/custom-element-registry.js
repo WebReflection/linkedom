@@ -1,10 +1,62 @@
 'use strict';
-const getCE = element => element.getAttribute('is') || element.localName;
+const {ELEMENT_NODE} = require("../cjs/constants");
+
+const {keys, setPrototypeOf} = Object;
 
 const classes = new WeakMap;
 exports.classes = classes;
 
-const {keys, setPrototypeOf} = Object;
+const shouldTrigger = element => {
+  const {_active, _hold} = element.ownerDocument._customElements;
+  return _active && !_hold;
+};
+
+const attributeChangedCallback = (element, name, oldValue, newValue) => {
+  if (
+    element._custom &&
+    element.attributeChangedCallback &&
+    element.constructor.observedAttributes.includes(name)
+  ) {
+    element.attributeChangedCallback(name, oldValue, newValue);
+  }
+};
+exports.attributeChangedCallback = attributeChangedCallback;
+
+const triggerConnected = element => {
+  if (element._custom && element.connectedCallback && element.isConnected)
+    element.connectedCallback();
+};
+
+const connectedCallback = element => {
+  if (shouldTrigger(element)) {
+    triggerConnected(element);
+    let {_next, _end} = element;
+    while (_next !== _end) {
+      if (_next.nodeType === ELEMENT_NODE)
+        triggerConnected(_next);
+      _next = _next._next;
+    }
+  }
+};
+exports.connectedCallback = connectedCallback;
+
+const triggerDisconnected = element => {
+  if (element._custom && element.disconnectedCallback && !element.isConnected)
+    element.disconnectedCallback();
+};
+
+const disconnectedCallback = element => {
+  if (shouldTrigger(element)) {
+    triggerDisconnected(element);
+    let {_next, _end} = element;
+    while (_next !== _end) {
+      if (_next.nodeType === ELEMENT_NODE)
+        triggerDisconnected(_next);
+      _next = _next._next;
+    }
+  }
+};
+exports.disconnectedCallback = disconnectedCallback;
 
 /**
  * @implements globalThis.CustomElementRegistry
@@ -19,6 +71,7 @@ class CustomElementRegistry {
     this._registry = new Map;
     this._waiting = new Map;
     this._active = false;
+    this._hold = false;
   }
 
   /**
@@ -70,7 +123,7 @@ class CustomElementRegistry {
     if (element._custom)
       return;
     const {_registry} = this;
-    const ce = getCE(element);
+    const ce = element.getAttribute('is') || element.localName;
     if (_registry.has(ce)) {
       const {Class, check} = _registry.get(ce);
       if (check(element)) {
@@ -85,8 +138,8 @@ class CustomElementRegistry {
         }
         setPrototypeOf(element, upgrade);
         element._custom = true;
-        if (element.isConnected && element.connectedCallback)
-          element.connectedCallback();
+        if (element.isConnected)
+          connectedCallback(element);
       }
     }
   }

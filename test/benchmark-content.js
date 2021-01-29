@@ -1,3 +1,7 @@
+// Please note: you can literally copy and paste this file
+//              into any browser console and see it running
+//              in there too, so it's easy to compare with NodeJS.
+
 let browser = false;
 
 const bench = (name, count, times) => {

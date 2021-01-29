@@ -1,8 +1,10 @@
 import {escape} from 'html-escaper';
 
 import {ATTRIBUTE_NODE} from './constants.js';
-import {String, attributeChangedCallback} from './utils.js';
+import {String} from './utils.js';
 import {Node} from './node.js';
+
+import {attributeChangedCallback} from './custom-element-registry.js';
 
 /**
  * @implements globalThis.Attr
@@ -26,9 +28,9 @@ export class Attr extends Node {
   set value(value) {
     const {ownerElement, name, _value} = this;
     this._changed = true;
-    attributeChangedCallback(
-      ownerElement, name, _value, this._value = String(value)
-    );
+    this._value = String(value);
+    if (ownerElement)
+      attributeChangedCallback(ownerElement, name, _value, this._value);
   }
 
   toString() {

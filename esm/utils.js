@@ -12,43 +12,38 @@ import {
 const $String = String;
 export {$String as String};
 
+const textOnly = {test: () => false};
 const voidElements = {test: () => true};
 export const Mime = {
   'text/html': {
     docType: '<!DOCTYPE html>',
     ignoreCase: true,
+    textOnly: /^(?:plaintext|script|style|textarea|title|xmp)$/i,
     voidElements: /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i
+  },
+  'image/svg+xml': {
+    docType: '',
+    ignoreCase: false,
+    textOnly,
+    voidElements
   },
   'text/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    textOnly,
     voidElements
   },
   'application/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    textOnly,
     voidElements
   },
   'application/xhtml+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    textOnly,
     voidElements
-  },
-  'image/svg+xml': {
-    docType: '',
-    ignoreCase: false,
-    voidElements
-  }
-};
-
-export const attributeChangedCallback = (element, name, oldValue, newValue) => {
-  if (
-    element &&
-    element._custom &&
-    element.attributeChangedCallback &&
-    element.constructor.observedAttributes.includes(name)
-  ) {
-    element.attributeChangedCallback(name, oldValue, newValue);
   }
 };
 
@@ -105,6 +100,23 @@ export const localCase = ({localName, ownerDocument}) => {
   return ownerDocument._mime.ignoreCase ? localName.toUpperCase() : localName;
 };
 
+export const setAdjacent = (before, after) => {
+  if (before)
+    before._next = after;
+  if (after)
+    after._prev = before;
+};
+
+export const setBoundaries = (before, current, after) => {
+  if (before)
+    before._next = current;
+  current._prev = before;
+  current = getEnd(current);
+  current._next = after;
+  if (after)
+    after._prev = current;
+};
+
 const HTML = 'text/html';
 const VOID_SOURCE = Mime[HTML].voidElements.source.slice(4, -2);
 const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');
@@ -114,6 +126,8 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
   if (!markupLanguage)
     return document;
   const {SVGElement} = document[DOM];
+  const {_customElements} = document;
+  const {_active, _registry} = _customElements;
   let node = document.root || document.createElement('root');
   let ownerSVGElement = null;
   const content = new Parser({
@@ -128,11 +142,25 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
           node = node.appendChild(ownerSVGElement);
           return;
         }
+        else if (_active && _registry.has(name)) {
+          const {Class} = _registry.get(name);
+          node = node.appendChild(new Class);
+          return;
+        }
       }
       node = node.appendChild(document.createElement(name));
     },
     onattribute(name, value) {
-      node.setAttribute(name, value);
+      if (isHTML && _active && name === 'is' && _registry.has(value)) {
+        const {Class} = _registry.get(value);
+        const custom = new Class;
+        for (const attribute of node.attributes)
+          custom.setAttributeNode(attribute);
+        node.replaceWith(custom);
+        node = custom;
+      }
+      else
+        node.setAttribute(name, value);
     },
     oncomment(data) {
       node.appendChild(document.createComment(data));

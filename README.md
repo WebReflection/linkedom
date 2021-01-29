@@ -117,11 +117,11 @@ npm run benchmark
 
 ## How does it work?
 
-All nodes are linked on both side and all elements consist of 2 nodes, also linked in between.
+All nodes are linked on both sides, and all elements consist of 2 nodes, also linked in between.
 
-Attributes are always at the beginning of an element, while zero or more can be found before the end node.
+Attributes are always at the beginning of an element, while zero or more extra nodes can be found before the end.
 
-A fragment is a special element without boundaries or parent node.
+A fragment is a special element without boundaries, or parent node.
 
 ```
 Node:             ← node →
@@ -154,16 +154,18 @@ Fragment example:
 
 ### Why is this better?
 
-Moving *N* nodes from a container, either *Element* or *Fragment*, requires these steps:
+Moving *N* nodes from a container, being it either an *Element* or a *Fragment*, requires the following steps:
 
   * update the first *left* link of the moved segment
   * update the last *right* link of the moved segment
   * connect the *left* side, if any, of the moved node at the beginning of the segment, with the *right* side, if any, of the node at the end of such segment
   * update the *parentNode* of the segment to either *null*, or the new *parentNode*
 
-As result, no array operations, no memory operations, everything is kept in sync by updating a few properties, so that removing `3714` sparse `<div>` elements, in a *12M* document, takes as little as *3ms*, while appending a whole fragment takes close to *0ms*.
+As result, there are no array operations, and no memory operations, and everything is kept in sync by updating a few properties, so that removing `3714` sparse `<div>` elements in a *12M* document, as example, takes as little as *3ms*, while appending a whole fragment takes close to *0ms*.
 
-This structure also allows developers to avoid issues such as "*Maximum call stack size exceeded*" or "*JavaScript heap out of memory*" crashes, thanks to its reduced usage of memory, zero stacks involved, hence scaling better from small, to very big, documents.
+Try `npm run benchmark:html` to see it yourself.
+
+This structure also allows programs to avoid issues such as "*Maximum call stack size exceeded*" <sup><sub>(basicHTML)</sub></sup>, or "*JavaScript heap out of memory*" crashes <sup><sub>(JSDOM)</sub></sup>, thanks to its reduced usage of memory and zero stacks involved, hence scaling better from small to very big documents.
 
 ### Are *childNodes* and *children* always computed?
 
