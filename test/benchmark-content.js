@@ -28,7 +28,7 @@ const crawl = (element, kind) => {
 
 const sleep = ms => new Promise($ => setTimeout($, ms));
 
-const onContent = async (createDocument, html, times, logHeap = () => {}, cloneBench = true) => {
+const onContent = async (createDocument, html, times, logHeap = () => {}, cloneBench = true, customElements = false) => {
 
   console.time(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 
@@ -37,41 +37,58 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
 
   let document;
   try {
-    console.time(clean('parsing \x1b[2mcold\x1b[0m'));
+    console.time(clean(' parsing \x1b[2mcold\x1b[0m'));
     document = createDocument(html.toString());
-    console.timeEnd(clean('parsing \x1b[2mcold\x1b[0m'));
+    console.timeEnd(clean(' parsing \x1b[2mcold\x1b[0m'));
     console.log();
     logHeap('document heap');
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`));
     process.exit(1);
   }
   console.log();
 
+  if (customElements) {
+    let {constructor} = document.documentElement;
+    while (constructor.name !== 'HTMLElement')
+      constructor = Object.getPrototypeOf(constructor);
+    (document.defaultView.customElements || global.customElements).define(
+      'custom-element',
+      class extends constructor {
+        static get observedAttributes() { return ['nothing', 'really']; }
+        attributeChangedCallback() {}
+        connectedCallback() {}
+        disconnectedCallback() {}
+      }
+    );
+    console.log(clean('\x1b[1mCustom Elements\x1b[0m enabled via ' + constructor.name));
+    console.log();
+  }
+
   try {
-    bench('html.normalize()', () => { document.documentElement.normalize(); }, 1);
+    bench(' html.normalize()', () => { document.documentElement.normalize(); }, 1);
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to normalize html: ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to normalize html: ${o_O.message}`));
   }
   console.log();
 
   try {
-    console.log('total childNodes', bench('crawling childNodes', () => crawl(document.documentElement, 'childNodes'), times));
+    console.log(' total childNodes', bench(' crawling childNodes', () => crawl(document.documentElement, 'childNodes'), times));
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to crawl childNodes: ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to crawl childNodes: ${o_O.message}`));
   }
   console.log();
 
   await sleep(100);
 
   try {
-    console.log('total children', bench('crawling children', () => crawl(document.documentElement, 'children'), times));
+    console.log(' total children', bench(' crawling children', () => crawl(document.documentElement, 'children'), times));
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to crawl children: ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to crawl children: ${o_O.message}`));
   }
   console.log();
 
@@ -82,19 +99,19 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     await sleep(100);
 
     try {
-      const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
-      console.log('cloning: OK');
+      const html = bench(' html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
+      console.log(' cloning: OK');
 
       const {outerHTML: cloned} = html;
       const {outerHTML: original} = document.documentElement;
-      console.log('outerHTML: OK');
+      console.log(' outerHTML: OK');
 
       if (cloned.length !== original.length)
         throw new Error('invalid output');
-      console.log('outcome: OK');
+      console.log(' outcome: OK');
     }
     catch (o_O) {
-      console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
+      console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
     }
     console.log();
 
@@ -105,20 +122,20 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
   await sleep(100);
 
   try {
-    console.log('total div', bench('querySelectorAll("div")', () => document.documentElement.querySelectorAll('div').length, times));
+    console.log(' total div', bench(' querySelectorAll("div")', () => document.documentElement.querySelectorAll('div').length, times));
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to querySelectorAll("div"): ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to querySelectorAll("div"): ${o_O.message}`));
   }
   console.log();
 
   await sleep(100);
 
   try {
-    console.log('total p', bench('getElementsByTagName("p")', () => document.documentElement.getElementsByTagName('p').length, times));
+    console.log(' total p', bench(' getElementsByTagName("p")', () => document.documentElement.getElementsByTagName('p').length, times));
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
   }
   console.log();
 
@@ -129,34 +146,34 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
 
   try {
     const divs = document.documentElement.querySelectorAll('div');
-    console.time('removing divs');
+    console.time(' removing divs');
     divs.forEach(div => {
       div.remove();
     });
-    console.timeEnd('removing divs');
+    console.timeEnd(' removing divs');
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to div.remove() them all: ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to div.remove() them all: ${o_O.message}`));
   }
   console.log();
 
   await sleep(100);
 
   try {
-    console.log('total div', bench('div count', () => document.documentElement.getElementsByTagName('div').length, 1));
+    console.log(' total div', bench(' div count', () => document.documentElement.getElementsByTagName('div').length, 1));
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("div"): ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("div"): ${o_O.message}`));
   }
   console.log();
 
   await sleep(100);
 
   try {
-    console.log('total p', bench('p count', () => document.documentElement.getElementsByTagName('p').length, 1));
+    console.log(' total p', bench(' p count', () => document.documentElement.getElementsByTagName('p').length, 1));
   }
   catch (o_O) {
-    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
+    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
   }
   console.log();
 
@@ -167,23 +184,29 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
 
   if (cloneBench) {
     try {
-      const html = bench('html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
-      console.log('cloneNode: OK');
+      const html = bench(' html.cloneNode(true)', () => document.documentElement.cloneNode(true), 1);
+      console.log(' cloneNode: OK');
       console.log();
 
       await sleep(100);
-      const outerHTML = bench('html.outerHTML', () => html.outerHTML, times);
+      const outerHTML = bench(' html.outerHTML', () => html.outerHTML, times);
 
       if (outerHTML.length !== document.documentElement.outerHTML.length)
         throw new Error('invalid output');
-      console.log('outcome: OK');
+      console.log(' outcome: OK');
     }
     catch (o_O) {
-      console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
+      console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
     }
     console.log();
   }
 
+  await sleep(100);
+  console.time(' html.innerHTML');
+  document.documentElement.innerHTML = document.documentElement.innerHTML;
+  console.timeEnd(' html.innerHTML');
+
+  console.log();
   console.timeEnd(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 };
 
