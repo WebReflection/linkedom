@@ -7,8 +7,10 @@ const assert = (expression, message) => {
 };
 
 const svgDocument = (new DOMParser).parseFromString('<svg><rect /></svg>', 'image/svg+xml');
-let xmlDocument = (new DOMParser).parseFromString('<svg><rect /></svg>', 'text/xml');
+let xmlDocument = (new DOMParser).parseFromString('<svg><rect></rect></svg>', 'text/xml');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?><svg><rect /></svg>', 'xml toString');
+assert(xmlDocument._mime.voidElements.test(xmlDocument.querySelector('rect')), 'xml always void');
+assert(!xmlDocument._mime.textOnly.test(xmlDocument.querySelector('rect')), 'xml always non text-only');
 
 svgDocument.root = svgDocument.createElement('Svg');
 assert(svgDocument.root.tagName === 'Svg', 'XML names are case-sensitive');
@@ -26,6 +28,13 @@ assert(xmlDocument.childElementCount === 0, 'childElementCount as 0');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?>', 'mime type only');
 
 let document = (new DOMParser).parseFromString('<div><svg><rect /></svg></div>', 'text/html');
+
+assert(document.ELEMENT_NODE, 'ELEMENT_NODE');
+assert(document.ATTRIBUTE_NODE, 'ATTRIBUTE_NODE');
+assert(document.TEXT_NODE, 'TEXT_NODE');
+assert(document.COMMENT_NODE, 'COMMENT_NODE');
+assert(document.DOCUMENT_NODE, 'DOCUMENT_NODE');
+assert(document.DOCUMENT_FRAGMENT_NODE, 'DOCUMENT_FRAGMENT_NODE');
 
 let svg = document.querySelector('svg');
 assert('ownerSVGElement' in svg, '<svg> ownerSVGElement');
@@ -293,8 +302,8 @@ document.documentElement.appendChild(node);
 text.before(node.firstChild);
 text.after(node.firstChild);
 assert(node.toString() === '<div><p></p></div>', 'before after not affected');
-node.firstChild.textContent = 'test';
-assert(node.toString() === '<div><p>test</p></div>', 'before after not affected');
+node.firstChild.textContent = '<test>';
+assert(node.toString() === '<div><p>&lt;test&gt;</p></div>', 'before after not affected');
 node.firstChild.textContent = '';
 assert(node.toString() === '<div><p></p></div>', 'before after not affected');
 assert(!text.isConnected, '!isConnected');
@@ -323,6 +332,7 @@ assert(node.toString() === '<div><p></p></div>', 'remove');
 assert(text.isEqualNode(text.cloneNode(true)), 'isEqualNode');
 assert(text.isSameNode(text), 'isSameNode');
 assert(text.nodeValue === text.textContent, 'nodeValue');
+assert(text.data === text.textContent, 'data');
 assert(text.firstChild === null, 'firstChild');
 assert(text.lastChild === null, 'lastChild');
 assert(text.nextSibling === null, 'nextSibling');
@@ -669,6 +679,82 @@ const TemplateExtend = customElements.get('custom-template');
 assert((new TemplateExtend).toString() === '<template is="custom-template"></template>', 'builtin extends work');
 
 assert(HTMLElement.observedAttributes.length === 0, 'default observedAttributes has length 0');
+
+args = [];
+customElements.define('outer-test', class extends HTMLElement {
+  connectedCallback() {
+    args.push('connected: ' + this.localName);
+  }
+  disconnectedCallback() {
+    args.push('disconnected: ' + this.localName);
+  }
+});
+
+customElements.define('inner-test', class extends HTMLElement {
+  connectedCallback() {
+    args.push('connected: ' + this.localName);
+  }
+  disconnectedCallback() {
+    args.push('disconnected: ' + this.localName);
+  }
+});
+
+var outer = document.createElement('outer-test');
+
+outer.innerHTML = '<div>OK<inner-test>OK</inner-test>OK<inner-test>OK</inner-test>OK</div><inner-test>OK</inner-test>';
+document.documentElement.appendChild(outer);
+
+assert(args.splice(0).join(',') === 'connected: outer-test,connected: inner-test,connected: inner-test,connected: inner-test', 'inner elements get connected too');
+
+outer.remove();
+
+assert(args.splice(0).join(',') === 'disconnected: outer-test,disconnected: inner-test,disconnected: inner-test,disconnected: inner-test', 'inner elements get disconnected too');
+
+outer.remove();
+assert(args.length === 0, 'should not trigger disconnected again');
+
+customElements.define('inner-button', class extends HTMLButtonElement {
+  static get observedAttributes() { return ['test']; }
+  attributeChangedCallback() {
+    args.push(arguments);
+  }
+  connectedCallback() {
+    args.push('connected: ' + this.localName + '[is="' + this.getAttribute('is') + '"]');
+  }
+  disconnectedCallback() {
+    args.push('disconnected: ' + this.localName);
+  }
+}, {extends: 'button'});
+
+outer.innerHTML = '<div><button test="123" is="inner-button">OK</button></div>';
+
+// TODO: this shouldn't happen (previous node re-trigger disconnect)
+args.splice(0);
+
+document.documentElement.appendChild(outer);
+
+assert(args.splice(0).join(',') === 'connected: outer-test,connected: button[is="inner-button"]', 'inner builtin elements get connected too');
+
+
+
+node = document.createElement('script');
+assert(node.textContent === '', 'empty textOnly works');
+node.appendChild(document.createComment('test'));
+assert(node.textContent === '<!--test-->', 'expected text only content');
+assert(node.toString() === '<script><!--test--></script>', 'correct toString');
+node.textContent = '';
+node.appendChild(document.createTextNode('<OK>'));
+assert(node.innerHTML === '<OK>', 'expected innerHTML as textOnly');
+node.innerHTML = '<OK>';
+assert(node.toString() === '<script><OK></script>', 'text only is broken');
+
+const js = `
+function test() {
+  return html\`<div>${'hello'}</div>\`;
+}
+`;
+node.textContent = js;
+assert(node.toString() === `<script>${js}</script>`, 'complex content is right');
 
 const {voidElements} = document._mime;
 [

@@ -165,7 +165,7 @@ As result, there are no array operations, and no memory operations, and everythi
 
 Try `npm run benchmark:html` to see it yourself.
 
-This structure also allows programs to avoid issues such as "*Maximum call stack size exceeded*", or "*JavaScript heap out of memory*" crashes, thanks to its reduced usage of memory and zero stacks involved, hence scaling better from small to very big documents.
+This structure also allows programs to avoid issues such as "*Maximum call stack size exceeded*" <sup><sub>(basicHTML)</sub></sup>, or "*JavaScript heap out of memory*" crashes <sup><sub>(JSDOM)</sub></sup>, thanks to its reduced usage of memory and zero stacks involved, hence scaling better from small to very big documents.
 
 ### Are *childNodes* and *children* always computed?
 

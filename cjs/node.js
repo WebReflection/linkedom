@@ -13,10 +13,14 @@ const {
 const {EventTarget, NodeList} = require('./interfaces.js');
 const {ChildNode, NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
 
+const {connectedCallback} = require('./custom-element-registry.js');
+
 const {
   String,
   findNext,
   getBoundaries,
+  setAdjacent,
+  setBoundaries,
   getEnd,
   getNext,
   getPrev
@@ -66,6 +70,13 @@ class Node extends EventTarget {
     this._prev = null;
     this._next = null;
   }
+
+  get ELEMENT_NODE() { return this.constructor.ELEMENT_NODE; }
+  get ATTRIBUTE_NODE() { return this.constructor.ATTRIBUTE_NODE; }
+  get TEXT_NODE() { return this.constructor.TEXT_NODE; }
+  get COMMENT_NODE() { return this.constructor.COMMENT_NODE; }
+  get DOCUMENT_NODE() { return this.constructor.DOCUMENT_NODE; }
+  get DOCUMENT_FRAGMENT_NODE() { return this.constructor.DOCUMENT_FRAGMENT_NODE; }
 
   // <ChildNode>
   before(...nodes) {
@@ -141,8 +152,8 @@ class Node extends EventTarget {
         const {SVGElement} = OD[DOM];
         const addNext = _next => {
           _next.parentNode = parentNode;
-          _next._prev = $next;
-          $next = ($next._next = _next);
+          setAdjacent($next, _next);
+          $next = _next;
         };
         const clone = create(OD, this, localName, SVGElement);
         let parentNode = clone, $next = clone;
@@ -150,8 +161,8 @@ class Node extends EventTarget {
         while (_next !== _end && (deep || _next.nodeType === ATTRIBUTE_NODE)) {
           switch (_next.nodeType) {
             case ELEMENT_NODE_END:
-              parentNode._end._prev = $next;
-              $next = ($next._next = parentNode._end);
+              setAdjacent($next, parentNode._end);
+              $next = parentNode._end;
               parentNode = parentNode.parentNode;
               break;
             case ELEMENT_NODE:
@@ -173,8 +184,7 @@ class Node extends EventTarget {
           }
           _next = _next._next;
         }
-        clone._end._prev = $next;
-        $next._next = clone._end;
+        setAdjacent($next, clone._end);
         return clone;
       case TEXT_NODE:
         return OD.createTextNode(this.textContent);
@@ -370,45 +380,35 @@ class NodeElement extends Node {
     switch (node.nodeType) {
       case ELEMENT_NODE: {
         node.remove();
-        _prev._next = node;
-        _end._prev = node._end;
-        node._prev = _prev;
-        node._end._next = _end;
         node.parentNode = this;
-        if (node._custom && node.connectedCallback)
-          node.connectedCallback();
+        setBoundaries(_prev, node, _end);
+        connectedCallback(node);
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
         // DO_NOT_REMOVE invalidate(node);
         let {firstChild, lastChild} = node;
         if (firstChild) {
-          _prev._next = firstChild;
-          firstChild._prev = _prev;
-          const last = getEnd(lastChild);
-          _end._prev = last;
-          last._next = _end;
+          setAdjacent(_prev, firstChild);
+          setAdjacent(getEnd(lastChild), _end);
           // reset fragment
-          node._next = node._end;
-          node._end._prev = node;
+          setAdjacent(node, node._end);
           // set parent node
           do {
             firstChild.parentNode = this;
-            if (firstChild._custom && firstChild.connectedCallback)
-              firstChild.connectedCallback();
+            if (firstChild.nodeType === ELEMENT_NODE)
+              connectedCallback(firstChild);
           } while (
             firstChild !== lastChild &&
-            (firstChild = firstChild._next)
+            (firstChild = firstChild.nextSibling)
           );
         }
         break;
       }
       default: {
         node.remove();
-        _prev._next = _end._prev = node;
-        node._prev = _prev;
-        node._next = _end;
         node.parentNode = this;
+        setBoundaries(_prev, node, _end);
         break;
       }
     }
@@ -457,12 +457,8 @@ class NodeElement extends Node {
     // DO_NOT_REMOVE invalidate(this);
     replaced.remove();
     node.remove();
-    _prev._next = node;
-    node._prev = _prev;
-    const _end = getEnd(node);
-    _next._prev = _end;
-    _end._next = _next;
     node.parentNode = this;
+    setBoundaries(_prev, node, _next);
     return replaced;
   }
 

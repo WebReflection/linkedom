@@ -1,4 +1,4 @@
-import {getEnd} from './utils.js';
+import {getEnd, setAdjacent} from './utils.js';
 
 // https://dom.spec.whatwg.org/#concept-live-range
 
@@ -7,8 +7,7 @@ import {getEnd} from './utils.js';
 
 
 const deleteContents = ({_start, _end}, fragment = null) => {
-  _start._prev._next = _end._next;
-  _end._next._prev = _start._prev;
+  setAdjacent(_start._prev, _end._next);
   do {
     const end = getEnd(_start);
     const next = end === _end ? end : end._next;

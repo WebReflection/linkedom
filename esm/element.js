@@ -1,11 +1,13 @@
 import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
 import {
   String,
-  attributeChangedCallback,
-  getNext, getPrev,
+  getNext, getPrev, setAdjacent,
   ignoreCase, localCase,
-  parseFromString
+  parseFromString,
+  setBoundaries
 } from './utils.js';
+
+import {attributeChangedCallback} from './custom-element-registry.js';
 
 import {NodeList} from './interfaces.js';
 import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
@@ -126,10 +128,18 @@ export class Element extends NodeElement {
     return this.childNodes.join('');
   }
 
+  // awkward ... but necessary to avoid triggering Custom Events
+  // while created through the parseFromString procedure
   set innerHTML(html) {
-    const {constructor} = this.ownerDocument;
-    const document = parseFromString(new constructor, ignoreCase(this), html);
-    this.replaceChildren(...document.documentElement.childNodes);
+    const {constructor, _customElements} = this.ownerDocument;
+    const document = new constructor;
+    document._customElements = _customElements;
+    _customElements._hold = true;
+    const {childNodes} = parseFromString(document, ignoreCase(this), html).documentElement;
+    const fragment = document.createDocumentFragment();
+    fragment.append(...childNodes);
+    _customElements._hold = false;
+    this.replaceChildren(fragment);
   }
 
   get outerHTML() {
@@ -220,14 +230,11 @@ export class Element extends NodeElement {
     while (_next.nodeType === ATTRIBUTE_NODE) {
       if (_next === attribute) {
         const {_prev, _next, name} = attribute;
-        _prev._next = _next;
-        _next._prev = _prev;
+        setAdjacent(_prev, _next);
         attribute.ownerElement = attribute._prev = attribute._next = null;
         if (name === 'class')
           this._classList = null;
-        attributeChangedCallback(
-          this, name, attribute._value, null
-        );
+        attributeChangedCallback(this, name, attribute._value, null);
         return;
       }
       _next = _next._next;
@@ -249,14 +256,10 @@ export class Element extends NodeElement {
       if (ownerElement)
         ownerElement.removeAttributeNode(attribute);
       attribute.ownerElement = this;
-      attribute._prev = this;
-      attribute._next = _next;
-      this._next = _next._prev = attribute;
+      setBoundaries(this, attribute, _next);
       if (name === 'class')
         this.className = attribute._value;
-      attributeChangedCallback(
-        this, name, null, attribute._value
-      );
+      attributeChangedCallback(this, name, null, attribute._value);
     }
     return previously;
   }

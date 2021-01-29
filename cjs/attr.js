@@ -2,8 +2,10 @@
 const {escape} = require('html-escaper');
 
 const {ATTRIBUTE_NODE} = require('./constants.js');
-const {String, attributeChangedCallback} = require('./utils.js');
+const {String} = require('./utils.js');
 const {Node} = require('./node.js');
+
+const {attributeChangedCallback} = require('./custom-element-registry.js');
 
 /**
  * @implements globalThis.Attr
@@ -27,9 +29,9 @@ class Attr extends Node {
   set value(value) {
     const {ownerElement, name, _value} = this;
     this._changed = true;
-    attributeChangedCallback(
-      ownerElement, name, _value, this._value = String(value)
-    );
+    this._value = String(value);
+    if (ownerElement)
+      attributeChangedCallback(ownerElement, name, _value, this._value);
   }
 
   toString() {
