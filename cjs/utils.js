@@ -55,6 +55,19 @@ const attributeChangedCallback = (element, name, oldValue, newValue) => {
 };
 exports.attributeChangedCallback = attributeChangedCallback;
 
+const booleanAttribute = {
+  get(element, name) {
+    return element.hasAttribute(name);
+  },
+  set(element, name, value) {
+    if (value)
+      element.setAttribute(name, '');
+    else
+      element.removeAttribute(name);
+  }
+};
+exports.booleanAttribute = booleanAttribute;
+
 const findNext = ({_next, _end}) => {
   while (_next.nodeType === ATTRIBUTE_NODE)
     _next = _next._next;

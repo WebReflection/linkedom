@@ -749,3 +749,16 @@ const {voidElements} = document._mime;
     'unexpected string representation'
   );
 });
+
+[
+  HTMLButtonElement,
+  HTMLInputElement,
+  HTMLTextAreaElement
+].forEach(Class => {
+  const element = new Class(document);
+  assert(element.disabled === false, 'starting as not disabled');
+  element.disabled = true;
+  assert(element.hasAttribute('disabled') === true, 'setting disabled true');
+  element.disabled = false;
+  assert(element.hasAttribute('disabled') === false, 'setting disabled false');
+});
