@@ -3,18 +3,22 @@ const {ELEMENT_NODE} = require("../cjs/constants");
 
 const {keys, setPrototypeOf} = Object;
 
+let reactive = false;
+
+const setReactive = value => {
+  reactive = value;
+};
+exports.setReactive = setReactive;
+
 const Classes = new WeakMap;
 exports.Classes = Classes;
+
 const customElements = new WeakMap;
 exports.customElements = customElements;
 
-const shouldTrigger = element => {
-  const {_active, _hold} = element.ownerDocument._customElements;
-  return _active && !_hold;
-};
-
 const attributeChangedCallback = (element, name, oldValue, newValue) => {
   if (
+    reactive &&
     customElements.has(element) &&
     element.attributeChangedCallback &&
     element.constructor.observedAttributes.includes(name)
@@ -30,7 +34,7 @@ const triggerConnected = element => {
 };
 
 const connectedCallback = element => {
-  if (shouldTrigger(element)) {
+  if (reactive) {
     triggerConnected(element);
     let {_next, _end} = element;
     while (_next !== _end) {
@@ -48,7 +52,7 @@ const triggerDisconnected = element => {
 };
 
 const disconnectedCallback = element => {
-  if (shouldTrigger(element)) {
+  if (reactive) {
     triggerDisconnected(element);
     let {_next, _end} = element;
     while (_next !== _end) {
@@ -73,7 +77,6 @@ class CustomElementRegistry {
     this._registry = new Map;
     this._waiting = new Map;
     this._active = false;
-    this._hold = false;
   }
 
   /**
@@ -91,7 +94,7 @@ class CustomElementRegistry {
       /* c8 ignore next */
       throw new Error('unable to redefine the same class: ' + Class);
 
-    this._active = true;
+    this._active = (reactive = true);
 
     const {extends: extend} = options;
 

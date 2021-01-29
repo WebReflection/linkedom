@@ -225,7 +225,7 @@ class Document extends Node {
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
     this._mime = Mime[type];
-    this._customElements = {_active: false, _hold: false};
+    this._customElements = {_active: false, _registry: null};
 
     /**
      * @type {Element?}

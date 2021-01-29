@@ -11,7 +11,7 @@ const {
   setBoundaries
 } = require('./utils.js');
 
-const {attributeChangedCallback} = require('./custom-element-registry.js');
+const {attributeChangedCallback, setReactive} = require('./custom-element-registry.js');
 
 const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
@@ -135,14 +135,15 @@ class Element extends NodeElement {
   // awkward ... but necessary to avoid triggering Custom Events
   // while created through the parseFromString procedure
   set innerHTML(html) {
-    const {constructor, _customElements} = this.ownerDocument;
+    setReactive(false);
+    const {ownerDocument} = this;
+    const {constructor, _customElements} = ownerDocument;
     const document = new constructor;
     document._customElements = _customElements;
-    _customElements._hold = true;
-    const {childNodes} = parseFromString(document, ignoreCase(this), html).documentElement;
-    const fragment = document.createDocumentFragment();
+    const {childNodes} = parseFromString(document, ignoreCase(this), html).root;
+    const fragment = ownerDocument.createDocumentFragment();
     fragment.append(...childNodes);
-    _customElements._hold = false;
+    setReactive(true);
     this.replaceChildren(fragment);
   }
 
