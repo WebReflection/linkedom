@@ -662,18 +662,18 @@ customElements.define('custom-template', class extends HTMLTemplateElement {
 ce = document.createElement('template', {is: 'custom-template'});
 assert(ce.toString() === '<template is="custom-template"></template>', 'builtin extends work');
 
-assert(args[0] === document.documentElement.lastChild, 'builtin connected');
+assert(args.length === 1 && args.pop() === document.documentElement.lastChild, 'builtin connected');
 
 customElements.upgrade(ce);
 
 document.documentElement.insertBefore(ce, document.documentElement.lastChild);
-assert(args.pop() === ce, 'connectedCallback via insertBefore');
+assert(args.length === 1 && args.pop() === ce, 'connectedCallback via insertBefore');
 
 node = document.createDocumentFragment();
 node.appendChild(ce);
-document.documentElement.insertBefore(node, document.documentElement.lastChild);
-assert(args.pop() === ce, 'connectedCallback via insertBefore and fragment');
 
+document.documentElement.insertBefore(node, document.documentElement.lastChild);
+assert(args.length === 1 && args.pop() === ce, 'connectedCallback via insertBefore and fragment');
 
 const TemplateExtend = customElements.get('custom-template');
 assert((new TemplateExtend).toString() === '<template is="custom-template"></template>', 'builtin extends work');

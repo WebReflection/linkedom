@@ -1,17 +1,21 @@
 import {ELEMENT_NODE} from "../cjs/constants";
 
-const {keys, setPrototypeOf} = Object;
+const {entries, setPrototypeOf} = Object;
 
-export const classes = new WeakMap;
+let reactive = false;
 
-const shouldTrigger = element => {
-  const {_active, _hold} = element.ownerDocument._customElements;
-  return _active && !_hold;
+export const setReactive = value => {
+  reactive = value;
 };
+
+export const Classes = new WeakMap;
+
+export const customElements = new WeakMap;
 
 export const attributeChangedCallback = (element, name, oldValue, newValue) => {
   if (
-    element._custom &&
+    reactive &&
+    customElements.has(element) &&
     element.attributeChangedCallback &&
     element.constructor.observedAttributes.includes(name)
   ) {
@@ -19,13 +23,20 @@ export const attributeChangedCallback = (element, name, oldValue, newValue) => {
   }
 };
 
-const triggerConnected = element => {
-  if (element._custom && element.connectedCallback && element.isConnected)
-    element.connectedCallback();
+const createTrigger = (method, connected) => element => {
+  if (customElements.has(element)) {
+    const info = customElements.get(element);
+    if (info.connected === connected && element.isConnected === !connected) {
+      info.connected = !connected;
+      if (method in element)
+        element[method]();
+    }
+  }
 };
 
+const triggerConnected = createTrigger('connectedCallback', false);
 export const connectedCallback = element => {
-  if (shouldTrigger(element)) {
+  if (reactive) {
     triggerConnected(element);
     let {_next, _end} = element;
     while (_next !== _end) {
@@ -36,13 +47,9 @@ export const connectedCallback = element => {
   }
 };
 
-const triggerDisconnected = element => {
-  if (element._custom && element.disconnectedCallback && !element.isConnected)
-    element.disconnectedCallback();
-};
-
+const triggerDisconnected = createTrigger('disconnectedCallback', true);
 export const disconnectedCallback = element => {
-  if (shouldTrigger(element)) {
+  if (reactive) {
     triggerDisconnected(element);
     let {_next, _end} = element;
     while (_next !== _end) {
@@ -66,7 +73,6 @@ export class CustomElementRegistry {
     this._registry = new Map;
     this._waiting = new Map;
     this._active = false;
-    this._hold = false;
   }
 
   /**
@@ -77,18 +83,18 @@ export class CustomElementRegistry {
   define(localName, Class, options = {}) {
     const {_ownerDocument, _registry, _waiting} = this;
 
-    if (_registry.has(localName) || classes.has(Class))
+    if (_registry.has(localName) || Classes.has(Class))
       throw new Error('unable to redefine ' + localName);
 
-    if (classes.has(Class))
+    if (Classes.has(Class))
       /* c8 ignore next */
       throw new Error('unable to redefine the same class: ' + Class);
 
-    this._active = true;
+    this._active = (reactive = true);
 
     const {extends: extend} = options;
 
-    classes.set(Class, {
+    Classes.set(Class, {
       ownerDocument: _ownerDocument,
       options: {is: extend ? localName : ''},
       localName: extend || localName
@@ -115,26 +121,32 @@ export class CustomElementRegistry {
    * @param {Element} element
    */
   upgrade(element) {
-    if (element._custom)
+    if (customElements.has(element))
       return;
     const {_registry} = this;
     const ce = element.getAttribute('is') || element.localName;
     if (_registry.has(ce)) {
       const {Class, check} = _registry.get(ce);
       if (check(element)) {
-        const {attributes} = element;
-        const upgrade = new Class(this._ownerDocument, ce);
+        const {attributes, isConnected} = element;
         for (const attr of attributes)
-          upgrade.setAttributeNode(attr);
-        for (const key of keys(element)) {
-          const value = element[key];
+          element.removeAttributeNode(attr);
+
+        const values = entries(element);
+        for (const [key] of values)
           delete element[key];
-          upgrade[key] = value;
-        }
-        setPrototypeOf(element, upgrade);
-        element._custom = true;
-        if (element.isConnected)
-          connectedCallback(element);
+
+        setPrototypeOf(element, new Class(this._ownerDocument, ce));
+        customElements.set(element, {connected: isConnected});
+
+        for (const [key, value] of values)
+          element[key] = value;
+
+        for (const attr of attributes)
+          element.setAttributeNode(attr);
+
+        if (isConnected && element.connectedCallback)
+          element.connectedCallback();
       }
     }
   }

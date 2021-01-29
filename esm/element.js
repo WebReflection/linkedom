@@ -7,7 +7,7 @@ import {
   setBoundaries
 } from './utils.js';
 
-import {attributeChangedCallback} from './custom-element-registry.js';
+import {attributeChangedCallback, setReactive} from './custom-element-registry.js';
 
 import {NodeList} from './interfaces.js';
 import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
@@ -131,14 +131,15 @@ export class Element extends NodeElement {
   // awkward ... but necessary to avoid triggering Custom Events
   // while created through the parseFromString procedure
   set innerHTML(html) {
-    const {constructor, _customElements} = this.ownerDocument;
+    setReactive(false);
+    const {ownerDocument} = this;
+    const {constructor, _customElements} = ownerDocument;
     const document = new constructor;
     document._customElements = _customElements;
-    _customElements._hold = true;
-    const {childNodes} = parseFromString(document, ignoreCase(this), html).documentElement;
-    const fragment = document.createDocumentFragment();
+    const {childNodes} = parseFromString(document, ignoreCase(this), html).root;
+    const fragment = ownerDocument.createDocumentFragment();
     fragment.append(...childNodes);
-    _customElements._hold = false;
+    setReactive(true);
     this.replaceChildren(fragment);
   }
 

@@ -1,6 +1,6 @@
 'use strict';
 const {Element} = require('../element.js');
-const {classes} = require('../custom-element-registry.js');
+const {Classes, customElements} = require('../custom-element-registry.js');
 
 const empty = [];
 
@@ -13,15 +13,14 @@ class HTMLElement extends Element {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
-    this._custom = false;
     if (!ownerDocument) {
-      const {constructor: Class} = this;
-      if (!classes.has(Class))
+      const {constructor: Class, _end} = this;
+      if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
-      const {ownerDocument, localName, options} = classes.get(Class);
-      this.ownerDocument = this._end.ownerDocument = ownerDocument;
-      this.localName = this._end.localName = localName;
-      this._custom = true;
+      const {ownerDocument, localName, options} = Classes.get(Class);
+      this.ownerDocument = _end.ownerDocument = ownerDocument;
+      this.localName = _end.localName = localName;
+      customElements.set(this, {connected: false});
       if (options.is)
         this.setAttribute('is', options.is);
     }
