@@ -1,19 +1,28 @@
-import {booleanAttribute} from '../utils.js';
+import {booleanAttribute, registerHTMLClass} from '../utils.js';
 import {HTMLElement} from './html-element.js';
+
+const tagName = 'button';
 
 /**
  * @implements globalThis.HTMLButtonElement
  */
-export class HTMLButtonElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'button') {
+class HTMLButtonElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 
-  get disabled() {
-    return booleanAttribute.get(this, 'disabled');
-  }
+  /* c8 ignore start */
+  get disabled() { return booleanAttribute.get(this, 'disabled'); }
+  set disabled(value) { booleanAttribute.set(this, 'disabled', value); }
 
-  set disabled(value) {
-    booleanAttribute.set(this, 'disabled', value);
-  }
+  get name() { return this.getAttribute('name'); }
+  set name(value) { this.setAttribute('name', value); }
+
+  get type() { return this.getAttribute('type'); }
+  set type(value) { this.setAttribute('type', value); }
+  /* c8 ignore stop */
 }
+
+registerHTMLClass(tagName, HTMLButtonElement);
+
+export {HTMLButtonElement};
