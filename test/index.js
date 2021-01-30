@@ -413,6 +413,32 @@ assert(node.toString() === '<p>b</p><p>c</p><p>d</p>', 'append cloned content');
 
 assert(document.importNode(node, true).toString() === '<p>b</p><p>c</p><p>d</p>', 'importNode');
 
+template.innerHTML = '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>';
+range = document.createRange();
+range.setStartAfter(template.content.firstChild);
+range.setEndAfter(template.content.lastChild);
+range.deleteContents();
+assert(template.innerHTML === '<p>a</p>', 'deleteContents startafter endafter');
+
+
+template.innerHTML = '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>';
+range = document.createRange();
+range.setStartAfter(template.content.firstChild);
+range.setEndBefore(template.content.lastChild);
+range.deleteContents();
+assert(template.innerHTML === '<p>a</p><p>e</p>', 'deleteContents startafter endbefore');
+
+range = document.createRange();
+range.selectNode(document.createTextNode('!'));
+let h1 = document.createElement('h1');
+range.surroundContents(h1);
+assert(h1.toString() === '<h1>!</h1>', 'surroundContents');
+
+range = document.createRange();
+range.selectNode(h1.firstChild);
+range.insertNode(document.createTextNode('?'));
+assert(h1.toString() === '<h1>?!</h1>', 'insertNode');
+
 let event = document.createEvent('Event');
 event.initEvent('test-event');
 

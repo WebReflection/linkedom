@@ -29,13 +29,27 @@ class Range {
     this._end = null;
   }
 
-  /* c8 ignore start */
+  /* TODO: this is more complicated than it looks
   setStart(node, offset) {
     this._start = node.childNodes[offset];
   }
 
   setEnd(node, offset) {
     this._end = getEnd(node.childNodes[offset]);
+  }
+  */
+
+  insertNode(newNode) {
+    this._start.parentNode.insertBefore(newNode, this._start);
+  }
+
+  selectNode(node) {
+    this._start = node;
+    this._end = getEnd(node);
+  }
+
+  surroundContents(parentNode) {
+    parentNode.replaceChildren(this.extractContents());
   }
 
   setStartBefore(node) {
@@ -53,7 +67,6 @@ class Range {
   setEndAfter(node) {
     this._end = getEnd(node);
   }
-  /* c8 ignore stop */
 
   cloneContents() {
     let {_start, _end} = this;
