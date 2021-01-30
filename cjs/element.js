@@ -11,7 +11,8 @@ const {
   setBoundaries
 } = require('./utils.js');
 
-const {attributeChangedCallback, setReactive} = require('./custom-element-registry.js');
+const {attributeChangedCallback: ceAttributes, setReactive} = require('./custom-element-registry.js');
+const {attributeChangedCallback: moAttributes} = require('./mutation-observer-class.js');
 
 const {NodeList} = require('./interfaces.js');
 const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
@@ -282,12 +283,13 @@ class Element extends NodeElement {
     let {_next} = this;
     while (_next.nodeType === ATTRIBUTE_NODE) {
       if (_next === attribute) {
-        const {_prev, _next, name} = attribute;
+        const {_value, _prev, _next, name} = attribute;
         setAdjacent(_prev, _next);
         attribute.ownerElement = attribute._prev = attribute._next = null;
         if (name === 'class')
           this._classList = null;
-        attributeChangedCallback(this, name, attribute._value, null);
+        ceAttributes(this, name, _value, null);
+        moAttributes(this, name, _value);
         return;
       }
       _next = _next._next;
@@ -312,7 +314,8 @@ class Element extends NodeElement {
       setBoundaries(this, attribute, _next);
       if (name === 'class')
         this.className = attribute._value;
-      attributeChangedCallback(this, name, null, attribute._value);
+      ceAttributes(this, name, null, attribute._value);
+      moAttributes(this, name, null);
     }
     return previously;
   }
