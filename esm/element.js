@@ -194,7 +194,7 @@ export class Element extends NodeElement {
     return NonDocumentTypeChildNode.previousElementSibling(this);
   }
 
-  // TODO: make creation of shadow dom reflect on the page, once DSD is out
+  // TODO: make creation of shadow dom reflect on the page, once DSD is out?
   /**
    * @param {object} init either `{mode: "open"}` or `{mode: "closed"}`
    */
@@ -221,6 +221,54 @@ export class Element extends NodeElement {
       _next = _next._next;
     }
     return null;
+  }
+
+  /**
+   * @param {'beforebegin'|'afterbegin'|'beforeend'|'afterend'} position
+   * @param {Element} element 
+   */
+  insertAdjacentElement(position, element) {
+    const {parentElement} = this;
+    switch (position) {
+      case 'beforebegin':
+        if (parentElement) {
+          parentElement.insertBefore(element, this);
+          break;
+        }
+        return null;
+      case 'afterbegin':
+        this.insertBefore(element, this.firstChild);
+        break;
+      case 'beforeend':
+        this.insertBefore(element, null);
+        break;
+      case 'afterend':
+        if (parentElement) {
+          parentElement.insertBefore(element, this.nextSibling);
+          break;
+        }
+        return null;
+    }
+    return element;
+  }
+
+  /**
+   * @param {'beforebegin'|'afterbegin'|'beforeend'|'afterend'} position
+   * @param {string} html 
+   */
+  insertAdjacentHTML(position, html) {
+    const template = this.ownerDocument.createElement('template');
+    template.innerHTML = html;
+    this.insertAdjacentElement(position, template.content);
+  }
+
+  /**
+   * @param {'beforebegin'|'afterbegin'|'beforeend'|'afterend'} position
+   * @param {string} text 
+   */
+  insertAdjacentText(position, text) {
+    const node = this.ownerDocument.createTextNode(text);
+    this.insertAdjacentElement(position, node);
   }
 
   /**
