@@ -216,6 +216,8 @@ class Document extends Node {
         switch (name) {
           case 'document':
             return this;
+          case 'window':
+            return this.defaultView;
           case 'customElements':
             if (!this._customElements.define)
               this._customElements = new CustomElementRegistry(this);
