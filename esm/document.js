@@ -89,6 +89,7 @@ import {HTMLMarqueeElement} from './html/html-marquee-element.js';
 import {Range} from './range.js';
 import {TreeWalker} from './tree-walker.js';
 import {CustomElementRegistry, customElements} from './custom-element-registry.js';
+import {MutationObserverClass} from './mutation-observer-class.js';
 
 const {create, defineProperties} = Object;
 
@@ -192,8 +193,9 @@ export class Document extends Node {
    */
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
-    this._mime = Mime[type];
     this._customElements = {_active: false, _registry: null};
+    this._observer = {_active: false, _class: null};
+    this._mime = Mime[type];
 
     /**
      * @type {Element?}
@@ -218,9 +220,14 @@ export class Document extends Node {
           case 'window':
             return window;
           case 'customElements':
-            if (!this._customElements.define)
+            if (!this._customElements._registry)
               this._customElements = new CustomElementRegistry(this);
             return this._customElements;
+          case 'MutationObserver':
+            if (!this._observer._class)
+              this._observer = new MutationObserverClass(this);
+            return this._observer._class;
+            break;
           default:
             return defaultViewExports[name] || globalThis[name];
         }

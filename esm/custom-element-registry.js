@@ -12,14 +12,14 @@ export const Classes = new WeakMap;
 
 export const customElements = new WeakMap;
 
-export const attributeChangedCallback = (element, name, oldValue, newValue) => {
+export const attributeChangedCallback = (element, attributeName, oldValue, newValue) => {
   if (
     reactive &&
     customElements.has(element) &&
     element.attributeChangedCallback &&
-    element.constructor.observedAttributes.includes(name)
+    element.constructor.observedAttributes.includes(attributeName)
   ) {
-    element.attributeChangedCallback(name, oldValue, newValue);
+    element.attributeChangedCallback(attributeName, oldValue, newValue);
   }
 };
 

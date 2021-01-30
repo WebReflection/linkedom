@@ -148,11 +148,17 @@ export class Node extends EventTarget {
   cloneNode(deep = false) {
     const {ownerDocument: OD, nodeType, localName} = this;
     switch (nodeType) {
-      case DOCUMENT_NODE:
+      case DOCUMENT_NODE: {
         const document = new this.constructor();
         document._customElements = this._customElements;
-        document.root = this.root.cloneNode(deep);
+        (document.root = this.root.cloneNode(deep)).ownerDocument = document;
+        let {_next, _end} = document.root;
+        while (_next !== _end) {
+          _next.ownerDocument = document;
+          _next = _next._next;
+        }
         return document;
+      }
       case ELEMENT_NODE:
         const {SVGElement} = OD[DOM];
         const addNext = _next => {

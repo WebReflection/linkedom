@@ -15,7 +15,7 @@
     "build": "npm run cjs && npm run test",
     "cjs": "ascjs --no-default esm cjs",
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
-    "test": "c8 node test/index.js && node test/benchmark-linkedom.js --dom --custom-elements"
+    "test": "node test/benchmark-linkedom.js --w3c --custom-elements --no-clone && c8 node test/index.js"
   },
   "keywords": [
     "DOM",

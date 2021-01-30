@@ -54,6 +54,10 @@ assert(document.all.length > 0, 'document.all');
 assert(document.toString() === '<!DOCTYPE html><html><head><title></title></head><body></body></html>', 'document sanity');
 
 document = (new DOMParser).parseFromString('', 'text/html');
+assert(typeof document.defaultView.MutationObserver === 'function', 'MutationObserver class');
+let tmp = new document.defaultView.MutationObserver;
+tmp.observe(document.documentElement);
+tmp.disconnect();
 assert(document.documentElement.attachShadow({mode: 'closed'}) === document.documentElement, 'closed shadowRoot');
 assert(document.documentElement.attachShadow({mode: 'open'}) === document.documentElement, 'open shadowRoot');
 assert(document.documentElement.shadowRoot === document.documentElement, 'shadowRoot');
@@ -940,3 +944,36 @@ assert(newDoc._customElements === doc._customElements, 'shared custom elements')
 assert(newDoc.defaultView.document === newDoc, 'defaultView.document as circular reference');
 let {window} = newDoc.defaultView;
 assert(window === window.window, 'defaultView.window as circular reference');
+
+let {MutationObserver} = window;
+let observer = new MutationObserver(records => {
+  args = records;
+});
+
+newDoc.documentElement.appendChild(
+  newDoc.createElement('not-observed')
+);
+
+let observed = newDoc.documentElement.appendChild(
+  newDoc.createElement('observed')
+);
+
+observer.observe(observed, {
+  attributes: true,
+  attributeFilter: ['first']
+});
+
+observed.setAttribute('first', 123);
+observed.setAttribute('second', 456);
+assert(args === null, 'MutationObserver is asynchronous');
+assert(JSON.stringify(observer._records) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
+
+setTimeout(() => {
+
+  assert(JSON.stringify(args) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
+args = null;
+observer.disconnect();
+observed.setAttribute('first', 456);
+assert(JSON.stringify(observer.takeRecords()) === '[]', 'MutationObserver disconnected');
+
+});
