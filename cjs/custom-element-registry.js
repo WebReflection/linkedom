@@ -28,18 +28,18 @@ const attributeChangedCallback = (element, name, oldValue, newValue) => {
 };
 exports.attributeChangedCallback = attributeChangedCallback;
 
-const createTrigger = (method, connected) => element => {
+const createTrigger = (method, isConnected) => element => {
   if (customElements.has(element)) {
     const info = customElements.get(element);
-    if (info.connected === connected && element.isConnected === !connected) {
-      info.connected = !connected;
+    if (info.connected !== isConnected && element.isConnected === isConnected) {
+      info.connected = isConnected;
       if (method in element)
         element[method]();
     }
   }
 };
 
-const triggerConnected = createTrigger('connectedCallback', false);
+const triggerConnected = createTrigger('connectedCallback', true);
 const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
@@ -53,7 +53,7 @@ const connectedCallback = element => {
 };
 exports.connectedCallback = connectedCallback;
 
-const triggerDisconnected = createTrigger('disconnectedCallback', true);
+const triggerDisconnected = createTrigger('disconnectedCallback', false);
 const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);

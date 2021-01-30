@@ -172,7 +172,7 @@ class Node extends EventTarget {
               break;
             case ATTRIBUTE_NODE:
               const attribute = OD.createAttribute(_next.name);
-              attribute._value = _next.value;
+              attribute._value = _next._value;
               addNext(attribute);
               break;
             case TEXT_NODE:
@@ -192,7 +192,7 @@ class Node extends EventTarget {
         return OD.createComment(this.textContent);
       case ATTRIBUTE_NODE:
         const attribute = OD.createAttribute(this.name);
-        attribute._value = this.value;
+        attribute._value = this._value;
         return attribute;
       default:
         const fragment = OD.createDocumentFragment();

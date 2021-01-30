@@ -320,7 +320,7 @@ class Element extends NodeElement {
   setAttribute(name, value) {
     let attribute = this.getAttributeNode(name);
     if (attribute)
-      attribute.value = String(value);
+      attribute.value = value;
     else
       this.setAttributeNode(new Attr(this.ownerDocument, name, value));
   }
@@ -364,13 +364,17 @@ class Element extends NodeElement {
           }
           break;
         case ELEMENT_NODE_END:
-          if (isOpened && ('ownerSVGElement' in _next._start))
-            out.push(' />');
-          else if (isOpened && isVoidElement(_next))
-            out.push(ignoreCase(_next) ? '>' : ' />');
+          if (isOpened) {
+            if ('ownerSVGElement' in _next._start)
+              out.push(' />');
+            else if (isVoidElement(_next))
+              out.push(ignoreCase(_next) ? '>' : ' />');
+            else
+              out.push(`></${_next.localName}>`);
+            isOpened = false;
+          }
           else
-            out.push(`${isOpened ? '>' : ''}</${_next.localName}>`);
-          isOpened = false;
+            out.push(`</${_next.localName}>`);
           break;
         case ELEMENT_NODE:
           out.push(`${isOpened ? '>' : ''}<${_next.localName}`);

@@ -101,7 +101,7 @@ const textOnlyDescriptors = {
       const {ownerDocument, _end} = this;
       const text = createNode ? ownerDocument.createTextNode(content) : content;
       text.parentNode = this;
-      setBoundaries(this, text, this._end);
+      setBoundaries(this, text, _end);
     }
   },
   innerHTML : {
