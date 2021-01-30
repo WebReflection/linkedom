@@ -61,6 +61,24 @@ document.querySelectorAll('form, input[name], button');
 ```
 
 
+### Simulating JSON Bootstrap
+
+This module is based on [DOMParser](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser) API, hence it creates a *new* `document` each time `new DOMParser().parseFromString(...)` is invoked.
+
+As there's *no global pollution* whatsoever, to retrieve classes and features associated to the `document` returned by `parseFromString`, you need to access its `defaultView` property, which is a special proxy that lets you get *pseudo-global-but-not-global* properties and classes.
+
+Accordingly, to simulate `new JSDOM(html).window` behavior, you can use a tiny helper like the following one:
+
+```js
+// facade to a generic JSDOM bootstrap
+import {parseHTML} from 'linkedom';
+function JSDOM(html) { return {window: parseHTML(html).defaultView}; }
+
+// now you can do the same as you would with JSDOM
+const {document} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>').window;
+```
+
+
 
 ## How does it work?
 
