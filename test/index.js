@@ -10,7 +10,7 @@ const svgDocument = (new DOMParser).parseFromString('<svg><rect /></svg>', 'imag
 let xmlDocument = (new DOMParser).parseFromString('<svg><rect></rect></svg>', 'text/xml');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?><svg><rect /></svg>', 'xml toString');
 assert(xmlDocument._mime.voidElements.test(xmlDocument.querySelector('rect')), 'xml always void');
-assert(!xmlDocument._mime.textOnly.test(xmlDocument.querySelector('rect')), 'xml always non text-only');
+// assert(!xmlDocument._mime.textOnly.test(xmlDocument.querySelector('rect')), 'xml always non text-only');
 
 svgDocument.root = svgDocument.createElement('Svg');
 assert(svgDocument.root.tagName === 'Svg', 'XML names are case-sensitive');

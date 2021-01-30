@@ -1,6 +1,6 @@
 import {DOCUMENT_NODE, TEXT_NODE, DOM} from './constants.js';
 
-import {Mime, setBoundaries} from './utils.js';
+import {Mime, htmlClasses, setBoundaries} from './utils.js';
 
 // mixins & interfaces
 import {NonElementParentNode, ParentNode} from './mixins.js';
@@ -92,53 +92,23 @@ import {TreeWalker} from './tree-walker.js';
 import {CustomElementRegistry, customElements} from './custom-element-registry.js';
 
 const {create, defineProperties} = Object;
-const {toString} = Element.prototype;
 
-const textOnlyDescriptors = {
-  _updateTextContent: {
-    value(content, createNode) {
-      this.replaceChildren();
-      const {ownerDocument, _end} = this;
-      const text = createNode ? ownerDocument.createTextNode(content) : content;
-      text.parentNode = this;
-      setBoundaries(this, text, _end);
-    }
-  },
-  innerHTML : {
-    get() {
-      return this.textContent;
-    },
-    set(html) {
-      this.textContent = html;
-    }
-  },
-  textContent: {
-    get() {
-      const {firstChild} = this;
-      return firstChild ? firstChild.textContent : '';
-    },
-    set(content) {
-      this._updateTextContent(content, true);
-    }
-  },
-  // TODO: this is not perfect, although I don't think there are
-  //       real world use cases to make it perfect 🤷‍♂️
-  //       if there are though, this node should accept nodes *but*
-  //       use these as `textContent` only
-  insertBefore: {
-    value(node) {
-      node.remove();
-      this._updateTextContent(node, node.nodeType !== TEXT_NODE);
-      node.parentNode = this;
-      return node;
-    }
-  },
-  toString: {
-    value() {
-      const outerHTML = toString.call(this.cloneNode());
-      return outerHTML.replace(/></, `>${this.textContent}<`);
+const createHTMLElement = (ownerDocument, builtin, localName, options) => {
+  if (!builtin && htmlClasses.has(localName)) {
+    const Class = htmlClasses.get(localName);
+    return new Class(ownerDocument, localName);
+  }
+  const {_customElements: {_active, _registry}} = ownerDocument;
+  if (_active) {
+    const ce = builtin ? options.is : localName;
+    if (_registry.has(ce)) {
+      const {Class} = _registry.get(ce);
+      const element = new Class(ownerDocument, localName);
+      customElements.set(element, {connected: false, setup: false});
+      return element;
     }
   }
+  return new HTMLElement(ownerDocument, localName);
 };
 
 const defaultViewExports = {
@@ -344,38 +314,14 @@ export class Document extends Node {
    * @param {object?} options
    */
   createElement(localName, options) {
-    let element;
     if (this._mime.ignoreCase) {
       const builtin = !!(options && options.is);
-      switch (localName) {
-        case 'template':
-        case 'TEMPLATE':
-          if (!builtin) {
-            element = new HTMLTemplateElement(this);
-            break;
-          }
-        default:
-          const {_customElements} = this;
-          if (_customElements._active) {
-            const ce = builtin ? options.is : localName;
-            if (_customElements._registry.has(ce)) {
-              const {Class} = _customElements._registry.get(ce);
-              element = new Class(this, localName);
-              customElements.set(element, {connected: false, setup: false});
-              break;
-            }
-          }
-          element = new HTMLElement(this, localName);
-          break;
-      }
+      const element = createHTMLElement(this, builtin, localName, options);
       if (builtin)
         element.setAttribute('is', options.is);
-      if (this._mime.textOnly.test(localName))
-        defineProperties(element, textOnlyDescriptors);
+      return element;
     }
-    else
-      element = new Element(this, localName);
-    return element;
+    return new Element(this, localName);
   }
 
   /**

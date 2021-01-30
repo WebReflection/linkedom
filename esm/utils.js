@@ -16,40 +16,48 @@ const setupNode = node => {
     customElements.get(node).setup = true;
 };
 
+export const htmlClasses = new Map;
+export const registerHTMLClass = (names, Class) => {
+  for (const name of [].concat(names)) {
+    htmlClasses.set(name, Class);
+    htmlClasses.set(name.toUpperCase(), Class);
+  }
+};
+
 const $String = String;
 export {$String as String};
 
-const textOnly = {test: () => false};
+// const textOnly = {test: () => false};
 const voidElements = {test: () => true};
 export const Mime = {
   'text/html': {
     docType: '<!DOCTYPE html>',
     ignoreCase: true,
-    textOnly: /^(?:plaintext|script|style|textarea|title|xmp)$/i,
+    // textOnly: /^(?:plaintext|script|style|textarea|title|xmp)$/i,
     voidElements: /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i
   },
   'image/svg+xml': {
     docType: '',
     ignoreCase: false,
-    textOnly,
+    // textOnly,
     voidElements
   },
   'text/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
-    textOnly,
+    // textOnly,
     voidElements
   },
   'application/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
-    textOnly,
+    // textOnly,
     voidElements
   },
   'application/xhtml+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
-    textOnly,
+    // textOnly,
     voidElements
   }
 };

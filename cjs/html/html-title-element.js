@@ -1,12 +1,19 @@
 'use strict';
-const {HTMLElement} = require('./html-element.js');
+const {registerHTMLClass} = require('../utils.js');
+const {TextElement} = require('../text-element.js');
+
+const tagName = 'title';
 
 /**
  * @implements globalThis.HTMLTitleElement
  */
-class HTMLTitleElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'title') {
+class HTMLTitleElement extends TextElement {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 }
 exports.HTMLTitleElement = HTMLTitleElement
+
+registerHTMLClass(tagName, HTMLTitleElement);
+
+exports.HTMLTitleElement = HTMLTitleElement;

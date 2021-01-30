@@ -1,12 +1,14 @@
 'use strict';
-const {booleanAttribute} = require('../utils.js');
-const {HTMLElement} = require('./html-element.js');
+const {booleanAttribute, registerHTMLClass} = require('../utils.js');
+const {TextElement} = require('../text-element.js');
+
+const tagName = 'textarea';
 
 /**
  * @implements globalThis.HTMLTextAreaElement
  */
-class HTMLTextAreaElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'textarea') {
+class HTMLTextAreaElement extends TextElement {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 
@@ -19,3 +21,7 @@ class HTMLTextAreaElement extends HTMLElement {
   }
 }
 exports.HTMLTextAreaElement = HTMLTextAreaElement
+
+registerHTMLClass(tagName, HTMLTextAreaElement);
+
+exports.HTMLTextAreaElement = HTMLTextAreaElement;
