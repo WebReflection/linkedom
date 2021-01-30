@@ -18,9 +18,19 @@ A triple-linked lists based DOM with the following goals:
 Until there is a badge with 100% code coverage, and *npm* version is `0.1.x`, consider this project highly experimental, or a playground, to see where and how a linked-list based DOM can shine, and how difficult it would be to reach at least feature-parity with *basicHTML*.
 
 ```js
-import {DOMParser} from 'linkedom';
+import {DOMParser, parseHTML} from 'linkedom';
 
-const document = (new DOMParser).parseFromString(`
+// Standard way: text/html, text/xml, image/svg+xml, etc...
+// const document = (new DOMParser).parseFromString(html, 'text/html');
+
+// Simplified way for HTML
+const {
+  // note, these are *not* globals
+  window, document, customElements,
+  HTMLElement,
+  Event, CustomEvent
+  // other exports ..
+} = parseHTML(`
   <!doctype html>
   <html lang="en">
     <head>
@@ -35,25 +45,7 @@ const document = (new DOMParser).parseFromString(`
       </form>
     </body>
   </html>
-  `,
-  'text/html'
-);
-
-// retrieve the document.defaultView, a global proxy that does *not*
-// pollute the global environment (you are in charge of doing it)
-const {defaultView: window} = document;
-
-// the window proxy exposes all globals + classes from this module
-const {
-  // provided by this module, could be native too
-  Event, CustomEvent,
-  // all HTML classes, such as HTMLButtonElement and others, are available
-  HTMLElement,
-  // the CustomElementRegistry is defined once *per document*
-  // multiple documents require multiple custom elements definition
-  // but classes can be reused
-  customElements
-} = window;
+`);
 
 // builtin extends compatible too 👍
 customElements.define('custom-element', class extends HTMLElement {

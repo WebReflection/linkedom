@@ -1,4 +1,4 @@
-const {CustomEvent, DOMParser} = require('../cjs');
+const {CustomEvent, DOMParser, parseHTML} = require('../cjs');
 
 const assert = (expression, message) => {
   console.assert(expression, message);
@@ -27,7 +27,7 @@ assert(xmlDocument.lastElementChild === null, 'no lastElementChild');
 assert(xmlDocument.childElementCount === 0, 'childElementCount as 0');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?>', 'mime type only');
 
-let document = (new DOMParser).parseFromString('<div><svg><rect /></svg></div>', 'text/html');
+let {document} = parseHTML('<div><svg><rect /></svg></div>');
 
 assert(document.ELEMENT_NODE, 'ELEMENT_NODE');
 assert(document.ATTRIBUTE_NODE, 'ATTRIBUTE_NODE');
