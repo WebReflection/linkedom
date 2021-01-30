@@ -151,7 +151,7 @@ class Node extends EventTarget {
       case DOCUMENT_NODE:
         const document = new this.constructor();
         document._customElements = this._customElements;
-        document.root = this.root.cloneNode(true);
+        document.root = this.root.cloneNode(deep);
         return document;
       case ELEMENT_NODE:
         const {SVGElement} = OD[DOM];

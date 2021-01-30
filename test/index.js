@@ -937,3 +937,4 @@ assert(doc.toString() === '<!DOCTYPE html><html><head><script csp-hash="any"></s
 
 let newDoc = doc.cloneNode(true);
 assert(newDoc._customElements === doc._customElements, 'shared custom elements');
+assert(newDoc.defaultView.document === newDoc, 'defaultView.document as circular reference');
