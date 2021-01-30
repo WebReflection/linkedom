@@ -773,6 +773,15 @@ assert(node.toString() === '<div>beforebegin<p>afterbegin!beforeend</p>afterend<
 node.firstElementChild.insertAdjacentText('afterend', '<OK>');
 assert(node.toString() === '<div>beforebegin<p>afterbegin!beforeend</p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
 
+args = null;
+node.addEventListener('click', {
+  handleEvent(event) {
+    args = event;
+  }
+});
+node.dispatchEvent(new Event('click'));
+assert(args.type === 'click', 'handleEvent works');
+
 const {voidElements} = document._mime;
 [
   HTMLHtmlElement,
