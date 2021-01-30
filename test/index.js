@@ -808,6 +808,33 @@ node.addEventListener('click', {
 node.dispatchEvent(new Event('click'));
 assert(args.type === 'click', 'handleEvent works');
 
+node.replaceChildren();
+assert(node.contentEditable === false, 'boolean attributes as false');
+node.contentEditable = true;
+assert(node.toString() === '<div contenteditable></div>', 'boolean attributes as layout');
+node.contentEditable = false;
+assert(node.toString() === '<div></div>', 'boolean attributes when false');
+assert(node.tabIndex === -1, 'numeric attributes when absent');
+node.tabIndex = 1;
+assert(node.toString() === '<div tabindex="1"></div>', 'numeric attributes when specified');
+assert(node.tabIndex === 1);
+node.removeAttribute('tabindex');
+assert(node.accessKey === '', 'string attributes when absent');
+node.accessKey = 'enter';
+assert(node.toString() === '<div accesskey="enter"></div>', 'string attributes when specified');
+node.removeAttribute('accesskey');
+assert(node.onabort === null, 'DOM Level 0 events empty');
+node.onabort = event => { args = event; };
+assert(typeof node.onabort === 'function', 'DOM Level 0 events set');
+node.dispatchEvent(new Event('abort'));
+assert(args.type === 'abort', 'DOM Level 0 events triggered');
+node.onabort = null;
+assert(node.onabort === null, 'DOM Level 0 events removed');
+args = null;
+node.dispatchEvent(new Event('abort'));
+assert(args === null, 'DOM Level 0 events nope');
+
+
 const {voidElements} = document._mime;
 [
   HTMLHtmlElement,

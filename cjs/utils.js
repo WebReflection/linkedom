@@ -68,16 +68,37 @@ exports.Mime = Mime;
 
 const booleanAttribute = {
   get(element, name) {
-    return element.hasAttribute(name);
+    return element.hasAttribute(name.toLowerCase());
   },
   set(element, name, value) {
     if (value)
-      element.setAttribute(name, '');
+      element.setAttribute(name.toLowerCase(), '');
     else
-      element.removeAttribute(name);
+      element.removeAttribute(name.toLowerCase());
   }
 };
 exports.booleanAttribute = booleanAttribute;
+
+const numericAttribute = {
+  get(element, name) {
+    return parseFloat(element.getAttribute(name.toLowerCase()) || -1);
+  },
+  set(element, name, value) {
+    element.setAttribute(name.toLowerCase(), value);
+  }
+};
+exports.numericAttribute = numericAttribute;
+
+const stringAttribute = {
+  get(element, name) {
+    return element.getAttribute(name.toLowerCase()) || '';
+  },
+  set(element, name, value) {
+    element.setAttribute(name.toLowerCase(), value);
+  }
+};
+exports.stringAttribute = stringAttribute;
+
 
 const findNext = ({_next, _end}) => {
   while (_next.nodeType === ATTRIBUTE_NODE)
