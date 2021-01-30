@@ -1,3 +1,4 @@
+import {registerHTMLClass} from '../utils.js';
 import {HTMLElement} from './html-element.js';
 
 const update = ({content, childNodes}) => {
@@ -7,7 +8,7 @@ const update = ({content, childNodes}) => {
 /**
  * @implements globalThis.HTMLTemplateElement
  */
-export class HTMLTemplateElement extends HTMLElement {
+class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
     super(ownerDocument, 'template');
     this.content = this.ownerDocument.createDocumentFragment();
@@ -23,3 +24,7 @@ export class HTMLTemplateElement extends HTMLElement {
     update(this);
   }
 }
+
+registerHTMLClass('template', HTMLTemplateElement);
+
+export {HTMLTemplateElement};

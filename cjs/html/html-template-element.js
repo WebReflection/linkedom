@@ -1,4 +1,5 @@
 'use strict';
+const {registerHTMLClass} = require('../utils.js');
 const {HTMLElement} = require('./html-element.js');
 
 const update = ({content, childNodes}) => {
@@ -24,4 +25,7 @@ class HTMLTemplateElement extends HTMLElement {
     update(this);
   }
 }
-exports.HTMLTemplateElement = HTMLTemplateElement
+
+registerHTMLClass('template', HTMLTemplateElement);
+
+exports.HTMLTemplateElement = HTMLTemplateElement;
