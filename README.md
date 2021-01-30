@@ -72,7 +72,7 @@ Accordingly, to simulate `new JSDOM(html).window` behavior, you can use a tiny h
 ```js
 // facade to a generic JSDOM bootstrap
 import {parseHTML} from 'linkedom';
-function JSDOM(html) { return {window: parseHTML(html).defaultView}; }
+function JSDOM(html) { return parseHTML(html).defaultView; }
 
 // now you can do the same as you would with JSDOM
 const {document} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>').window;

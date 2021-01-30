@@ -209,14 +209,14 @@ export class Document extends Node {
   }
 
   get defaultView() {
-    return new Proxy(globalThis, {
+    const window = new Proxy(globalThis, {
       /* c8 ignore start */
       get: (globalThis, name) => {
         switch (name) {
           case 'document':
             return this;
           case 'window':
-            return this.defaultView;
+            return window;
           case 'customElements':
             if (!this._customElements.define)
               this._customElements = new CustomElementRegistry(this);
@@ -227,6 +227,7 @@ export class Document extends Node {
       }
       /* c8 ignore stop */
     });
+    return window;
   }
 
   // <NonElementParentNode>
