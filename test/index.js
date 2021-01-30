@@ -927,3 +927,10 @@ const {voidElements} = document._mime;
   element.disabled = false;
   assert(element.hasAttribute('disabled') === false, 'setting disabled false');
 });
+
+
+// Issues //
+
+let {document: doc} = parseHTML('');
+doc.head.innerHTML = `<script csp-hash="any"></script>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><script csp-hash="any"></script></head></html>', 'Issue #1');

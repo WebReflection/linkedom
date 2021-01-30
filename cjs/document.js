@@ -86,7 +86,6 @@ const {HTMLSourceElement} = require('./html/html-source-element.js');
 const {HTMLTrackElement} = require('./html/html-track-element.js');
 const {HTMLMarqueeElement} = require('./html/html-marquee-element.js');
 
-
 // extras
 const {Range} = require('./range.js');
 const {TreeWalker} = require('./tree-walker.js');
@@ -211,13 +210,15 @@ class Document extends Node {
   }
 
   get defaultView() {
-    if (!this._customElements.define)
-      this._customElements = new CustomElementRegistry(this);
     return new Proxy(globalThis, {
       /* c8 ignore start */
       get: (globalThis, name) => {
         switch (name) {
+          case 'document':
+            return this;
           case 'customElements':
+            if (!this._customElements.define)
+              this._customElements = new CustomElementRegistry(this);
             return this._customElements;
           default:
             return defaultViewExports[name] || globalThis[name];
