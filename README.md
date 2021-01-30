@@ -11,12 +11,6 @@ A triple-linked lists based DOM with the following goals:
   * be **close to the** current **DOM standard**, but not too close.
   * replace [basicHTML](https://github.com/WebReflection/basicHTML#readme) (long term goal).
 
-
-
-## Work in progress
-
-Until there is a badge with 100% code coverage, and *npm* version is `0.1.x`, consider this project highly experimental, or a playground, to see where and how a linked-list based DOM can shine, and how difficult it would be to reach at least feature-parity with *basicHTML*.
-
 ```js
 import {DOMParser, parseHTML} from 'linkedom';
 
@@ -98,6 +92,8 @@ npm i
 
 npm run benchmark
 ```
+
+Following a couple of (outdated) benchmark results example.
 
 ### benchmark:dom
 ![benchmark output example](./linkedom-benchmark-dom.jpg)
