@@ -62,47 +62,6 @@ document.querySelectorAll('form, input[name], button');
 
 
 
-## Parsing VS Node Types
-
-This module parses, and works, only with the following `nodeType`:
-
-  * `ELEMENT_NODE`
-  * `ATTRIBUTE_NODE`
-  * `TEXT_NODE`
-  * `COMMENT_NODE`
-  * `DOCUMENT_NODE`
-  * `DOCUMENT_FRAGMENT_NODE`
-
-Everything else, at least for the time being, is considered *YAGNI*, and it won't likely ever land in this project, as there's no goal to replicate deprecated features of this aged Web.
-
-
-
-## Benchmarks
-
-To run the benchmark locally, please follow these commands:
-
-```sh
-git clone https://github.com/WebReflection/linkedom.git
-
-cd linkedom/test
-npm i
-
-cd ..
-npm i
-
-npm run benchmark
-```
-
-Following a couple of (outdated) benchmark results example.
-
-### benchmark:dom
-![benchmark output example](./linkedom-benchmark-dom.jpg)
-
-### benchmark:html
-![benchmark output example](./linkedom-benchmark-html.jpg)
-
-
-
 ## How does it work?
 
 All nodes are linked on both sides, and all elements consist of 2 nodes, also linked in between.
@@ -113,10 +72,10 @@ A fragment is a special element without boundaries, or parent node.
 
 ```
 Node:             ← node →
-Attr<Node>:       ← attr →          ↑ ownerElement
-Text<Node>:       ← text →          ↑ parentNode
-Comment<Node>:    ← comment →       ↑ parentNode
-Element<Node>:    ← start ↔ end →   ↑ parentNode
+Attr<Node>:       ← attr →          ↑ ownerElement?
+Text<Node>:       ← text →          ↑ parentNode?
+Comment<Node>:    ← comment →       ↑ parentNode?
+Element<Node>:    ← start ↔ end →   ↑ parentNode?
 
 Fragment<Element>:  start ↔ end
 
@@ -159,3 +118,43 @@ This structure also allows programs to avoid issues such as "*Maximum call stack
 
 At this point, even if this module is ready to cache results when no mutations happen, and since repeated crawling is not a too common pattern, but it can always be cached in user-land, the core always crawl *left* to *right* or *right* to *left* so that it guarantees it's always in sync with the current DOM state.
 
+
+
+## Parsing VS Node Types
+
+This module parses, and works, only with the following `nodeType`:
+
+  * `ELEMENT_NODE`
+  * `ATTRIBUTE_NODE`
+  * `TEXT_NODE`
+  * `COMMENT_NODE`
+  * `DOCUMENT_NODE`
+  * `DOCUMENT_FRAGMENT_NODE`
+
+Everything else, at least for the time being, is considered *YAGNI*, and it won't likely ever land in this project, as there's no goal to replicate deprecated features of this aged Web.
+
+
+
+## Benchmarks
+
+To run the benchmark locally, please follow these commands:
+
+```sh
+git clone https://github.com/WebReflection/linkedom.git
+
+cd linkedom/test
+npm i
+
+cd ..
+npm i
+
+npm run benchmark
+```
+
+Following a couple of (outdated) benchmark results example.
+
+### benchmark:dom
+![benchmark output example](./linkedom-benchmark-dom.jpg)
+
+### benchmark:html
+![benchmark output example](./linkedom-benchmark-html.jpg)
