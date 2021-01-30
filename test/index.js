@@ -934,3 +934,6 @@ const {voidElements} = document._mime;
 let {document: doc} = parseHTML('');
 doc.head.innerHTML = `<script csp-hash="any"></script>`;
 assert(doc.toString() === '<!DOCTYPE html><html><head><script csp-hash="any"></script></head></html>', 'Issue #1');
+
+let newDoc = doc.cloneNode(true);
+assert(newDoc._customElements === doc._customElements, 'shared custom elements');
