@@ -362,7 +362,7 @@ class Document extends Node {
             if (_customElements._registry.has(ce)) {
               const {Class} = _customElements._registry.get(ce);
               element = new Class(this, localName);
-              customElements.set(element, {connected: false});
+              customElements.set(element, {connected: false, setup: false});
               break;
             }
           }

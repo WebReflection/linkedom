@@ -715,8 +715,8 @@ assert(args.length === 0, 'should not trigger disconnected again');
 
 customElements.define('inner-button', class extends HTMLButtonElement {
   static get observedAttributes() { return ['test']; }
-  attributeChangedCallback() {
-    args.push(arguments);
+  attributeChangedCallback(name, oldValue, newValue) {
+    args.push(name, oldValue, newValue);
   }
   connectedCallback() {
     args.push('connected: ' + this.localName + '[is="' + this.getAttribute('is') + '"]');
@@ -728,8 +728,7 @@ customElements.define('inner-button', class extends HTMLButtonElement {
 
 outer.innerHTML = '<div><button test="123" is="inner-button">OK</button></div>';
 
-// TODO: this shouldn't happen (previous node re-trigger disconnect)
-args.splice(0);
+assert(JSON.stringify(args.splice(0)) === '["test",null,"123"]', 'attributes get initialized');
 
 document.documentElement.appendChild(outer);
 

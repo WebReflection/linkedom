@@ -1,5 +1,5 @@
 'use strict';
-const {ELEMENT_NODE} = require("../cjs/constants");
+const {ELEMENT_NODE} = require("./constants.js");
 
 const {entries, setPrototypeOf} = Object;
 
@@ -31,6 +31,14 @@ exports.attributeChangedCallback = attributeChangedCallback;
 const createTrigger = (method, isConnected) => element => {
   if (customElements.has(element)) {
     const info = customElements.get(element);
+    if (isConnected && info.setup) {
+      info.setup = false;
+      const {observedAttributes} = element.constructor;
+      for (const {name, value} of element.attributes) {
+        if (observedAttributes.includes(name))
+          element.attributeChangedCallback(name, null, value);
+      }
+    }
     if (info.connected !== isConnected && element.isConnected === isConnected) {
       info.connected = isConnected;
       if (method in element)
@@ -144,7 +152,7 @@ class CustomElementRegistry {
           delete element[key];
 
         setPrototypeOf(element, new Class(this._ownerDocument, ce));
-        customElements.set(element, {connected: isConnected});
+        customElements.set(element, {connected: isConnected, setup: false});
 
         for (const [key, value] of values)
           element[key] = value;

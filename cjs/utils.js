@@ -10,6 +10,13 @@ const {
   DOM
 } = require('./constants.js');
 
+const {customElements} = require('./custom-element-registry.js');
+
+const setupNode = node => {
+  if ('attributeChangedCallback' in node)
+    customElements.get(node).setup = true;
+};
+
 const $String = String;
 exports.String = $String;
 
@@ -156,7 +163,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
         }
         else if (_active && _registry.has(name)) {
           const {Class} = _registry.get(name);
-          node = node.appendChild(new Class);
+          setupNode(node = node.appendChild(new Class));
           return;
         }
       }
@@ -172,7 +179,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
           setBoundaries(_end._prev, attribute, _end);
         }
         node.replaceWith(custom);
-        node = custom;
+        setupNode(node = custom);
       }
       else
         node.setAttribute(name, value);

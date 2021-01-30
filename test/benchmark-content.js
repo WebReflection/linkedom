@@ -44,7 +44,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     logHeap('document heap');
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`));
     process.exit(1);
   }
   console.log();
@@ -70,7 +70,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     bench(' html.normalize()', () => { document.documentElement.normalize(); }, 1);
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to normalize html: ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to normalize html: ${o_O.message}`));
   }
   console.log();
 
@@ -78,7 +78,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.log(' total childNodes', bench(' crawling childNodes', () => crawl(document.documentElement, 'childNodes'), times));
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to crawl childNodes: ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to crawl childNodes: ${o_O.message}`));
   }
   console.log();
 
@@ -88,7 +88,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.log(' total children', bench(' crawling children', () => crawl(document.documentElement, 'children'), times));
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to crawl children: ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to crawl children: ${o_O.message}`));
   }
   console.log();
 
@@ -111,7 +111,8 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
       console.log(' outcome: OK');
     }
     catch (o_O) {
-      console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
+      console.log();
+      console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
     }
     console.log();
 
@@ -125,7 +126,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.log(' total div', bench(' querySelectorAll("div")', () => document.documentElement.querySelectorAll('div').length, times));
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to querySelectorAll("div"): ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to querySelectorAll("div"): ${o_O.message}`));
   }
   console.log();
 
@@ -135,7 +136,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.log(' total p', bench(' getElementsByTagName("p")', () => document.documentElement.getElementsByTagName('p').length, times));
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
   }
   console.log();
 
@@ -153,7 +154,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.timeEnd(' removing divs');
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to div.remove() them all: ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to div.remove() them all: ${o_O.message}`));
   }
   console.log();
 
@@ -163,7 +164,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.log(' total div', bench(' div count', () => document.documentElement.getElementsByTagName('div').length, 1));
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("div"): ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("div"): ${o_O.message}`));
   }
   console.log();
 
@@ -173,7 +174,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.log(' total p', bench(' p count', () => document.documentElement.getElementsByTagName('p').length, 1));
   }
   catch (o_O) {
-    console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
+    console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to getElementsByTagName("p"): ${o_O.message}`));
   }
   console.log();
 
@@ -196,15 +197,17 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
       console.log(' outcome: OK');
     }
     catch (o_O) {
-      console.warn(clean(` ⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
+      console.warn(clean(`⚠ \x1b[1merror\x1b[0m - unable to clone html: ${o_O.message}`));
     }
     console.log();
   }
 
-  await sleep(100);
-  console.time(' html.innerHTML');
-  document.documentElement.innerHTML = document.documentElement.innerHTML;
-  console.timeEnd(' html.innerHTML');
+  if (cloneBench) {
+    await sleep(100);
+    console.time(' html.innerHTML');
+    document.documentElement.innerHTML = document.documentElement.innerHTML;
+    console.timeEnd(' html.innerHTML');
+  }
 
   console.log();
   console.timeEnd(clean('\x1b[1mtotal benchmark time\x1b[0m'));
