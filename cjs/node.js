@@ -386,6 +386,8 @@ class NodeElement extends Node {
    * @returns {Node}
    */
   insertBefore(node, before) {
+    if (node === this)
+      throw new Error('unable to append a not to itself');
     // DO_NOT_REMOVE invalidate(this);
     const end = before || this._end;
     switch (node.nodeType) {

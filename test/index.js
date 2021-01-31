@@ -1136,6 +1136,12 @@ observer.observe(document, {
   subtree: true
 });
 
+try {
+  observed.appendChild(observed);
+  assert(false, 'node appended to itself');
+}
+catch (ok) {}
+
 document.documentElement.appendChild(observed);
 
 await milliseconds(10);
