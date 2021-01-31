@@ -6,6 +6,10 @@ const assert = (expression, message) => {
     process.exit(1);
 };
 
+const milliseconds = ms => new Promise($ => setTimeout($, ms));
+
+(async () => {
+
 const svgDocument = (new DOMParser).parseFromString('<svg><rect /></svg>', 'image/svg+xml');
 let xmlDocument = (new DOMParser).parseFromString('<svg><rect></rect></svg>', 'text/xml');
 assert(xmlDocument.toString() === '<?xml version="1.0" encoding="utf-8"?><svg><rect /></svg>', 'xml toString');
@@ -950,7 +954,7 @@ let observer = new MutationObserver(records => {
   args = records;
 });
 
-newDoc.documentElement.appendChild(
+let notObserved = newDoc.documentElement.appendChild(
   newDoc.createElement('not-observed')
 );
 
@@ -968,12 +972,32 @@ observed.setAttribute('second', 456);
 assert(args === null, 'MutationObserver is asynchronous');
 assert(JSON.stringify(observer._records) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
 
-setTimeout(() => {
+await milliseconds(10);
 
-  assert(JSON.stringify(args) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
+assert(JSON.stringify(args) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
 args = null;
 observer.disconnect();
 observed.setAttribute('first', 456);
 assert(JSON.stringify(observer.takeRecords()) === '[]', 'MutationObserver disconnected');
 
+// observe them all
+observer.observe(observed, {
+  attributeOldValue: true
 });
+
+observed.setAttribute('first', 789);
+observed.setAttribute('second', 1);
+
+await milliseconds(10);
+
+assert(JSON.stringify(args) === '[{"type":"attributes","attributeName":"first","oldValue":"456"},{"type":"attributes","attributeName":"second","oldValue":"456"}]', 'MutationObserver attributes');
+
+args = null;
+notObserved.setAttribute('first', 'nope');
+
+await milliseconds(10);
+assert(args === null, 'MutationObserver not observing did not trigger generic node');
+
+
+
+})();

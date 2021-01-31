@@ -1,22 +1,8 @@
-const {assign} = Object;
-
-const mutationObserverInit = {
-  subtree: false,
-  childList: false,
-  attributes: false,
-  attributeFilter: [],
-  attributeOldValue: false,
-  characterData: false,
-  characterDataOldValue: false
-};
-
 let queue = Promise.resolve();
 let toBeScheduled = true;
 
 export const attributeChangedCallback = (element, attributeName, oldValue) => {
   const {_active, _observers} = element.ownerDocument._observer;
-  // TODO: c8 .. what do you want? everything is tested in here!
-  /* c8 ignore start */
   if (_active) {
     for (const {_nodes, _records} of _observers) {
       if (_nodes.has(element)) {
@@ -25,7 +11,7 @@ export const attributeChangedCallback = (element, attributeName, oldValue) => {
           attributeFilter,
           attributeOldValue
         } = _nodes.get(element);
-        if (attributes && attributeFilter.includes(attributeName)) {
+        if (attributes && (!attributeFilter || attributeFilter.includes(attributeName))) {
           _records.push({
             type: 'attributes',
             attributeName,
@@ -44,7 +30,6 @@ export const attributeChangedCallback = (element, attributeName, oldValue) => {
       }
     }
   }
-  /* c8 ignore stop */
 };
 
 export class MutationObserverClass {
@@ -67,16 +52,28 @@ export class MutationObserverClass {
       disconnect() {
         observers.delete(this);
         ownerDocument._observer._active = !!observers.size;
+        this._nodes.clear();
+        this._records.splice(0);
       }
 
       /**
        * @param {Element} target
        * @param {MutationObserverInit} options
        */
-      observe(target, options) {
+      observe(target, options = {
+        subtree: false,
+        childList: false,
+        attributes: false,
+        attributeFilter: null,
+        attributeOldValue: false,
+        characterData: false,
+        characterDataOldValue: false
+      }) {
         observers.add(this);
-        this._nodes.set(target, assign({}, mutationObserverInit, options));
         ownerDocument._observer._active = true;
+        if (options.attributeOldValue || options.attributeFilter)
+          options.attributes = true;
+        this._nodes.set(target, options);
       }
 
       /**
