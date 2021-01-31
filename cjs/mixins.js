@@ -71,11 +71,10 @@ const ChildNode = {
       node.parentNode = null;
       setAdjacent(_prev, _next);
       setBoundaries(null, node, null);
-      if (node.nodeType === ELEMENT_NODE) {
+      if (node.nodeType === ELEMENT_NODE)
         disconnectedCallback(node);
-        if (parentNode)
-          moCallback(node, parentNode);
-      }
+      if (parentNode)
+        moCallback(node, parentNode);
       // DO_NOT_REMOVE if (parentNode) invalidate(parentNode);
     }
   }

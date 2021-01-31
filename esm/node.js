@@ -359,7 +359,7 @@ export class NodeElement extends Node {
    * @returns {boolean}
    */
   contains(node) {
-    let {parentNode} = node;
+    let parentNode = node;
     while (parentNode && parentNode !== this)
       parentNode = parentNode.parentNode;
     return parentNode === this;
@@ -409,10 +409,9 @@ export class NodeElement extends Node {
           // set parent node
           do {
             firstChild.parentNode = this;
-            if (firstChild.nodeType === ELEMENT_NODE) {
+            if (firstChild.nodeType === ELEMENT_NODE)
               connectedCallback(firstChild);
-              moCallback(firstChild, null);
-            }
+            moCallback(firstChild, null);
           } while (
             firstChild !== lastChild &&
             (firstChild = firstChild.nextSibling)
@@ -424,6 +423,7 @@ export class NodeElement extends Node {
         node.remove();
         node.parentNode = this;
         setBoundaries(end._prev, node, end);
+        moCallback(node, null);
         break;
       }
     }

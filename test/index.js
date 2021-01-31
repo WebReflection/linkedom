@@ -982,7 +982,6 @@ const checkRecord = (
 
 let {MutationObserver} = window;
 let observer = new MutationObserver(records => {
-  debugger;
   args = records;
 });
 
@@ -1100,6 +1099,7 @@ observer.observe(observed, {
 });
 
 observed.removeChild(notObserved);
+observed.appendChild(observed.ownerDocument.createTextNode('!'));
 
 await milliseconds(10);
 
@@ -1112,6 +1112,25 @@ assert(
 );
 
 args = null;
+
+observer.disconnect();
+
+observer.observe(observed, {
+  childList: true,
+  characterData: true
+});
+
+observed.appendChild(observed.ownerDocument.createTextNode('!'));
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: observed, type: "childList", addedNodes: [observed.lastChild]},
+    args[0]
+  ),
+  'MutationObserver addedNodes characterData'
+);
 
 observed.appendChild(notObserved);
 
@@ -1131,7 +1150,7 @@ observer.disconnect();
 
 args = null;
 
-observer.observe(document, {
+observer.observe(observed.ownerDocument, {
   childList: true,
   subtree: true
 });
@@ -1142,16 +1161,51 @@ try {
 }
 catch (ok) {}
 
-document.documentElement.appendChild(observed);
+observed.getRootNode().appendChild(notObserved);
 
 await milliseconds(10);
 
 assert(
   checkRecord(
-    {target: document, type: "childList", addedNodes: [observed]},
+    {target: observed.ownerDocument, type: "childList", addedNodes: [notObserved]},
     args[0]
   ),
   'MutationObserver addedNodes'
+);
+
+args = null;
+
+notObserved.remove();
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: observed.ownerDocument, type: "childList", removedNodes: [notObserved]},
+    args[0]
+  ),
+  'MutationObserver removedNodes again'
+);
+
+observer.disconnect();
+
+args = null;
+
+observer.observe(observed.getRootNode(), {
+  childList: true,
+  subtree: true
+});
+
+observed.getRootNode().appendChild(notObserved);
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: observed.getRootNode(), type: "childList", addedNodes: [notObserved]},
+    args[0]
+  ),
+  'MutationObserver addedNodes on html'
 );
 
 })();

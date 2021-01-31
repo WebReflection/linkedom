@@ -73,12 +73,12 @@ export const moCallback = (element, parentNode) => {
   const {_active, _observers} = ownerDocument._observer;
   if (_active) {
     for (const observer of _observers) {
-      for (const [target, {childList, subtree}] of observer._nodes) {
+      for (const [target, {subtree, childList, characterData}] of observer._nodes) {
         if (childList) {
           if (
             (parentNode && (target === parentNode || (subtree && target.contains(parentNode)))) ||
             (!parentNode && ((subtree && (target === ownerDocument || target.contains(element))) ||
-                            (!subtree && target.children.includes(element))))
+                            (!subtree && target[characterData ? 'childNodes' : 'children'].includes(element))))
           ) {
             const {_callback, _records, _scheduled} = observer;
             _records.push(createRecord(
@@ -136,12 +136,13 @@ export class MutationObserverClass {
         attributeFilter: null,
         attributeOldValue: false,
         characterData: false,
-        characterDataOldValue: false
+        // TODO: not implemented yet
+        // characterDataOldValue: false
       }) {
         if (('attributeOldValue' in options) || ('attributeFilter' in options))
           options.attributes = true;
-        if ('characterDataOldValue' in options)
-          options.characterData = true;
+        // if ('characterDataOldValue' in options)
+        //   options.characterData = true;
         options.childList = !!options.childList;
         options.subtree = !!options.subtree;
         this._nodes.set(target, options);
