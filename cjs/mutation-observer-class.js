@@ -34,7 +34,8 @@ const queueAttribute = (observer, target, attributeName, attributeFilter, attrib
 };
 
 const attributeChangedCallback = (element, attributeName, oldValue) => {
-  const {_active, _observers} = element.ownerDocument._observer;
+  const {ownerDocument} = element;
+  const {_active, _observers} = ownerDocument._observer;
   if (_active) {
     for (const observer of _observers) {
       for (const [
@@ -48,7 +49,10 @@ const attributeChangedCallback = (element, attributeName, oldValue) => {
         }
       ] of observer._nodes) {
         if (childList) {
-          if ((subtree && target.contains(element)) || (!subtree && target.children.includes(element))) {
+          if (
+            (subtree && (target === ownerDocument || target.contains(element))) ||
+            (!subtree && target.children.includes(element))
+          ) {
             queueAttribute(observer, element, attributeName, attributeFilter, attributeOldValue, oldValue);
             break;
           }
@@ -67,14 +71,16 @@ const attributeChangedCallback = (element, attributeName, oldValue) => {
 exports.attributeChangedCallback = attributeChangedCallback;
 
 const moCallback = (element, parentNode) => {
-  const {_active, _observers} = element.ownerDocument._observer;
+  const {ownerDocument} = element;
+  const {_active, _observers} = ownerDocument._observer;
   if (_active) {
     for (const observer of _observers) {
       for (const [target, {childList, subtree}] of observer._nodes) {
         if (childList) {
           if (
             (parentNode && (target === parentNode || (subtree && target.contains(parentNode)))) ||
-            (!parentNode && ((subtree && target.contains(element)) || (!subtree && target.children.includes(element))))
+            (!parentNode && ((subtree && (target === ownerDocument || target.contains(element))) ||
+                            (!subtree && target.children.includes(element))))
           ) {
             const {_callback, _records, _scheduled} = observer;
             _records.push(createRecord(

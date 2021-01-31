@@ -11,6 +11,7 @@
     "benchmark:dom:ce": "node test/benchmark-linkedom.js --dom --custom-elements; node test/benchmark-jsdom.js --dom --custom-elements; node test/benchmark-basichtml.js --dom --custom-elements",
     "benchmark:html": "node test/benchmark-linkedom.js --html; node test/benchmark-jsdom.js --html; node test/benchmark-basichtml.js --html",
     "benchmark:html:ce": "node test/benchmark-linkedom.js --html --custom-elements; node test/benchmark-jsdom.js --html --custom-elements; node test/benchmark-basichtml.js --html --custom-elements",
+    "benchmark:html:mo": "node test/benchmark-linkedom.js --html --mutation-observer --custom-elements",
     "benchmark:html:nc": "node test/benchmark-linkedom.js --html --no-clone; node test/benchmark-jsdom.js --html --no-clone; node test/benchmark-basichtml.js --html --no-clone",
     "build": "npm run cjs && npm run test",
     "cjs": "ascjs --no-default esm cjs",

@@ -28,7 +28,7 @@ const crawl = (element, kind) => {
 
 const sleep = ms => new Promise($ => setTimeout($, ms));
 
-const onContent = async (createDocument, html, times, logHeap = () => {}, cloneBench = true, customElements = false) => {
+const onContent = async (createDocument, html, times, logHeap = () => {}, cloneBench = true, customElements = false, mutationObserver = false) => {
 
   console.time(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 
@@ -63,6 +63,21 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
       }
     );
     console.log(clean('\x1b[1mCustom Elements\x1b[0m enabled via ' + constructor.name));
+    console.log();
+  }
+
+  let observed = 0;
+  if (mutationObserver) {
+    const {MutationObserver} = document.defaultView;
+    const mo = new MutationObserver(() => {
+      observed++;
+    });
+    mo.observe(document, {
+      childList: true,
+      subtree: true,
+      attributes: true
+    });
+    console.log(clean('\x1b[1mMutationObserver\x1b[0m enabled'));
     console.log();
   }
 
@@ -207,6 +222,11 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
     console.time(' html.innerHTML');
     document.documentElement.innerHTML = document.documentElement.innerHTML;
     console.timeEnd(' html.innerHTML');
+  }
+
+  if (mutationObserver) {
+    console.log();
+    console.log(clean('\x1b[1mobserved mutations: \x1b[0m' + observed));
   }
 
   console.log();
