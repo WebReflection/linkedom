@@ -1,22 +1,34 @@
-import {TEXT_NODE} from './constants.js';
+import {COMMENT_NODE, ELEMENT_NODE, TEXT_NODE} from './constants.js';
 import {HTMLElement} from './html/html-element.js';
 
-const {insertBefore, toString} = HTMLElement.prototype;
+const {toString} = HTMLElement.prototype;
 
 export class TextElement extends HTMLElement {
 
   get innerHTML() { return this.textContent; }
   set innerHTML(html) { this.textContent = html; }
 
-  insertBefore(node) {
+  get textContent() {
+    let {_next, _end} = this;
+    const output = [];
+    while (_next !== _end) {
+      switch (_next.nodeType) {
+        case TEXT_NODE:
+        case ELEMENT_NODE:
+          output.push(_next.textContent);
+          break;
+        case COMMENT_NODE:
+          output.push(_next.toString());
+          break;
+      }
+      _next = _next._next;
+    }
+    return output.join('');
+  }
+
+  set textContent(content) {
     this.replaceChildren();
-    insertBefore.call(
-      this,
-      node.nodeType === TEXT_NODE ?
-        node : this.ownerDocument.createTextNode(node)
-    );
-    node.parentNode = this;
-    return node;
+    this.insertBefore(this.ownerDocument.createTextNode(content), this._end);
   }
 
   toString() {
