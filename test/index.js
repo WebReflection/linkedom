@@ -949,6 +949,37 @@ assert(newDoc.defaultView.document === newDoc, 'defaultView.document as circular
 let {window} = newDoc.defaultView;
 assert(window === window.window, 'defaultView.window as circular reference');
 
+
+// MutationObserver //
+
+const checkRecord = (
+  {
+    type: aType,
+    target: aTarget,
+    addedNodes: aAddedNodes,
+    removedNodes: aRemovedNodes,
+    attributeName: aAttributeName,
+    oldValue: aOldValue
+  },
+  {
+    type: bType,
+    target: bTarget,
+    addedNodes: bAddedNodes,
+    removedNodes: bRemovedNodes,
+    attributeName: bAttributeName,
+    oldValue: bOldValue
+  }
+) => {
+  return (
+    aType === bType &&
+    aTarget === bTarget &&
+    (aAddedNodes || []).every((node, i) => node === bAddedNodes[i]) &&
+    (aRemovedNodes || []).every((node, i) => node === bRemovedNodes[i]) &&
+    (aAttributeName || null) === bAttributeName &&
+    aOldValue === bOldValue
+  );
+};
+
 let {MutationObserver} = window;
 let observer = new MutationObserver(records => {
   args = records;
@@ -970,11 +1001,17 @@ observer.observe(observed, {
 observed.setAttribute('first', 123);
 observed.setAttribute('second', 456);
 assert(args === null, 'MutationObserver is asynchronous');
-assert(JSON.stringify(observer._records) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
+
+assert(
+  checkRecord(
+    {target: observed, type: "attributes", attributeName: "first"},
+    observer._records[0]
+  ),
+  'MutationObserver attributes'
+);
 
 await milliseconds(10);
 
-assert(JSON.stringify(args) === '[{"type":"attributes","attributeName":"first"}]', 'MutationObserver attributes');
 args = null;
 observer.disconnect();
 observed.setAttribute('first', 456);
@@ -990,7 +1027,17 @@ observed.setAttribute('second', 1);
 
 await milliseconds(10);
 
-assert(JSON.stringify(args) === '[{"type":"attributes","attributeName":"first","oldValue":"456"},{"type":"attributes","attributeName":"second","oldValue":"456"}]', 'MutationObserver attributes');
+assert(
+  checkRecord(
+    {target: observed, type: "attributes", attributeName: "first", oldValue: "456"},
+    args[0]
+  ) &&
+  checkRecord(
+    {target: observed, type: "attributes", attributeName: "second", oldValue: "456"},
+    args[1]
+  ),
+  'MutationObserver attributes'
+);
 
 args = null;
 notObserved.setAttribute('first', 'nope');
@@ -998,6 +1045,49 @@ notObserved.setAttribute('first', 'nope');
 await milliseconds(10);
 assert(args === null, 'MutationObserver not observing did not trigger generic node');
 
+observer.disconnect();
+
+observed.appendChild(notObserved);
+
+observer.observe(observed, {
+  childList: true,
+  attributeFilter: ['first']
+});
+
+notObserved.setAttribute('first', 'yup');
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: notObserved, type: "attributes", attributeName: "first"},
+    args[0]
+  ),
+  'MutationObserver attributes'
+);
+
+
+observer.disconnect();
+
+observed.appendChild(notObserved);
+
+observer.observe(observed, {
+  childList: true,
+  subtree: true,
+  attributeFilter: ['first']
+});
+
+notObserved.setAttribute('first', 'again');
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: notObserved, type: "attributes", attributeName: "first"},
+    args[0]
+  ),
+  'MutationObserver attributes'
+);
 
 
 })();
