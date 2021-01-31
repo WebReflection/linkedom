@@ -8,6 +8,7 @@ import {
 import {NodeList} from './interfaces.js';
 
 import {disconnectedCallback} from './custom-element-registry.js';
+import {moCallback} from './mutation-observer-class.js';
 
 import {
   findNext,
@@ -64,14 +65,17 @@ export const ChildNode = {
    * @param {Node} node 
    */
   remove(node) {
-    const {_prev} = node;
+    const {_prev, parentNode} = node;
     const {_next} = getEnd(node);
-    if (_prev || _next || node.parentNode) {
+    if (_prev || _next || parentNode) {
       node.parentNode = null;
       setAdjacent(_prev, _next);
       setBoundaries(null, node, null);
-      if (node.nodeType === ELEMENT_NODE)
+      if (node.nodeType === ELEMENT_NODE) {
         disconnectedCallback(node);
+        if (parentNode)
+          moCallback(node, parentNode);
+      }
       // DO_NOT_REMOVE if (parentNode) invalidate(parentNode);
     }
   }

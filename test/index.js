@@ -975,13 +975,14 @@ const checkRecord = (
     aTarget === bTarget &&
     (aAddedNodes || []).every((node, i) => node === bAddedNodes[i]) &&
     (aRemovedNodes || []).every((node, i) => node === bRemovedNodes[i]) &&
-    (aAttributeName || null) === bAttributeName &&
+    (aAttributeName || null) === (bAttributeName || null) &&
     aOldValue === bOldValue
   );
 };
 
 let {MutationObserver} = window;
 let observer = new MutationObserver(records => {
+  debugger;
   args = records;
 });
 
@@ -1066,7 +1067,6 @@ assert(
   'MutationObserver attributes'
 );
 
-
 observer.disconnect();
 
 observed.appendChild(notObserved);
@@ -1089,5 +1089,63 @@ assert(
   'MutationObserver attributes'
 );
 
+args = null;
+
+observer.disconnect();
+
+observed.appendChild(notObserved);
+
+observer.observe(observed, {
+  childList: true
+});
+
+observed.removeChild(notObserved);
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: observed, type: "childList", removedNodes: [notObserved]},
+    args[0]
+  ),
+  'MutationObserver removedNodes'
+);
+
+args = null;
+
+observed.appendChild(notObserved);
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: observed, type: "childList", addedNodes: [notObserved]},
+    args[0]
+  ),
+  'MutationObserver addedNodes'
+);
+
+observed.removeChild(notObserved);
+
+observer.disconnect();
+
+args = null;
+
+observer.observe(document, {
+  childList: true,
+  subtree: true
+});
+
+document.documentElement.appendChild(observed);
+
+await milliseconds(10);
+
+assert(
+  checkRecord(
+    {target: document, type: "childList", addedNodes: [observed]},
+    args[0]
+  ),
+  'MutationObserver addedNodes'
+);
 
 })();

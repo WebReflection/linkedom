@@ -313,6 +313,13 @@ export class Document extends Node {
   // </ParentNode>
 
   /**
+   * @param {Node} node
+   */
+  contains(node) {
+    return this.root.contains(node);
+  }
+
+  /**
    * @param {string} name
    * @returns {Attr}
    */

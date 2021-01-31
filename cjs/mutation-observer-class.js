@@ -27,7 +27,7 @@ const queueAttribute = (observer, target, attributeName, attributeFilter, attrib
       observer._scheduled = true;
       Promise.resolve().then(() => {
         observer._scheduled = false;
-        _callback(_records.splice(0));
+        _callback(_records.splice(0), observer);
       });
     }
   }
@@ -66,38 +66,36 @@ const attributeChangedCallback = (element, attributeName, oldValue) => {
 };
 exports.attributeChangedCallback = attributeChangedCallback;
 
-/*
-// let's make it work first, somehow ...
-const createTrigger = isConnected => target => {
-  const {_active, _observers} = target.ownerDocument._observer;
+const moCallback = (element, parentNode) => {
+  const {_active, _observers} = element.ownerDocument._observer;
   if (_active) {
-    for (const {_nodes, _records} of _observers) {
-      if (_nodes.has(target)) {
-        const {
-          subtree,
-          childList,
-          characterData,
-          characterDataOldValue,
-          connected
-        } = _nodes.get(target);
-        if (childList && connected !== isConnected && target.isConnected === isConnected) {
-          const nodes = characterData ? target.childNodes : target.children;
-          _records.push(createRecord(
-            'childList', target,
-            isConnected  ? nodes : [], isConnected ? [] : nodes,
-            null, void 0
-          ));
+    for (const observer of _observers) {
+      for (const [target, {childList, subtree}] of observer._nodes) {
+        if (childList) {
+          if (
+            (parentNode && (target === parentNode || (subtree && target.contains(parentNode)))) ||
+            (!parentNode && ((subtree && target.contains(element)) || (!subtree && target.children.includes(element))))
+          ) {
+            const {_callback, _records, _scheduled} = observer;
+            _records.push(createRecord(
+              'childList', target,
+              parentNode ? [] : [element], parentNode ? [element] : []
+            ));
+            if (!_scheduled) {
+              observer._scheduled = true;
+              Promise.resolve().then(() => {
+                observer._scheduled = false;
+                _callback(_records.splice(0), observer);
+              });
+            }
+            break;
+          }
         }
-        return;
       }
     }
   }
 };
-
-export const connectedCallback = createTrigger(true);
-
-export const disconnectedCallback = createTrigger(false);
-*/
+exports.moCallback = moCallback;
 
 class MutationObserverClass {
   constructor(ownerDocument) {
@@ -143,7 +141,6 @@ class MutationObserverClass {
           options.characterData = true;
         options.childList = !!options.childList;
         options.subtree = !!options.subtree;
-        options.connected = options.childList && target.isConnected;
         this._nodes.set(target, options);
         observers.add(this);
         ownerDocument._observer._active = true;

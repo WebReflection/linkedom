@@ -13,6 +13,7 @@ import {EventTarget, NodeList} from './interfaces.js';
 import {ChildNode, NonDocumentTypeChildNode, ParentNode} from './mixins.js';
 
 import {connectedCallback} from './custom-element-registry.js';
+import {moCallback} from './mutation-observer-class.js';
 
 import {
   String,
@@ -385,29 +386,31 @@ export class NodeElement extends Node {
    */
   insertBefore(node, before) {
     // DO_NOT_REMOVE invalidate(this);
-    const _end = before || this._end;
-    const {_prev} = _end;
+    const end = before || this._end;
     switch (node.nodeType) {
       case ELEMENT_NODE: {
         node.remove();
         node.parentNode = this;
-        setBoundaries(_prev, node, _end);
+        setBoundaries(end._prev, node, end);
         connectedCallback(node);
+        moCallback(node, null);
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
         // DO_NOT_REMOVE invalidate(node);
         let {firstChild, lastChild} = node;
         if (firstChild) {
-          setAdjacent(_prev, firstChild);
-          setAdjacent(getEnd(lastChild), _end);
+          setAdjacent(end._prev, firstChild);
+          setAdjacent(getEnd(lastChild), end);
           // reset fragment
           setAdjacent(node, node._end);
           // set parent node
           do {
             firstChild.parentNode = this;
-            if (firstChild.nodeType === ELEMENT_NODE)
+            if (firstChild.nodeType === ELEMENT_NODE) {
               connectedCallback(firstChild);
+              moCallback(firstChild, null);
+            }
           } while (
             firstChild !== lastChild &&
             (firstChild = firstChild.nextSibling)
@@ -418,7 +421,7 @@ export class NodeElement extends Node {
       default: {
         node.remove();
         node.parentNode = this;
-        setBoundaries(_prev, node, _end);
+        setBoundaries(end._prev, node, end);
         break;
       }
     }
