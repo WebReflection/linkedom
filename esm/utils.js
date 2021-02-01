@@ -62,20 +62,6 @@ export const Mime = {
   }
 };
 
-/*
-export const accessorAttribute = {
-  get(element, name) {
-    return element.getAttribute(name);
-  },
-  set(element, name, value) {
-    if (value === null)
-      element.removeAttribute(name);
-    else
-      element.setAttribute(name, value);
-  }
-};
-*/
-
 export const booleanAttribute = {
   get(element, name) {
     return element.hasAttribute(name.toLowerCase());
@@ -87,6 +73,20 @@ export const booleanAttribute = {
       element.removeAttribute(name.toLowerCase());
   }
 };
+
+/* oddly enough, this apparently is not a thing
+export const nullableAttribute = {
+  get(element, name) {
+    return element.getAttribute(name);
+  },
+  set(element, name, value) {
+    if (value === null)
+      element.removeAttribute(name);
+    else
+      element.setAttribute(name, value);
+  }
+};
+*/
 
 export const numericAttribute = {
   get(element, name) {

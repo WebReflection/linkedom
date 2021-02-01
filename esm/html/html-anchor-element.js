@@ -15,6 +15,14 @@ class HTMLAnchorElement extends HTMLElement {
   get href() { return stringAttribute.get(this, 'href'); }
   set href(value) { stringAttribute.set(this, 'href', value); }
 
+  get download() { return stringAttribute.get(this, 'download'); }
+  set download(value) { stringAttribute.set(this, 'download', value); }
+
+  get target() { return stringAttribute.get(this, 'target'); }
+  set target(value) { stringAttribute.set(this, 'target', value); }
+
+  get type() { return stringAttribute.get(this, 'type'); }
+  set type(value) { stringAttribute.set(this, 'type', value); }
   /* c8 ignore stop */
 
 }
