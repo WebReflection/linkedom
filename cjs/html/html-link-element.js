@@ -1,5 +1,5 @@
 'use strict';
-const {accessorAttribute, registerHTMLClass} = require('../utils.js');
+const {booleanAttribute, stringAttribute, registerHTMLClass} = require('../utils.js');
 const {HTMLElement} = require('./html-element.js');
 
 const tagName = 'img';
@@ -13,8 +13,23 @@ class HTMLLinkElement extends HTMLElement {
   }
 
   /* c8 ignore start */ // copy paste from img.src, already covered
-  get href() { return accessorAttribute.get(this, 'href'); }
-  set href(value) { accessorAttribute.set(this, 'href', value); }
+  get disabled() { return booleanAttribute.get(this, 'disabled'); }
+  set disabled(value) { booleanAttribute.set(this, 'disabled', value); }
+
+  get href() { return stringAttribute.get(this, 'href'); }
+  set href(value) { stringAttribute.set(this, 'href', value); }
+
+  get hreflang() { return stringAttribute.get(this, 'hreflang'); }
+  set hreflang(value) { stringAttribute.set(this, 'hreflang', value); }
+
+  get media() { return stringAttribute.get(this, 'media'); }
+  set media(value) { stringAttribute.set(this, 'media', value); }
+
+  get rel() { return stringAttribute.get(this, 'rel'); }
+  set rel(value) { stringAttribute.set(this, 'rel', value); }
+
+  get type() { return stringAttribute.get(this, 'type'); }
+  set type(value) { stringAttribute.set(this, 'type', value); }
   /* c8 ignore stop */
 
 }

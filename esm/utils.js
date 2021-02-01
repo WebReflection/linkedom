@@ -62,7 +62,7 @@ export const Mime = {
   }
 };
 
-// TODO: use name.toLowerCase() if there are accessors camelCase
+/*
 export const accessorAttribute = {
   get(element, name) {
     return element.getAttribute(name);
@@ -74,6 +74,7 @@ export const accessorAttribute = {
       element.setAttribute(name, value);
   }
 };
+*/
 
 export const booleanAttribute = {
   get(element, name) {

@@ -1,4 +1,4 @@
-import {accessorAttribute, registerHTMLClass} from '../utils.js';
+import {stringAttribute, registerHTMLClass} from '../utils.js';
 import {HTMLElement} from './html-element.js';
 
 const tagName = 'a';
@@ -12,8 +12,9 @@ class HTMLAnchorElement extends HTMLElement {
   }
 
   /* c8 ignore start */ // copy paste from img.src, already covered
-  get href() { return accessorAttribute.get(this, 'href'); }
-  set href(value) { accessorAttribute.set(this, 'href', value); }
+  get href() { return stringAttribute.get(this, 'href'); }
+  set href(value) { stringAttribute.set(this, 'href', value); }
+
   /* c8 ignore stop */
 
 }

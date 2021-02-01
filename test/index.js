@@ -970,8 +970,6 @@ doc.documentElement.innerHTML = `<img>`;
 doc.documentElement.firstElementChild.src = 'example.org';
 assert(doc.documentElement.firstElementChild.src === 'example.org', 'Issue #10 - <img>.src');
 assert(doc.toString() === '<!DOCTYPE html><html><img src="example.org"></html>', 'Issue #10 - <img>.src');
-doc.documentElement.firstElementChild.src = null;
-assert(doc.toString() === '<!DOCTYPE html><html><img></html>', 'Issue #10 - <img>.src');
 
 
 
