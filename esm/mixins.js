@@ -65,17 +65,17 @@ export const ChildNode = {
    * @param {Node} node 
    */
   remove(node) {
-    const {_prev, parentNode} = node;
+    const {_prev, nodeType, parentNode} = node;
     const {_next} = getEnd(node);
-    if (_prev || _next || parentNode) {
-      node.parentNode = null;
+    if (_prev || _next) {
       setAdjacent(_prev, _next);
       setBoundaries(null, node, null);
-      if (node.nodeType === ELEMENT_NODE)
+    }
+    if (parentNode) {
+      node.parentNode = null;
+      if (nodeType === ELEMENT_NODE)
         disconnectedCallback(node);
-      if (parentNode)
-        moCallback(node, parentNode);
-      // DO_NOT_REMOVE if (parentNode) invalidate(parentNode);
+      moCallback(node, parentNode);
     }
   }
 };
@@ -143,7 +143,6 @@ export const NonElementParentNode = {
  * @param  {Node[]} nodes
  */
 const append = (element, nodes) => {
-  // DO_NOT_REMOVE invalidate(element);
   const {ownerDocument, _end} = element;
   for (const node of nodes)
     element.insertBefore(
@@ -207,7 +206,6 @@ export const ParentNode = {
    * @param  {Node[]} nodes
    */
   prepend(element, nodes) {
-    // DO_NOT_REMOVE invalidate(element);
     const {ownerDocument, firstChild} = element;
     for (const node of nodes)
       element.insertBefore(
@@ -223,7 +221,6 @@ export const ParentNode = {
    * @param  {Node[]} nodes
    */
   replaceChildren(element, nodes) {
-    // DO_NOT_REMOVE invalidate(element);
     let {_next, _end} = findNext(element);
     while (_next !== _end) {
       const next = getEnd(_next)._next;

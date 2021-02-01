@@ -270,22 +270,13 @@ const getChildNodes = element => {
 
 export class NodeElement extends Node {
 
-  /*
-  constructor(ownerDocument, localName, nodeType) {
-    super(ownerDocument, localName, nodeType);
-    // DO_NOT_REMOVE invalidate(this);
-  }
-  */
-
   get childNodes() {
     return getChildNodes(this);
-    // DO_NOT_REMOVE return this._childNodes || (this._childNodes = getChildNodes(this));
   }
 
   // <ParentNode>
   get children() {
     return ParentNode.children(this);
-    // DO_NOT_REMOVE return this._children || (this._children = ParentNode.children(this));
   }
 
   /**
@@ -375,7 +366,6 @@ export class NodeElement extends Node {
    * @param {Node} node
    */
   appendChild(node) {
-    // DO_NOT_REMOVE invalidate(this);
     return this.insertBefore(node, this._end);
   }
 
@@ -387,7 +377,6 @@ export class NodeElement extends Node {
   insertBefore(node, before) {
     if (node === this)
       throw new Error('unable to append a not to itself');
-    // DO_NOT_REMOVE invalidate(this);
     const end = before || this._end;
     switch (node.nodeType) {
       case ELEMENT_NODE: {
@@ -399,7 +388,6 @@ export class NodeElement extends Node {
         break;
       }
       case DOCUMENT_FRAGMENT_NODE: {
-        // DO_NOT_REMOVE invalidate(node);
         let {firstChild, lastChild} = node;
         if (firstChild) {
           setAdjacent(end._prev, firstChild);
@@ -431,24 +419,20 @@ export class NodeElement extends Node {
   }
 
   normalize() {
-    let shouldInvalidate = false;
     let {_next, _end} = this;
     while (_next !== _end) {
       const {_next: next, _prev, nodeType} = _next;
       if (nodeType === TEXT_NODE) {
         if (!_next.textContent) {
-          shouldInvalidate = true;
           _next.remove();
         }
         else if (_prev && _prev.nodeType === TEXT_NODE) {
-          shouldInvalidate = true;
           _prev.textContent += _next.textContent;
           _next.remove();
         }
       }
       _next = next;
     }
-    // DO_NOT_REMOVE if (shouldInvalidate) invalidate(this);
   }
 
   /**
@@ -469,7 +453,6 @@ export class NodeElement extends Node {
    */
   replaceChild(node, replaced) {
     const {_prev, _next} = getBoundaries(replaced);
-    // DO_NOT_REMOVE invalidate(this);
     replaced.remove();
     node.remove();
     node.parentNode = this;
