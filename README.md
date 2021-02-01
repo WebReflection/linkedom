@@ -153,6 +153,22 @@ Everything else, at least for the time being, is considered *YAGNI*, and it won'
 
 
 
+## Cached VS Not Cached
+
+This module exports both `linkedom` and `linkedom/cached`, which are basically the exact same thing, except the cached version outperforms `linkedom` in these scenarios:
+
+  * the document, or any of its elements, are rarely changed, as opposite of frequently mutated or manipulated
+  * the use-case needs many repeated *CSS* selectors, over a sporadically mutated "*tree*"
+  * the generic DOM mutation time is *not* a concern
+  * the *RAM* is *not* a concern
+
+On the other hand, the basic, *non-cached*, module, grants the following:
+
+  * minimal amount of *RAM* needed, given any task to perform, as nothing is ever retained on *RAM*
+  * linear fast performance for any *every-time-new* structure, such as those created via `importNode` or `cloneNode` (i.e. template literals based libraries)
+
+
+
 ## Benchmarks
 
 To run the benchmark locally, please follow these commands:

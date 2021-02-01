@@ -15,11 +15,20 @@ const querySelectorWM = new WeakMap;
 const querySelectorAllWM = new WeakMap;
 
 const reset = parentNode => {
-  while (parentNode && parentNode.nodeType !== DOCUMENT_NODE) {
+  while (
+    parentNode && (
+      parentNode._children ||
+      parentNode._childNodes ||
+      querySelectorWM.has(parentNode) ||
+      querySelectorAllWM.has(parentNode)
+    )
+  ) {
     parentNode._children = parentNode._childNodes = null;
     querySelectorWM.delete(parentNode);
     querySelectorAllWM.delete(parentNode);
     parentNode = parentNode.parentNode;
+    if (parentNode && parentNode.nodeType === DOCUMENT_NODE)
+      return;
   }
 };
 
