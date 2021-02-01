@@ -965,6 +965,18 @@ doc.head.innerHTML = `<script type="application/ld+json">{}</script>`;
 doc.head.querySelector("script").textContent = `{"change": true}`;
 assert(doc.toString() === '<!DOCTYPE html><html><head><script type="application/ld+json">{"change": true}</script></head></html>', 'Issue #9 - <textarea> node');
 
+
+doc.documentElement.innerHTML = `<img>`;
+doc.documentElement.firstElementChild.src = 'example.org';
+assert(doc.documentElement.firstElementChild.src === 'example.org', 'Issue #10 - <img>.src');
+assert(doc.toString() === '<!DOCTYPE html><html><img src="example.org"></html>', 'Issue #10 - <img>.src');
+doc.documentElement.firstElementChild.src = null;
+assert(doc.toString() === '<!DOCTYPE html><html><img></html>', 'Issue #10 - <img>.src');
+
+
+
+
+
 let newDoc = doc.cloneNode(true);
 assert(newDoc._customElements === doc._customElements, 'shared custom elements');
 assert(newDoc.defaultView.document === newDoc, 'defaultView.document as circular reference');
