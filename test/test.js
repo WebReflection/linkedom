@@ -107,6 +107,7 @@ assert(
 
 
 assert(document.querySelector('html') === document.documentElement, 'document.querySelector');
+assert(document.querySelector('html') === document.documentElement, 'document.querySelector');
 assert(document.querySelectorAll('html')[0] === document.documentElement, 'document.querySelectorAll');
 
 document.documentElement.append(
@@ -173,7 +174,10 @@ assert(node.classList.supports('whatever'), 'whatever');
 
 node = document.createDocumentFragment();
 assert(node.getElementById('any') === null, 'no element by id');
+// duplicated to measure cache
 assert(node.querySelector('div[id="any"]') === null, 'no querySelector');
+assert(node.querySelector('div[id="any"]') === null, 'no querySelector');
+assert(node.querySelectorAll('div[id="any"]').item(0) === null, 'no NodeList.item()');
 assert(node.querySelectorAll('div[id="any"]').item(0) === null, 'no NodeList.item()');
 assert(node.children.length === 0, 'no children');
 assert(node.childElementCount === 0, 'childElementCount is 0');
