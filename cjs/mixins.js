@@ -227,7 +227,7 @@ const ParentNode = {
    */
   replaceChildren(element, nodes) {
     // DO_NOT_REMOVE invalidate(element);
-    let {_next, _end} = element;
+    let {_next, _end} = findNext(element);
     while (_next !== _end) {
       const next = getEnd(_next)._next;
       _next.remove();

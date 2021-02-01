@@ -120,11 +120,11 @@ assert(document.toString() === '<!DOCTYPE html><html id="html" class="live"><!--
 assert(document.documentElement.innerText === '<hello>', 'textContent read');
 
 document.documentElement.innerHTML = '<div /><input><p />';
-assert(document.toString() === '<!DOCTYPE html><html><div></div><input><p></p></html>', 'innerHTML + sanitizer');
+assert(document.toString() === '<!DOCTYPE html><html id="html" class="live"><div></div><input><p></p></html>', 'innerHTML + sanitizer');
 
 document.documentElement.setAttribute('lang', 'en');
-assert(document.documentElement.cloneNode(true).outerHTML === '<html lang="en"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
-assert(document.documentElement.cloneNode().outerHTML === '<html lang="en"></html>', 'cloneNode().outerHTML');
+assert(document.documentElement.cloneNode(true).outerHTML === '<html lang="en" id="html" class="live"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
+assert(document.documentElement.cloneNode().outerHTML === '<html lang="en" id="html" class="live"></html>', 'cloneNode().outerHTML');
 
 document.documentElement.append('a', 'b');
 assert(document.documentElement.lastChild.previousSibling.textContent === 'a', 'previousSibling text');
@@ -136,10 +136,10 @@ let node = document.getElementsByTagName('div')[0];
 
 node.before('before');
 node.after('after');
-assert(document.toString() === '<!DOCTYPE html><html lang="en">before<div></div>after<input><p></p>ab</html>', '.before() and after()');
+assert(document.toString() === '<!DOCTYPE html><html lang="en" id="html" class="live">before<div></div>after<input><p></p>ab</html>', '.before() and after()');
 
 node.replaceWith(document.createTextNode('&'));
-assert(document.toString() === '<!DOCTYPE html><html lang="en">before&amp;after<input><p></p>ab</html>', '.before() and after()');
+assert(document.toString() === '<!DOCTYPE html><html lang="en" id="html" class="live">before&amp;after<input><p></p>ab</html>', '.before() and after()');
 
 // assert(document.createElement('button', {is: 'special-case'}).getAttribute('is') === 'special-case', 'createElement with extra options');
 
@@ -208,7 +208,7 @@ assert(!node.isEqualNode(document), 'no node is equal to the document');
 node.innerHTML = '<!--comment--><input type="password" />OK';
 assert(node.childNodes[1].previousSibling === node.firstChild, 'previousSibling comment');
 assert(node.firstChild.previousSibling === null, 'previousSibling null');
-assert(node.outerHTML === '<div><!--comment--><input type="password">OK</div>', 'comment and attributes parsed');
+assert(node.outerHTML === '<div tmp><!--comment--><input type="password">OK</div>', 'comment and attributes parsed');
 
 let triggered = false;
 node.addEventListener('click', event => {
@@ -241,6 +241,8 @@ node.className = ' a b ';
 assert(node.className === 'a b', 'yes className');
 assert(node.nodeName === 'DIV', 'nodeName');
 assert(node.tagName === 'DIV', 'tagName');
+assert(node.attributes.length === 3, 'attributes');
+node.removeAttribute('tmp');
 assert(node.attributes.length === 2, 'attributes');
 assert(node.attributes.id.value === 'test', 'attributes.id');
 assert(node.attributes.class.value === 'a b', 'attributes.class');
@@ -958,6 +960,10 @@ doc.head.innerHTML = `<script csp-hash="any">"</script>`;
 assert(doc.toString() === '<!DOCTYPE html><html><head><script csp-hash="any">"</script></head></html>', 'Issue #1 - <script> node');
 doc.head.innerHTML = `<textarea csp-hash="any">"</textarea>`;
 assert(doc.toString() === '<!DOCTYPE html><html><head><textarea csp-hash="any">"</textarea></head></html>', 'Issue #1 - <textarea> node');
+
+doc.head.innerHTML = `<script type="application/ld+json">{}</script>`;
+doc.head.querySelector("script").textContent = `{"change": true}`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><script type="application/ld+json">{"change": true}</script></head></html>', 'Issue #9 - <textarea> node');
 
 let newDoc = doc.cloneNode(true);
 assert(newDoc._customElements === doc._customElements, 'shared custom elements');
