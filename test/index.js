@@ -1,4 +1,4 @@
-const {CustomEvent, DOMParser, parseHTML} = require('../cjs');
+const {CustomEvent, DOMParser, parseHTML} = require('../cjs/cached.js');
 
 const assert = (expression, message) => {
   console.assert(expression, message);

@@ -6,7 +6,7 @@ const tagName = 'title';
 /**
  * @implements globalThis.HTMLTitleElement
  */
-export class HTMLTitleElement extends TextElement {
+class HTMLTitleElement extends TextElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }

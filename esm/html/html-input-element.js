@@ -6,7 +6,7 @@ const tagName = 'input';
 /**
  * @implements globalThis.HTMLInputElement
  */
-export class HTMLInputElement extends HTMLElement {
+class HTMLInputElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }

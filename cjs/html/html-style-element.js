@@ -12,7 +12,6 @@ class HTMLStyleElement extends TextElement {
     super(ownerDocument, localName);
   }
 }
-exports.HTMLStyleElement = HTMLStyleElement
 
 registerHTMLClass(tagName, HTMLStyleElement);
 

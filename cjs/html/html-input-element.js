@@ -26,7 +26,6 @@ class HTMLInputElement extends HTMLElement {
   set type(value) { this.setAttribute('type', value); }
   /* c8 ignore stop */
 }
-exports.HTMLInputElement = HTMLInputElement
 
 registerHTMLClass(tagName, HTMLInputElement);
 

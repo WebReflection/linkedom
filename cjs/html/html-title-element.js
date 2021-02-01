@@ -12,7 +12,6 @@ class HTMLTitleElement extends TextElement {
     super(ownerDocument, localName);
   }
 }
-exports.HTMLTitleElement = HTMLTitleElement
 
 registerHTMLClass(tagName, HTMLTitleElement);
 
