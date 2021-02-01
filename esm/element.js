@@ -424,8 +424,17 @@ export class Element extends NodeElement {
             out.push(`</${_next.localName}>`);
           break;
         case ELEMENT_NODE:
-          out.push(`${isOpened ? '>' : ''}<${_next.localName}`);
-          isOpened = true;
+          if (isOpened)
+            out.push('>');
+          if (_next.toString !== this.toString) {
+            out.push(_next.toString());
+            _next = _next._end;
+            isOpened = false;
+          }
+          else {
+            out.push(`<${_next.localName}`);
+            isOpened = true;
+          }
           break;
         case TEXT_NODE:
         case COMMENT_NODE:

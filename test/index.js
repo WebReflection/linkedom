@@ -943,21 +943,21 @@ let {document: doc} = parseHTML('');
 
 let script = doc.createElement('script');
 script.setAttribute('what', 'ever');
-script.appendChild(doc.createTextNode('!'));
-assert(script.toString() === '<script what="ever">!</script>', 'text elements toString');
+script.appendChild(doc.createTextNode('"'));
+assert(script.toString() === '<script what="ever">"</script>', 'text elements toString');
 
-doc.head.innerHTML = `<nope csp-hash="any">X</nope>`;
-assert(doc.toString() === '<!DOCTYPE html><html><head><nope csp-hash="any">X</nope></head></html>', 'Issue #1 - <nope> node');
-doc.head.innerHTML = `<div csp-hash="any">X</div>`;
-assert(doc.toString() === '<!DOCTYPE html><html><head><div csp-hash="any">X</div></head></html>', 'Issue #1 - <div> node');
-doc.head.innerHTML = `<title csp-hash="any">X</title>`;
-assert(doc.toString() === '<!DOCTYPE html><html><head><title csp-hash="any">X</title></head></html>', 'Issue #1 - <title> node');
-doc.head.innerHTML = `<style csp-hash="any">X</style>`;
-assert(doc.toString() === '<!DOCTYPE html><html><head><style csp-hash="any">X</style></head></html>', 'Issue #1 - <style> node');
-doc.head.innerHTML = `<script csp-hash="any">X</script>`;
-assert(doc.toString() === '<!DOCTYPE html><html><head><script csp-hash="any">X</script></head></html>', 'Issue #1 - <script> node');
-doc.head.innerHTML = `<textarea csp-hash="any">X</textarea>`;
-assert(doc.toString() === '<!DOCTYPE html><html><head><textarea csp-hash="any">X</textarea></head></html>', 'Issue #1 - <textarea> node');
+doc.head.innerHTML = `<nope csp-hash="any">"</nope>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><nope csp-hash="any">&quot;</nope></head></html>', 'Issue #1 - <nope> node');
+doc.head.innerHTML = `<div csp-hash="any">"</div>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><div csp-hash="any">&quot;</div></head></html>', 'Issue #1 - <div> node');
+doc.head.innerHTML = `<title csp-hash="any">"</title>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><title csp-hash="any">"</title></head></html>', 'Issue #1 - <title> node');
+doc.head.innerHTML = `<style csp-hash="any">"</style>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><style csp-hash="any">"</style></head></html>', 'Issue #1 - <style> node');
+doc.head.innerHTML = `<script csp-hash="any">"</script>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><script csp-hash="any">"</script></head></html>', 'Issue #1 - <script> node');
+doc.head.innerHTML = `<textarea csp-hash="any">"</textarea>`;
+assert(doc.toString() === '<!DOCTYPE html><html><head><textarea csp-hash="any">"</textarea></head></html>', 'Issue #1 - <textarea> node');
 
 let newDoc = doc.cloneNode(true);
 assert(newDoc._customElements === doc._customElements, 'shared custom elements');
