@@ -155,8 +155,6 @@ exports.getPrev = getPrev;
 const ignoreCase = ({ownerDocument}) => ownerDocument._mime.ignoreCase;
 exports.ignoreCase = ignoreCase;
 
-// DO_NOTE_REMOVE export const invalidate = $ => { $._childNodes = $._children = null; };
-
 const localCase = ({localName, ownerDocument}) => {
   return ownerDocument._mime.ignoreCase ? localName.toUpperCase() : localName;
 };

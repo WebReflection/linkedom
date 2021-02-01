@@ -1,6 +1,6 @@
-import {DOCUMENT_NODE, TEXT_NODE, DOM} from './constants.js';
+import {DOCUMENT_NODE, DOM} from './constants.js';
 
-import {Mime, htmlClasses, setBoundaries} from './utils.js';
+import {Mime, htmlClasses} from './utils.js';
 
 // mixins & interfaces
 import {NonElementParentNode, ParentNode} from './mixins.js';

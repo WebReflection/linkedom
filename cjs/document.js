@@ -1,7 +1,7 @@
 'use strict';
-const {DOCUMENT_NODE, TEXT_NODE, DOM} = require('./constants.js');
+const {DOCUMENT_NODE, DOM} = require('./constants.js');
 
-const {Mime, htmlClasses, setBoundaries} = require('./utils.js');
+const {Mime, htmlClasses} = require('./utils.js');
 
 // mixins & interfaces
 const {NonElementParentNode, ParentNode} = require('./mixins.js');
