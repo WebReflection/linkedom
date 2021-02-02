@@ -69,7 +69,9 @@ catch (o_O) {}
 assert(document.documentElement.shadowRoot === null, 'closed shadowRoot is null');
 
 let openSR = document.createElement('shadowed');
+openSR.append('a', 'b', 'c');
 assert(openSR.attachShadow({mode: 'open'}) === openSR.shadowRoot, 'open shadow root returned');
+assert(openSR.shadowRoot.toString() === '<#shadow-root>abc</#shadow-root>', 'shadowRoot as string');
 
 assert(document.querySelector('nope') === null, 'no element selected');
 assert(document.querySelectorAll('nope').length === 0, 'empty NodeList');

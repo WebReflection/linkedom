@@ -9,4 +9,8 @@ export class ShadowRoot extends Fragment {
     super(ownerDocument, '#shadow-root');
   }
 
+  toString() {
+    const {localName} = this;
+    return `<${localName}>${this.childNodes.join('')}</${localName}>`
+  }
 }
