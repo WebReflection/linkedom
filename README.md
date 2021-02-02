@@ -99,22 +99,22 @@ Fragment<Element>:  start ↔ end
 
 Element example:
 
-          parentNode?
-              ↑
-              ├────────────────────────────────────────────┐
-              │                                            ↓
-    node? ← start → attr* → text* → comment* → element* → end → node?
-              ↑                                            │
-              └────────────────────────────────────────────┘
+        parentNode? (as shortcut for a linked list of previous nodes)
+            ↑
+            ├────────────────────────────────────────────┐
+            │                                            ↓
+  node? ← start → attr* → text* → comment* → element* → end → node?
+            ↑                                            │
+            └────────────────────────────────────────────┘
 
 
 Fragment example:
 
-              ┌────────────────────────────────────────────┐
-              │                                            ↓
-            start → attr* → text* → comment* → element* → end
-              ↑                                            │
-              └────────────────────────────────────────────┘
+            ┌────────────────────────────────────────────┐
+            │                                            ↓
+          start → attr* → text* → comment* → element* → end
+            ↑                                            │
+            └────────────────────────────────────────────┘
 ```
 
 ### Why is this better?
