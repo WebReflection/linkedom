@@ -24,6 +24,9 @@ class HTMLImageElement extends HTMLElement {
 
   get srcset() { return stringAttribute.get(this, 'srcset'); }
   set srcset(value) { stringAttribute.set(this, 'srcset', value); }
+
+  get sizes() { return stringAttribute.get(this, 'sizes'); }
+  set sizes(value) { stringAttribute.set(this, 'sizes', value); }
   /* c8 ignore stop */
 }
 
