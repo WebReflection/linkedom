@@ -4,8 +4,8 @@ const {DOCUMENT_NODE, DOM} = require('./constants.js');
 const {Mime, htmlClasses} = require('./utils.js');
 
 // mixins & interfaces
-const {NonElementParentNode, ParentNode} = require('./mixins.js');
-const {Event, CustomEvent} = require('./interfaces.js');
+const {NonElementParentNode} = require('./mixins.js');
+const {Event, CustomEvent, NodeList} = require('./interfaces.js');
 
 // nodes
 const {Attr} = require('./attr.js');
@@ -110,6 +110,16 @@ const createHTMLElement = (ownerDocument, builtin, localName, options) => {
     }
   }
   return new HTMLElement(ownerDocument, localName);
+};
+
+const queryAll = ({root}, method, search, check) => {
+  if (root) {
+    const all = root[method](search);
+    if (check(root))
+      all.unshift(root);
+    return all;
+  }
+  return new NodeList;
 };
 
 const defaultViewExports = {
@@ -300,7 +310,7 @@ class Document extends Node {
    */
   querySelector(selectors) {
     const {root} = this;
-    return root && ParentNode.querySelector({_next: root}, selectors);
+    return root && (root.matches(selectors) ? root : root.querySelector(selectors));
   }
 
   /**
@@ -308,8 +318,7 @@ class Document extends Node {
    * @returns {NodeList}
    */
   querySelectorAll(selectors) {
-    const {root} = this;
-    return root ? ParentNode.querySelectorAll({_next: root}, selectors) : [];
+    return queryAll(this, 'querySelectorAll', selectors, root => root.matches(selectors));
   }
   // </ParentNode>
 
@@ -413,8 +422,9 @@ class Document extends Node {
    * @returns {NodeList}
    */
   getElementsByTagName(name) {
-    const {root} = this;
-    return root ? root.getElementsByTagName(name) : [];
+    return queryAll(this, 'getElementsByTagName', name, root => (
+      root.localName === name || root.tagName === name
+    ));
   }
 
   /**
@@ -432,8 +442,9 @@ class Document extends Node {
    * @returns {NodeList}
    */
   getElementsByClassName(className) {
-    const {root} = this;
-    return root ? root.getElementsByClassName(className) : [];
+    return queryAll(this, 'getElementsByClassName', className, root => (
+      root.hasAttribute('class') && root.classList.contains(className)
+    ));
   }
 
   /* c8 ignore start */

@@ -18,7 +18,7 @@ const {DOMStringMap} = require('./dom-string-map.js');
 const {DOMTokenList} = require('./dom-token-list.js');
 const {CSSStyleDeclaration} = require('./css-style-declaration.js');
 
-const matches = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('./matches.js'));
+const {matches} = require('./matches.js');
 
 const attributesHandler = {
   get(target, key) {

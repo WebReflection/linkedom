@@ -21,7 +21,7 @@ import {DOMStringMap} from './dom-string-map.js';
 import {DOMTokenList} from './dom-token-list.js';
 import {CSSStyleDeclaration} from './css-style-declaration.js';
 
-import matches from './matches.js';
+import {matches} from './matches.js';
 
 const attributesHandler = {
   get(target, key) {

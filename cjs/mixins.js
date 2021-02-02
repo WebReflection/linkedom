@@ -7,6 +7,7 @@ const {
 } = require('./constants.js');
 
 const {NodeList} = require('./interfaces.js');
+const {prepareMatch} = require('./matches.js');
 
 const {disconnectedCallback} = require('./custom-element-registry.js');
 const {moCallback} = require('./mutation-observer-class.js');
@@ -239,10 +240,10 @@ const ParentNode = {
    * @returns {Element?}
    */
   querySelector(element, selectors) {
+    const matches = prepareMatch(element, selectors);
     let {_next, _end} = findNext(element);
-    // TODO: _next should never be null here
-    while (_next && _next !== _end) {
-      if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
+    while (_next !== _end) {
+      if (_next.nodeType === ELEMENT_NODE && matches(_next))
         return _next;
       _next = _next._next;
     }
@@ -255,11 +256,11 @@ const ParentNode = {
    * @returns {NodeList}
    */
   querySelectorAll(element, selectors) {
+    const matches = prepareMatch(element, selectors);
     let {_next, _end} = findNext(element);
     const elements = new NodeList;
-    // TODO: _next should never be null here
-    while (_next && _next !== _end) {
-      if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
+    while (_next !== _end) {
+      if (_next.nodeType === ELEMENT_NODE && matches(_next))
         elements.push(_next);
       _next = _next._next;
     }

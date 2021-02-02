@@ -79,23 +79,35 @@ const findOne = (test, nodes) => {
 };
 /* c8 ignore stop */
 
-module.exports = (element, selectors) => {
+const adapter = {
+  isTag,
+  existsOne,
+  getAttributeValue,
+  getChildren,
+  getName,
+  getParent,
+  getSiblings,
+  getText,
+  hasAttrib,
+  removeSubsets,
+  findAll,
+  findOne
+};
+
+const prepareMatch = (element, selectors) => {
+  return CSSselect.compile(selectors, {
+    strict: true,
+    xmlMode: !ignoreCase(element),
+    adapter
+  });
+};
+exports.prepareMatch = prepareMatch;
+
+const matches = (element, selectors) => {
   return CSSselect.is(element, selectors, {
     strict: true,
     xmlMode: !ignoreCase(element),
-    adapter: {
-      isTag,
-      existsOne,
-      getAttributeValue,
-      getChildren,
-      getName,
-      getParent,
-      getSiblings,
-      getText,
-      hasAttrib,
-      removeSubsets,
-      findAll,
-      findOne
-    }
+    adapter
   });
 };
+exports.matches = matches;

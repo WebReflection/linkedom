@@ -23,8 +23,7 @@ import {
   setBoundaries,
   getEnd,
   getNext,
-  getPrev,
-  // invalidate
+  getPrev
 } from './utils.js';
 
 const create = (ownerDocument, element, localName, SVGElement)  => (

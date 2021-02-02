@@ -6,6 +6,7 @@ import {
 } from './constants.js';
 
 import {NodeList} from './interfaces.js';
+import {prepareMatch} from './matches.js';
 
 import {disconnectedCallback} from './custom-element-registry.js';
 import {moCallback} from './mutation-observer-class.js';
@@ -15,7 +16,6 @@ import {
   getEnd,
   setAdjacent,
   setBoundaries
-  // invalidate
 } from './utils.js';
 
 const asFragment = (ownerDocument, nodes) => {
@@ -236,10 +236,10 @@ export const ParentNode = {
    * @returns {Element?}
    */
   querySelector(element, selectors) {
+    const matches = prepareMatch(element, selectors);
     let {_next, _end} = findNext(element);
-    // TODO: _next should never be null here
-    while (_next && _next !== _end) {
-      if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
+    while (_next !== _end) {
+      if (_next.nodeType === ELEMENT_NODE && matches(_next))
         return _next;
       _next = _next._next;
     }
@@ -252,11 +252,11 @@ export const ParentNode = {
    * @returns {NodeList}
    */
   querySelectorAll(element, selectors) {
+    const matches = prepareMatch(element, selectors);
     let {_next, _end} = findNext(element);
     const elements = new NodeList;
-    // TODO: _next should never be null here
-    while (_next && _next !== _end) {
-      if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
+    while (_next !== _end) {
+      if (_next.nodeType === ELEMENT_NODE && matches(_next))
         elements.push(_next);
       _next = _next._next;
     }

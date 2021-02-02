@@ -3,8 +3,8 @@ import {DOCUMENT_NODE, DOM} from './constants.js';
 import {Mime, htmlClasses} from './utils.js';
 
 // mixins & interfaces
-import {NonElementParentNode, ParentNode} from './mixins.js';
-import {Event, CustomEvent} from './interfaces.js';
+import {NonElementParentNode} from './mixins.js';
+import {Event, CustomEvent, NodeList} from './interfaces.js';
 
 // nodes
 import {Attr} from './attr.js';
@@ -109,6 +109,16 @@ const createHTMLElement = (ownerDocument, builtin, localName, options) => {
     }
   }
   return new HTMLElement(ownerDocument, localName);
+};
+
+const queryAll = ({root}, method, search, check) => {
+  if (root) {
+    const all = root[method](search);
+    if (check(root))
+      all.unshift(root);
+    return all;
+  }
+  return new NodeList;
 };
 
 const defaultViewExports = {
@@ -299,7 +309,7 @@ export class Document extends Node {
    */
   querySelector(selectors) {
     const {root} = this;
-    return root && ParentNode.querySelector({_next: root}, selectors);
+    return root && (root.matches(selectors) ? root : root.querySelector(selectors));
   }
 
   /**
@@ -307,8 +317,7 @@ export class Document extends Node {
    * @returns {NodeList}
    */
   querySelectorAll(selectors) {
-    const {root} = this;
-    return root ? ParentNode.querySelectorAll({_next: root}, selectors) : [];
+    return queryAll(this, 'querySelectorAll', selectors, root => root.matches(selectors));
   }
   // </ParentNode>
 
@@ -412,8 +421,9 @@ export class Document extends Node {
    * @returns {NodeList}
    */
   getElementsByTagName(name) {
-    const {root} = this;
-    return root ? root.getElementsByTagName(name) : [];
+    return queryAll(this, 'getElementsByTagName', name, root => (
+      root.localName === name || root.tagName === name
+    ));
   }
 
   /**
@@ -431,8 +441,9 @@ export class Document extends Node {
    * @returns {NodeList}
    */
   getElementsByClassName(className) {
-    const {root} = this;
-    return root ? root.getElementsByClassName(className) : [];
+    return queryAll(this, 'getElementsByClassName', className, root => (
+      root.hasAttribute('class') && root.classList.contains(className)
+    ));
   }
 
   /* c8 ignore start */
