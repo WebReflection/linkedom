@@ -116,6 +116,9 @@ Fragment example:
             └────────────────────────────────────────────┘
 ```
 
+If this is not clear, feel free to **[read more in the deep dive page](./deep-dive.md)**.
+
+
 ### Why is this better?
 
 Moving *N* nodes from a container, being it either an *Element* or a *Fragment*, requires the following steps:
