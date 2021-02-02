@@ -60,9 +60,16 @@ assert(typeof document.defaultView.MutationObserver === 'function', 'MutationObs
 let tmp = new document.defaultView.MutationObserver;
 tmp.observe(document.documentElement);
 tmp.disconnect();
-assert(document.documentElement.attachShadow({mode: 'closed'}) === document.documentElement, 'closed shadowRoot');
-assert(document.documentElement.attachShadow({mode: 'open'}) === document.documentElement, 'open shadowRoot');
-assert(document.documentElement.shadowRoot === document.documentElement, 'shadowRoot');
+assert(document.documentElement.attachShadow({mode: 'closed'}).nodeType, 'closed shadowRoot returned');
+try {
+  assert(document.documentElement.attachShadow({mode: 'open'}) === document.documentElement, 'open shadowRoot');
+  assert(false, 'it should not be possible to define a shadow root twice');
+}
+catch (o_O) {}
+assert(document.documentElement.shadowRoot === null, 'closed shadowRoot is null');
+
+let openSR = document.createElement('shadowed');
+assert(openSR.attachShadow({mode: 'open'}) === openSR.shadowRoot, 'open shadow root returned');
 
 assert(document.querySelector('nope') === null, 'no element selected');
 assert(document.querySelectorAll('nope').length === 0, 'empty NodeList');

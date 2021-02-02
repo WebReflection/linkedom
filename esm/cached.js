@@ -2,6 +2,7 @@ import {DOCUMENT_NODE} from './constants.js';
 import {ChildNode, ParentNode} from './mixins.js';
 import {getReactive} from './custom-element-registry.js';
 import {Node, NodeElement} from './node.js';
+import {Attr} from './attr.js';
 import {Element} from './element.js';
 import {DocumentFragment} from './document-fragment.js';
 
@@ -110,6 +111,24 @@ class CachedNode extends Node {
 setPrototypeOf(NodeElement, CachedNode);
 setPrototypeOf(NodeElement.prototype, CachedNode.prototype);
 // </Node>
+
+
+
+// <Attr>
+const {
+  value: {get: getAttributeValue, set: setAttributeValue}
+} = getOwnPropertyDescriptors(Attr.prototype);
+
+defineProperties(Attr.prototype, {
+  value: {
+    get: getAttributeValue,
+    set(value) {
+      reset(this.ownerElement);
+      setAttributeValue.call(this, value);
+    }
+  }
+});
+// </Attr>
 
 
 

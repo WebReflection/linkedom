@@ -134,8 +134,7 @@ This structure also allows programs to avoid issues such as "*Maximum call stack
 
 ### Are *childNodes* and *children* always computed?
 
-At this point, even if this module is ready to cache results when no mutations happen, and since repeated crawling is not a too common pattern, but it can always be cached in user-land, the core always crawl *left* to *right* or *right* to *left* so that it guarantees it's always in sync with the current DOM state.
-
+As everything is a `while(...)` loop away, by default this module does not cache anything, specially because caching requires state invalidation for each container, returned queries, and so on. However, you can import `linkedom/cached` instead, as long as you [understand its constraints](https://github.com/WebReflection/linkedom#cached-vs-not-cached).
 
 
 ## Parsing VS Node Types
@@ -159,13 +158,14 @@ This module exports both `linkedom` and `linkedom/cached`, which are basically t
 
   * the document, or any of its elements, are rarely changed, as opposite of frequently mutated or manipulated
   * the use-case needs many repeated *CSS* selectors, over a sporadically mutated "*tree*"
-  * the generic DOM mutation time is *not* a concern
-  * the *RAM* is *not* a concern
+  * the generic DOM mutation time is *not* a concern (each, removal or change requires a whole document cache invalidation)
+  * the *RAM* is *not* a concern (all cached results are held into *NodeList* arrays until changes happen)
 
 On the other hand, the basic, *non-cached*, module, grants the following:
 
   * minimal amount of *RAM* needed, given any task to perform, as nothing is ever retained on *RAM*
   * linear fast performance for any *every-time-new* structure, such as those created via `importNode` or `cloneNode` (i.e. template literals based libraries)
+  * much faster DOM manipulation, without side effect caused by cache invalidation
 
 
 

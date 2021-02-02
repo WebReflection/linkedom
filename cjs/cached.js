@@ -3,6 +3,7 @@ const {DOCUMENT_NODE} = require('./constants.js');
 const {ChildNode, ParentNode} = require('./mixins.js');
 const {getReactive} = require('./custom-element-registry.js');
 const {Node, NodeElement} = require('./node.js');
+const {Attr} = require('./attr.js');
 const {Element} = require('./element.js');
 const {DocumentFragment} = require('./document-fragment.js');
 
@@ -111,6 +112,24 @@ class CachedNode extends Node {
 setPrototypeOf(NodeElement, CachedNode);
 setPrototypeOf(NodeElement.prototype, CachedNode.prototype);
 // </Node>
+
+
+
+// <Attr>
+const {
+  value: {get: getAttributeValue, set: setAttributeValue}
+} = getOwnPropertyDescriptors(Attr.prototype);
+
+defineProperties(Attr.prototype, {
+  value: {
+    get: getAttributeValue,
+    set(value) {
+      reset(this.ownerElement);
+      setAttributeValue.call(this, value);
+    }
+  }
+});
+// </Attr>
 
 
 

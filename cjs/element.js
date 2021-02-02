@@ -20,6 +20,8 @@ const {CSSStyleDeclaration} = require('./css-style-declaration.js');
 
 const {matches} = require('./matches.js');
 
+const shadowRoots = new WeakMap;
+
 const attributesHandler = {
   get(target, key) {
     return key in target ? target[key] : target.find(({name}) => name === key);
@@ -37,7 +39,6 @@ class Element extends NodeElement {
 
   constructor(ownerDocument, localName) {
     super(ownerDocument, localName, ELEMENT_NODE);
-    this.shadowRoot = null;
     this._classList = null;
     this._dataset = null;
     this._style = null;
@@ -192,12 +193,35 @@ class Element extends NodeElement {
     return NonDocumentTypeChildNode.previousElementSibling(this);
   }
 
-  // TODO: make creation of shadow dom reflect on the page, once DSD is out?
   /**
    * @param {object} init either `{mode: "open"}` or `{mode: "closed"}`
    */
   attachShadow(init) {
-    return init.mode === 'open' ? (this.shadowRoot = this) : this;
+    if (shadowRoots.has(this))
+      throw new Error('operation not supported');
+    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
+    //       but until DSD is out, I am not sure I should spend time on this.
+    const {constructor, _customElements} = this.ownerDocument;
+    const document = new constructor();
+    document._customElements = _customElements;
+    document.root = document.createElement('#shadow-root');
+    shadowRoots.set(this, {
+      mode: init.mode,
+      root: document.root
+    });
+    return document.root;
+  }
+
+  /**
+   * @type {ShadowRoot?}
+   */
+  get shadowRoot() {
+    if (shadowRoots.has(this)) {
+      const {mode, root} = shadowRoots.get(this);
+      if (mode === 'open')
+        return root;
+    }
+    return null;
   }
 
   closest(selectors) {
