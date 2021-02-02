@@ -1,5 +1,6 @@
 import {DOCUMENT_NODE} from './constants.js';
 import {ChildNode, ParentNode} from './mixins.js';
+import {getReactive} from './custom-element-registry.js';
 import {Node, NodeElement} from './node.js';
 import {Element} from './element.js';
 import {DocumentFragment} from './document-fragment.js';
@@ -14,20 +15,13 @@ const querySelectorWM = new WeakMap;
 const querySelectorAllWM = new WeakMap;
 
 const reset = parentNode => {
-  while (
-    parentNode && (
-      parentNode._children ||
-      parentNode._childNodes ||
-      querySelectorWM.has(parentNode) ||
-      querySelectorAllWM.has(parentNode)
-    )
-  ) {
-    parentNode._children = parentNode._childNodes = null;
-    querySelectorWM.delete(parentNode);
-    querySelectorAllWM.delete(parentNode);
-    parentNode = parentNode.parentNode;
-    if (parentNode && parentNode.nodeType === DOCUMENT_NODE)
-      return;
+  if (getReactive()) {
+    while (parentNode && parentNode.nodType !== DOCUMENT_NODE) {
+      parentNode._children = parentNode._childNodes = null;
+      querySelectorWM.delete(parentNode);
+      querySelectorAllWM.delete(parentNode);
+      parentNode = parentNode.parentNode;
+    }
   }
 };
 

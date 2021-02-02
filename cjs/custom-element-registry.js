@@ -5,6 +5,9 @@ const {entries, setPrototypeOf} = Object;
 
 let reactive = false;
 
+const getReactive = () => reactive;
+exports.getReactive = getReactive;
+
 const setReactive = value => {
   reactive = value;
 };

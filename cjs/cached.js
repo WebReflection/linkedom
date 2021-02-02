@@ -1,6 +1,7 @@
 'use strict';
 const {DOCUMENT_NODE} = require('./constants.js');
 const {ChildNode, ParentNode} = require('./mixins.js');
+const {getReactive} = require('./custom-element-registry.js');
 const {Node, NodeElement} = require('./node.js');
 const {Element} = require('./element.js');
 const {DocumentFragment} = require('./document-fragment.js');
@@ -15,20 +16,13 @@ const querySelectorWM = new WeakMap;
 const querySelectorAllWM = new WeakMap;
 
 const reset = parentNode => {
-  while (
-    parentNode && (
-      parentNode._children ||
-      parentNode._childNodes ||
-      querySelectorWM.has(parentNode) ||
-      querySelectorAllWM.has(parentNode)
-    )
-  ) {
-    parentNode._children = parentNode._childNodes = null;
-    querySelectorWM.delete(parentNode);
-    querySelectorAllWM.delete(parentNode);
-    parentNode = parentNode.parentNode;
-    if (parentNode && parentNode.nodeType === DOCUMENT_NODE)
-      return;
+  if (getReactive()) {
+    while (parentNode && parentNode.nodType !== DOCUMENT_NODE) {
+      parentNode._children = parentNode._childNodes = null;
+      querySelectorWM.delete(parentNode);
+      querySelectorAllWM.delete(parentNode);
+      parentNode = parentNode.parentNode;
+    }
   }
 };
 
