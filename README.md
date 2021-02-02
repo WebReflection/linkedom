@@ -183,11 +183,3 @@ npm i
 
 npm run benchmark
 ```
-
-Following a couple of (outdated) benchmark results example.
-
-### benchmark:dom
-![benchmark output example](./linkedom-benchmark-dom.jpg)
-
-### benchmark:html
-![benchmark output example](./linkedom-benchmark-html.jpg)
