@@ -1,14 +1,7 @@
 'use strict';
 const {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} = require('./constants.js');
 const {
-  String,
-  getNext,
-  getPrev,
-  setAdjacent,
-  ignoreCase,
-  localCase,
-  parseFromString,
-  setBoundaries
+  getNext, getPrev, setAdjacent, ignoreCase, localCase, parseFromString, setBoundaries, findNext
 } = require('./utils.js');
 
 const {attributeChangedCallback: ceAttributes, setReactive} = require('./custom-element-registry.js');
@@ -455,10 +448,11 @@ class Element extends NodeElement {
    */
   getElementsByTagName(name) {
     const elements = new NodeList;
-    let {_next} = this;
-    while (_next) {
+    let {_next, _end} = findNext(this);
+    while (_next !== _end) {
       if (_next.nodeType === ELEMENT_NODE && (
-        _next.localName === name || _next.tagName === name
+        _next.localName === name ||
+        _next.tagName === name
       ))
         elements.push(_next);
       _next = _next._next;
@@ -471,8 +465,8 @@ class Element extends NodeElement {
    */
   getElementsByClassName(className) {
     const elements = new NodeList;
-    let {_next} = this;
-    while (_next) {
+    let {_next, _end} = findNext(this);
+    while (_next !== _end) {
       if (
         _next.nodeType === ELEMENT_NODE &&
         _next.hasAttribute('class') &&

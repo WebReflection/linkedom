@@ -1,10 +1,10 @@
 import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
 import {
-  String,
   getNext, getPrev, setAdjacent,
   ignoreCase, localCase,
   parseFromString,
-  setBoundaries
+  setBoundaries,
+  findNext
 } from './utils.js';
 
 import {attributeChangedCallback as ceAttributes, setReactive} from './custom-element-registry.js';
@@ -451,10 +451,11 @@ export class Element extends NodeElement {
    */
   getElementsByTagName(name) {
     const elements = new NodeList;
-    let {_next} = this;
-    while (_next) {
+    let {_next, _end} = findNext(this);
+    while (_next !== _end) {
       if (_next.nodeType === ELEMENT_NODE && (
-        _next.localName === name || _next.tagName === name
+        _next.localName === name ||
+        _next.tagName === name
       ))
         elements.push(_next);
       _next = _next._next;
@@ -467,8 +468,8 @@ export class Element extends NodeElement {
    */
   getElementsByClassName(className) {
     const elements = new NodeList;
-    let {_next} = this;
-    while (_next) {
+    let {_next, _end} = findNext(this);
+    while (_next !== _end) {
       if (
         _next.nodeType === ELEMENT_NODE &&
         _next.hasAttribute('class') &&

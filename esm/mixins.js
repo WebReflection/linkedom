@@ -235,8 +235,10 @@ export const ParentNode = {
    * @param  {string} selectors
    * @returns {Element?}
    */
-  querySelector({_next}, selectors) {
-    while (_next) {
+  querySelector(element, selectors) {
+    let {_next, _end} = findNext(element);
+    // TODO: _next should never be null here
+    while (_next && _next !== _end) {
       if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
         return _next;
       _next = _next._next;
@@ -249,9 +251,11 @@ export const ParentNode = {
    * @param  {string} selectors
    * @returns {NodeList}
    */
-  querySelectorAll({_next}, selectors) {
+  querySelectorAll(element, selectors) {
+    let {_next, _end} = findNext(element);
     const elements = new NodeList;
-    while (_next) {
+    // TODO: _next should never be null here
+    while (_next && _next !== _end) {
       if (_next.nodeType === ELEMENT_NODE && _next.matches(selectors))
         elements.push(_next);
       _next = _next._next;

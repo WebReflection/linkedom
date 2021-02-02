@@ -974,6 +974,9 @@ assert(doc.documentElement.firstElementChild.src === 'example.org', 'Issue #10 -
 assert(doc.toString() === '<!DOCTYPE html><html><img src="example.org"></html>', 'Issue #10 - <img>.src');
 
 
+doc.documentElement.innerHTML = `<picture><source></picture><picture><source></picture>`;
+let all = doc.querySelector("picture").getElementsByTagName("source");
+assert(all.length === 1 && all[0] === doc.documentElement.children[0].children[0], 'Issue #12 - filter own element');
 
 
 
