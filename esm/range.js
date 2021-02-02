@@ -36,7 +36,7 @@ export class Range {
   setEnd(node, offset) {
     this._end = getEnd(node.childNodes[offset]);
   }
-  */
+  //*/
 
   insertNode(newNode) {
     this._start.parentNode.insertBefore(newNode, this._start);
