@@ -1,4 +1,8 @@
-import {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} from './constants.js';
+import {
+  ELEMENT_NODE, ELEMENT_NODE_END,
+  ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE
+} from './constants.js';
+
 import {
   getNext, getPrev, setAdjacent,
   ignoreCase, localCase,
@@ -15,6 +19,7 @@ import {NonDocumentTypeChildNode, ParentNode} from './mixins.js';
 
 import {Attr} from './attr.js';
 import {NodeElement, NodeElementEnd} from './node.js';
+import {ShadowRoot} from './shadow-root.js';
 import {NamedNodeMap} from './named-node-map.js';
 
 import {DOMStringMap} from './dom-string-map.js';
@@ -204,15 +209,12 @@ export class Element extends NodeElement {
       throw new Error('operation not supported');
     // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
-    const {constructor, _customElements} = this.ownerDocument;
-    const document = new constructor();
-    document._customElements = _customElements;
-    document.root = document.createElement('#shadow-root');
+    const shadowRoot = new ShadowRoot(this.ownerDocument);
     shadowRoots.set(this, {
       mode: init.mode,
-      root: document.root
+      shadowRoot
     });
-    return document.root;
+    return shadowRoot;
   }
 
   /**
@@ -220,9 +222,9 @@ export class Element extends NodeElement {
    */
   get shadowRoot() {
     if (shadowRoots.has(this)) {
-      const {mode, root} = shadowRoots.get(this);
+      const {mode, shadowRoot} = shadowRoots.get(this);
       if (mode === 'open')
-        return root;
+        return shadowRoot;
     }
     return null;
   }

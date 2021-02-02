@@ -1,5 +1,8 @@
 'use strict';
-const {ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE} = require('./constants.js');
+const {
+  ELEMENT_NODE, ELEMENT_NODE_END, ATTRIBUTE_NODE, TEXT_NODE, COMMENT_NODE
+} = require('./constants.js');
+
 const {
   getNext, getPrev, setAdjacent, ignoreCase, localCase, parseFromString, setBoundaries, findNext
 } = require('./utils.js');
@@ -12,6 +15,7 @@ const {NonDocumentTypeChildNode, ParentNode} = require('./mixins.js');
 
 const {Attr} = require('./attr.js');
 const {NodeElement, NodeElementEnd} = require('./node.js');
+const {ShadowRoot} = require('./shadow-root.js');
 const {NamedNodeMap} = require('./named-node-map.js');
 
 const {DOMStringMap} = require('./dom-string-map.js');
@@ -201,15 +205,12 @@ class Element extends NodeElement {
       throw new Error('operation not supported');
     // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
-    const {constructor, _customElements} = this.ownerDocument;
-    const document = new constructor();
-    document._customElements = _customElements;
-    document.root = document.createElement('#shadow-root');
+    const shadowRoot = new ShadowRoot(this.ownerDocument);
     shadowRoots.set(this, {
       mode: init.mode,
-      root: document.root
+      shadowRoot
     });
-    return document.root;
+    return shadowRoot;
   }
 
   /**
@@ -217,9 +218,9 @@ class Element extends NodeElement {
    */
   get shadowRoot() {
     if (shadowRoots.has(this)) {
-      const {mode, root} = shadowRoots.get(this);
+      const {mode, shadowRoot} = shadowRoots.get(this);
       if (mode === 'open')
-        return root;
+        return shadowRoot;
     }
     return null;
   }
