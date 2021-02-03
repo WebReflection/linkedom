@@ -17,7 +17,7 @@
     "cjs": "ascjs --no-default esm cjs",
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
     "hello": "node --input-type=module -e 'import {DOMParser} from \"./esm/index.js\";console.log(`\\x1b[7m\\x1b[1m`,new DOMParser().parseFromString(`LinkeDOM`,`text/html`).toString(),`\\x1b[0m`);'",
-    "test": "npm run hello && node test/benchmark-linkedom.js --w3c --custom-elements --no-clone && c8 node test/index.js"
+    "test": "npm run hello && node test/benchmark-linkedom.js --w3c --custom-elements --no-clone && c8 node test/index.js && c8 report -r html"
   },
   "keywords": [
     "DOM",

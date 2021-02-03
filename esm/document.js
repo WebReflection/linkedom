@@ -222,7 +222,6 @@ export class Document extends Node {
 
   get defaultView() {
     const window = new Proxy(globalThis, {
-      /* c8 ignore start */
       get: (globalThis, name) => {
         switch (name) {
           case 'document':
@@ -237,12 +236,10 @@ export class Document extends Node {
             if (!this._observer._class)
               this._observer = new MutationObserverClass(this);
             return this._observer._class;
-            break;
           default:
             return defaultViewExports[name] || globalThis[name];
         }
       }
-      /* c8 ignore stop */
     });
     return window;
   }

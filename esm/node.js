@@ -140,7 +140,6 @@ export class Node extends EventTarget {
     return parentNode;
   }
 
-  // it's huge, but it should never suffer a maximum callstack issue
   /**
    * @param {boolean?} deep
    * @returns {Node}
@@ -205,13 +204,10 @@ export class Node extends EventTarget {
         const attribute = OD.createAttribute(this.name);
         attribute._value = this._value;
         return attribute;
-      default:
-        const fragment = OD.createDocumentFragment();
-        fragment.append(...this.childNodes.map(child => child.cloneNode(deep)));
-        return fragment;
     }
-    /* c8 ignore start */
-    /* c8 ignore stop */
+    const fragment = OD.createDocumentFragment();
+    fragment.append(...this.childNodes.map(child => child.cloneNode(deep)));
+    return fragment;
   }
 
   /**
@@ -237,15 +233,12 @@ export class Node extends EventTarget {
         case TEXT_NODE:
         case COMMENT_NODE:
           return this.toString() === node.toString();
-        default:
-          const aNodes = this.childNodes;
-          const bNodes = node.childNodes;
-          return aNodes.length === bNodes.length && aNodes.every((node, i) => node.isEqualNode(bNodes[i]));
       }
-      /* c8 ignore start */
+      const aNodes = this.childNodes;
+      const bNodes = node.childNodes;
+      return aNodes.length === bNodes.length && aNodes.every((node, i) => node.isEqualNode(bNodes[i]));
     }
     return false;
-    /* c8 ignore stop */
   }
 
   // meh
