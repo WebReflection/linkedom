@@ -999,6 +999,7 @@ newDoc.documentElement.innerHTML = '<div>first<br>second<br></div><p></p>';
 assert(newDoc.documentElement.nextSibling === null, 'html.nextSibling');
 assert(newDoc.documentElement.firstChild.nextSibling === newDoc.querySelector('p'), 'html.firstChild.nextSibling');
 assert(newDoc.documentElement.firstChild.lastChild.nextSibling === null, 'html.firstChild.lastChild.nextSibling');
+assert(newDoc.documentElement.firstChild.lastChild.nextElementSibling === null, 'html.firstChild.lastChild.nextElementSibling');
 assert(newDoc.querySelector('br').nextSibling.textContent === 'second', 'br.nextSibling');
 
 

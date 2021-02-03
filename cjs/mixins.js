@@ -3,7 +3,9 @@ const {
   ELEMENT_NODE_END,
   ELEMENT_NODE,
   ATTRIBUTE_NODE,
-  DOM
+  DOM,
+  TEXT_NODE,
+  COMMENT_NODE
 } = require('./constants.js');
 
 const {NodeList} = require('./interfaces.js');
@@ -113,9 +115,12 @@ const NonDocumentTypeChildNode = {
       switch (_next.nodeType) {
         case ELEMENT_NODE:
           return _next;
-        default:
+        case TEXT_NODE:
+        case COMMENT_NODE:
           _next = _next._next;
           break;
+        default:
+          return null;
       }
     }
     return null;
