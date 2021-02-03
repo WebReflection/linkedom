@@ -482,9 +482,9 @@ treeWalker = document.createTreeWalker(node, 7357);
 assert(treeWalker.nextNode() === null, 'no fancy numbers for treeWalker');
 
 treeWalker = document.createTreeWalker(node, 1);
-assert(treeWalker.nextNode() === node.childNodes[0], 'first treeWalker');
-assert(treeWalker.nextNode() === node.childNodes[1], 'second treeWalker');
-assert(treeWalker.nextNode() === node.childNodes[2], 'third treeWalker');
+assert(treeWalker.nextNode() === node.childNodes[0], 'first treeWalker again');
+assert(treeWalker.nextNode() === node.childNodes[1], 'second treeWalker again');
+assert(treeWalker.nextNode() === node.childNodes[2], 'third treeWalker again');
 assert(treeWalker.nextNode() === null, 'end of treeWalker');
 
 node.appendChild(document.createComment('ok'));
@@ -492,6 +492,9 @@ node.appendChild(document.createComment('ok'));
 treeWalker = document.createTreeWalker(node, 128);
 assert(treeWalker.nextNode() === node.lastChild, 'yes comments for treeWalker');
 assert(treeWalker.nextNode() === null, 'end of treeWalker');
+
+treeWalker = document.createTreeWalker(document);
+assert(treeWalker.nextNode() === document.documentElement, 'root as document works');
 
 assert(node.childNodes[1].previousSibling === node.childNodes[0], 'previousSibling element');
 assert(node.childNodes[0].previousSibling === null, 'previousSibling nope');
