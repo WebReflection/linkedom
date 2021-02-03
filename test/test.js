@@ -995,6 +995,12 @@ assert(newDoc.defaultView.document === newDoc, 'defaultView.document as circular
 let {window} = newDoc.defaultView;
 assert(window === window.window, 'defaultView.window as circular reference');
 
+newDoc.documentElement.innerHTML = '<div>first<br>second<br></div><p></p>';
+assert(newDoc.documentElement.nextSibling === null, 'html.nextSibling');
+assert(newDoc.documentElement.firstChild.nextSibling === newDoc.querySelector('p'), 'html.firstChild.nextSibling');
+assert(newDoc.documentElement.firstChild.lastChild.nextSibling === null, 'html.firstChild.lastChild.nextSibling');
+assert(newDoc.querySelector('br').nextSibling.textContent === 'second', 'br.nextSibling');
+
 
 // MutationObserver //
 

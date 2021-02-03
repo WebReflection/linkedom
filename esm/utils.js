@@ -122,20 +122,16 @@ export const getEnd = node => node.nodeType === ELEMENT_NODE ?
                               node._end : node;
 
 export const getNext = ({_next}) => {
-  while (_next && _next.nodeType === ELEMENT_NODE_END)
-    _next = _next._next;
-  return _next;
+  return _next && (_next.nodeType === ELEMENT_NODE_END ? null : _next);
 };
 
 export const getPrev = ({_prev}) => {
-  if (_prev) {
-    switch (_prev.nodeType) {
-      case ELEMENT_NODE_END:
-        return _prev._start;
-      case TEXT_NODE:
-      case COMMENT_NODE:
-        return _prev;
-    }
+  switch (_prev && _prev.nodeType) {
+    case ELEMENT_NODE_END:
+      return _prev._start;
+    case TEXT_NODE:
+    case COMMENT_NODE:
+      return _prev;
   }
   return null;
 };
