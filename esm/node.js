@@ -368,7 +368,7 @@ export class NodeElement extends Node {
    */
   insertBefore(node, before) {
     if (node === this)
-      throw new Error('unable to append a not to itself');
+      throw new Error('unable to append a node to itself');
     const end = before || this._end;
     switch (node.nodeType) {
       case ELEMENT_NODE: {
