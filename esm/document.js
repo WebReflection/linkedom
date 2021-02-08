@@ -6,9 +6,6 @@ import {Mime, htmlClasses} from './utils.js';
 import {NonElementParentNode} from './mixins.js';
 import {Event, CustomEvent, NodeList} from './interfaces.js';
 
-// parser
-import {DOMParser} from './dom-parser.js';
-
 // nodes
 import {Attr} from './attr.js';
 import {Comment} from './comment.js';
@@ -209,6 +206,7 @@ export class Document extends Node {
     this._customElements = {_active: false, _registry: null};
     this._observer = {_active: false, _class: null};
     this._mime = Mime[type];
+    this._domParser = null;
 
     /**
      * @type {Element?}
@@ -236,7 +234,7 @@ export class Document extends Node {
               this._customElements = new CustomElementRegistry(this);
             return this._customElements;
           case 'DOMParser':
-            return DOMParser;
+            return this._domParser;
           case 'MutationObserver':
             if (!this._observer._class)
               this._observer = new MutationObserverClass(this);

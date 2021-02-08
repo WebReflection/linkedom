@@ -7,9 +7,6 @@ const {Mime, htmlClasses} = require('./utils.js');
 const {NonElementParentNode} = require('./mixins.js');
 const {Event, CustomEvent, NodeList} = require('./interfaces.js');
 
-// parser
-const {DOMParser} = require('./dom-parser.js');
-
 // nodes
 const {Attr} = require('./attr.js');
 const {Comment} = require('./comment.js');
@@ -210,6 +207,7 @@ class Document extends Node {
     this._customElements = {_active: false, _registry: null};
     this._observer = {_active: false, _class: null};
     this._mime = Mime[type];
+    this._domParser = null;
 
     /**
      * @type {Element?}
@@ -237,7 +235,7 @@ class Document extends Node {
               this._customElements = new CustomElementRegistry(this);
             return this._customElements;
           case 'DOMParser':
-            return DOMParser;
+            return this._domParser;
           case 'MutationObserver':
             if (!this._observer._class)
               this._observer = new MutationObserverClass(this);

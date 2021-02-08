@@ -22,6 +22,7 @@ export class DOMParser {
       document = new SVGDocument;
     else
       document = new XMLDocument;
+    document._domParser = this;
     return parseFromString(document, isHTML, markupLanguage);
   }
 }
