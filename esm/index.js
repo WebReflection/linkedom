@@ -1,23 +1,25 @@
-import {DOMParser} from './dom-parser.js';
+import {DOMParser} from './dom/parser.js';
+import {Document as _Document} from './interface/document.js';
 
-import {Node} from './node.js';
-import {HTMLElement} from './html/html-element.js';
+import {illegalConstructor} from './shared/facades.js';
+import {setPrototypeOf} from './shared/object.js';
 
-import {EventTarget, Event, CustomEvent} from './interfaces.js';
+export * from './shared/facades.js';
+export * from './shared/html-classes.js';
 
-export {
-  DOMParser,
-  Node, HTMLElement,
-  EventTarget, Event, CustomEvent
-};
+export {DOMParser};
 
-export const parseHTML = html => {
-  const document = (new DOMParser).parseFromString(html, 'text/html');
-  const {defaultView: window} = document;
-  return {
-    Node, HTMLElement,
-    EventTarget, Event, CustomEvent,
-    customElements: window.customElements,
-    window, document
-  };
-};
+export {CustomEvent} from './interface/custom-event.js';
+export {Event} from './interface/event.js';
+export {EventTarget} from './interface/event-target.js';
+export {NodeList} from './interface/node-list.js';
+
+export const parseHTML = html => (new DOMParser).parseFromString(
+  html, 'text/html'
+).defaultView;
+
+export function Document() {
+  illegalConstructor();
+}
+
+setPrototypeOf(Document, _Document).prototype = _Document.prototype;

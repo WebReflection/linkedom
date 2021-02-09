@@ -149,6 +149,7 @@ This module parses, and works, only with the following `nodeType`:
   * `COMMENT_NODE`
   * `DOCUMENT_NODE`
   * `DOCUMENT_FRAGMENT_NODE`
+  * `DOCUMENT_TYPE_NODE`
 
 Everything else, at least for the time being, is considered *YAGNI*, and it won't likely ever land in this project, as there's no goal to replicate deprecated features of this aged Web.
 
