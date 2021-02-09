@@ -63,3 +63,6 @@ document.documentElement.insertBefore(node, text);
 node.append('a', '');
 node.normalize();
 assert(node.childNodes.length, 1, 'normalize() empty text');
+assert(text.nodeValue, 'text');
+text.nodeValue = '';
+assert(text.nodeValue, '');

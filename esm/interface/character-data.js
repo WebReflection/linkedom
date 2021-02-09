@@ -33,6 +33,8 @@ export class CharacterData extends Node {
   // </Mixins>
 
   get nodeValue() { return this.textContent; }
+  set nodeValue(value) { this.textContent = value; }
+
   get textContent() { return this[VALUE]; }
   set textContent(value) {
     this[VALUE] = value;
