@@ -1,0 +1,16 @@
+export const CHANGED = Symbol('changed');
+export const CLASS_LIST = Symbol('classList');
+export const CUSTOM_ELEMENTS = Symbol('CustomElements');
+export const DATASET = Symbol('dataset');
+export const DOCTYPE = Symbol('doctype');
+export const DOM_PARSER = Symbol('DOMParser');
+export const END = Symbol('end');
+export const MIME = Symbol('mime');
+export const MUTATION_OBSERVER = Symbol('MutationObserver');
+export const NEXT = Symbol('next');
+export const OWNER_ELEMENT = Symbol('ownerElement');
+export const PREV = Symbol('prev');
+export const PRIVATE = Symbol('private');
+export const START = Symbol('start');
+export const STYLE = Symbol('style');
+export const VALUE = Symbol('value');

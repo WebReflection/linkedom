@@ -1,0 +1,111 @@
+'use strict';
+const uhyphen = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('uhyphen'));
+
+const {CHANGED, PRIVATE, VALUE} = require('../shared/symbols.js');
+
+const refs = new WeakMap;
+
+const getKeys = style => [...style.keys()].filter(key => key !== PRIVATE);
+
+const updateKeys = style => {
+  const attr = refs.get(style).getAttributeNode('style');
+  if (!attr || attr[CHANGED] || style.get(PRIVATE) !== attr) {
+    style.clear();
+    if (attr) {
+      style.set(PRIVATE, attr);
+      for (const rule of attr[VALUE].split(/\s*;\s*/)) {
+        const pair = rule.split(/\s*:\s*/);
+        if (1 < pair.length) {
+          let [key, value] = pair;
+          key = key.trim();
+          value = value.trim();
+          if (key && value)
+            style.set(key, value);
+        }
+      }
+    }
+  }
+  return attr;
+};
+
+const handler = {
+  get(style, name) {
+    if (name in prototype)
+      return style[name];
+    updateKeys(style);
+    if (name === 'length')
+      return getKeys(style).length;
+    if (/^\d+$/.test(name))
+      return getKeys(style)[name];
+    return style.get(uhyphen(name));
+  },
+
+  set(style, name, value) {
+    if (name === 'cssText')
+      style[name] = value;
+    else {
+      let attr = updateKeys(style);
+      if (value == null)
+        style.delete(uhyphen(name));
+      else
+        style.set(uhyphen(name), value);
+      if (!attr) {
+        const element = refs.get(style);
+        attr = element.ownerDocument.createAttribute('style');
+        element.setAttributeNode(attr);
+        style.set(PRIVATE, attr);
+      }
+      attr[CHANGED] = false;
+      attr[VALUE] = style.toString();
+    }
+    return true;
+  }
+};
+
+class CSSStyleDeclaration extends Map {
+  constructor(element) {
+    super();
+    refs.set(this, element);
+    /* c8 ignore start */
+    return new Proxy(this, handler);
+    /* c8 ignore stop */
+  }
+
+  get cssText() {
+    return this.toString();
+  }
+
+  set cssText(value) {
+    refs.get(this).setAttribute('style', value);
+  }
+
+  [Symbol.iterator]() {
+    const keys = getKeys(this[PRIVATE]);
+    const {length} = keys;
+    let i = 0;
+    return {
+      next() {
+        const done = i === length;
+        return {done, value: done ? null : keys[i++]};
+      }
+    };
+  }
+
+  get[PRIVATE]() { return this; }
+
+  toString() {
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const cssText = [];
+    self.forEach(push, cssText);
+    return cssText.join(';');
+  }
+}
+exports.CSSStyleDeclaration = CSSStyleDeclaration
+
+const {prototype} = CSSStyleDeclaration;
+
+function push(value, key) {
+  if (key !== PRIVATE)
+    this.push(`${key}:${value}`);
+}

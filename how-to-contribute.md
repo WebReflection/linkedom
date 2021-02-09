@@ -18,9 +18,9 @@ All files in `./cjs` are automatically overwritten every time something in `./es
 
 ## Testing
 
-The file is not well organized, and it's rather a rabbit hole I should likely improve sooner than later, but [./test/test.js](./test/test.js) is where all testing happens.
+Almost every `./esm` file, within its folder, is replicated in the `./test` folder too.
 
-Currently, the same test is executed twice: once for `linkedom` module, and a second pass for `linkedom/cached` export.
+Each test is executed twice: once for `linkedom` module, and a second pass for `linkedom/cached` export.
 
 The very beginning of the test ensures everything is OK in *ESM* exports-land, it runs a quick benchmark to be sure everything works as expected and, eventually, keep performance under control, and finally to verify that all code has been covered.
 
@@ -113,14 +113,14 @@ Currently there are 3 kinds of attributes helpers:
   * **numericAttribute**, it casts the attribute as *number*, and returns it as such. Example: `img.width = 100`
   * **stringAttribute**, it sets or retrieves the attribute as *string*, no matter its value. Example: `img.src`
 
-All helpers are available via `import {...} from '../utils.js'` and share the same signature:
+All attributes helpers are available via `import {...} from '../shared/attributes.js'`, and these all share the same signature:
 
 ```js
 helper.get(element, attributeName);             // returns something
 helper.set(element, attributeName, anyValue);   // returns void
 ```
 
-If you are not sure check other classes 'cause one of those will use these helpers for something.
+If you are not sure, please check other classes, 'cause one of those will use these helpers for something.
 
 
 ### What about other accessors?
