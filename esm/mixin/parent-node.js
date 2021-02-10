@@ -202,10 +202,12 @@ export class ParentNode extends Node {
         connectedCallback(node);
         break;
       case DOCUMENT_FRAGMENT_NODE:
-        let {firstChild, lastChild} = node;
+        let {firstChild, lastChild, parentNode} = node;
         if (firstChild) {
           knownSegment(next[PREV], firstChild, lastChild, next);
           knownAdjacent(node, node[END]);
+          if (parentNode)
+            parentNode.replaceChildren();
           do {
             firstChild.parentNode = this;
             moCallback(firstChild, null);

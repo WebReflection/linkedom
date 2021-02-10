@@ -1,38 +1,30 @@
-import {isNotParsing} from '../shared/parse-from-string.js';
 import {registerHTMLClass} from '../shared/register-html-class.js';
 
 import {HTMLElement} from './element.js';
+
+const CONTENT = Symbol('content');
+
+const tagName = 'template';
 
 /**
  * @implements globalThis.HTMLTemplateElement
  */
 class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
-    super(ownerDocument, 'template');
-    this.content = this.ownerDocument.createDocumentFragment();
+    super(ownerDocument, tagName);
+    const content = this.ownerDocument.createDocumentFragment();
+    (this[CONTENT] = content).parentNode = this;
   }
 
-  get innerHTML() {
-    return this.content.childNodes.join('');
-  }
-
-  set innerHTML(value) {
-    super.innerHTML = value;
-    this.content.replaceChildren(
-      ...this.childNodes.map(node => node.cloneNode(true))
-    );
-  }
-
-  // needed only during serialization
-  insertBefore(node, before) {
-    if (isNotParsing())
-      super.insertBefore(node, before);
-    else
-      this.content.appendChild(node);
-    return node;
+  get content() {
+    if (this.hasChildNodes() && !this[CONTENT].hasChildNodes()) {
+      for (const node of this.childNodes)
+        this[CONTENT].appendChild(node.cloneNode(true));
+    }
+    return this[CONTENT];
   }
 }
 
-registerHTMLClass('template', HTMLTemplateElement);
+registerHTMLClass(tagName, HTMLTemplateElement);
 
 export {HTMLTemplateElement};
