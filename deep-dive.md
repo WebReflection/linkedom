@@ -305,6 +305,8 @@ let isOpen = false;
 while (next) {
   switch (next.type) {
     case Node.ELEMENT:
+      if (isOpen)
+        output.push('>');
       isOpen = true;
       output.push('<', next.name);
       break;
@@ -430,6 +432,8 @@ const toString = node => {
   while (node) {
     switch (node.type) {
       case Node.ELEMENT:
+        if (isOpen)
+          output.push('>');
         isOpen = true;
         output.push('<', node.name);
         break;
