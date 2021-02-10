@@ -5,6 +5,7 @@ export const DATASET = Symbol('dataset');
 export const DOCTYPE = Symbol('doctype');
 export const DOM_PARSER = Symbol('DOMParser');
 export const END = Symbol('end');
+export const IMAGE = Symbol('image');
 export const MIME = Symbol('mime');
 export const MUTATION_OBSERVER = Symbol('MutationObserver');
 export const NEXT = Symbol('next');

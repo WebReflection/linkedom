@@ -1,7 +1,7 @@
 import {DOCUMENT_NODE, DOCUMENT_TYPE_NODE} from '../shared/constants.js';
 
 import {
-  CUSTOM_ELEMENTS, DOM_PARSER, MUTATION_OBSERVER,
+  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER,
   DOCTYPE, END, NEXT, MIME, PRIVATE
 } from '../shared/symbols.js';
 
@@ -24,6 +24,7 @@ import {DocumentType} from './document-type.js';
 import {Element} from './element.js';
 import {Event} from './event.js';
 import {EventTarget} from './event-target.js';
+import {ImageClass} from './image.js';
 import {MutationObserverClass} from './mutation-observer.js';
 import {NodeList} from './node-list.js';
 import {Range} from './range.js';
@@ -55,6 +56,7 @@ export class Document extends NonElementParentNode {
     this[MIME] = Mime[type];
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
+    this[IMAGE] = null;
   }
 
   get [PRIVATE]() {
@@ -75,6 +77,10 @@ export class Document extends NonElementParentNode {
             return this[CUSTOM_ELEMENTS];
           case 'DOMParser':
             return this[DOM_PARSER];
+          case 'Image':
+            if (!this[IMAGE])
+              this[IMAGE] = ImageClass(this);
+            return this[IMAGE];
           case 'MutationObserver':
             if (!this[MUTATION_OBSERVER].class)
               this[MUTATION_OBSERVER] = new MutationObserverClass(this);
