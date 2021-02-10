@@ -2,7 +2,7 @@
 const {DOCUMENT_NODE, DOCUMENT_TYPE_NODE} = require('../shared/constants.js');
 
 const {
-  CUSTOM_ELEMENTS, DOM_PARSER, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, PRIVATE
+  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, PRIVATE
 } = require('../shared/symbols.js');
 
 const {Facades, illegalConstructor} = require('../shared/facades.js');
@@ -24,6 +24,7 @@ const {DocumentType} = require('./document-type.js');
 const {Element} = require('./element.js');
 const {Event} = require('./event.js');
 const {EventTarget} = require('./event-target.js');
+const {ImageClass} = require('./image.js');
 const {MutationObserverClass} = require('./mutation-observer.js');
 const {NodeList} = require('./node-list.js');
 const {Range} = require('./range.js');
@@ -55,6 +56,7 @@ class Document extends NonElementParentNode {
     this[MIME] = Mime[type];
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
+    this[IMAGE] = null;
   }
 
   get [PRIVATE]() {
@@ -75,6 +77,10 @@ class Document extends NonElementParentNode {
             return this[CUSTOM_ELEMENTS];
           case 'DOMParser':
             return this[DOM_PARSER];
+          case 'Image':
+            if (!this[IMAGE])
+              this[IMAGE] = ImageClass(this);
+            return this[IMAGE];
           case 'MutationObserver':
             if (!this[MUTATION_OBSERVER].class)
               this[MUTATION_OBSERVER] = new MutationObserverClass(this);
