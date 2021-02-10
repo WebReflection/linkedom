@@ -1,7 +1,7 @@
 const assert = require('../assert.js').for('SVGElement');
-const {parseHTML, SVGElement} = global[Symbol.for('linkedom')];
+const {parseHTML, SVGElement, DOMParser} = global[Symbol.for('linkedom')];
 
-const {document} = parseHTML('<div><svg><rect /></svg></div>');
+let {document} = parseHTML('<div><svg><rect /></svg></div>');
 
 assert(document.ELEMENT_NODE, 1);
 assert(document.ATTRIBUTE_NODE, 2);
@@ -27,3 +27,7 @@ try {
   assert(false, true, 'facades should not be instantiable');
 }
 catch (OK) {}
+
+document = (new DOMParser).parseFromString(`<!doctype html><html><svg><rect /></svg></html>`, 'text/html');
+
+assert('ownerSVGElement' in document.querySelector('svg rect'), true, 'svg restored');

@@ -173,8 +173,10 @@ class Document extends NonElementParentNode {
   createAttributeNS(_, name) {
     return this.createAttribute(name);
   }
-  createElementNS(_, localName, options) {
-    return this.createElement(localName, options);
+  createElementNS(nsp, localName, options) {
+    return nsp === 'http://www.w3.org/2000/svg' ?
+            new SVGElement(this, localName, null) :
+            this.createElement(localName, options);
   }
   /* c8 ignore stop */
 }
