@@ -1,6 +1,8 @@
 'use strict';
 // https://dom.spec.whatwg.org/#interface-element
 
+const {unescape} = require('html-escaper');
+
 const {
   ATTRIBUTE_NODE,
   COMMENT_NODE,
@@ -163,7 +165,7 @@ class Element extends ParentNode {
       this.appendChild(new Text(this.ownerDocument, text));
   }
 
-  get innerHTML() { return this.childNodes.join(''); }
+  get innerHTML() { return unescape(this.childNodes.join('')); }
   set innerHTML(html) {
     const {ownerDocument} = this;
     const {constructor} = ownerDocument;
@@ -173,7 +175,7 @@ class Element extends ParentNode {
     this.replaceChildren(...childNodes);
   }
 
-  get outerHTML() { return this.toString(); }
+  get outerHTML() { return unescape(this.toString()); }
   set outerHTML(html) {
     const template = this.ownerDocument.createElement('');
     template.innerHTML = html;

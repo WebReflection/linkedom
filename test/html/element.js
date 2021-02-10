@@ -106,3 +106,6 @@ assert(node.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>&lt;OK&gt;af
 node.setAttribute('a', '1');
 node.setAttribute('b', '2');
 node.removeAttributeNode(node.attributes[1]);
+
+node.innerHTML = '"hello"';
+assert(node.innerHTML, '"hello"');
