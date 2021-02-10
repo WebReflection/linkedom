@@ -2,7 +2,7 @@ const assert = require('../assert.js').for('HTMLTemplateElement');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {document} = parseHTML('<template><div>foo</div><div>bar</div></template>');
+let {document} = parseHTML('<template><div>foo</div><div>bar</div></template>');
 
 let template = document.documentElement;
 assert(template.innerHTML, '<div>foo</div><div>bar</div>');
@@ -24,3 +24,19 @@ assert(template.content, template.content, 'template.content');
 assert(template.innerHTML, '<p>template</p>', 'template.innerHTML');
 document.documentElement.appendChild(template.content);
 assert(template.innerHTML, '', 'empty template.innerHTML');
+
+let html = `<!DOCTYPE html>
+<html>
+
+<template>
+    <div></div>
+</template>
+<template>
+
+</template>
+</html>
+`;
+
+({document} = parseHTML(html));
+
+assert(document.toString(), html);
