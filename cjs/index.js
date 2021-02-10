@@ -4,6 +4,9 @@ const {Document: _Document} = require('./interface/document.js');
 
 const {illegalConstructor} = require('./shared/facades.js');
 const {setPrototypeOf} = require('./shared/object.js');
+(m => {
+  exports.parseJSON = m.parseJSON;
+})(require('./shared/parse-json.js'));
 
 (m => Object.keys(m).map(k => k !== 'default' && (exports[k] = m[k])))
 (require('./shared/facades.js'));

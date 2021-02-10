@@ -15,7 +15,7 @@ import {END, NEXT, PREV, START, VALUE} from '../shared/symbols.js';
 import {reset} from '../shared/cache.js';
 import {prepareMatch} from '../shared/matches.js';
 import {previousSibling, nextSibling} from '../shared/node.js';
-import {getEnd, knownAdjacent, knownBoundaries, knownSegment, localCase} from '../shared/utils.js';
+import {getEnd, knownAdjacent, knownBoundaries, knownSegment, knownSiblings, localCase} from '../shared/utils.js';
 
 import {Node} from '../interface/node.js';
 import {Text} from '../interface/text.js';
@@ -225,7 +225,7 @@ export class ParentNode extends Node {
         node.remove();
       default:
         node.parentNode = this;
-        knownBoundaries(next[PREV], node, next);
+        knownSiblings(next[PREV], node, next);
         moCallback(node, null);
         break;
     }

@@ -61,18 +61,21 @@ document.querySelectorAll('form, input[name], button');
 
 ### Serializing as JSON
 
-*LinkeDOM* uses a blazing fast [JSDON serializer](https://github.com/WebReflection/jsdon#readme), and nodes, as well as whole documents, can be retrieved back by passing a `document` reference to `JSDON.fromJSON(json, document)`, needed to create nodes, reach the `DOMParser`, and so on.
+*LinkeDOM* uses a blazing fast [JSDON serializer](https://github.com/WebReflection/jsdon#readme), and nodes, as well as whole documents, can be retrieved back via `parsJSON(value)`.
 
 ```js
 // any node can be serialized
 const array = document.toJSON();
 
 // somewhere else ...
-import {parseHTML} from 'linkedom';
-import {fromJSON} from 'jsdon';
+import {parsJSON} from 'linkedom';
 
-const document = fromJSON(array, parseHTML(''));
+const document = parsJSON(array);
 ```
+
+Please note that *Custom Elements* won't be upgraded, unless the resulting nodes are imported via `document.importNode(nodeOrFragment, true)`.
+
+Alternatively, `JSDON.fromJSON(array, document)` is able to initialize right away *Custom Elements* associated with the passed `document`.
 
 
 ### Simulating JSON Bootstrap

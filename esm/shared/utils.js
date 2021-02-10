@@ -23,6 +23,11 @@ export const knownSegment = (prev, start, end, next) => {
   knownAdjacent(getEnd(end), next);
 };
 
+export const knownSiblings = (prev, current, next) => {
+  knownAdjacent(prev, current);
+  knownAdjacent(current, next);
+};
+
 export const localCase = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].ignoreCase ? localName.toUpperCase() : localName;
 };

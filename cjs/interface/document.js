@@ -1,5 +1,5 @@
 'use strict';
-const {DOCUMENT_NODE, DOCUMENT_TYPE_NODE} = require('../shared/constants.js');
+const {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE} = require('../shared/constants.js');
 
 const {
   CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, PRIVATE
@@ -8,7 +8,7 @@ const {
 const {Facades, illegalConstructor} = require('../shared/facades.js');
 const {HTMLClasses} = require('../shared/html-classes.js');
 const {Mime} = require('../shared/mime.js');
-const {knownBoundaries} = require('../shared/utils.js');
+const {knownSiblings} = require('../shared/utils.js');
 const {assign, create, defineProperties, setPrototypeOf} = require('../shared/object.js');
 
 const {NonElementParentNode} = require('../mixin/non-element-parent-node.js');
@@ -107,7 +107,7 @@ class Document extends NonElementParentNode {
 
   set doctype(name) {
     this[DOCTYPE] = new DocumentType(this, name);
-    knownBoundaries(this, this[DOCTYPE], this[NEXT]);
+    knownSiblings(this, this[DOCTYPE], this[NEXT]);
   }
 
   get documentElement() {
@@ -161,8 +161,30 @@ class Document extends NonElementParentNode {
     return document;
   }
 
-  importNode(node, deep = false) {
-    return node.cloneNode(deep);
+  importNode(externalNode, deep = false) {
+    const node = externalNode.cloneNode(deep);
+    const {[CUSTOM_ELEMENTS]: customElements} = this;
+    const {active} = customElements;
+    const upgrade = element => {
+      const {ownerDocument, nodeType} = element;
+      element.ownerDocument = this;
+      if (active && ownerDocument !== this && nodeType === ELEMENT_NODE)
+        customElements.upgrade(element);
+    };
+    upgrade(node);
+    if (deep) {
+      switch (node.nodeType) {
+        case ELEMENT_NODE:
+        case DOCUMENT_FRAGMENT_NODE:
+          let {[NEXT]: next, [END]: end} = node;
+          while (next !== end) {
+            upgrade(next);
+            next = next[NEXT];
+          }
+          break;
+      }
+    }
+    return node;
   }
 
   toString() { return this.childNodes.join(''); }

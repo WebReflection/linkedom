@@ -16,7 +16,7 @@ const {END, NEXT, PREV, START, VALUE} = require('../shared/symbols.js');
 const {reset} = require('../shared/cache.js');
 const {prepareMatch} = require('../shared/matches.js');
 const {previousSibling, nextSibling} = require('../shared/node.js');
-const {getEnd, knownAdjacent, knownBoundaries, knownSegment, localCase} = require('../shared/utils.js');
+const {getEnd, knownAdjacent, knownBoundaries, knownSegment, knownSiblings, localCase} = require('../shared/utils.js');
 
 const {Node} = require('../interface/node.js');
 const {Text} = require('../interface/text.js');
@@ -226,7 +226,7 @@ class ParentNode extends Node {
         node.remove();
       default:
         node.parentNode = this;
-        knownBoundaries(next[PREV], node, next);
+        knownSiblings(next[PREV], node, next);
         moCallback(node, null);
         break;
     }

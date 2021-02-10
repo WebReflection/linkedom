@@ -23,7 +23,7 @@ const {parseFromString} = require('../shared/parse-from-string.js');
 const {
   ignoreCase,
   knownAdjacent,
-  knownBoundaries,
+  knownSiblings,
   localCase
 } = require('../shared/utils.js');
 
@@ -77,7 +77,7 @@ const removeAttribute = (element, attribute) => {
 const setAttribute = (element, attribute) => {
   const {[VALUE]: value, name} = attribute;
   attribute.ownerElement = element;
-  knownBoundaries(element, attribute, element[NEXT]);
+  knownSiblings(element, attribute, element[NEXT]);
   if (name === 'class')
     element.className = value;
   moAttributes(element, name, null);

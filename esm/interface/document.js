@@ -1,4 +1,4 @@
-import {DOCUMENT_NODE, DOCUMENT_TYPE_NODE} from '../shared/constants.js';
+import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE} from '../shared/constants.js';
 
 import {
   CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER,
@@ -8,7 +8,7 @@ import {
 import {Facades, illegalConstructor} from '../shared/facades.js';
 import {HTMLClasses} from '../shared/html-classes.js';
 import {Mime} from '../shared/mime.js';
-import {knownBoundaries} from '../shared/utils.js';
+import {knownSiblings} from '../shared/utils.js';
 import {assign, create, defineProperties, setPrototypeOf} from '../shared/object.js';
 
 import {NonElementParentNode} from '../mixin/non-element-parent-node.js';
@@ -107,7 +107,7 @@ export class Document extends NonElementParentNode {
 
   set doctype(name) {
     this[DOCTYPE] = new DocumentType(this, name);
-    knownBoundaries(this, this[DOCTYPE], this[NEXT]);
+    knownSiblings(this, this[DOCTYPE], this[NEXT]);
   }
 
   get documentElement() {
@@ -161,8 +161,30 @@ export class Document extends NonElementParentNode {
     return document;
   }
 
-  importNode(node, deep = false) {
-    return node.cloneNode(deep);
+  importNode(externalNode, deep = false) {
+    const node = externalNode.cloneNode(deep);
+    const {[CUSTOM_ELEMENTS]: customElements} = this;
+    const {active} = customElements;
+    const upgrade = element => {
+      const {ownerDocument, nodeType} = element;
+      element.ownerDocument = this;
+      if (active && ownerDocument !== this && nodeType === ELEMENT_NODE)
+        customElements.upgrade(element);
+    };
+    upgrade(node);
+    if (deep) {
+      switch (node.nodeType) {
+        case ELEMENT_NODE:
+        case DOCUMENT_FRAGMENT_NODE:
+          let {[NEXT]: next, [END]: end} = node;
+          while (next !== end) {
+            upgrade(next);
+            next = next[NEXT];
+          }
+          break;
+      }
+    }
+    return node;
   }
 
   toString() { return this.childNodes.join(''); }
