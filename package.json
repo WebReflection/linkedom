@@ -30,7 +30,7 @@
   "license": "ISC",
   "devDependencies": {
     "ascjs": "^5.0.0",
-    "c8": "^7.4.0",
+    "c8": "^7.5.0",
     "coveralls": "^3.1.0"
   },
   "module": "./esm/index.js",
