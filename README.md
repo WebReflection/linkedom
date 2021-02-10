@@ -59,6 +59,21 @@ document.querySelectorAll('form, input[name], button');
 // CSS Selector via CSSselect
 ```
 
+### Serializing as JSON
+
+*LinkeDOM* uses a blazing fast [JSDON serializer](https://github.com/WebReflection/jsdon#readme), and nodes, as well as whole documents, can be retrieved back by passing a `document` reference to `JSDON.fromJSON(json, document)`, needed to create nodes, reach the `DOMParser`, and so on.
+
+```js
+// any node can be serialized
+const array = document.toJSON();
+
+// somewhere else ...
+import {parseHTML} from 'linkedom';
+import {fromJSON} from 'jsdon';
+
+const document = fromJSON(array, parseHTML(''));
+```
+
 
 ### Simulating JSON Bootstrap
 
@@ -74,7 +89,7 @@ import {parseHTML} from 'linkedom';
 function JSDOM(html) { return parseHTML(html).defaultView; }
 
 // now you can do the same as you would with JSDOM
-const {document} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>').window;
+const {document, window} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>');
 ```
 
 
