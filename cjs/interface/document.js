@@ -48,6 +48,9 @@ const globalExports = assign(
   }
 );
 
+/**
+ * @implements globalThis.Document
+ */
 class Document extends NonElementParentNode {
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);

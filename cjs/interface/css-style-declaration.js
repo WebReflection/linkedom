@@ -62,6 +62,9 @@ const handler = {
   }
 };
 
+/**
+ * @implements globalThis.CSSStyleDeclaration
+ */
 class CSSStyleDeclaration extends Map {
   constructor(element) {
     super();

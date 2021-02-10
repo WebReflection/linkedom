@@ -1,6 +1,10 @@
 import {HTMLImageElement} from '../html/image-element.js';
 
-export const ImageClass = ownerDocument => class Image extends HTMLImageElement {
+export const ImageClass = ownerDocument =>
+/**
+ * @implements globalThis.Image
+ */
+class Image extends HTMLImageElement {
   constructor(width, height) {
     super(ownerDocument);
     switch (arguments.length) {

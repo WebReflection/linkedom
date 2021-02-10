@@ -4,6 +4,9 @@ const {documentTypeAsJSON} = require('../shared/jsdon.js');
 
 const {Node} = require('./node.js');
 
+/**
+ * @implements globalThis.DocumentType
+ */
 class DocumentType extends Node {
   constructor(ownerDocument, name) {
     super(ownerDocument, '#document-type', DOCUMENT_TYPE_NODE);

@@ -11,6 +11,9 @@ const {before, after, replaceWith, remove} = require('../mixin/child-node.js');
 
 const {Node} = require('./node.js');
 
+/**
+ * @implements globalThis.CharacterData
+ */
 class CharacterData extends Node {
 
   constructor(ownerDocument, localName, nodeType, data) {

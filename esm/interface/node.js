@@ -31,6 +31,9 @@ const getParentNodeCount = ({parentNode}) => {
   return count;
 };
 
+/**
+ * @implements globalThis.Node
+ */
 export class Node extends EventTarget {
   static ELEMENT_NODE = ELEMENT_NODE;
   static ATTRIBUTE_NODE = ATTRIBUTE_NODE;

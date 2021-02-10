@@ -6,6 +6,9 @@ const {VALUE} = require('../shared/symbols.js');
 
 const {CharacterData} = require('./character-data.js');
 
+/**
+ * @implements globalThis.Text
+ */
 class Text extends CharacterData {
   constructor(ownerDocument, data = '') {
     super(ownerDocument, '#text', TEXT_NODE, data);

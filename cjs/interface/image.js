@@ -1,7 +1,11 @@
 'use strict';
 const {HTMLImageElement} = require('../html/image-element.js');
 
-const ImageClass = ownerDocument => class Image extends HTMLImageElement {
+const ImageClass = ownerDocument =>
+/**
+ * @implements globalThis.Image
+ */
+class Image extends HTMLImageElement {
   constructor(width, height) {
     super(ownerDocument);
     switch (arguments.length) {

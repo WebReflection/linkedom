@@ -10,6 +10,9 @@ import {attributeChangedCallback as ceAttributes} from './custom-element-registr
 
 import {Node} from './node.js';
 
+/**
+ * @implements globalThis.Attr
+ */
 export class Attr extends Node {
   constructor(ownerDocument, name, value = '') {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);

@@ -11,6 +11,9 @@ const {attributeChangedCallback: ceAttributes} = require('./custom-element-regis
 
 const {Node} = require('./node.js');
 
+/**
+ * @implements globalThis.Attr
+ */
 class Attr extends Node {
   constructor(ownerDocument, name, value = '') {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);

@@ -88,7 +88,9 @@ const setAttribute = (element, attribute) => {
 const shadowRoots = new WeakMap;
 // </utils>
 
-
+/**
+ * @implements globalThis.Element
+ */
 export class Element extends ParentNode {
   constructor(ownerDocument, localName) {
     super(ownerDocument, localName, ELEMENT_NODE);

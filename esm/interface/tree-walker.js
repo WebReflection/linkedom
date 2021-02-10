@@ -23,6 +23,9 @@ const isOK = ({nodeType}, mask) => {
   return 0;
 };
 
+/**
+ * @implements globalThis.TreeWalker
+ */
 export class TreeWalker {
   constructor(root, whatToShow = SHOW_ALL) {
     this.root = root;

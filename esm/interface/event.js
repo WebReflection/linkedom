@@ -2,4 +2,7 @@
 
 import Event from '@ungap/event';
 
+/**
+ * @implements globalThis.Event
+ */
 export {Event};
