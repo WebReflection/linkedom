@@ -14,6 +14,9 @@ class HTMLInputElement extends HTMLElement {
   }
 
   /* c8 ignore start */
+  get autofocus() { return booleanAttribute.get(this, 'autofocus') || -1; }
+  set autofocus(value) { booleanAttribute.set(this, 'autofocus', value); }
+
   get disabled() { return booleanAttribute.get(this, 'disabled'); }
   set disabled(value) { booleanAttribute.set(this, 'disabled', value); }
 

@@ -16,7 +16,7 @@ import {
   MIME, PRIVATE, CUSTOM_ELEMENTS
 } from '../shared/symbols.js';
 
-import {stringAttribute} from '../shared/attributes.js';
+import {numericAttribute, stringAttribute} from '../shared/attributes.js';
 import {elementAsJSON} from '../shared/jsdon.js';
 import {matches, prepareMatch} from '../shared/matches.js';
 import {parseFromString} from '../shared/parse-from-string.js';
@@ -38,6 +38,7 @@ import {DOMStringMap} from '../dom/string-map.js';
 import {DOMTokenList} from '../dom/token-list.js';
 
 import {CSSStyleDeclaration} from './css-style-declaration.js';
+import {Event} from './event.js';
 import {NamedNodeMap} from './named-node-map.js';
 import {ShadowRoot} from './shadow-root.js';
 import {NodeList} from './node-list.js';
@@ -140,11 +141,17 @@ export class Element extends ParentNode {
     );
   }
 
+  get nonce() { return stringAttribute.get(this, 'nonce'); }
+  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
+
   get style() {
     return this[STYLE] || (
       this[STYLE] = new CSSStyleDeclaration(this)
     );
   }
+
+  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
+  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
   // </specialGetters>
 
 
@@ -196,6 +203,8 @@ export class Element extends ParentNode {
     }
     return new Proxy(attributes, attributesHandler);
   }
+
+  focus() { this.dispatchEvent(new Event('focus')); }
 
   getAttribute(name) {
     const attribute = this.getAttributeNode(name);

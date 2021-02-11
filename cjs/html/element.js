@@ -55,9 +55,8 @@ class HTMLElement extends Element {
   offsetWidth
   */
 
-  blur() { this.dispatchEvent(new Event('blur', {bubbles: true})); }
-  click() { this.dispatchEvent(new Event('click', {bubbles: true})); }
-  focus() { this.dispatchEvent(new Event('focus', {bubbles: true})); }
+  blur() { this.dispatchEvent(new Event('blur')); }
+  click() { this.dispatchEvent(new Event('click')); }
 
   // Boolean getters
   get accessKeyLabel() {
@@ -76,10 +75,6 @@ class HTMLElement extends Element {
   get spellcheck() { return booleanAttribute.get(this, 'spellcheck'); }
   set spellcheck(value) { booleanAttribute.set(this, 'spellcheck', value); }
 
-  // Numeric Accessors
-  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
-  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
-
   // String Accessors
   get accessKey() { return stringAttribute.get(this, 'accesskey'); }
   set accessKey(value) { stringAttribute.set(this, 'accesskey', value); }
@@ -87,8 +82,6 @@ class HTMLElement extends Element {
   set dir(value) { stringAttribute.set(this, 'dir', value); }
   get lang() { return stringAttribute.get(this, 'lang'); }
   set lang(value) { stringAttribute.set(this, 'lang', value); }
-  get nonce() { return stringAttribute.get(this, 'nonce'); }
-  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
   get title() { return stringAttribute.get(this, 'title'); }
   set title(value) { stringAttribute.set(this, 'title', value); }
 

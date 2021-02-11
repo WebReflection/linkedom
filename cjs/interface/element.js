@@ -15,7 +15,7 @@ const {
   CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, VALUE, MIME, PRIVATE, CUSTOM_ELEMENTS
 } = require('../shared/symbols.js');
 
-const {stringAttribute} = require('../shared/attributes.js');
+const {numericAttribute, stringAttribute} = require('../shared/attributes.js');
 const {elementAsJSON} = require('../shared/jsdon.js');
 const {matches, prepareMatch} = require('../shared/matches.js');
 const {parseFromString} = require('../shared/parse-from-string.js');
@@ -37,6 +37,7 @@ const {DOMStringMap} = require('../dom/string-map.js');
 const {DOMTokenList} = require('../dom/token-list.js');
 
 const {CSSStyleDeclaration} = require('./css-style-declaration.js');
+const {Event} = require('./event.js');
 const {NamedNodeMap} = require('./named-node-map.js');
 const {ShadowRoot} = require('./shadow-root.js');
 const {NodeList} = require('./node-list.js');
@@ -139,11 +140,17 @@ class Element extends ParentNode {
     );
   }
 
+  get nonce() { return stringAttribute.get(this, 'nonce'); }
+  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
+
   get style() {
     return this[STYLE] || (
       this[STYLE] = new CSSStyleDeclaration(this)
     );
   }
+
+  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
+  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
   // </specialGetters>
 
 
@@ -195,6 +202,8 @@ class Element extends ParentNode {
     }
     return new Proxy(attributes, attributesHandler);
   }
+
+  focus() { this.dispatchEvent(new Event('focus')); }
 
   getAttribute(name) {
     const attribute = this.getAttributeNode(name);

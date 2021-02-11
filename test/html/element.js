@@ -71,24 +71,32 @@ assert(node.classList.supports('whatever'), true, 'whatever');
 assert(node.onclick, null, 'Level 0 events');
 
 let args = null;
-function click(event) {
+function focus(event) {
   args = event;
 }
-node.onclick = click;
-assert(node.onclick, click, 'Level 0 events');
+node.onfocus = focus;
+assert(node.onfocus, focus, 'Level 0 events');
 
 let event = node.ownerDocument.createEvent('Event');
-event.initEvent('click');
+event.initEvent('focus');
 node.dispatchEvent(event);
 
-assert(args.type, 'click');
-node.onclick = null;
-assert(node.onclick, null, 'Level 0 events');
+assert(args.type, 'focus');
+node.onfocus = null;
+assert(node.onfocus, null, 'Level 0 events');
 
 args = null;
-node.onclick = click;
-node.click();
-assert(args.type, 'click', 'event bubbled');
+node.onfocus = focus;
+node.focus();
+assert(args.type, 'focus', 'event bubbled');
+
+assert(node.tabIndex, -1, 'no tabIndex');
+node.tabIndex = 1;
+assert(node.tabIndex, 1, 'yes tabIndex');
+
+assert(node.nonce, '', 'no nonce');
+node.nonce = 'abc';
+assert(node.nonce, 'abc', 'yes nonce');
 
 node = document.createElement('div');
 node.innerHTML = '<p>!</p>';
