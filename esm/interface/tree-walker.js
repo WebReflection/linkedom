@@ -9,7 +9,7 @@ import {
   SHOW_TEXT
 } from '../shared/constants.js';
 
-import {END, NEXT} from '../shared/symbols.js';
+import {PRIVATE, END, NEXT} from '../shared/symbols.js';
 
 const isOK = ({nodeType}, mask) => {
   switch (nodeType) {
@@ -37,18 +37,18 @@ export class TreeWalker {
       next = documentElement;
       end = documentElement[END];
     }
-    this[NEXT] = next;
-    this[END] = end;
+    const nodes = [];
+    while (next !== end) {
+      if (isOK(next, whatToShow))
+        nodes.push(next);
+      next = next[NEXT];
+    }
+    this[PRIVATE] = {i: 0, nodes};
   }
 
   nextNode() {
-    let {[NEXT]: next, [END]: end, whatToShow} = this;
-    while (next !== end) {
-      this[NEXT] = next[NEXT];
-      if (isOK(next, whatToShow))
-        return (this.currentNode = next);
-      next = this[NEXT];
-    }
-    return (this.currentNode = null);
+    const $ = this[PRIVATE];
+    this.currentNode = $.i < $.nodes.length ? $.nodes[$.i++] : null;
+    return this.currentNode;
   }
 }

@@ -36,3 +36,15 @@ assert(treeWalker.nextNode(), document.documentElement, 'root as document works'
 
 assert(node.childNodes[1].previousSibling, node.childNodes[0], 'previousSibling element');
 assert(node.childNodes[0].previousSibling, null, 'previousSibling nope');
+
+node.replaceChildren();
+let p = node.appendChild(document.createElement('p'));
+p.setAttribute('ghost', '');
+p.textContent = 'ok';
+
+treeWalker = document.createTreeWalker(node);
+assert(treeWalker.nextNode(), p, 'treewalker p');
+p.removeAttribute('ghost');
+
+assert(treeWalker.nextNode(), p.firstChild, 'treewalker p.firstChild');
+assert(treeWalker.nextNode(), null, 'end of p treeWalker');
