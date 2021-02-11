@@ -161,7 +161,10 @@ class Document extends NonElementParentNode {
     return document;
   }
 
-  importNode(externalNode, deep = false) {
+  importNode(externalNode) {
+    // important: keep the signature length as *one*
+    // or it would behave like old IE or Edge with polyfills
+    const deep = 1 < arguments.length && !!arguments[1];
     const node = externalNode.cloneNode(deep);
     const {[CUSTOM_ELEMENTS]: customElements} = this;
     const {active} = customElements;
