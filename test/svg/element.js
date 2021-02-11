@@ -31,3 +31,12 @@ catch (OK) {}
 document = (new DOMParser).parseFromString(`<!doctype html><html><svg><rect /></svg></html>`, 'text/html');
 
 assert('ownerSVGElement' in document.querySelector('svg rect'), true, 'svg restored');
+
+svg.className.what = 'ever';
+
+assert(svg.className.what, 'ever', '<svg>.className');
+
+svg.setAttribute('test', 123);
+svg.setAttribute('style', 'width:100px');
+
+assert(svg.toString(), '<svg style="width:100px" test="123"><rect /></svg>');
