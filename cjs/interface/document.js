@@ -68,6 +68,12 @@ class Document extends NonElementParentNode {
         switch (name) {
           case 'document':
             return this;
+          /* c8 ignore start */
+          case 'navigator':
+            return {
+              userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'
+            };
+          /* c8 ignore stop */
           case 'window':
             return window;
           case 'customElements':
