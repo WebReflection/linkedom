@@ -3,9 +3,11 @@ import {IMAGE} from '../shared/symbols.js';
 import {registerHTMLClass} from '../shared/register-html-class.js';
 import {numericAttribute} from '../shared/attributes.js';
 
-import createCanvas from '../../commonjs/canvas.cjs';
+import * as Canvas from '../../commonjs/canvas.cjs';
 
 import {HTMLElement} from './element.js';
+
+const {createCanvas} = Canvas;
 
 const tagName = 'canvas';
 

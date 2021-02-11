@@ -1,10 +1,11 @@
 'use strict';
-const {Parser} = require('htmlparser2');
+const HTMLParser2 = require('htmlparser2');
 
 const {CUSTOM_ELEMENTS, PRIVATE} = require('./symbols.js');
 const {Mime} = require('./mime.js');
 const {keys} = require('./object.js');
 
+const {Parser} = HTMLParser2;
 
 const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);
 const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');

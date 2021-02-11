@@ -14,4 +14,8 @@ assert(canvas.toString(), '<canvas width="320" height="200"></canvas>');
 
 assert(canvas.getContext('2d') !== void 0, true, 'canvas.getContext');
 
-assert(typeof canvas.toDataURL('image/png'), 'string', 'canvas.toDataURL');
+const asString = canvas.toDataURL('image/png');
+assert(typeof asString, 'string', 'canvas.toDataURL');
+
+if (asString.length)
+  console.log(' └ with canvas module available');

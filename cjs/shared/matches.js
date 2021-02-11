@@ -1,5 +1,5 @@
 'use strict';
-const CSSselect = require('../../commonjs/css-select.cjs');
+const CSSselect = require('css-select');
 
 const {ELEMENT_NODE, TEXT_NODE} = require('./constants.js');
 const {VALUE} = require('./symbols.js');

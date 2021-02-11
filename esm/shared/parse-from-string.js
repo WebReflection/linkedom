@@ -1,9 +1,10 @@
-import {Parser} from 'htmlparser2';
+import * as HTMLParser2 from 'htmlparser2';
 
 import {CUSTOM_ELEMENTS, PRIVATE} from './symbols.js';
 import {Mime} from './mime.js';
 import {keys} from './object.js';
 
+const {Parser} = HTMLParser2;
 
 const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);
 const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');

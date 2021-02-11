@@ -1,4 +1,4 @@
-import * as CSSselect from '../../commonjs/css-select.cjs';
+import * as CSSselect from 'css-select';
 
 import {ELEMENT_NODE, TEXT_NODE} from './constants.js';
 import {VALUE} from './symbols.js';

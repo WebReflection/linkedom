@@ -1,6 +1,6 @@
 /* c8 ignore start */
 try {
-  module.exports = require('canvas').createCanvas;
+  module.exports = require('canvas');
 }
 catch (fallback) {
   class Canvas {
@@ -11,6 +11,8 @@ catch (fallback) {
     getContext() { return null; }
     toDataURL() { return ''; }
   }
-  module.exports = (width, height) => new Canvas(width, height);
+  module.exports = {
+    createCanvas: (width, height) => new Canvas(width, height)
+  };
 }
 /* c8 ignore stop */

@@ -4,9 +4,11 @@ const {IMAGE} = require('../shared/symbols.js');
 const {registerHTMLClass} = require('../shared/register-html-class.js');
 const {numericAttribute} = require('../shared/attributes.js');
 
-const createCanvas = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('../../commonjs/canvas.cjs'));
+const Canvas = require('../../commonjs/canvas.cjs');
 
 const {HTMLElement} = require('./element.js');
+
+const {createCanvas} = Canvas;
 
 const tagName = 'canvas';
 
