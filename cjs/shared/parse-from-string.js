@@ -1,7 +1,8 @@
 'use strict';
 const HTMLParser2 = require('htmlparser2');
 
-const {CUSTOM_ELEMENTS, PRIVATE} = require('./symbols.js');
+const {SVG_NAMESPACE} = require('./constants.js');
+const {CUSTOM_ELEMENTS} = require('./symbols.js');
 const {Mime} = require('./mime.js');
 const {keys} = require('./object.js');
 
@@ -18,7 +19,6 @@ const isNotParsing = () => notParsing;
 exports.isNotParsing = isNotParsing;
 
 const parseFromString = (document, isHTML, markupLanguage) => {
-  const {SVGElement} = document[PRIVATE];
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
   let node = document;
@@ -38,11 +38,12 @@ const parseFromString = (document, isHTML, markupLanguage) => {
       let create = true;
       if (isHTML) {
         if (ownerSVGElement) {
-          node = node.appendChild(new SVGElement(document, name, ownerSVGElement));
+          node = node.appendChild(document.createElementNS(SVG_NAMESPACE, name));
+          node.ownerSVGElement = ownerSVGElement;
           create = false;
         }
         else if (name === 'svg' || name === 'SVG') {
-          ownerSVGElement = new SVGElement(document, name);
+          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
           node = node.appendChild(ownerSVGElement);
           create = false;
         }

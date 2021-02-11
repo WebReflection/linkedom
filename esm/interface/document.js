@@ -1,4 +1,4 @@
-import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE} from '../shared/constants.js';
+import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} from '../shared/constants.js';
 
 import {
   CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER,
@@ -60,10 +60,6 @@ export class Document extends NonElementParentNode {
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
     this[IMAGE] = null;
-  }
-
-  get [PRIVATE]() {
-    return {SVGElement};
   }
 
   get defaultView() {
@@ -209,7 +205,7 @@ export class Document extends NonElementParentNode {
     return this.createAttribute(name);
   }
   createElementNS(nsp, localName, options) {
-    return nsp === 'http://www.w3.org/2000/svg' ?
+    return nsp === SVG_NAMESPACE ?
             new SVGElement(this, localName, null) :
             this.createElement(localName, options);
   }

@@ -1,4 +1,6 @@
 'use strict';
+const {PRIVATE} = require('../shared/symbols.js');
+
 const {registerHTMLClass} = require('../shared/register-html-class.js');
 
 const {HTMLElement} = require('./element.js');
@@ -14,7 +16,7 @@ class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
     super(ownerDocument, tagName);
     const content = this.ownerDocument.createDocumentFragment();
-    (this[CONTENT] = content).parentNode = this;
+    (this[CONTENT] = content)[PRIVATE] = this;
   }
 
   get content() {

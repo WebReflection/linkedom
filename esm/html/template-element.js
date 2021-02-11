@@ -1,3 +1,5 @@
+import {PRIVATE} from '../shared/symbols.js';
+
 import {registerHTMLClass} from '../shared/register-html-class.js';
 
 import {HTMLElement} from './element.js';
@@ -13,7 +15,7 @@ class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
     super(ownerDocument, tagName);
     const content = this.ownerDocument.createDocumentFragment();
-    (this[CONTENT] = content).parentNode = this;
+    (this[CONTENT] = content)[PRIVATE] = this;
   }
 
   get content() {

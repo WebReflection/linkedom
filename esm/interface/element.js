@@ -7,7 +7,8 @@ import {
   COMMENT_NODE,
   ELEMENT_NODE,
   NODE_END,
-  TEXT_NODE
+  TEXT_NODE,
+  SVG_NAMESPACE
 } from '../shared/constants.js';
 
 import {
@@ -56,11 +57,14 @@ const attributesHandler = {
   }
 };
 
-const create = (ownerDocument, element, localName, SVGElement)  => (
-  'ownerSVGElement' in element ?
-    new SVGElement(ownerDocument, localName, element.ownerSVGElement) :
-    ownerDocument.createElement(localName)
-);
+const create = (ownerDocument, element, localName)  => {
+  if ('ownerSVGElement' in element) {
+    const svg = ownerDocument.createElementNS(SVG_NAMESPACE, localName);
+    svg.ownerSVGElement = element.ownerSVGElement;
+    return svg;
+  }
+  return ownerDocument.createElement(localName);
+};
 
 const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
@@ -369,14 +373,13 @@ export class Element extends ParentNode {
   // </insertAdjacent>
 
   cloneNode(deep = false) {
-    const {ownerDocument: OD, localName} = this;
-    const {SVGElement} = OD[PRIVATE];
+    const {ownerDocument, localName} = this;
     const addNext = next => {
       next.parentNode = parentNode;
       knownAdjacent($next, next);
       $next = next;
     };
-    const clone = create(OD, this, localName, SVGElement);
+    const clone = create(ownerDocument, this, localName);
     let parentNode = clone, $next = clone;
     let {[NEXT]: next, [END]: prev} = this;
     while (next !== prev && (deep || next.nodeType === ATTRIBUTE_NODE)) {
@@ -387,7 +390,7 @@ export class Element extends ParentNode {
           parentNode = parentNode.parentNode;
           break;
         case ELEMENT_NODE:
-          const node = create(OD, next, next.localName, SVGElement);
+          const node = create(ownerDocument, next, next.localName);
           addNext(node);
           parentNode = node;
           break;

@@ -1,6 +1,7 @@
 import * as HTMLParser2 from 'htmlparser2';
 
-import {CUSTOM_ELEMENTS, PRIVATE} from './symbols.js';
+import {SVG_NAMESPACE} from './constants.js';
+import {CUSTOM_ELEMENTS} from './symbols.js';
 import {Mime} from './mime.js';
 import {keys} from './object.js';
 
@@ -16,7 +17,6 @@ let notParsing = true;
 export const isNotParsing = () => notParsing;
 
 export const parseFromString = (document, isHTML, markupLanguage) => {
-  const {SVGElement} = document[PRIVATE];
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
   let node = document;
@@ -36,11 +36,12 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
       let create = true;
       if (isHTML) {
         if (ownerSVGElement) {
-          node = node.appendChild(new SVGElement(document, name, ownerSVGElement));
+          node = node.appendChild(document.createElementNS(SVG_NAMESPACE, name));
+          node.ownerSVGElement = ownerSVGElement;
           create = false;
         }
         else if (name === 'svg' || name === 'SVG') {
-          ownerSVGElement = new SVGElement(document, name);
+          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
           node = node.appendChild(ownerSVGElement);
           create = false;
         }

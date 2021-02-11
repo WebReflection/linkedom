@@ -11,7 +11,7 @@ const {
   COMMENT_NODE
 } = require('../shared/constants.js');
 
-const {END, NEXT, PREV, START, VALUE} = require('../shared/symbols.js');
+const {PRIVATE, END, NEXT, PREV, START, VALUE} = require('../shared/symbols.js');
 
 const {reset} = require('../shared/cache.js');
 const {prepareMatch} = require('../shared/matches.js');
@@ -42,6 +42,7 @@ class ParentNode extends Node {
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
     knownAdjacent(this, this[END] = new ParentNodeEnd(this));
+    this[PRIVATE] = null;
   }
 
   get childNodes() {
@@ -203,7 +204,7 @@ class ParentNode extends Node {
         connectedCallback(node);
         break;
       case DOCUMENT_FRAGMENT_NODE:
-        let {firstChild, lastChild, parentNode} = node;
+        let {[PRIVATE]: parentNode, firstChild, lastChild} = node;
         if (firstChild) {
           knownSegment(next[PREV], firstChild, lastChild, next);
           knownAdjacent(node, node[END]);
