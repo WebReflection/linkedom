@@ -181,7 +181,8 @@ export class Document extends NonElementParentNode {
         case DOCUMENT_FRAGMENT_NODE:
           let {[NEXT]: next, [END]: end} = node;
           while (next !== end) {
-            upgrade(next);
+            if (next.nodeType === ELEMENT_NODE)
+              upgrade(next);
             next = next[NEXT];
           }
           break;
