@@ -85,6 +85,11 @@ assert(args.type, 'click');
 node.onclick = null;
 assert(node.onclick, null, 'Level 0 events');
 
+args = null;
+node.onclick = click;
+node.click();
+assert(args.type, 'click', 'event bubbled');
+
 node = document.createElement('div');
 node.innerHTML = '<p>!</p>';
 assert(node.innerHTML, '<p>!</p>', 'innerHTML');

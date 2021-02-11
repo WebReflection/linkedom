@@ -1,6 +1,7 @@
 import {END} from '../shared/symbols.js';
 import {booleanAttribute, numericAttribute, stringAttribute} from '../shared/attributes.js';
 
+import {Event} from '../interface/event.js';
 import {Element} from '../interface/element.js';
 import {Classes, customElements} from '../interface/custom-element-registry.js';
 
@@ -45,9 +46,28 @@ export class HTMLElement extends Element {
 
   /* c8 ignore start */
 
+  /* TODO: what about these?
+  offsetHeight
+  offsetLeft
+  offsetParent
+  offsetTop
+  offsetWidth
+  */
+
+  blur() { this.dispatchEvent(new Event('blur')); }
+  click() { this.dispatchEvent(new Event('click')); }
+  focus() { this.dispatchEvent(new Event('focus')); }
+
+  // Boolean getters
+  get accessKeyLabel() {
+    const {accessKey} = this;
+    return accessKey && `Alt+Shift+${accessKey}`;
+  }
+  get isContentEditable() { return this.hasAttribute('contenteditable'); }
+
   // Boolean Accessors
-  get contentEditable() { return booleanAttribute.get(this, 'contentEditable'); }
-  set contentEditable(value) { booleanAttribute.set(this, 'contentEditable', value); }
+  get contentEditable() { return booleanAttribute.get(this, 'contenteditable'); }
+  set contentEditable(value) { booleanAttribute.set(this, 'contenteditable', value); }
   get draggable() { return booleanAttribute.get(this, 'draggable'); }
   set draggable(value) { booleanAttribute.set(this, 'draggable', value); }
   get hidden() { return booleanAttribute.get(this, 'hidden'); }
@@ -56,16 +76,18 @@ export class HTMLElement extends Element {
   set spellcheck(value) { booleanAttribute.set(this, 'spellcheck', value); }
 
   // Numeric Accessors
-  get tabIndex() { return numericAttribute.get(this, 'tabIndex'); }
-  set tabIndex(value) { numericAttribute.set(this, 'tabIndex', value); }
+  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
+  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
 
   // String Accessors
-  get accessKey() { return stringAttribute.get(this, 'accessKey'); }
-  set accessKey(value) { stringAttribute.set(this, 'accessKey', value); }
+  get accessKey() { return stringAttribute.get(this, 'accesskey'); }
+  set accessKey(value) { stringAttribute.set(this, 'accesskey', value); }
   get dir() { return stringAttribute.get(this, 'dir'); }
   set dir(value) { stringAttribute.set(this, 'dir', value); }
   get lang() { return stringAttribute.get(this, 'lang'); }
   set lang(value) { stringAttribute.set(this, 'lang', value); }
+  get nonce() { return stringAttribute.get(this, 'nonce'); }
+  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
   get title() { return stringAttribute.get(this, 'title'); }
   set title(value) { stringAttribute.set(this, 'title', value); }
 

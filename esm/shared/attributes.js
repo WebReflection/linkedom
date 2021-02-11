@@ -1,30 +1,30 @@
 export const booleanAttribute = {
   get(element, name) {
-    return element.hasAttribute(name.toLowerCase());
+    return element.hasAttribute(name);
   },
   set(element, name, value) {
     if (value)
-      element.setAttribute(name.toLowerCase(), '');
+      element.setAttribute(name, '');
     else
-      element.removeAttribute(name.toLowerCase());
+      element.removeAttribute(name);
   }
 };
 
 export const numericAttribute = {
   get(element, name) {
-    return parseFloat(element.getAttribute(name.toLowerCase()) || 0);
+    return parseFloat(element.getAttribute(name) || 0);
   },
   set(element, name, value) {
-    element.setAttribute(name.toLowerCase(), value);
+    element.setAttribute(name, value);
   }
 };
 
 export const stringAttribute = {
   get(element, name) {
-    return element.getAttribute(name.toLowerCase()) || '';
+    return element.getAttribute(name) || '';
   },
   set(element, name, value) {
-    element.setAttribute(name.toLowerCase(), value);
+    element.setAttribute(name, value);
   }
 };
 
