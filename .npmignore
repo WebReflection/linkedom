@@ -6,3 +6,5 @@ node_modules/
 rollup/
 test/
 linkedom-benchmark.jpg
+deep-dive.md
+how-to-contribute.md
