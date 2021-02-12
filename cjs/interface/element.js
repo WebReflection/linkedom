@@ -13,7 +13,7 @@ const {
 } = require('../shared/constants.js');
 
 const {
-  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, VALUE, MIME, PRIVATE, CUSTOM_ELEMENTS
+  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, VALUE, MIME, CUSTOM_ELEMENTS
 } = require('../shared/symbols.js');
 
 const {numericAttribute, stringAttribute} = require('../shared/attributes.js');

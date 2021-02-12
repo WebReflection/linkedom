@@ -22,22 +22,21 @@ const test = folder => getFiles(folder).then(files => {
   }
 });
 
-setTimeout(() => {
-  console.log(`\x1b[7m\x1b[1m ${'LinkeDOM'.padEnd(74)}\x1b[0m`);
-  global[Symbol.for('linkedom')] = require('../cjs/index.js');
-  test('xml')
-  .then(() => test('svg'))
-  .then(() => test('html'))
-  .then(() => test('interface'))
-  .then(() => test('shared'));
-}, 0);
-
-setTimeout(() => {
-  console.log(`\x1b[7m\x1b[1m ${'LinkeDOM - Cached'.padEnd(74)}\x1b[0m`);
-  global[Symbol.for('linkedom')] = require('../cjs/cached.js');
-  test('xml')
-  .then(() => test('svg'))
-  .then(() => test('html'))
-  .then(() => test('interface'))
-  .then(() => test('shared'));
-}, 2000);
+console.log(`\x1b[7m\x1b[1m ${'LinkeDOM'.padEnd(74)}\x1b[0m`);
+global[Symbol.for('linkedom')] = require('../cjs/index.js');
+test('xml')
+.then(() => test('svg'))
+.then(() => test('html'))
+.then(() => test('interface'))
+.then(() => test('shared'))
+.then(() => {
+  setTimeout(() => {
+    console.log(`\x1b[7m\x1b[1m ${'LinkeDOM - Cached'.padEnd(74)}\x1b[0m`);
+    global[Symbol.for('linkedom')] = require('../cjs/cached.js');
+    test('xml')
+    .then(() => test('svg'))
+    .then(() => test('html'))
+    .then(() => test('interface'))
+    .then(() => test('shared'));
+  }, 500);
+});

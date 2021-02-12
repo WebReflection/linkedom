@@ -224,6 +224,7 @@ export class ParentNode extends Node {
       case TEXT_NODE:
       case COMMENT_NODE:
         node.remove();
+      // this covers DOCUMENT_TYPE_NODE too
       default:
         node.parentNode = this;
         knownSiblings(next[PREV], node, next);

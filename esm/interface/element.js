@@ -14,7 +14,7 @@ import {
 import {
   CLASS_LIST, DATASET, STYLE,
   END, NEXT, PREV, START, VALUE,
-  MIME, PRIVATE, CUSTOM_ELEMENTS
+  MIME, CUSTOM_ELEMENTS
 } from '../shared/symbols.js';
 
 import {numericAttribute, stringAttribute} from '../shared/attributes.js';
