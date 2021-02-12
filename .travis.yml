@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - stable
+  - v14
+  - v12
 git:
   depth: 1
 branches:
