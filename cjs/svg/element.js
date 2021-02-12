@@ -28,6 +28,12 @@ class SVGElement extends Element {
     return classNames.get(this);
   }
 
+  set className(value) {
+    const {classList} = this;
+    classList.clear();
+    classList.add(...value.split(/\s+/));
+  }
+
   setAttribute(name, value) {
     if (name === 'style') {
       const {className} = this;
