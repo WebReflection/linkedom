@@ -38,7 +38,7 @@ class HTMLElement extends Element {
         throw new Error('unable to initialize this Custom Element');
       const {ownerDocument, localName, options} = Classes.get(Class);
       this.ownerDocument = end.ownerDocument = ownerDocument;
-      this.localName = end.localName = localName;
+      this.localName = localName;
       customElements.set(this, {connected: false});
       if (options.is)
         this.setAttribute('is', options.is);
