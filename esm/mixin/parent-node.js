@@ -40,8 +40,15 @@ const insert = (parentNode, child, nodes) => {
 export class ParentNode extends Node {
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
-    knownAdjacent(this, this[END] = new ParentNodeEnd(this));
     this[PRIVATE] = null;
+    this[NEXT] = this[END] = {
+      [NEXT]: null,
+      [PREV]: this,
+      [START]: this,
+      nodeType: NODE_END,
+      ownerDocument: this.ownerDocument,
+      parentNode: null
+    };
   }
 
   get childNodes() {
@@ -262,13 +269,5 @@ export class ParentNode extends Node {
     replaced.remove();
     this.insertBefore(node, next);
     return replaced;
-  }
-}
-
-class ParentNodeEnd extends Node {
-  constructor(tree) {
-    const {ownerDocument, localName} = tree;
-    super(ownerDocument, localName, NODE_END);
-    this[START] = tree;
   }
 }

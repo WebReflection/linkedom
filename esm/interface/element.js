@@ -427,17 +427,18 @@ export class Element extends ParentNode {
           }
           break;
         case NODE_END:
+          const start = next[START];
           if (isOpened) {
-            if ('ownerSVGElement' in next[START])
+            if ('ownerSVGElement' in start)
               out.push(' />');
-            else if (isVoid(next))
-              out.push(ignoreCase(next) ? '>' : ' />');
+            else if (isVoid(start))
+              out.push(ignoreCase(start) ? '>' : ' />');
             else
-              out.push(`></${next.localName}>`);
+              out.push(`></${start.localName}>`);
             isOpened = false;
           }
           else
-            out.push(`</${next.localName}>`);
+            out.push(`</${start.localName}>`);
           break;
         case ELEMENT_NODE:
           if (isOpened)
