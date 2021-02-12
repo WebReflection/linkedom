@@ -1,4 +1,4 @@
-const assert = require('../assert.js').for('HTMLHtmlElement');
+const assert = require('../assert.js').for('HTMLElement');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
