@@ -2,6 +2,7 @@ import {registerHTMLClass} from '../shared/register-html-class.js';
 import {booleanAttribute} from '../shared/attributes.js';
 
 import {HTMLElement} from './element.js';
+import {NodeList} from '../interface/node-list.js';
 
 const tagName = 'select';
 
@@ -11,6 +12,20 @@ const tagName = 'select';
 class HTMLSelectElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
+  }
+
+  get options() {
+    let children = new NodeList;
+    let {firstElementChild} = this;
+    while (firstElementChild) {
+      if (firstElementChild.tagName === 'OPTGROUP') {
+        children = children.concat(firstElementChild.children);
+      } else {
+        children.push(firstElementChild);
+      }
+      firstElementChild = firstElementChild.nextElementSibling;
+    }
+    return children;
   }
 
   /* c8 ignore start */
@@ -25,3 +40,4 @@ class HTMLSelectElement extends HTMLElement {
 registerHTMLClass(tagName, HTMLSelectElement);
 
 export {HTMLSelectElement};
+

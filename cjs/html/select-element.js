@@ -3,6 +3,7 @@ const {registerHTMLClass} = require('../shared/register-html-class.js');
 const {booleanAttribute} = require('../shared/attributes.js');
 
 const {HTMLElement} = require('./element.js');
+const {NodeList} = require('../interface/node-list.js');
 
 const tagName = 'select';
 
@@ -12,6 +13,20 @@ const tagName = 'select';
 class HTMLSelectElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
+  }
+
+  get options() {
+    let children = new NodeList;
+    let {firstElementChild} = this;
+    while (firstElementChild) {
+      if (firstElementChild.tagName === 'OPTGROUP') {
+        children = children.concat(firstElementChild.children);
+      } else {
+        children.push(firstElementChild);
+      }
+      firstElementChild = firstElementChild.nextElementSibling;
+    }
+    return children;
   }
 
   /* c8 ignore start */
@@ -26,3 +41,4 @@ class HTMLSelectElement extends HTMLElement {
 registerHTMLClass(tagName, HTMLSelectElement);
 
 exports.HTMLSelectElement = HTMLSelectElement;
+
