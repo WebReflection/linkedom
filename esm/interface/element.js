@@ -389,11 +389,12 @@ export class Element extends ParentNode {
           $next = parentNode[END];
           parentNode = parentNode.parentNode;
           break;
-        case ELEMENT_NODE:
+        case ELEMENT_NODE: {
           const node = create(ownerDocument, next, next.localName);
           addNext(node);
           parentNode = node;
           break;
+        }
         case ATTRIBUTE_NODE:
         case TEXT_NODE:
         case COMMENT_NODE:
@@ -415,7 +416,7 @@ export class Element extends ParentNode {
     do {
       next = next[NEXT];
       switch (next.nodeType) {
-        case ATTRIBUTE_NODE:
+        case ATTRIBUTE_NODE: {
           const attr = ' ' + next;
           switch (attr) {
             case ' id':
@@ -426,7 +427,8 @@ export class Element extends ParentNode {
               out.push(attr);
           }
           break;
-        case NODE_END:
+        }
+        case NODE_END: {
           const start = next[START];
           if (isOpened) {
             if ('ownerSVGElement' in start)
@@ -440,6 +442,7 @@ export class Element extends ParentNode {
           else
             out.push(`</${start.localName}>`);
           break;
+        }
         case ELEMENT_NODE:
           if (isOpened)
             out.push('>');

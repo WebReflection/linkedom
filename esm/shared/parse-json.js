@@ -46,7 +46,7 @@ export const parseJSON = value => {
   while (i < length) {
     let nodeType = array[i++];
     switch (nodeType) {
-      case ELEMENT_NODE:
+      case ELEMENT_NODE: {
         const localName = array[i++];
         const isSVG = svg || localName === 'svg' || localName === 'SVG';
         const element = isSVG ?
@@ -58,13 +58,15 @@ export const parseJSON = value => {
         end = parentNode[END];
         svg = isSVG;
         break;
-      case ATTRIBUTE_NODE:
+      }
+      case ATTRIBUTE_NODE: {
         const name = array[i++];
         const value = typeof array[i] === 'string' ? array[i++] : '';
         const attr = new Attr(document, name, value);
         attr.ownerElement = parentNode;
         knownSiblings(end[PREV], attr, end);
         break;
+      }
       case TEXT_NODE:
         append(parentNode, new Text(document, array[i++]), end);
         break;
@@ -77,6 +79,7 @@ export const parseJSON = value => {
       case DOCUMENT_FRAGMENT_NODE:
         parentNode = document.createDocumentFragment();
         end = parentNode[END];
+      /* eslint no-fallthrough:0 */
       case DOCUMENT_NODE:
         break;
       default:

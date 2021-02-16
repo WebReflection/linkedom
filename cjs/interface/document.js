@@ -2,7 +2,7 @@
 const {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} = require('../shared/constants.js');
 
 const {
-  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, PRIVATE
+  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME
 } = require('../shared/symbols.js');
 
 const {Facades, illegalConstructor} = require('../shared/facades.js');
@@ -180,7 +180,7 @@ class Document extends NonElementParentNode {
     if (deep) {
       switch (node.nodeType) {
         case ELEMENT_NODE:
-        case DOCUMENT_FRAGMENT_NODE:
+        case DOCUMENT_FRAGMENT_NODE: {
           let {[NEXT]: next, [END]: end} = node;
           while (next !== end) {
             if (next.nodeType === ELEMENT_NODE)
@@ -188,6 +188,7 @@ class Document extends NonElementParentNode {
             next = next[NEXT];
           }
           break;
+        }
       }
     }
     return node;

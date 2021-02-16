@@ -5,14 +5,17 @@
 
 // Node 15 has Event but 14 and 12 don't
 
+const BUBBLING_PHASE = 3;
+const CAPTURING_PHASE = 1;
+
 /**
  * @implements globalThis.Event
  */
 const GlobalEvent = typeof Event === 'function' ?
   Event :
   class Event {
-    static BUBBLING_PHASE = 3;
-    static CAPTURING_PHASE = 1;
+    static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    static get CAPTURING_PHASE() { return CAPTURING_PHASE; }
 
     constructor(type, eventInitDict = {}) {
       this.type = type;
@@ -27,8 +30,8 @@ const GlobalEvent = typeof Event === 'function' ?
       this.target = null;
     }
 
-    get BUBBLING_PHASE() { return Event.BUBBLING_PHASE; }
-    get CAPTURING_PHASE() { return Event.CAPTURING_PHASE; }
+    get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    get CAPTURING_PHASE() { return CAPTURING_PHASE; }
 
     preventDefault() { this.defaultPrevented = true; }
 

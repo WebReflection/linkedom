@@ -77,5 +77,5 @@ export class DOMTokenList extends Set {
   /**
    * @param {string} token
    */
-  supports(token) { return true; }
+  supports() { return true; }
 }

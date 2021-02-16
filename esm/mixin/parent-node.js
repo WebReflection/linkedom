@@ -209,7 +209,7 @@ export class ParentNode extends Node {
         moCallback(node, null);
         connectedCallback(node);
         break;
-      case DOCUMENT_FRAGMENT_NODE:
+      case DOCUMENT_FRAGMENT_NODE: {
         let {[PRIVATE]: parentNode, firstChild, lastChild} = node;
         if (firstChild) {
           knownSegment(next[PREV], firstChild, lastChild, next);
@@ -228,9 +228,11 @@ export class ParentNode extends Node {
         }
         reset(node);
         break;
+      }
       case TEXT_NODE:
       case COMMENT_NODE:
         node.remove();
+      /* eslint no-fallthrough:0 */
       // this covers DOCUMENT_TYPE_NODE too
       default:
         node.parentNode = this;

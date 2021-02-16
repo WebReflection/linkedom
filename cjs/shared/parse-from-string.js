@@ -70,7 +70,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     ontext(text) { node.appendChild(document.createTextNode(text)); },
 
     // </tagName>
-    onclosetag(name) {
+    onclosetag() {
       if (isHTML && node === ownerSVGElement)
         ownerSVGElement = null;
       node = node.parentNode;

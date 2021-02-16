@@ -35,13 +35,14 @@ const getParentNodeCount = ({parentNode}) => {
  * @implements globalThis.Node
  */
 export class Node extends EventTarget {
-  static ELEMENT_NODE = ELEMENT_NODE;
-  static ATTRIBUTE_NODE = ATTRIBUTE_NODE;
-  static TEXT_NODE = TEXT_NODE;
-  static COMMENT_NODE = COMMENT_NODE;
-  static DOCUMENT_NODE = DOCUMENT_NODE;
-  static DOCUMENT_FRAGMENT_NODE = DOCUMENT_FRAGMENT_NODE;
-  static DOCUMENT_TYPE_NODE = DOCUMENT_TYPE_NODE;
+
+  static get ELEMENT_NODE() { return ELEMENT_NODE; }
+  static get ATTRIBUTE_NODE() { return ATTRIBUTE_NODE; }
+  static get TEXT_NODE() { return TEXT_NODE; }
+  static get COMMENT_NODE() { return COMMENT_NODE; }
+  static get DOCUMENT_NODE() { return DOCUMENT_NODE; }
+  static get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }
+  static get DOCUMENT_TYPE_NODE() { return DOCUMENT_TYPE_NODE; }
 
   constructor(ownerDocument, localName, nodeType) {
     super();
@@ -53,7 +54,6 @@ export class Node extends EventTarget {
     this[PREV] = null;
   }
 
-  /* c8 ignore start */
   get ELEMENT_NODE() { return ELEMENT_NODE; }
   get ATTRIBUTE_NODE() { return ATTRIBUTE_NODE; }
   get TEXT_NODE() { return TEXT_NODE; }
@@ -62,6 +62,7 @@ export class Node extends EventTarget {
   get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }
   get DOCUMENT_TYPE_NODE() { return DOCUMENT_TYPE_NODE; }
 
+  /* c8 ignore start */
   // mixin: node
   get isConnected() { return false; }
   get nodeName() { return this.localName; }
@@ -127,10 +128,11 @@ export class Node extends EventTarget {
     if (this.nodeType === node.nodeType) {
       switch (this.nodeType) {
         case DOCUMENT_NODE:
-        case DOCUMENT_FRAGMENT_NODE:
+        case DOCUMENT_FRAGMENT_NODE: {
           const aNodes = this.childNodes;
           const bNodes = node.childNodes;
           return aNodes.length === bNodes.length && aNodes.every((node, i) => node.isEqualNode(bNodes[i]));
+        }
       }
       return this.toString() === node.toString();
     }

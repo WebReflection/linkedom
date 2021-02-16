@@ -7,9 +7,9 @@ const {
 } = require('../shared/constants.js');
 
 class NodeFilter {
-  static SHOW_ALL = SHOW_ALL;
-  static SHOW_ELEMENT = SHOW_ELEMENT;
-  static SHOW_COMMENT = SHOW_COMMENT;
-  static SHOW_TEXT = SHOW_TEXT;
+  static get SHOW_ALL() { return SHOW_ALL; }
+  static get SHOW_ELEMENT() { return SHOW_ELEMENT; }
+  static get SHOW_COMMENT() { return SHOW_COMMENT; }
+  static get SHOW_TEXT() { return SHOW_TEXT; }
 }
 exports.NodeFilter = NodeFilter

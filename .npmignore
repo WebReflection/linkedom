@@ -1,4 +1,5 @@
 .DS_Store
+.eslintrc.json
 .nyc_output
 .travis.yml
 coverage/
