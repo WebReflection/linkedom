@@ -19,11 +19,10 @@ class HTMLSelectElement extends HTMLElement {
     let children = new NodeList;
     let {firstElementChild} = this;
     while (firstElementChild) {
-      if (firstElementChild.tagName === 'OPTGROUP') {
-        children = children.concat(firstElementChild.children);
-      } else {
+      if (firstElementChild.tagName === 'OPTGROUP')
+        children.push(...firstElementChild.children);
+      else
         children.push(firstElementChild);
-      }
       firstElementChild = firstElementChild.nextElementSibling;
     }
     return children;
