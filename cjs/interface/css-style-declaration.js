@@ -1,5 +1,5 @@
 'use strict';
-const uhyphen = (m => m.__esModule ? /* c8 ignore next */ m.default : /* c8 ignore next */ m)(require('uhyphen'));
+const uhyphen = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('uhyphen'));
 
 const {CHANGED, PRIVATE, VALUE} = require('../shared/symbols.js');
 

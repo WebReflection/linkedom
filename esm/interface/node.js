@@ -76,10 +76,8 @@ export class Node extends EventTarget {
   get lastChild() { return null; }
 
   // default values
-  get nodeValue() { return this.textContent; }
-  set nodeValue(value) {
-    this.textContent = value;
-  }
+  get nodeValue() { return null; }
+  set nodeValue(value) {}
   get textContent() { return null; }
   set textContent(value) {}
   normalize() {}
