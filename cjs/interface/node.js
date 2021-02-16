@@ -77,8 +77,12 @@ class Node extends EventTarget {
   get lastChild() { return null; }
 
   // default values
-  get nodeValue() { return null; }
+  get nodeValue() { return this.textContent; }
+  set nodeValue(value) {
+    this.textContent = value;
+  }
   get textContent() { return null; }
+  set textContent(value) {}
   normalize() {}
   cloneNode() { return null; }
   contains() { return false; }

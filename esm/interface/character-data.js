@@ -35,12 +35,6 @@ export class CharacterData extends Node {
   remove() { remove(this[PREV], this, this[NEXT]); }
   // </Mixins>
 
-  // for perf sake, these two are pretty much the same
-  get nodeValue() { return this[VALUE]; }
-  set nodeValue(value) {
-    this[VALUE] = value;
-  }
-
   get textContent() { return this[VALUE]; }
   set textContent(value) {
     this[VALUE] = value;
