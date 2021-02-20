@@ -36,42 +36,44 @@ class CharacterData extends Node {
   remove() { remove(this[PREV], this, this[NEXT]); }
   // </Mixins>
 
-  get textContent() { return this[VALUE]; }
-  set textContent(value) {
+  // CharacterData only
+  /* c8 ignore start */
+  get data() { return this[VALUE]; }
+  set data(value) {
+    // TODO: MutationObserver here should likely trigger
+    //       if characterData was observed
     this[VALUE] = String(value);
   }
 
-  // CharacterData only
-  /* c8 ignore start */
-  get data() { return this.textContent; }
-  set data(value) { this.textContent = value; }
+  get nodeValue() { return this.data; }
+  set nodeValue(value) { this.data = value; }
 
-  get nodeValue() { return this.textContent; }
-  set nodeValue(value) { this.textContent = value; }
+  get textContent() { return this.data; }
+  set textContent(value) { this.data = value; }
 
-  get length() { return this.textContent.length; }
+  get length() { return this.data.length; }
 
   substringData(offset, count) {
-    return this.textContent.substr(offset, count);
+    return this.data.substr(offset, count);
   }
 
   appendData(data) {
-    this.textContent += data;
+    this.data += data;
   }
 
   insertData(offset, data) {
-    const {textContent: t} = this;
-    this.textContent = t.slice(0, offset) + data + t.slice(offset);
+    const {data: t} = this;
+    this.data = t.slice(0, offset) + data + t.slice(offset);
   }
 
   deleteData(offset, count) {
-    const {textContent: t} = this;
-    this.textContent = t.slice(0, offset) + t.slice(offset + count);
+    const {data: t} = this;
+    this.data = t.slice(0, offset) + t.slice(offset + count);
   }
 
   replaceData(offset, count, data) {
-    const {textContent: t} = this;
-    this.textContent = t.slice(0, offset) + data + t.slice(offset + count);
+    const {data: t} = this;
+    this.data = t.slice(0, offset) + data + t.slice(offset + count);
   }
   /* c8 ignore stop */
 
