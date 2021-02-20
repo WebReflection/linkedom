@@ -35,19 +35,19 @@ export class CharacterData extends Node {
   remove() { remove(this[PREV], this, this[NEXT]); }
   // </Mixins>
 
-  get nodeValue() { return this.textContent; }
-  set nodeValue(value) {
-    this.textContent = value;
-  }
-
   get textContent() { return this[VALUE]; }
   set textContent(value) {
-    this[VALUE] = value;
+    this[VALUE] = String(value);
   }
 
   // CharacterData only
   /* c8 ignore start */
   get data() { return this.textContent; }
+  set data(value) { this.textContent = value; }
+
+  get nodeValue() { return this.textContent; }
+  set nodeValue(value) { this.textContent = value; }
+
   get length() { return this.textContent.length; }
 
   substringData(offset, count) {
