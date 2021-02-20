@@ -37,6 +37,8 @@ export class CharacterData extends Node {
 
   get textContent() { return this[VALUE]; }
   set textContent(value) {
+    // TODO: MutationObserver here should likely trigger
+    //       if characterData was observed
     this[VALUE] = String(value);
   }
 
