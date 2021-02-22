@@ -9,6 +9,7 @@ import {previousElementSibling, nextElementSibling} from '../mixin/non-document-
 import {before, after, replaceWith, remove} from '../mixin/child-node.js';
 
 import {Node} from './node.js';
+import {moCallback} from './mutation-observer.js';
 
 /**
  * @implements globalThis.CharacterData
@@ -39,9 +40,8 @@ export class CharacterData extends Node {
   /* c8 ignore start */
   get data() { return this[VALUE]; }
   set data(value) {
-    // TODO: MutationObserver here should likely trigger
-    //       if characterData was observed
     this[VALUE] = String(value);
+    moCallback(this, this.parentNode);
   }
 
   get nodeValue() { return this.data; }

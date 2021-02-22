@@ -10,6 +10,7 @@ const {previousElementSibling, nextElementSibling} = require('../mixin/non-docum
 const {before, after, replaceWith, remove} = require('../mixin/child-node.js');
 
 const {Node} = require('./node.js');
+const {moCallback} = require('./mutation-observer.js');
 
 /**
  * @implements globalThis.CharacterData
@@ -40,9 +41,8 @@ class CharacterData extends Node {
   /* c8 ignore start */
   get data() { return this[VALUE]; }
   set data(value) {
-    // TODO: MutationObserver here should likely trigger
-    //       if characterData was observed
     this[VALUE] = String(value);
+    moCallback(this, this.parentNode);
   }
 
   get nodeValue() { return this.data; }
