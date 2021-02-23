@@ -25,6 +25,9 @@ exports.DOMParser = DOMParser;
   exports.EventTarget = m.EventTarget;
 })(require('./interface/event-target.js'));
 (m => {
+  exports.InputEvent = m.InputEvent;
+})(require('./interface/input-event.js'));
+(m => {
   exports.NodeList = m.NodeList;
 })(require('./interface/node-list.js'));
 

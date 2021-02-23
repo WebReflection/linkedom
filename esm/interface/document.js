@@ -24,6 +24,7 @@ import {DocumentType} from './document-type.js';
 import {Element} from './element.js';
 import {Event} from './event.js';
 import {EventTarget} from './event-target.js';
+import {InputEvent} from './input-event.js';
 import {ImageClass} from './image.js';
 import {MutationObserverClass} from './mutation-observer.js';
 import {NodeList} from './node-list.js';
@@ -44,6 +45,7 @@ const globalExports = assign(
     CustomEvent,
     Event,
     EventTarget,
+    InputEvent,
     NodeList
   }
 );

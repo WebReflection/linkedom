@@ -24,6 +24,7 @@ const {DocumentType} = require('./document-type.js');
 const {Element} = require('./element.js');
 const {Event} = require('./event.js');
 const {EventTarget} = require('./event-target.js');
+const {InputEvent} = require('./input-event.js');
 const {ImageClass} = require('./image.js');
 const {MutationObserverClass} = require('./mutation-observer.js');
 const {NodeList} = require('./node-list.js');
@@ -44,6 +45,7 @@ const globalExports = assign(
     CustomEvent,
     Event,
     EventTarget,
+    InputEvent,
     NodeList
   }
 );

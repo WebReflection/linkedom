@@ -13,6 +13,7 @@ export {DOMParser};
 export {CustomEvent} from './interface/custom-event.js';
 export {Event} from './interface/event.js';
 export {EventTarget} from './interface/event-target.js';
+export {InputEvent} from './interface/input-event.js';
 export {NodeList} from './interface/node-list.js';
 
 export const parseHTML = html => (new DOMParser).parseFromString(
