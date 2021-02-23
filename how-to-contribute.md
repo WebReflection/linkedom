@@ -57,7 +57,7 @@ export class HTMLExample extends HTMLElement {
 In order to expose `HTMLExample` to the *parser*, so that it creates a specialized element, instead of a generic `HTMLElement` one, we need to somehow register it via the ad-hoc utility:
 
 ```js
-import {registerHTMLClass} from '../utils.js';
+import {registerHTMLClass} from '../shared/register-html-class.js';
 import {HTMLElement} from './html-element.js';
 
 /**
@@ -84,7 +84,7 @@ Once these changes are in, it will be possible from the code to simply invoke `n
 Good thinking, and the `HTMLHeadingElement` is a good example to check out:
 
 ```js
-import {registerHTMLClass} from '../utils.js';
+import {registerHTMLClass} from '../shared/register-html-class.js';
 import {HTMLElement} from './html-element.js';
 
 /**
