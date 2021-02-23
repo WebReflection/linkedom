@@ -1,7 +1,6 @@
 import * as CSSselect from 'css-select';
 
 import {ELEMENT_NODE, TEXT_NODE} from './constants.js';
-import {VALUE} from './symbols.js';
 import {ignoreCase} from './utils.js';
 
 const {isArray} = Array;
@@ -35,7 +34,7 @@ const getText = node => {
   if (isTag(node))
     return getText(getChildren(node));
   if (node.nodeType === TEXT_NODE)
-    return node[VALUE];
+    return node.data;
   return '';
 };
 

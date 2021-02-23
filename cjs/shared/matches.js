@@ -2,7 +2,6 @@
 const CSSselect = require('css-select');
 
 const {ELEMENT_NODE, TEXT_NODE} = require('./constants.js');
-const {VALUE} = require('./symbols.js');
 const {ignoreCase} = require('./utils.js');
 
 const {isArray} = Array;
@@ -36,7 +35,7 @@ const getText = node => {
   if (isTag(node))
     return getText(getChildren(node));
   if (node.nodeType === TEXT_NODE)
-    return node[VALUE];
+    return node.data;
   return '';
 };
 
