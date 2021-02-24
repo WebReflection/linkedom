@@ -84,12 +84,12 @@ This module is based on [DOMParser](https://developer.mozilla.org/en-US/docs/Web
 
 As there's *no global pollution* whatsoever, to retrieve classes and features associated to the `document` returned by `parseFromString`, you need to access its `defaultView` property, which is a special proxy that lets you get *pseudo-global-but-not-global* properties and classes.
 
-Accordingly, to simulate `new JSDOM(html).window` behavior, you can use a tiny helper like the following one:
+Alternatively, you can use the `parseHTML` utility which returns a pseudo *window* object with all the public references you need.
 
 ```js
 // facade to a generic JSDOM bootstrap
 import {parseHTML} from 'linkedom';
-function JSDOM(html) { return parseHTML(html).defaultView; }
+function JSDOM(html) { return parseHTML(html); }
 
 // now you can do the same as you would with JSDOM
 const {document, window} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>');
