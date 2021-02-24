@@ -12,7 +12,6 @@ import {
 
 import {PRIVATE, END, NEXT, PREV, START, VALUE} from '../shared/symbols.js';
 
-import {reset} from '../shared/cache.js';
 import {prepareMatch} from '../shared/matches.js';
 import {previousSibling, nextSibling} from '../shared/node.js';
 import {getEnd, knownAdjacent, knownBoundaries, knownSegment, knownSiblings, localCase} from '../shared/utils.js';
@@ -226,7 +225,6 @@ export class ParentNode extends Node {
             (firstChild = nextSibling(firstChild))
           );
         }
-        reset(node);
         break;
       }
       case TEXT_NODE:

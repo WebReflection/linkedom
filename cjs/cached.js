@@ -1,4 +1,7 @@
 'use strict';
+const {DOCUMENT_FRAGMENT_NODE} = require('./shared/constants.js');
+const {defineProperties, getOwnPropertyDescriptors} = require('./shared/object.js');
+
 const {Attr} = require('./interface/attr.js');
 const {CharacterData} = require('./interface/character-data.js');
 const {Element} = require('./interface/element.js');
@@ -7,19 +10,14 @@ const {ParentNode} = require('./mixin/parent-node.js');
 const {NonElementParentNode} = require('./mixin/non-element-parent-node.js');
 const {HTMLDocument} = require('./html/document.js');
 
-const {defineProperties, getOwnPropertyDescriptors} = require('./shared/object.js');
-
 const {
   childNodesWM,
   childrenWM,
   querySelectorWM,
   querySelectorAllWM,
   get,
-  reset,
-  startCaching
+  reset
 } = require('./shared/cache.js');
-
-startCaching();
 
 // Attr
 const {value: {
@@ -94,6 +92,8 @@ const query = (wm, method, self, selectors) => {
 defineProperties(ParentNode.prototype, {
   insertBefore: {value(node, before) {
     reset(this);
+    if (node.nodeType === DOCUMENT_FRAGMENT_NODE)
+      reset(node);
     return insertBefore.call(this, node, before);
   }},
   getElementsByClassName: {value(className) {

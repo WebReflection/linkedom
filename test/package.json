@@ -1,6 +1,6 @@
 {
   "type": "commonjs",
-  "dependencies": {
+  "devDependencies": {
     "basichtml": "^2.4.6",
     "jsdom": "^16.4.0",
     "jsdon": "^0.1.14"

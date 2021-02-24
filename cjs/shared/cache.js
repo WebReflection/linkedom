@@ -1,8 +1,6 @@
 'use strict';
 const {isNotParsing} = require('./parse-from-string.js');
 
-let caching = false;
-
 const childNodesWM = new WeakMap;
 exports.childNodesWM = childNodesWM;
 const childrenWM = new WeakMap;
@@ -22,7 +20,7 @@ const get = (wm, self, method) => {
 exports.get = get;
 
 const reset = parentNode => {
-  if (caching && isNotParsing()) {
+  if (isNotParsing()) {
     while (parentNode) {
       childNodesWM.delete(parentNode);
       childrenWM.delete(parentNode);
@@ -33,8 +31,3 @@ const reset = parentNode => {
   }
 };
 exports.reset = reset;
-
-const startCaching = () => {
-  caching = true;
-};
-exports.startCaching = startCaching;

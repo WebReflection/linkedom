@@ -1,3 +1,6 @@
+import {DOCUMENT_FRAGMENT_NODE} from './shared/constants.js';
+import {defineProperties, getOwnPropertyDescriptors} from './shared/object.js';
+
 import {Attr} from './interface/attr.js';
 import {CharacterData} from './interface/character-data.js';
 import {Element} from './interface/element.js';
@@ -6,19 +9,14 @@ import {ParentNode} from './mixin/parent-node.js';
 import {NonElementParentNode} from './mixin/non-element-parent-node.js';
 import {HTMLDocument} from './html/document.js';
 
-import {defineProperties, getOwnPropertyDescriptors} from './shared/object.js';
-
 import {
   childNodesWM,
   childrenWM,
   querySelectorWM,
   querySelectorAllWM,
   get,
-  reset,
-  startCaching
+  reset
 } from './shared/cache.js';
-
-startCaching();
 
 // Attr
 const {value: {
@@ -93,6 +91,8 @@ const query = (wm, method, self, selectors) => {
 defineProperties(ParentNode.prototype, {
   insertBefore: {value(node, before) {
     reset(this);
+    if (node.nodeType === DOCUMENT_FRAGMENT_NODE)
+      reset(node);
     return insertBefore.call(this, node, before);
   }},
   getElementsByClassName: {value(className) {

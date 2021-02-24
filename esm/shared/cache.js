@@ -1,7 +1,5 @@
 import {isNotParsing} from './parse-from-string.js';
 
-let caching = false;
-
 export const childNodesWM = new WeakMap;
 export const childrenWM = new WeakMap;
 export const querySelectorWM = new WeakMap;
@@ -16,7 +14,7 @@ export const get = (wm, self, method) => {
 };
 
 export const reset = parentNode => {
-  if (caching && isNotParsing()) {
+  if (isNotParsing()) {
     while (parentNode) {
       childNodesWM.delete(parentNode);
       childrenWM.delete(parentNode);
@@ -25,8 +23,4 @@ export const reset = parentNode => {
       parentNode = parentNode.parentNode;
     }
   }
-};
-
-export const startCaching = () => {
-  caching = true;
 };

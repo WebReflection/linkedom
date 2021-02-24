@@ -13,7 +13,6 @@ const {
 
 const {PRIVATE, END, NEXT, PREV, START, VALUE} = require('../shared/symbols.js');
 
-const {reset} = require('../shared/cache.js');
 const {prepareMatch} = require('../shared/matches.js');
 const {previousSibling, nextSibling} = require('../shared/node.js');
 const {getEnd, knownAdjacent, knownBoundaries, knownSegment, knownSiblings, localCase} = require('../shared/utils.js');
@@ -227,7 +226,6 @@ class ParentNode extends Node {
             (firstChild = nextSibling(firstChild))
           );
         }
-        reset(node);
         break;
       }
       case TEXT_NODE:
