@@ -26,6 +26,8 @@ export class DOMParser {
     else
       document = new XMLDocument;
     document[DOM_PARSER] = DOMParser;
-    return parseFromString(document, isHTML, markupLanguage);
+    return markupLanguage ?
+            parseFromString(document, isHTML, markupLanguage) :
+            document;
   }
 }
