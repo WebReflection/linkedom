@@ -1,6 +1,6 @@
 {
   "name": "linkedom",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A triple-linked lists based DOM implementation",
   "main": "./cjs/index.js",
   "scripts": {
