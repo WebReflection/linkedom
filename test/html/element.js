@@ -8,7 +8,7 @@ assert(document.documentElement.lastChild.previousElementSibling, null, 'previou
 assert(document.documentElement.lastChild.wholeText, '<hello>', 'wholeText');
 assert(document.documentElement.innerText, '<hello>', 'textContent read');
 
-document.documentElement.innerHTML = '<div /><input><p />';
+document.documentElement.innerHTML = '<div></div><input><p />';
 assert(document.toString(), '<!DOCTYPE html><html id="html" class="live"><div></div><input><p></p></html>', 'innerHTML + sanitizer');
 
 document.documentElement.setAttribute('lang', 'en');

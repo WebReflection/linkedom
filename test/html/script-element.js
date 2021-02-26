@@ -38,14 +38,14 @@ function test() {
 assert(head.toString(), `<head><script>
 <!--comment-->
 function test() {
-  return html\`\${'hello'}\`;
+  return html\`<div>\${'hello'}</div>\`;
 }
 </script></head>`, '<script>');
 
 assert(head.firstChild.innerHTML, `
 <!--comment-->
 function test() {
-  return html\`\${'hello'}\`;
+  return html\`<div>\${'hello'}</div>\`;
 }
 `, '<script>.innerHTML');
 

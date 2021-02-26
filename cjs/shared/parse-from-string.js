@@ -3,15 +3,15 @@ const HTMLParser2 = require('htmlparser2');
 
 const {SVG_NAMESPACE} = require('./constants.js');
 const {CUSTOM_ELEMENTS} = require('./symbols.js');
-const {Mime} = require('./mime.js');
 const {keys} = require('./object.js');
 
 const {Parser} = HTMLParser2;
 
-const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);
-const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');
-const VOID_SANITIZER = (_, $1, $2) => `<${$1}${$2}${/\/$/.test($2) ? '' : ' /'}>`;
-const voidSanitizer = html => html.replace(VOID_ELEMENTS, VOID_SANITIZER);
+// import {Mime} from './mime.js';
+// const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);
+// const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');
+// const VOID_SANITIZER = (_, $1, $2) => `<${$1}${$2}${/\/$/.test($2) ? '' : ' /'}>`;
+// const voidSanitizer = html => html.replace(VOID_ELEMENTS, VOID_SANITIZER);
 
 let notParsing = true;
 
@@ -77,10 +77,10 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     }
   }, {
     decodeEntities: true,
-    xmlMode: true
+    xmlMode: !isHTML
   });
 
-  content.write(isHTML ? voidSanitizer(markupLanguage) : markupLanguage);
+  content.write(markupLanguage);
   content.end();
 
   notParsing = true;
