@@ -68,9 +68,9 @@ document.querySelectorAll('form, input[name], button');
 const array = document.toJSON();
 
 // somewhere else ...
-import {parsJSON} from 'linkedom';
+import {parseJSON} from 'linkedom';
 
-const document = parsJSON(array);
+const document = parseJSON(array);
 ```
 
 Please note that *Custom Elements* won't be upgraded, unless the resulting nodes are imported via `document.importNode(nodeOrFragment, true)`.
