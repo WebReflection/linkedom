@@ -2,7 +2,7 @@ import {MIME} from '../shared/symbols.js';
 import {Document} from '../interface/document.js';
 
 /**
- * @implements globalThis.SVGDocument
+ * @implements globalThis.Document
  */
 export class SVGDocument extends Document {
   constructor() { super('image/svg+xml'); }

@@ -3,6 +3,7 @@
   "version": "0.5.2",
   "description": "A triple-linked lists based DOM implementation",
   "main": "./cjs/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "benchmark": "node test/benchmark/linkedom.js",
     "benchmark:w3c": "node test/benchmark/linkedom.js --w3c; node test/benchmark/linkedom-cached.js --w3c; node test/benchmark/jsdom.js --w3c; node test/benchmark/basichtml.js --w3c",
@@ -13,8 +14,9 @@
     "benchmark:html:ce": "node test/benchmark/linkedom.js --html --custom-elements; node test/benchmark/linkedom-cached.js --html --custom-elements; #node test/benchmark/jsdom.js --html --custom-elements",
     "benchmark:html:mo": "node test/benchmark/linkedom.js --html --mutation-observer --custom-elements; node test/benchmark/linkedom-cached.js --html --mutation-observer --custom-elements",
     "benchmark:html:nc": "node test/benchmark/linkedom.js --html --no-clone; node test/benchmark/linkedom-cached.js --html --no-clone; #node test/benchmark/jsdom.js --html --no-clone",
-    "build": "npm run cjs && npm run test",
+    "build": "npm run tsc && npm run cjs && npm run test",
     "cjs": "ascjs --no-default esm cjs",
+    "tsc": "tsc -p .",
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
     "hello": "if [[ \"$(node --version)\" =~ ^v1[^2] ]]; then node --input-type=module -e \"import {DOMParser} from './esm/index.js';console.log('\\x1b[7m\\x1b[1m',(new DOMParser).parseFromString('<html>LinkeDOM</html>','text/html').querySelectorAll('html')[0].firstChild.toString(),'\\x1b[0m')\"; fi",
     "test": "eslint esm/ && npm run hello && node test/benchmark/linkedom.js --w3c --mutation-observer --custom-elements && c8 node test/index.js && c8 report -r html"
@@ -32,7 +34,8 @@
     "ascjs": "^5.0.1",
     "c8": "^7.6.0",
     "coveralls": "^3.1.0",
-    "eslint": "^7.20.0"
+    "eslint": "^7.20.0",
+    "typescript": "^4.2.2"
   },
   "module": "./esm/index.js",
   "type": "module",

@@ -1,0 +1,11 @@
+export function Document(): void;
+export { parseJSON } from "./shared/parse-json.js";
+export * from "./shared/facades.js";
+export * from "./shared/html-classes.js";
+export { DOMParser };
+export { CustomEvent } from "./interface/custom-event.js";
+export { Event } from "./interface/event.js";
+export { EventTarget } from "./interface/event-target.js";
+export { NodeList } from "./interface/node-list.js";
+export function parseHTML(html: any): Window & typeof globalThis;
+import { DOMParser } from "./dom/parser.js";
