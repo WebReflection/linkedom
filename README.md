@@ -254,3 +254,25 @@ while (element.childNodes.length)
 
   </div>
 </details>
+
+
+<details>
+  <summary><strong>Are childNodes and children always same?</strong></summary>
+  <div>
+
+**Nope**, these are discovered each time, so when heavy usage of these *lists* is needed, but no mutation is meant, just trap these once and use these like a frozen array.
+
+```js
+function eachChildNode({childNodes}, callback) {
+  for (const child of childNodes) {
+    callback(child);
+    if (child.nodeType === child.ELEMENT_NODE)
+      eachChildNode(child, callback);
+  }
+}
+
+eachChildNode(document, console.log);
+```
+
+  </div>
+</details>
