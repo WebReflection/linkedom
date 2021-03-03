@@ -78,7 +78,7 @@ Please note that *Custom Elements* won't be upgraded, unless the resulting nodes
 Alternatively, `JSDON.fromJSON(array, document)` is able to initialize right away *Custom Elements* associated with the passed `document`.
 
 
-### Simulating JSON Bootstrap
+### Simulating JSDOM Bootstrap
 
 This module is based on [DOMParser](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser) API, hence it creates a *new* `document` each time `new DOMParser().parseFromString(...)` is invoked.
 
