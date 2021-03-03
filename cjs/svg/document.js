@@ -3,7 +3,7 @@ const {MIME} = require('../shared/symbols.js');
 const {Document} = require('../interface/document.js');
 
 /**
- * @implements globalThis.SVGDocument
+ * @implements globalThis.Document
  */
 class SVGDocument extends Document {
   constructor() { super('image/svg+xml'); }

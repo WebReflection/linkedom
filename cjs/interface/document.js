@@ -59,11 +59,15 @@ class Document extends NonElementParentNode {
     this[CUSTOM_ELEMENTS] = {active: false, registry: null};
     this[MUTATION_OBSERVER] = {active: false, class: null};
     this[MIME] = Mime[type];
+    /** @type {DocumentType} */
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
     this[IMAGE] = null;
   }
 
+  /**
+   * @type {globalThis.Document['defaultView']}
+   */
   get defaultView() {
     const window = new Proxy(globalThis, {
       get: (globalThis, name) => {

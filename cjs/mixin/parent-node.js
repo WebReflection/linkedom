@@ -37,10 +37,20 @@ const insert = (parentNode, child, nodes) => {
     );
 };
 
+/** @typedef {{
+    [typeof NEXT]: NodeStruct,
+    [typeof PREV]: NodeStruct,
+    [typeof START]: NodeStruct,
+    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE,
+    ownerDocument: Document,
+    parentNode: ParentNode,
+}} NodeStruct */
+
 class ParentNode extends Node {
   constructor(ownerDocument, localName, nodeType) {
     super(ownerDocument, localName, nodeType);
     this[PRIVATE] = null;
+    /** @type {NodeStruct} */
     this[NEXT] = this[END] = {
       [NEXT]: null,
       [PREV]: this,

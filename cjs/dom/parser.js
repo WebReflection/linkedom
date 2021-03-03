@@ -11,10 +11,12 @@ const {XMLDocument} = require('../xml/document.js');
  */
 class DOMParser {
 
+  /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc */
   /**
-   * @param {string} markupLanguage 
-   * @param {"text/html"|"image/svg+xml"|"text/xml"} mimeType
-   * @returns {HTMLDocument|SVGDocument|XMLDocument}
+   * @template {keyof MimeToDoc} MIME
+   * @param {string} markupLanguage
+   * @param {MIME} mimeType
+   * @returns {MimeToDoc[MIME]}
    */
   parseFromString(markupLanguage, mimeType) {
     let isHTML = false, document;
