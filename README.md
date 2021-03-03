@@ -8,7 +8,7 @@ A triple-linked lists based DOM with the following goals:
 
   * **avoid** maximum callstack/recursion or **crashes**, even under heaviest conditions.
   * guarantee **linear performance** from small to big documents.
-  * be **close to the** current **DOM standard**, but not too close.
+  * be **close to the** current **DOM standard**, but [not too close](https://github.com/WebReflection/linkedom#faq).
 
 ```js
 import {DOMParser, parseHTML} from 'linkedom';
@@ -205,3 +205,52 @@ npm i
 
 npm run benchmark
 ```
+
+
+## F.A.Q.
+
+<details>
+  <summary><strong>Are live collections supported?</strong></summary>
+  <div>
+
+The *TL;DR* answer is **no**. Live collections are considered legacy, are slower, have side effects, and it's not intention of *LinkeDOM* to support these, including:
+
+  * `getElementsByTagName` does not update when nodes are added or removed
+  * `getElementsByClassName` does not update when nodes are added or removed
+  * `childNodes`, if trapped once, does not update when nodes are added or removed
+  * `children`, if trapped once, does not update when nodes are added or removed
+  * `attributes`, if trapped once, does not update when attributes are added or removed
+  * `document.all`, if trapped once, does not update when attributes are added or removed
+
+If any code you are dealing with does something like this:
+
+```js
+const {children} = element;
+while (children.length)
+  target.appendChild(children[0]);
+```
+
+it will cause an infinite loop, as the `children` reference won't side-effect when nodes are moved.
+
+You can solve this in various ways though:
+
+```js
+// the modern approach (suggested)
+target.append(...element.children);
+
+// the check for firstElement/Child approach (good enough)
+while (element.firstChild)
+  target.appendChild(element.firstChild);
+
+// the convert to array approach (slow but OK)
+const list = [].slice.call(element.children);
+while (list.length)
+  target.appendChild(list.shift());
+
+// the zero trap approach (inefficient)
+while (element.childNodes.length)
+  target.appendChild(element.childNodes[0]);
+```
+
+  </div>
+</details>
