@@ -97,6 +97,78 @@ const {document, window} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>');
 
 
 
+## F.A.Q.
+
+<details>
+  <summary><strong>Are live collections supported?</strong></summary>
+  <div>
+
+The *TL;DR* answer is **no**. Live collections are considered legacy, are slower, have side effects, and it's not intention of *LinkeDOM* to support these, including:
+
+  * `getElementsByTagName` does not update when nodes are added or removed
+  * `getElementsByClassName` does not update when nodes are added or removed
+  * `childNodes`, if trapped once, does not update when nodes are added or removed
+  * `children`, if trapped once, does not update when nodes are added or removed
+  * `attributes`, if trapped once, does not update when attributes are added or removed
+  * `document.all`, if trapped once, does not update when attributes are added or removed
+
+If any code you are dealing with does something like this:
+
+```js
+const {children} = element;
+while (children.length)
+  target.appendChild(children[0]);
+```
+
+it will cause an infinite loop, as the `children` reference won't side-effect when nodes are moved.
+
+You can solve this in various ways though:
+
+```js
+// the modern approach (suggested)
+target.append(...element.children);
+
+// the check for firstElement/Child approach (good enough)
+while (element.firstChild)
+  target.appendChild(element.firstChild);
+
+// the convert to array approach (slow but OK)
+const list = [].slice.call(element.children);
+while (list.length)
+  target.appendChild(list.shift());
+
+// the zero trap approach (inefficient)
+while (element.childNodes.length)
+  target.appendChild(element.childNodes[0]);
+```
+
+  </div>
+</details>
+
+
+<details>
+  <summary><strong>Are childNodes and children always same?</strong></summary>
+  <div>
+
+**Nope**, these are discovered each time, so when heavy usage of these *lists* is needed, but no mutation is meant, just trap these once and use these like a frozen array.
+
+```js
+function eachChildNode({childNodes}, callback) {
+  for (const child of childNodes) {
+    callback(child);
+    if (child.nodeType === child.ELEMENT_NODE)
+      eachChildNode(child, callback);
+  }
+}
+
+eachChildNode(document, console.log);
+```
+
+  </div>
+</details>
+
+
+
 ## How does it work?
 
 All nodes are linked on both sides, and all elements consist of 2 nodes, also linked in between.
@@ -205,74 +277,3 @@ npm i
 
 npm run benchmark
 ```
-
-
-## F.A.Q.
-
-<details>
-  <summary><strong>Are live collections supported?</strong></summary>
-  <div>
-
-The *TL;DR* answer is **no**. Live collections are considered legacy, are slower, have side effects, and it's not intention of *LinkeDOM* to support these, including:
-
-  * `getElementsByTagName` does not update when nodes are added or removed
-  * `getElementsByClassName` does not update when nodes are added or removed
-  * `childNodes`, if trapped once, does not update when nodes are added or removed
-  * `children`, if trapped once, does not update when nodes are added or removed
-  * `attributes`, if trapped once, does not update when attributes are added or removed
-  * `document.all`, if trapped once, does not update when attributes are added or removed
-
-If any code you are dealing with does something like this:
-
-```js
-const {children} = element;
-while (children.length)
-  target.appendChild(children[0]);
-```
-
-it will cause an infinite loop, as the `children` reference won't side-effect when nodes are moved.
-
-You can solve this in various ways though:
-
-```js
-// the modern approach (suggested)
-target.append(...element.children);
-
-// the check for firstElement/Child approach (good enough)
-while (element.firstChild)
-  target.appendChild(element.firstChild);
-
-// the convert to array approach (slow but OK)
-const list = [].slice.call(element.children);
-while (list.length)
-  target.appendChild(list.shift());
-
-// the zero trap approach (inefficient)
-while (element.childNodes.length)
-  target.appendChild(element.childNodes[0]);
-```
-
-  </div>
-</details>
-
-
-<details>
-  <summary><strong>Are childNodes and children always same?</strong></summary>
-  <div>
-
-**Nope**, these are discovered each time, so when heavy usage of these *lists* is needed, but no mutation is meant, just trap these once and use these like a frozen array.
-
-```js
-function eachChildNode({childNodes}, callback) {
-  for (const child of childNodes) {
-    callback(child);
-    if (child.nodeType === child.ELEMENT_NODE)
-      eachChildNode(child, callback);
-  }
-}
-
-eachChildNode(document, console.log);
-```
-
-  </div>
-</details>
