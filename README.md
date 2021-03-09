@@ -61,7 +61,7 @@ document.querySelectorAll('form, input[name], button');
 
 ### Serializing as JSON
 
-*LinkeDOM* uses a blazing fast [JSDON serializer](https://github.com/WebReflection/jsdon#readme), and nodes, as well as whole documents, can be retrieved back via `parsJSON(value)`.
+*LinkeDOM* uses a blazing fast [JSDON serializer](https://github.com/WebReflection/jsdon#readme), and nodes, as well as whole documents, can be retrieved back via `parseJSON(value)`.
 
 ```js
 // any node can be serialized
