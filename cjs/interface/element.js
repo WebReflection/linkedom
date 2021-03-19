@@ -178,7 +178,12 @@ class Element extends ParentNode {
       this.appendChild(new Text(this.ownerDocument, text));
   }
 
-  get innerHTML() { return unescape(this.childNodes.join('')); }
+  get innerHTML() {
+    const html = [];
+    for (const node of this.childNodes)
+      html.push(node.nodeType === ELEMENT_NODE ? node.toString() : unescape(node));
+    return html.join('');
+  }
   set innerHTML(html) {
     const {ownerDocument} = this;
     const {constructor} = ownerDocument;
@@ -188,7 +193,7 @@ class Element extends ParentNode {
     this.replaceChildren(...childNodes);
   }
 
-  get outerHTML() { return unescape(this.toString()); }
+  get outerHTML() { return this.toString(); }
   set outerHTML(html) {
     const template = this.ownerDocument.createElement('');
     template.innerHTML = html;
