@@ -2,7 +2,7 @@ import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE,
 
 import {
   CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER,
-  DOCTYPE, END, NEXT, MIME
+  DOCTYPE, END, NEXT, MIME, EVENT_TARGET
 } from '../shared/symbols.js';
 
 import {Facades, illegalConstructor} from '../shared/facades.js';
@@ -70,8 +70,31 @@ export class Document extends NonElementParentNode {
    */
   get defaultView() {
     const window = new Proxy(globalThis, {
+      set: (target, name, value) => {
+        switch (name) {
+          case 'addEventListener':
+          case 'removeEventListener':
+          case 'dispatchEvent':
+            this[EVENT_TARGET][name] = value;
+            break;
+          default:
+            target[name] = value;
+            break;
+        }
+        return true;
+      },
       get: (globalThis, name) => {
         switch (name) {
+          case 'addEventListener':
+          case 'removeEventListener':
+          case 'dispatchEvent':
+            if (!this[EVENT_TARGET]) {
+              const et = this[EVENT_TARGET] = new EventTarget;
+              et.dispatchEvent = et.dispatchEvent.bind(et);
+              et.addEventListener = et.addEventListener.bind(et);
+              et.removeEventListener = et.removeEventListener.bind(et);
+            }
+            return this[EVENT_TARGET][name];
           case 'document':
             return this;
           /* c8 ignore start */

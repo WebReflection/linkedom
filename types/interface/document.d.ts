@@ -229,6 +229,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
         readonly DOCUMENT_FRAGMENT_NODE: number;
         readonly DOCUMENT_TYPE_NODE: number;
     };
+    [EVENT_TARGET]: any;
 }
 import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
 import { DocumentType } from "./document-type.js";
@@ -249,3 +250,4 @@ import { DOM_PARSER } from "../shared/symbols.js";
 import { IMAGE } from "../shared/symbols.js";
 import { NEXT } from "../shared/symbols.js";
 import { END } from "../shared/symbols.js";
+import { EVENT_TARGET } from "../shared/symbols.js";

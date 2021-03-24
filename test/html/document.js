@@ -47,3 +47,18 @@ assert(document.all[0], document.querySelector('html'));
 assert(document.all[1], document.querySelector('head'));
 assert(document.all[2], document.querySelector('title'));
 assert(document.all[3], document.querySelector('body'));
+
+// global listener
+let triggered = false;
+window.addEventListener('test', function once() {
+  triggered = true;
+  window.removeEventListener('test', once);
+});
+
+window.dispatchEvent(new window.Event('test'));
+assert(triggered, true);
+
+window.anyValue = 123;
+assert(window.anyValue, 123);
+window.addEventListener = window.removeEventListener = window.dispatchEvent = null;
+assert(window.addEventListener, null);
