@@ -2,7 +2,7 @@
 const HTMLParser2 = require('htmlparser2');
 
 const {ELEMENT_NODE, SVG_NAMESPACE} = require('./constants.js');
-const {CUSTOM_ELEMENTS, PREV, END, NEXT, VALUE} = require('./symbols.js');
+const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('./symbols.js');
 const {keys} = require('./object.js');
 
 const {knownBoundaries, knownSiblings} = require('./utils.js');
@@ -27,10 +27,10 @@ const append = (self, node, active) => {
   return node;
 };
 
-const attribute = (element, attribute, value, active) => {
+const attribute = (element, end, attribute, value, active) => {
   attribute[VALUE] = value;
   attribute.ownerElement = element;
-  knownSiblings(element, attribute, element[NEXT]);
+  knownSiblings(end[PREV], attribute, end);
   if (attribute.name === 'class')
     element.className = value;
   if (active)
@@ -83,8 +83,9 @@ const parseFromString = (document, isHTML, markupLanguage) => {
       if (create)
         node = append(node, document.createElement(name), false);
 
+      let end = node[END];
       for (const name of keys(attributes))
-        attribute(node, document.createAttribute(name), attributes[name], active);
+        attribute(node, end, document.createAttribute(name), attributes[name], active);
     },
 
     // #text, #comment

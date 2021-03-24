@@ -1,7 +1,7 @@
 import * as HTMLParser2 from 'htmlparser2';
 
 import {ELEMENT_NODE, SVG_NAMESPACE} from './constants.js';
-import {CUSTOM_ELEMENTS, PREV, END, NEXT, VALUE} from './symbols.js';
+import {CUSTOM_ELEMENTS, PREV, END, VALUE} from './symbols.js';
 import {keys} from './object.js';
 
 import {knownBoundaries, knownSiblings} from './utils.js';
@@ -26,10 +26,10 @@ const append = (self, node, active) => {
   return node;
 };
 
-const attribute = (element, attribute, value, active) => {
+const attribute = (element, end, attribute, value, active) => {
   attribute[VALUE] = value;
   attribute.ownerElement = element;
-  knownSiblings(element, attribute, element[NEXT]);
+  knownSiblings(end[PREV], attribute, end);
   if (attribute.name === 'class')
     element.className = value;
   if (active)
@@ -81,8 +81,9 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
       if (create)
         node = append(node, document.createElement(name), false);
 
+      let end = node[END];
       for (const name of keys(attributes))
-        attribute(node, document.createAttribute(name), attributes[name], active);
+        attribute(node, end, document.createAttribute(name), attributes[name], active);
     },
 
     // #text, #comment

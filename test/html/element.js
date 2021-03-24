@@ -2,7 +2,7 @@ const assert = require('../assert.js').for('HTMLElement');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {document} = parseHTML('<!DOCTYPE html><html class="live" id="html"><!--&lt;hello&gt;-->&lt;hello&gt;</html>');
+const {document} = parseHTML('<!DOCTYPE html><html id="html" class="live"><!--&lt;hello&gt;-->&lt;hello&gt;</html>');
 
 assert(document.documentElement.lastChild.previousElementSibling, null, 'previousElementSibling');
 assert(document.documentElement.lastChild.wholeText, '<hello>', 'wholeText');

@@ -168,11 +168,11 @@ customElements.define('inner-button', class extends HTMLButtonElement {
   }
 }, {extends: 'button'});
 
-outer.innerHTML = '<div><button test="123" is="inner-button">OK</button></div>';
+outer.innerHTML = '<div><button is="inner-button" test="123">OK</button></div>';
 
 assert(JSON.stringify(args.splice(0)), '["test",null,"123"]', 'attributes get initialized');
 
 document.documentElement.appendChild(outer);
 
 assert(args.splice(0).join(','), 'connected: outer-test,connected: button[is="inner-button"]', 'inner builtin elements get connected too');
-assert(outer.querySelector('button').toString(), '<button test="123" is="inner-button">OK</button>', 'button with the correct content');
+assert(outer.querySelector('button').toString(), '<button is="inner-button" test="123">OK</button>', 'button with the correct content');

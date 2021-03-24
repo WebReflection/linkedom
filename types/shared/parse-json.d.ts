@@ -1,2 +1,2 @@
-export function parseJSON(value: any): HTMLDocument | import("../mixin/parent-node.js").NodeStruct;
+export function parseJSON(value: string | any[]): HTMLDocument;
 import { HTMLDocument } from "../html/document.js";

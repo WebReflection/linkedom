@@ -38,6 +38,12 @@ const createHTMLElement = (ownerDocument, localName) => {
   return new HTMLElement(ownerDocument, localName);
 };
 
+/**
+ * Given a stringified, or arrayfied DOM element, returns an HTMLDocument
+ * that represent the content of such string, or array.
+ * @param {string|any[]} value
+ * @returns {HTMLDocument}
+ */
 export const parseJSON = value => {
   const array = typeof value === 'string' ? parse(value) : value;
   const {length} = array;
