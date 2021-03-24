@@ -6,6 +6,7 @@ const {illegalConstructor} = require('./shared/facades.js');
 const {setPrototypeOf} = require('./shared/object.js');
 (m => {
   exports.parseJSON = m.parseJSON;
+  exports.toJSON = m.toJSON;
 })(require('./shared/parse-json.js'));
 
 (m => Object.keys(m).map(k => k !== 'default' && (exports[k] = m[k])))

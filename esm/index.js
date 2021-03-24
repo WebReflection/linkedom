@@ -3,7 +3,7 @@ import {Document as _Document} from './interface/document.js';
 
 import {illegalConstructor} from './shared/facades.js';
 import {setPrototypeOf} from './shared/object.js';
-export {parseJSON} from './shared/parse-json.js';
+export {parseJSON, toJSON} from './shared/parse-json.js';
 
 export * from './shared/facades.js';
 export * from './shared/html-classes.js';

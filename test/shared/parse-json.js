@@ -1,6 +1,6 @@
 const assert = require('../assert.js').for('Facades');
 
-const {parseHTML, parseJSON} = global[Symbol.for('linkedom')];
+const {parseHTML, parseJSON, toJSON} = global[Symbol.for('linkedom')];
 
 assert(parseJSON([11,-1]).toString(), '<#document-fragment></#document-fragment>');
 assert(parseJSON([9,10,'html',-1]).toString(), '<!DOCTYPE html>');
@@ -25,6 +25,8 @@ customElements.define('c-e', class extends HTMLElement {
 });
 
 let div = parseJSON('[1,"div",1,"svg",1,"rect",-2,1,"c-e",-2]');
+
+assert(JSON.stringify(toJSON(div)), '[1,"div",1,"svg",1,"rect",-2,1,"c-e",-2]');
 
 assert(div.toString(), '<div><svg><rect /></svg><c-e></c-e></div>');
 

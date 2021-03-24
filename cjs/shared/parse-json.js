@@ -40,9 +40,13 @@ const createHTMLElement = (ownerDocument, localName) => {
 };
 
 /**
+ * @typedef {number|string} jsdonValue - either a node type or its content
+ */
+
+/**
  * Given a stringified, or arrayfied DOM element, returns an HTMLDocument
  * that represent the content of such string, or array.
- * @param {string|any[]} value
+ * @param {string|jsdonValue[]} value
  * @returns {HTMLDocument}
  */
 const parseJSON = value => {
@@ -109,3 +113,11 @@ const parseJSON = value => {
   return document;
 };
 exports.parseJSON = parseJSON;
+
+/**
+ * 
+ * @param {Document|Element} node the Document or Element to serialize
+ * @returns {jsdonValue[]} the linear jsdon serialized array
+ */
+const toJSON = node => node.toJSON();
+exports.toJSON = toJSON;

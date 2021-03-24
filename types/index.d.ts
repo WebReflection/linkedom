@@ -1,5 +1,4 @@
 export function Document(): void;
-export { parseJSON } from "./shared/parse-json.js";
 export * from "./shared/facades.js";
 export * from "./shared/html-classes.js";
 export { DOMParser };
@@ -10,3 +9,4 @@ export { InputEvent } from "./interface/input-event.js";
 export { NodeList } from "./interface/node-list.js";
 export function parseHTML(html: any): Window & typeof globalThis;
 import { DOMParser } from "./dom/parser.js";
+export { parseJSON, toJSON } from "./shared/parse-json.js";
