@@ -1,6 +1,4 @@
 'use strict';
-const {escape} = require('html-escaper');
-
 const {ATTRIBUTE_NODE} = require('../shared/constants.js');
 const {CHANGED, VALUE} = require('../shared/symbols.js');
 const {String, ignoreCase} = require('../shared/utils.js');
@@ -10,6 +8,8 @@ const {attributeChangedCallback: moAttributes} = require('./mutation-observer.js
 const {attributeChangedCallback: ceAttributes} = require('./custom-element-registry.js');
 
 const {Node} = require('./node.js');
+
+const QUOTE = /"/g;
 
 /**
  * @implements globalThis.Attr
@@ -41,7 +41,7 @@ class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return value || !ignoreCase(this) ? `${name}="${escape(value)}"` : name;
+    return value || !ignoreCase(this) ? `${name}="${value.replace(QUOTE, '&quot;')}"` : name;
   }
 
   toJSON() {
