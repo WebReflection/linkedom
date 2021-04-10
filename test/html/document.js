@@ -62,3 +62,5 @@ window.anyValue = 123;
 assert(window.anyValue, 123);
 window.addEventListener = window.removeEventListener = window.dispatchEvent = null;
 assert(window.addEventListener, null);
+
+assert(typeof window.performance.now(), 'number');
