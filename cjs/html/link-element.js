@@ -4,7 +4,7 @@ const {booleanAttribute, stringAttribute} = require('../shared/attributes.js');
 
 const {HTMLElement} = require('./element.js');
 
-const tagName = 'img';
+const tagName = 'link';
 
 /**
  * @implements globalThis.HTMLLinkElement

@@ -3,7 +3,7 @@ import {booleanAttribute, stringAttribute} from '../shared/attributes.js';
 
 import {HTMLElement} from './element.js';
 
-const tagName = 'img';
+const tagName = 'link';
 
 /**
  * @implements globalThis.HTMLLinkElement
