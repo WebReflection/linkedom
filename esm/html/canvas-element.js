@@ -3,7 +3,7 @@ import {IMAGE} from '../shared/symbols.js';
 import {registerHTMLClass} from '../shared/register-html-class.js';
 import {numericAttribute} from '../shared/attributes.js';
 
-import * as Canvas from '../../commonjs/canvas.cjs';
+import Canvas from '../../commonjs/canvas.cjs';
 
 import {HTMLElement} from './element.js';
 
