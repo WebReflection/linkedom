@@ -18,7 +18,7 @@
     "cjs": "ascjs --no-default esm cjs",
     "tsc": "tsc -p .",
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
-    "hello": "if [[ \"$(node --version)\" =~ ^v1[^2] ]]; then node --input-type=module -e \"import {DOMParser} from './esm/index.js';console.log('\\x1b[7m\\x1b[1m',(new DOMParser).parseFromString('<html>LinkeDOM</html>','text/html').querySelectorAll('html')[0].firstChild.toString(),'\\x1b[0m')\"; fi",
+    "hello": "if [[ \"$(node --version)\" =~ ^v1[^2] ]]; then node --input-type=module -e \"import {DOMParser} from './esm/index.js';console.log('\\x1b[7m\\x1b[1m',(new DOMParser).parseFromString('<html>LinkeDOM<canvas /></html>','text/html').querySelectorAll('html')[0].firstChild.toString(),'\\x1b[0m')\"; fi",
     "test": "eslint esm/ && npm run hello && node test/benchmark/linkedom.js --w3c --mutation-observer --custom-elements && c8 node test/index.js && c8 report -r html"
   },
   "keywords": [
