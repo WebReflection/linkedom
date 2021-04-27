@@ -65,6 +65,16 @@ export class Range {
     this[END] = getEnd(node);
   }
 
+  createContextualFragment (html) {
+    const {[START]: {ownerDocument}} = this;
+    const template = ownerDocument.createElement('template');
+
+    template.innerHTML = html;
+    this.selectNode(template.content);
+
+    return template.content;
+  }
+
   cloneContents() {
     let {[START]: start, [END]: end} = this;
     const fragment = start.ownerDocument.createDocumentFragment();

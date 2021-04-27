@@ -60,3 +60,8 @@ range = document.createRange();
 range.selectNode(h1.firstChild);
 range.insertNode(document.createTextNode('?'));
 assert(h1.toString(), '<h1>?!</h1>', 'insertNode');
+
+range = document.createRange();
+range.createContextualFragment('<h1>?!</h1>')
+assert(range.extractContents().childNodes.join(''), '<h1>?!</h1>', 'createContextualFragment');
+

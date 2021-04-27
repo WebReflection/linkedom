@@ -155,9 +155,16 @@ export class Document extends NonElementParentNode {
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
   createElement(localName) { return new Element(this, localName); }
-  createRange() { return new Range; }
   createTextNode(textContent) { return new Text(this, textContent); }
   createTreeWalker(root, whatToShow) { return new TreeWalker(root, whatToShow); }
+
+  createRange() {
+    const range = new Range();
+
+    range.selectNode(this.documentElement);
+
+    return range;
+  }
 
   createEvent(name) {
     const event = create(name === 'Event' ? new Event('') : new CustomEvent(''));
