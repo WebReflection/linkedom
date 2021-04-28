@@ -1,6 +1,6 @@
 // https://dom.spec.whatwg.org/#concept-live-range
 
-import {END, NEXT, OWNER_ELEMENT, PREV, START} from '../shared/symbols.js';
+import {END, NEXT, PREV, START} from '../shared/symbols.js';
 
 import {getEnd, setAdjacent} from '../shared/utils.js';
 
@@ -24,7 +24,7 @@ export class Range {
   constructor() {
     this[START] = null;
     this[END] = null;
-    this[OWNER_ELEMENT] = null;
+    this.commonAncestorContainer = null;
   }
 
   /* TODO: this is more complicated than it looks
@@ -89,7 +89,7 @@ export class Range {
   }
 
   createContextualFragment(html) {
-    const template = this[OWNER_ELEMENT].createElement('template');
+    const template = this.commonAncestorContainer.createElement('template');
     template.innerHTML = html;
     this.selectNode(template.content);
     return template.content;

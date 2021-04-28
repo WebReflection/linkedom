@@ -2,6 +2,7 @@
  * @implements globalThis.Range
  */
 export class Range implements globalThis.Range {
+    commonAncestorContainer: any;
     insertNode(newNode: any): void;
     selectNode(node: any): void;
     surroundContents(parentNode: any): void;
@@ -16,8 +17,6 @@ export class Range implements globalThis.Range {
     cloneRange(): Range;
     [START]: any;
     [END]: any;
-    [OWNER_ELEMENT]: any;
 }
 import { START } from "../shared/symbols.js";
 import { END } from "../shared/symbols.js";
-import { OWNER_ELEMENT } from "../shared/symbols.js";
