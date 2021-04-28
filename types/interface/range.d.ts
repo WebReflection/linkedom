@@ -12,9 +12,12 @@ export class Range implements globalThis.Range {
     cloneContents(): any;
     deleteContents(): void;
     extractContents(): any;
+    createContextualFragment(html: any): any;
     cloneRange(): Range;
     [START]: any;
     [END]: any;
+    [OWNER_ELEMENT]: any;
 }
 import { START } from "../shared/symbols.js";
 import { END } from "../shared/symbols.js";
+import { OWNER_ELEMENT } from "../shared/symbols.js";

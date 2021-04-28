@@ -1,6 +1,6 @@
 // https://dom.spec.whatwg.org/#concept-live-range
 
-import {END, NEXT, PREV, START} from '../shared/symbols.js';
+import {END, NEXT, OWNER_ELEMENT, PREV, START} from '../shared/symbols.js';
 
 import {getEnd, setAdjacent} from '../shared/utils.js';
 
@@ -24,6 +24,7 @@ export class Range {
   constructor() {
     this[START] = null;
     this[END] = null;
+    this[OWNER_ELEMENT] = null;
   }
 
   /* TODO: this is more complicated than it looks
@@ -85,6 +86,13 @@ export class Range {
     const fragment = this[START].ownerDocument.createDocumentFragment();
     deleteContents(this, fragment);
     return fragment;
+  }
+
+  createContextualFragment(html) {
+    const template = this[OWNER_ELEMENT].createElement('template');
+    template.innerHTML = html;
+    this.selectNode(template.content);
+    return template.content;
   }
 
   cloneRange() {

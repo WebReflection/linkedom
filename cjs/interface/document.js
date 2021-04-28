@@ -4,7 +4,7 @@ const {performance} = require('perf_hooks');
 const {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} = require('../shared/constants.js');
 
 const {
-  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, EVENT_TARGET
+  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, EVENT_TARGET, OWNER_ELEMENT
 } = require('../shared/symbols.js');
 
 const {Facades, illegalConstructor} = require('../shared/facades.js');
@@ -155,7 +155,11 @@ class Document extends NonElementParentNode {
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
   createElement(localName) { return new Element(this, localName); }
-  createRange() { return new Range; }
+  createRange() {
+    const range = new Range;
+    range[OWNER_ELEMENT] = this;
+    return range;
+  }
   createTextNode(textContent) { return new Text(this, textContent); }
   createTreeWalker(root, whatToShow) { return new TreeWalker(root, whatToShow); }
 

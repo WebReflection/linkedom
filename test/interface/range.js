@@ -60,3 +60,8 @@ range = document.createRange();
 range.selectNode(h1.firstChild);
 range.insertNode(document.createTextNode('?'));
 assert(h1.toString(), '<h1>?!</h1>', 'insertNode');
+
+range = document.createRange();
+let contestual = range.createContextualFragment('<div>hi</div>');
+assert(contestual.toString(), '<#document-fragment><div>hi</div></#document-fragment>', 'createContextualFragment');
+

@@ -1,7 +1,7 @@
 'use strict';
 // https://dom.spec.whatwg.org/#concept-live-range
 
-const {END, NEXT, PREV, START} = require('../shared/symbols.js');
+const {END, NEXT, OWNER_ELEMENT, PREV, START} = require('../shared/symbols.js');
 
 const {getEnd, setAdjacent} = require('../shared/utils.js');
 
@@ -25,6 +25,7 @@ class Range {
   constructor() {
     this[START] = null;
     this[END] = null;
+    this[OWNER_ELEMENT] = null;
   }
 
   /* TODO: this is more complicated than it looks
@@ -86,6 +87,13 @@ class Range {
     const fragment = this[START].ownerDocument.createDocumentFragment();
     deleteContents(this, fragment);
     return fragment;
+  }
+
+  createContextualFragment(html) {
+    const template = this[OWNER_ELEMENT].createElement('template');
+    template.innerHTML = html;
+    this.selectNode(template.content);
+    return template.content;
   }
 
   cloneRange() {

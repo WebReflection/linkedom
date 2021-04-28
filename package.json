@@ -32,10 +32,10 @@
   "license": "ISC",
   "devDependencies": {
     "ascjs": "^5.0.1",
-    "c8": "^7.6.0",
+    "c8": "^7.7.1",
     "coveralls": "^3.1.0",
-    "eslint": "^7.20.0",
-    "typescript": "^4.2.2"
+    "eslint": "^7.25.0",
+    "typescript": "^4.2.4"
   },
   "module": "./esm/index.js",
   "type": "module",
@@ -52,9 +52,9 @@
   },
   "dependencies": {
     "@ungap/event-target": "^0.2.2",
-    "css-select": "^3.1.2",
+    "css-select": "^4.1.2",
     "html-escaper": "^3.0.3",
-    "htmlparser2": "^6.0.0",
+    "htmlparser2": "^6.1.0",
     "uhyphen": "^0.1.0"
   },
   "repository": {
