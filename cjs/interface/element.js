@@ -197,7 +197,7 @@ class Element extends ParentNode {
   set outerHTML(html) {
     const template = this.ownerDocument.createElement('');
     template.innerHTML = html;
-    this.parentNode.replaceChild(template.firstElementChild, this);
+    this.replaceWith(...template.childNodes);
   }
   // </contentRelated>
 
