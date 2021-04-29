@@ -463,7 +463,7 @@ export class Element extends ParentNode {
           break;
         case TEXT_NODE:
         case COMMENT_NODE:
-          out.push((isOpened ? '>' : '') + next);
+          out.push((isOpened ? '>' : '') + unescape(next));
           isOpened = false;
           break;
       }

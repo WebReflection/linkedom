@@ -9,7 +9,8 @@ let div = document.querySelector('div');
 div.firstChild.outerHTML = 'hello';
 assert(div.firstChild.toString(), 'hello');
 
-div.innerHTML = '<span></span>'
+div.innerHTML = '<span>"hi</span>';
+assert(div.firstChild.toString(), '<span>"hi</span>');
 div.firstChild.outerHTML = '<p>hello</p>';
 assert(div.firstChild.toString(), '<p>hello</p>');
 
