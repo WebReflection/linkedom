@@ -96,7 +96,6 @@ const adapter = {
 
 const prepareMatch = (element, selectors) => {
   return CSSselect.compile(selectors, {
-    strict: true,
     xmlMode: !ignoreCase(element),
     adapter
   });
