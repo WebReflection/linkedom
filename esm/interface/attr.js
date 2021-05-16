@@ -1,6 +1,6 @@
 import {ATTRIBUTE_NODE} from '../shared/constants.js';
 import {CHANGED, VALUE} from '../shared/symbols.js';
-import {String, ignoreCase} from '../shared/utils.js';
+import {String} from '../shared/utils.js';
 import {attrAsJSON} from '../shared/jsdon.js';
 
 import {attributeChangedCallback as moAttributes} from './mutation-observer.js';
@@ -40,7 +40,7 @@ export class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return value || !ignoreCase(this) ? `${name}="${value.replace(QUOTE, '&quot;')}"` : name;
+    return `${name}="${value.replace(QUOTE, '&quot;')}"`;
   }
 
   toJSON() {
