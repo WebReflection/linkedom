@@ -462,10 +462,18 @@ export class Element extends ParentNode {
           }
           break;
         case TEXT_NODE:
-        case COMMENT_NODE:
-          out.push((isOpened ? '>' : '') + next);
+        case COMMENT_NODE: {
+          let nextModified = next
+          // Special NBSP exemption, must always be escaped in output
+          if (next.toString().length === 1 && next.toString().charCodeAt(0) === 160) {
+            // console.log("^^^^^^^^ I would make next = " + escape(next)) // TODO: For some reason this comes out at '%A0'???
+            nextModified = '&nbsp;'
+          }
+
+          out.push((isOpened ? '>' : '') + nextModified);
           isOpened = false;
           break;
+        }
       }
     } while (next !== end);
     return out.join('');
