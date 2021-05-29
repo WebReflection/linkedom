@@ -3,6 +3,7 @@
  */
 export class DOMTokenList extends Set<any> implements globalThis.DOMTokenList {
     constructor(ownerElement: any);
+    get length(): number;
     get value(): string;
     /**
      * @param {string} token

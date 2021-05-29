@@ -50,6 +50,7 @@ assert(node.className, '', 'no class name');
 assert(node.classList.contains('test'), false, 'no test class');
 node.classList.add('a', 'test', 'b');
 assert(node.classList.value, 'a test b', 'correct .value');
+assert(node.classList.length, 3, 'correct .length');
 assert(node.classList.contains('test'), true, 'test class');
 node.classList.toggle('test');
 assert(node.classList.contains('test'), false, 'no test class again');

@@ -15,6 +15,8 @@ class DOMTokenList extends Set {
     this[OWNER_ELEMENT] = ownerElement;
   }
 
+  get length() { return this.size; }
+
   get value() { return [...this].join(' '); }
 
   /**
