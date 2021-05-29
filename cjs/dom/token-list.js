@@ -1,8 +1,18 @@
 'use strict';
 const {OWNER_ELEMENT} = require('../shared/symbols.js');
+const {setAttribute} = require('../shared/attributes.js');
+
+const {Attr} = require('../interface/attr.js');
 
 const update = ({[OWNER_ELEMENT]: ownerElement, value}) => {
-  ownerElement.setAttribute('class', value);
+  const attribute = ownerElement.getAttributeNode('class');
+  if (attribute)
+    attribute.value = value;
+  else
+    setAttribute(
+      ownerElement,
+      new Attr(ownerElement.ownerDocument, 'class', value)
+    );
 };
 
 /**

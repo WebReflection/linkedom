@@ -127,3 +127,10 @@ assert(node.innerHTML, '"hello"');
 node.innerHTML = `<pre><code>echo &quot;&lt;table class=&#39;charts-css&#39;&gt;&quot;</code></pre>`;
 assert(node.innerHTML, `<pre><code>echo &quot;&lt;table class=&#39;charts-css&#39;&gt;&quot;</code></pre>`);
 assert(node.outerHTML, `<div b="2"><pre><code>echo &quot;&lt;table class=&#39;charts-css&#39;&gt;&quot;</code></pre></div>`);
+
+node.innerHTML = '';
+node.setAttribute('class', 'a b c');
+assert(node.getAttribute('class'), 'a b c');
+node.removeAttribute('class');
+assert(node.classList.length, 0);
+assert(node.getAttribute('class'), '');

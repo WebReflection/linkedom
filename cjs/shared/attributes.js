@@ -1,4 +1,11 @@
 'use strict';
+const {CLASS_LIST, NEXT, PREV, VALUE} = require('./symbols.js');
+
+const {knownAdjacent, knownSiblings} = require('./utils.js');
+
+const {attributeChangedCallback: ceAttributes} = require('../interface/custom-element-registry.js');
+const {attributeChangedCallback: moAttributes} = require('../interface/mutation-observer.js');
+
 const emptyAttributes = new Set([
   'allowfullscreen',
   'allowpaymentrequest',
@@ -33,6 +40,28 @@ const emptyAttributes = new Set([
   'truespeed'
 ]);
 exports.emptyAttributes = emptyAttributes;
+
+const setAttribute = (element, attribute) => {
+  const {[VALUE]: value, name} = attribute;
+  attribute.ownerElement = element;
+  knownSiblings(element, attribute, element[NEXT]);
+  if (name === 'class')
+    element.className = value;
+  moAttributes(element, name, null);
+  ceAttributes(element, name, null, value);
+};
+exports.setAttribute = setAttribute;
+
+const removeAttribute = (element, attribute) => {
+  const {[VALUE]: value, name} = attribute;
+  knownAdjacent(attribute[PREV], attribute[NEXT]);
+  attribute.ownerElement = attribute[PREV] = attribute[NEXT] = null;
+  if (name === 'class')
+    element[CLASS_LIST] = null;
+  moAttributes(element, name, value);
+  ceAttributes(element, name, value, null);
+};
+exports.removeAttribute = removeAttribute;
 
 const booleanAttribute = {
   get(element, name) {

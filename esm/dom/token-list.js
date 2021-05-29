@@ -1,7 +1,17 @@
 import {OWNER_ELEMENT} from '../shared/symbols.js';
+import {setAttribute} from '../shared/attributes.js';
+
+import {Attr} from '../interface/attr.js';
 
 const update = ({[OWNER_ELEMENT]: ownerElement, value}) => {
-  ownerElement.setAttribute('class', value);
+  const attribute = ownerElement.getAttributeNode('class');
+  if (attribute)
+    attribute.value = value;
+  else
+    setAttribute(
+      ownerElement,
+      new Attr(ownerElement.ownerDocument, 'class', value)
+    );
 };
 
 /**

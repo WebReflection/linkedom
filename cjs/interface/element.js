@@ -13,20 +13,22 @@ const {
 } = require('../shared/constants.js');
 
 const {
-  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, VALUE, MIME, CUSTOM_ELEMENTS
-} = require('../shared/symbols.js');
+  setAttribute, removeAttribute, numericAttribute, stringAttribute
+} = require('../shared/attributes.js');
 
-const {numericAttribute, stringAttribute} = require('../shared/attributes.js');
-const {elementAsJSON} = require('../shared/jsdon.js');
-const {matches, prepareMatch} = require('../shared/matches.js');
-const {parseFromString} = require('../shared/parse-from-string.js');
+const {
+  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, MIME, CUSTOM_ELEMENTS
+} = require('../shared/symbols.js');
 
 const {
   ignoreCase,
   knownAdjacent,
-  knownSiblings,
   localCase
 } = require('../shared/utils.js');
+
+const {elementAsJSON} = require('../shared/jsdon.js');
+const {matches, prepareMatch} = require('../shared/matches.js');
+const {parseFromString} = require('../shared/parse-from-string.js');
 
 const {isConnected, parentElement, previousSibling, nextSibling} = require('../shared/node.js');
 const {previousElementSibling, nextElementSibling} = require('../mixin/non-document-type-child-node.js');
@@ -44,10 +46,6 @@ const {ShadowRoot} = require('./shadow-root.js');
 const {NodeList} = require('./node-list.js');
 const {Attr} = require('./attr.js');
 const {Text} = require('./text.js');
-
-const {attributeChangedCallback: ceAttributes} = require('./custom-element-registry.js');
-const {attributeChangedCallback: moAttributes} = require('./mutation-observer.js');
-
 
 // <utils>
 const attributesHandler = {
@@ -67,26 +65,6 @@ const create = (ownerDocument, element, localName)  => {
 
 const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
-};
-
-const removeAttribute = (element, attribute) => {
-  const {[VALUE]: value, name} = attribute;
-  knownAdjacent(attribute[PREV], attribute[NEXT]);
-  attribute.ownerElement = attribute[PREV] = attribute[NEXT] = null;
-  if (name === 'class')
-    element[CLASS_LIST] = null;
-  moAttributes(element, name, value);
-  ceAttributes(element, name, value, null);
-};
-
-const setAttribute = (element, attribute) => {
-  const {[VALUE]: value, name} = attribute;
-  attribute.ownerElement = element;
-  knownSiblings(element, attribute, element[NEXT]);
-  if (name === 'class')
-    element.className = value;
-  moAttributes(element, name, null);
-  ceAttributes(element, name, null, value);
 };
 
 const shadowRoots = new WeakMap;
@@ -215,6 +193,8 @@ class Element extends ParentNode {
   focus() { this.dispatchEvent(new Event('focus')); }
 
   getAttribute(name) {
+    if (name === 'class')
+      return this.className;
     const attribute = this.getAttributeNode(name);
     return attribute && attribute.value;
   }
@@ -243,6 +223,8 @@ class Element extends ParentNode {
   hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
 
   removeAttribute(name) {
+    if (name === 'class' && this[CLASS_LIST])
+        this[CLASS_LIST].clear();
     let next = this[NEXT];
     while (next.nodeType === ATTRIBUTE_NODE) {
       if (next.name === name) {
@@ -265,11 +247,15 @@ class Element extends ParentNode {
   }
 
   setAttribute(name, value) {
-    const attribute = this.getAttributeNode(name);
-    if (attribute)
-      attribute.value = value;
-    else
-      setAttribute(this, new Attr(this.ownerDocument, name, value));
+    if (name === 'class')
+      this.className = value;
+    else {
+      const attribute = this.getAttributeNode(name);
+      if (attribute)
+        attribute.value = value;
+      else
+        setAttribute(this, new Attr(this.ownerDocument, name, value));
+    }
   }
 
   setAttributeNode(attribute) {
