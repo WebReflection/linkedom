@@ -31,6 +31,26 @@ If a proposed change decrease overall code coverage, this won't be accepted unti
 In these contributions cases, you are not required to write extra tests, but please add `/* c8 ignore start */` and `/*c8 ignore stop */` around the proposed new code, or place new accessors within previously defined `c8` directives.
 
 
+## Testing - Helpers
+
+The [assert.js](./test/assert.js) helper is pretty straight forward to use:
+
+```js
+const assert = require('../assert.js').for('Test Name');
+
+let condition = 'Some value';
+let expectations = 'Some expectation';
+assert(condition, expectation, message = '');
+```
+
+To run tests it's necessary to `npm run build` because ESM gets transpiled into CJS and then test and coverage happens.
+
+Nothing that doesn't score 100% test coverage will go through, and it's a good practice to use, as `Test Name`, the class, interface, or file, that's being tested.
+
+
+
+
+
 ## HTMLClasses Contributions
 
 This is a *[TL;DR commit example](https://github.com/WebReflection/linkedom/commit/2fa2d3b063f5b420c207f346d1ce943218d14178)*, explained in details here.
