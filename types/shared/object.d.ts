@@ -8,7 +8,7 @@ export const create: {
     (o: object): any;
     (o: object, properties: PropertyDescriptorMap & ThisType<any>): any;
 };
-export const defineProperties: (o: any, properties: PropertyDescriptorMap & ThisType<any>) => any;
+export const defineProperties: <T>(o: T, properties: PropertyDescriptorMap & ThisType<any>) => T;
 export const entries: {
     <T>(o: {
         [s: string]: T;

@@ -248,6 +248,4 @@ import { MIME } from "../shared/symbols.js";
 import { DOCTYPE } from "../shared/symbols.js";
 import { DOM_PARSER } from "../shared/symbols.js";
 import { IMAGE } from "../shared/symbols.js";
-import { NEXT } from "../shared/symbols.js";
-import { END } from "../shared/symbols.js";
 import { EVENT_TARGET } from "../shared/symbols.js";
