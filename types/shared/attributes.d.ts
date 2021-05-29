@@ -1,3 +1,4 @@
+export const emptyAttributes: Set<string>;
 export namespace booleanAttribute {
     function get(element: any, name: any): any;
     function get(element: any, name: any): any;

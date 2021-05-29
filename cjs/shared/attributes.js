@@ -1,4 +1,39 @@
 'use strict';
+const emptyAttributes = new Set([
+  'allowfullscreen',
+  'allowpaymentrequest',
+  'async',
+  'autofocus',
+  'autoplay',
+  'checked',
+  'class',
+  'contenteditable',
+  'controls',
+  'default',
+  'defer',
+  'disabled',
+  'draggable',
+  'formnovalidate',
+  'hidden',
+  'id',
+  'ismap',
+  'itemscope',
+  'loop',
+  'multiple',
+  'muted',
+  'nomodule',
+  'novalidate',
+  'open',
+  'playsinline',
+  'readonly',
+  'required',
+  'reversed',
+  'selected',
+  'style',
+  'truespeed'
+]);
+exports.emptyAttributes = emptyAttributes;
+
 const booleanAttribute = {
   get(element, name) {
     return element.hasAttribute(name);
