@@ -134,3 +134,10 @@ assert(node.getAttribute('class'), 'a b c');
 node.removeAttribute('class');
 assert(node.classList.length, 0);
 assert(node.getAttribute('class'), '');
+
+node.className = 'test';
+let clone = node.cloneNode(true);
+
+assert(node.getAttribute('class'), clone.getAttribute('class'), 'cloned class getAttribute');
+assert(node.className, clone.className, 'cloned class className');
+assert(node.classList.size, clone.classList.size, 'cloned class classList');

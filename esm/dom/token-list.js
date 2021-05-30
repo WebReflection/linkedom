@@ -3,6 +3,14 @@ import {setAttribute} from '../shared/attributes.js';
 
 import {Attr} from '../interface/attr.js';
 
+const {add} = Set.prototype;
+const addTokens = (self, tokens) => {
+  for (const token of tokens) {
+    if (token)
+      add.call(self, token);
+  }
+};
+
 const update = ({[OWNER_ELEMENT]: ownerElement, value}) => {
   const attribute = ownerElement.getAttributeNode('class');
   if (attribute)
@@ -22,6 +30,9 @@ export class DOMTokenList extends Set {
   constructor(ownerElement) {
     super();
     this[OWNER_ELEMENT] = ownerElement;
+    const attribute = ownerElement.getAttributeNode('class');
+    if (attribute)
+      addTokens(this, attribute.value.split(/\s+/));
   }
 
   get length() { return this.size; }
@@ -32,10 +43,7 @@ export class DOMTokenList extends Set {
    * @param  {...string} tokens
    */
   add(...tokens) {
-    for (const token of tokens) {
-      if (token)
-        super.add(token);
-    }
+    addTokens(this, tokens);
     update(this);
   }
 
