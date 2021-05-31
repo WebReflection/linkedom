@@ -144,3 +144,5 @@ assert(node.classList.size, clone.classList.size, 'cloned class classList');
 
 node.innerHTML = '<div data-amend>Foo</div>';
 assert(node.innerHTML, '<div data-amend="">Foo</div>');
+node.innerHTML = '<video src="" controls>';
+assert(node.innerHTML, '<video src="" controls></video>');
