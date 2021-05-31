@@ -141,3 +141,6 @@ let clone = node.cloneNode(true);
 assert(node.getAttribute('class'), clone.getAttribute('class'), 'cloned class getAttribute');
 assert(node.className, clone.className, 'cloned class className');
 assert(node.classList.size, clone.classList.size, 'cloned class classList');
+
+node.innerHTML = '<div data-amend>Foo</div>';
+assert(node.innerHTML, '<div data-amend="">Foo</div>');
