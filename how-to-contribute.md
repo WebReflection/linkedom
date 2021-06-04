@@ -22,14 +22,17 @@ Almost every `./esm` file, within its folder, is replicated in the `./test` fold
 
 Each test is executed twice: once for `linkedom` module, and a second pass for `linkedom/cached` export.
 
+Run the tests with: `npm run test`
+
 The very beginning of the test ensures everything is OK in *ESM* exports-land, it runs a quick benchmark to be sure everything works as expected and, eventually, keep performance under control, and finally to verify that all code has been covered.
 
-If a proposed change decrease overall code coverage, this won't be accepted until the score is back to 100%.
+If a proposed change decreases overall code coverage, this won't be accepted until the score is back to 100%.
 
 **However**, there are various parts that are already covered and won't likely benefit from extra tests. This is specially the case for *HTMLClasses accessors*, like the `HTMLImageElement#src` getter and setter, and all others I might have not fully augmented yet.
 
 In these contributions cases, you are not required to write extra tests, but please add `/* c8 ignore start */` and `/*c8 ignore stop */` around the proposed new code, or place new accessors within previously defined `c8` directives.
 
+To run only one test file (e.g. whilst developing) you can edit test/index.js and comment/uncomment folders appropriately.
 
 ## Testing - Helpers
 
