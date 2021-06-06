@@ -12,9 +12,9 @@ assert(script.toString(), '<script what="ever">"</script>', 'text elements toStr
 // Unrelated
 const {head} = document;
 head.innerHTML = `<nope csp-hash="any">"</nope>`;
-assert(document.toString(), '<!DOCTYPE html><html><head><nope csp-hash="any">&quot;</nope></head></html>', 'Issue #1 - <nope> node');
+assert(document.toString(), '<!DOCTYPE html><html><head><nope csp-hash="any">"</nope></head></html>', 'Issue #1 - <nope> node');
 head.innerHTML = `<div csp-hash="any">"</div>`;
-assert(document.toString(), '<!DOCTYPE html><html><head><div csp-hash="any">&quot;</div></head></html>', 'Issue #1 - <div> node');
+assert(document.toString(), '<!DOCTYPE html><html><head><div csp-hash="any">"</div></head></html>', 'Issue #1 - <div> node');
 head.innerHTML = `<title csp-hash="any">"</title>`;
 assert(document.toString(), '<!DOCTYPE html><html><head><title csp-hash="any">"</title></head></html>', 'Issue #1 - <title> node');
 head.innerHTML = `<style csp-hash="any">"</style>`;

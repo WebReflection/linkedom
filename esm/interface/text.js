@@ -1,7 +1,6 @@
-import {escape} from 'html-escaper';
-
 import {TEXT_NODE} from '../shared/constants.js';
 import {VALUE} from '../shared/symbols.js';
+import {escape} from '../shared/text-escaper.js';
 
 import {CharacterData} from './character-data.js';
 

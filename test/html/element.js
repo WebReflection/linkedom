@@ -124,9 +124,9 @@ node.removeAttributeNode(node.attributes[1]);
 node.innerHTML = '"hello"';
 assert(node.innerHTML, '"hello"');
 
-node.innerHTML = `<pre><code>echo &quot;&lt;table class=&#39;charts-css&#39;&gt;&quot;</code></pre>`;
-assert(node.innerHTML, `<pre><code>echo &quot;&lt;table class=&#39;charts-css&#39;&gt;&quot;</code></pre>`);
-assert(node.outerHTML, `<div b="2"><pre><code>echo &quot;&lt;table class=&#39;charts-css&#39;&gt;&quot;</code></pre></div>`);
+node.innerHTML = `<pre><code>echo &quot;&lt;table class='charts-css'&gt;&quot;</code></pre>`;
+assert(node.innerHTML, `<pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre>`);
+assert(node.outerHTML, `<div b="2"><pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre></div>`);
 
 node.innerHTML = '';
 node.setAttribute('class', 'a b c');
