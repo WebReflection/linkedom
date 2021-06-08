@@ -1,8 +1,7 @@
 'use strict';
-const {escape} = require('html-escaper');
-
 const {TEXT_NODE} = require('../shared/constants.js');
 const {VALUE} = require('../shared/symbols.js');
+const {escape} = require('../shared/text-escaper.js');
 
 const {CharacterData} = require('./character-data.js');
 
