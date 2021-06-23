@@ -16,8 +16,8 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     createElement(localName: any): Element;
     createRange(): Range;
     createTextNode(textContent: any): Text;
-    createTreeWalker(root: any, whatToShow: any): TreeWalker;
-    createNodeIterator(root: any, whatToShow: any): TreeWalker;
+    createTreeWalker(root: any, whatToShow?: number): TreeWalker;
+    createNodeIterator(root: any, whatToShow?: number): TreeWalker;
     createEvent(name: any): any;
     importNode(externalNode: any, ...args: any[]): any;
     getElementsByTagNameNS(_: any, name: any): NodeList;

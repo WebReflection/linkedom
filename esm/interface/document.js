@@ -161,8 +161,8 @@ export class Document extends NonElementParentNode {
     return range;
   }
   createTextNode(textContent) { return new Text(this, textContent); }
-  createTreeWalker(root, whatToShow) { return new TreeWalker(root, whatToShow); }
-  createNodeIterator(root, whatToShow) { return this.createTreeWalker(root, whatToShow); }
+  createTreeWalker(root, whatToShow = -1) { return new TreeWalker(root, whatToShow); }
+  createNodeIterator(root, whatToShow = -1) { return this.createTreeWalker(root, whatToShow); }
 
   createEvent(name) {
     const event = create(name === 'Event' ? new Event('') : new CustomEvent(''));
