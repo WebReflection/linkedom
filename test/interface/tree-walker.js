@@ -19,7 +19,7 @@ assert(treeWalker.nextNode(), null, 'end of treeWalker');
 treeWalker = document.createTreeWalker(node, 128);
 assert(treeWalker.nextNode(), null, 'no comments for treeWalker');
 
-treeWalker = document.createTreeWalker(node, 1);
+treeWalker = document.createNodeIterator(node, 1);
 assert(treeWalker.nextNode(), node.childNodes[0], 'first treeWalker again');
 assert(treeWalker.nextNode(), node.childNodes[1], 'second treeWalker again');
 assert(treeWalker.nextNode(), node.childNodes[2], 'third treeWalker again');

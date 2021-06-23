@@ -162,6 +162,7 @@ class Document extends NonElementParentNode {
   }
   createTextNode(textContent) { return new Text(this, textContent); }
   createTreeWalker(root, whatToShow) { return new TreeWalker(root, whatToShow); }
+  createNodeIterator(root, whatToShow) { return this.createTreeWalker(root, whatToShow); }
 
   createEvent(name) {
     const event = create(name === 'Event' ? new Event('') : new CustomEvent(''));
