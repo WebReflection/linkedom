@@ -39,8 +39,9 @@ assert(document.toString(), '<!DOCTYPE html><html lang="en" id="html" class="liv
 assert(document.createElement('button', {is: 'special-case'}).getAttribute('is'), 'special-case', 'createElement with extra options');
 
 assert(Object.keys(node.dataset).length, 0, 'empty dataset');
-assert(node.dataset.testValue, null, 'no testValue');
+assert(node.dataset.testValue, void 0, 'no testValue');
 node.dataset.testValue = 123;
+assert('testValue' in node.dataset, true, 'dataset in trap');
 assert(Object.keys(node.dataset).length, 1, 'not empty dataset');
 assert(node.getAttribute('data-test-value'), '123', 'dataset.testValue');
 delete node.dataset.testValue;
@@ -144,5 +145,6 @@ assert(node.classList.size, clone.classList.size, 'cloned class classList');
 
 node.innerHTML = '<div data-amend>Foo</div>';
 assert(node.innerHTML, '<div data-amend="">Foo</div>');
+assert(Object.keys(node.firstElementChild.dataset).join(''), 'amend', 'dataset initialized');
 node.innerHTML = '<video src="" controls>';
 assert(node.innerHTML, '<video src="" controls></video>');

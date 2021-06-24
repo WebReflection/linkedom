@@ -3,7 +3,7 @@
  */
 export class DOMStringMap implements globalThis.DOMStringMap {
     /**
-     * @param {Element} value
+     * @param {Element} ref
      */
-    constructor(value: Element);
+    constructor(ref: Element);
 }
