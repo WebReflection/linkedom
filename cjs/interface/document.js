@@ -140,9 +140,12 @@ class Document extends NonElementParentNode {
     return null;
   }
 
-  set doctype(name) {
-    this[DOCTYPE] = new DocumentType(this, name);
-    knownSiblings(this, this[DOCTYPE], this[NEXT]);
+  set doctype(value) {
+    if (/^([a-z:]+)(\s+system|\s+public(\s+"([^"]+)")?)?(\s+"([^"]+)")?/i.test(value)) {
+      const {$1: name, $4: publicId, $6: systemId} = RegExp;
+      this[DOCTYPE] = new DocumentType(this, name, publicId, systemId);
+      knownSiblings(this, this[DOCTYPE], this[NEXT]);
+    }
   }
 
   get documentElement() {
@@ -154,6 +157,7 @@ class Document extends NonElementParentNode {
   createAttribute(name) { return new Attr(this, name); }
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
+  createDocumentType(name, publicId, systemId) { return new DocumentType(this, name, publicId, systemId); }
   createElement(localName) { return new Element(this, localName); }
   createRange() {
     const range = new Range;

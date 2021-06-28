@@ -57,8 +57,12 @@ export const nonElementAsJSON = (node, json) => {
   loopSegment(node, json);
 };
 
-export const documentTypeAsJSON = (documentType, json) => {
-  json.push(DOCUMENT_TYPE_NODE, documentType.name);
+export const documentTypeAsJSON = ({name, publicId, systemId}, json) => {
+  json.push(DOCUMENT_TYPE_NODE, name);
+  if (publicId)
+    json.push(publicId);
+  if (systemId)
+    json.push(systemId);
 };
 
 export const elementAsJSON = (element, json) => {

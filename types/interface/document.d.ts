@@ -13,6 +13,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     createAttribute(name: any): Attr;
     createComment(textContent: any): Comment;
     createDocumentFragment(): DocumentFragment;
+    createDocumentType(name: any, publicId: any, systemId: any): DocumentType;
     createElement(localName: any): Element;
     createRange(): Range;
     createTextNode(textContent: any): Text;

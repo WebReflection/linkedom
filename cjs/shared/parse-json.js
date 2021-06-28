@@ -84,9 +84,15 @@ const parseJSON = value => {
       case COMMENT_NODE:
         append(parentNode, new Comment(document, array[i++]), end);
         break;
-      case DOCUMENT_TYPE_NODE:
-        append(parentNode, new DocumentType(document, array[i++]), end);
+      case DOCUMENT_TYPE_NODE: {
+        const args = [document];
+        while (typeof array[i] === 'string')
+          args.push(array[i++]);
+        if (args.length === 3 && /\.dtd$/i.test(args[2]))
+          args.splice(2, 0, '');
+        append(parentNode, new DocumentType(...args), end);
         break;
+      }
       case DOCUMENT_FRAGMENT_NODE:
         parentNode = document.createDocumentFragment();
         end = parentNode[END];

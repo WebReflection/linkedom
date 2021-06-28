@@ -61,8 +61,12 @@ const nonElementAsJSON = (node, json) => {
 };
 exports.nonElementAsJSON = nonElementAsJSON;
 
-const documentTypeAsJSON = (documentType, json) => {
-  json.push(DOCUMENT_TYPE_NODE, documentType.name);
+const documentTypeAsJSON = ({name, publicId, systemId}, json) => {
+  json.push(DOCUMENT_TYPE_NODE, name);
+  if (publicId)
+    json.push(publicId);
+  if (systemId)
+    json.push(systemId);
 };
 exports.documentTypeAsJSON = documentTypeAsJSON;
 
