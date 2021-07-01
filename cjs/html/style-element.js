@@ -29,14 +29,14 @@ class HTMLStyleElement extends TextElement {
     return super.innerHTML || '';
   }
   set innerHTML(value) {
-    super.innerHTML = value;
+    super.textContent = value;
     this[SHEET] = null;
   }
   get innerText() {
     return super.innerText || '';
   }
   set innerText(value) {
-    super.innerText = value;
+    super.textContent = value;
     this[SHEET] = null;
   }
   get textContent() {
