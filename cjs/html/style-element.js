@@ -2,12 +2,11 @@
 const {parse} = require('cssom');
 
 const {registerHTMLClass} = require('../shared/register-html-class.js');
+const {SHEET} = require('../shared/symbols.js');
 
 const {TextElement} = require('./text-element.js');
 
 const tagName = 'style';
-
-const SHEET = Symbol('sheet');
 
 /**
  * @implements globalThis.HTMLStyleElement
@@ -20,7 +19,7 @@ class HTMLStyleElement extends TextElement {
 
   get sheet() {
     const sheet = this[SHEET];
-    if (sheet != null) {
+    if (sheet !== null) {
       return sheet;
     }
     return this[SHEET] = parse(this.textContent);

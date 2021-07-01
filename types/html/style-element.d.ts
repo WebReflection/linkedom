@@ -6,5 +6,4 @@ export class HTMLStyleElement extends TextElement implements globalThis.HTMLStyl
     [SHEET]: any;
 }
 import { TextElement } from "./text-element.js";
-declare const SHEET: unique symbol;
-export {};
+import { SHEET } from "../shared/symbols.js";

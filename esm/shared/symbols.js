@@ -13,6 +13,7 @@ export const NEXT = Symbol('next');
 export const OWNER_ELEMENT = Symbol('ownerElement');
 export const PREV = Symbol('prev');
 export const PRIVATE = Symbol('private');
+export const SHEET = Symbol('sheet');
 export const START = Symbol('start');
 export const STYLE = Symbol('style');
 export const VALUE = Symbol('value');

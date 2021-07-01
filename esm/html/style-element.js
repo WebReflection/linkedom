@@ -1,12 +1,11 @@
 import {parse} from 'cssom';
 
 import {registerHTMLClass} from '../shared/register-html-class.js';
+import {SHEET} from '../shared/symbols.js';
 
 import {TextElement} from './text-element.js';
 
 const tagName = 'style';
-
-const SHEET = Symbol('sheet');
 
 /**
  * @implements globalThis.HTMLStyleElement
@@ -19,7 +18,7 @@ class HTMLStyleElement extends TextElement {
 
   get sheet() {
     const sheet = this[SHEET];
-    if (sheet != null) {
+    if (sheet !== null) {
       return sheet;
     }
     return this[SHEET] = parse(this.textContent);

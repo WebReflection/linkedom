@@ -13,6 +13,7 @@ export const NEXT: unique symbol;
 export const OWNER_ELEMENT: unique symbol;
 export const PREV: unique symbol;
 export const PRIVATE: unique symbol;
+export const SHEET: unique symbol;
 export const START: unique symbol;
 export const STYLE: unique symbol;
 export const VALUE: unique symbol;
