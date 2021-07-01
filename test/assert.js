@@ -1,3 +1,6 @@
+if (!(Symbol.for('linkedom') in global))
+  global[Symbol.for('linkedom')] = require('../cjs/index.js');
+
 module.exports = {
   for: Class => {
     console.log('\x1b[1m', Class.padEnd(60, ' '), '\x1b[0m');
