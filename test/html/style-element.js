@@ -9,7 +9,11 @@ let {firstElementChild: style} = document;
 assert(style.toString(), '<style></style>');
 assert(style.sheet != null, true, 'style.sheet');
 
-style.innerHTML = '.test { color: white; font-size: 12px; }';
+style.textContent = style.innerText = style.innerHTML = '.test { color: white; font-size: 12px; }';
+assert(style.innerHTML, '.test { color: white; font-size: 12px; }', 'style.innerHTML');
+assert(style.innerText, '.test { color: white; font-size: 12px; }', 'style.innerText');
+assert(style.textContent, '.test { color: white; font-size: 12px; }', 'style.textContent');
+
 assert(style.toString(), '<style>.test { color: white; font-size: 12px; }</style>');
 assert(style.sheet.cssRules.length === 1, true, 'style.sheet.cssRules.length');
 
