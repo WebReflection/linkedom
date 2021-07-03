@@ -52,6 +52,8 @@ const globalExports = assign(
   }
 );
 
+const window = new WeakMap;
+
 /**
  * @implements globalThis.Document
  */
@@ -71,63 +73,64 @@ class Document extends NonElementParentNode {
    * @type {globalThis.Document['defaultView']}
    */
   get defaultView() {
-    const window = new Proxy(globalThis, {
-      set: (target, name, value) => {
-        switch (name) {
-          case 'addEventListener':
-          case 'removeEventListener':
-          case 'dispatchEvent':
-            this[EVENT_TARGET][name] = value;
-            break;
-          default:
-            target[name] = value;
-            break;
+    if (!window.has(this))
+      window.set(this, new Proxy(globalThis, {
+        set: (target, name, value) => {
+          switch (name) {
+            case 'addEventListener':
+            case 'removeEventListener':
+            case 'dispatchEvent':
+              this[EVENT_TARGET][name] = value;
+              break;
+            default:
+              target[name] = value;
+              break;
+          }
+          return true;
+        },
+        get: (globalThis, name) => {
+          switch (name) {
+            case 'addEventListener':
+            case 'removeEventListener':
+            case 'dispatchEvent':
+              if (!this[EVENT_TARGET]) {
+                const et = this[EVENT_TARGET] = new EventTarget;
+                et.dispatchEvent = et.dispatchEvent.bind(et);
+                et.addEventListener = et.addEventListener.bind(et);
+                et.removeEventListener = et.removeEventListener.bind(et);
+              }
+              return this[EVENT_TARGET][name];
+            case 'document':
+              return this;
+            /* c8 ignore start */
+            case 'navigator':
+              return {
+                userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'
+              };
+            /* c8 ignore stop */
+            case 'window':
+              return window.get(this);
+            case 'customElements':
+              if (!this[CUSTOM_ELEMENTS].registry)
+                this[CUSTOM_ELEMENTS] = new CustomElementRegistry(this);
+              return this[CUSTOM_ELEMENTS];
+            case 'performance':
+              return performance;
+            case 'DOMParser':
+              return this[DOM_PARSER];
+            case 'Image':
+              if (!this[IMAGE])
+                this[IMAGE] = ImageClass(this);
+              return this[IMAGE];
+            case 'MutationObserver':
+              if (!this[MUTATION_OBSERVER].class)
+                this[MUTATION_OBSERVER] = new MutationObserverClass(this);
+              return this[MUTATION_OBSERVER].class;
+          }
+          return globalExports[name] || globalThis[name];
         }
-        return true;
-      },
-      get: (globalThis, name) => {
-        switch (name) {
-          case 'addEventListener':
-          case 'removeEventListener':
-          case 'dispatchEvent':
-            if (!this[EVENT_TARGET]) {
-              const et = this[EVENT_TARGET] = new EventTarget;
-              et.dispatchEvent = et.dispatchEvent.bind(et);
-              et.addEventListener = et.addEventListener.bind(et);
-              et.removeEventListener = et.removeEventListener.bind(et);
-            }
-            return this[EVENT_TARGET][name];
-          case 'document':
-            return this;
-          /* c8 ignore start */
-          case 'navigator':
-            return {
-              userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'
-            };
-          /* c8 ignore stop */
-          case 'window':
-            return window;
-          case 'customElements':
-            if (!this[CUSTOM_ELEMENTS].registry)
-              this[CUSTOM_ELEMENTS] = new CustomElementRegistry(this);
-            return this[CUSTOM_ELEMENTS];
-          case 'performance':
-            return performance;
-          case 'DOMParser':
-            return this[DOM_PARSER];
-          case 'Image':
-            if (!this[IMAGE])
-              this[IMAGE] = ImageClass(this);
-            return this[IMAGE];
-          case 'MutationObserver':
-            if (!this[MUTATION_OBSERVER].class)
-              this[MUTATION_OBSERVER] = new MutationObserverClass(this);
-            return this[MUTATION_OBSERVER].class;
-        }
-        return globalExports[name] || globalThis[name];
-      }
-    });
-    return window;
+      }));
+    return window.get(this);
   }
 
   get doctype() {

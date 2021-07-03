@@ -180,7 +180,9 @@ export class Document extends NonElementParentNode implements globalThis.Documen
             setAttributeNS(_: any, name: any, value: any): void;
             setAttributeNodeNS(attr: any): import("../mixin/parent-node.js").NodeStruct;
             [CLASS_LIST]: import("../dom/token-list.js").DOMTokenList;
-            [DATASET]: import("../dom/string-map.js").DOMStringMap;
+            [DATASET]: import("../dom/string-map.js").DOMStringMap; /**
+             * @type {globalThis.Document['defaultView']}
+             */
             [STYLE]: import("./css-style-declaration.js").CSSStyleDeclaration;
             readonly childNodes: NodeList;
             readonly children: NodeList;
