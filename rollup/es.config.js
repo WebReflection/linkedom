@@ -43,7 +43,7 @@ function shims() {
               getContext() { return null; }
               toDataURL() { return ''; }
             }
-            export default {createCanvas: (width, height) => new Canvas(width, height) };
+            export default {createCanvas: (width, height) => new Canvas(width, height)};
           `;
         }
       }

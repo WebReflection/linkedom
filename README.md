@@ -59,6 +59,10 @@ document.querySelectorAll('form, input[name], button');
 // CSS Selector via CSSselect
 ```
 
+### What's New
+
+  * in `v0.11` a new `linkedom/worker` export has been added. This works with [deno](https://deno.land/), Web, and Service Workers, and it's not strictly coupled with NodeJS. Please note, this export does not include `canvas` module, and the `performance` is retrieved from the `globalThis` context.
+
 ### Serializing as JSON
 
 *LinkeDOM* uses a blazing fast [JSDON serializer](https://github.com/WebReflection/jsdon#readme), and nodes, as well as whole documents, can be retrieved back via `parseJSON(value)`.
