@@ -1,6 +1,7 @@
 export const CHANGED: unique symbol;
 export const CLASS_LIST: unique symbol;
 export const CUSTOM_ELEMENTS: unique symbol;
+export const CONTENT: unique symbol;
 export const DATASET: unique symbol;
 export const DOCTYPE: unique symbol;
 export const DOM_PARSER: unique symbol;

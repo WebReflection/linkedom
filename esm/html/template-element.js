@@ -1,10 +1,8 @@
-import {PRIVATE} from '../shared/symbols.js';
+import {CONTENT, PRIVATE} from '../shared/symbols.js';
 
 import {registerHTMLClass} from '../shared/register-html-class.js';
 
 import {HTMLElement} from './element.js';
-
-const CONTENT = Symbol('content');
 
 const tagName = 'template';
 

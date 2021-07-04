@@ -1,11 +1,9 @@
 'use strict';
-const {PRIVATE} = require('../shared/symbols.js');
+const {CONTENT, PRIVATE} = require('../shared/symbols.js');
 
 const {registerHTMLClass} = require('../shared/register-html-class.js');
 
 const {HTMLElement} = require('./element.js');
-
-const CONTENT = Symbol('content');
 
 const tagName = 'template';
 

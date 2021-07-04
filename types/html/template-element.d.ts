@@ -7,5 +7,4 @@ export class HTMLTemplateElement extends HTMLElement implements globalThis.HTMLT
     [CONTENT]: any;
 }
 import { HTMLElement } from "./element.js";
-declare const CONTENT: unique symbol;
-export {};
+import { CONTENT } from "../shared/symbols.js";
