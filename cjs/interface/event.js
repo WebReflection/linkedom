@@ -20,6 +20,8 @@ const GlobalEvent = typeof Event === 'function' ?
     constructor(type, eventInitDict = {}) {
       this.type = type;
       this.bubbles = !!eventInitDict.bubbles;
+      this._stopPropagationFlag = false;
+      this._stopImmediatePropagationFlag = false;
       this.cancelable = !!eventInitDict.cancelable;
       this.eventPhase = this.BUBBLING_PHASE;
       this.timeStamp = Date.now();
@@ -36,8 +38,14 @@ const GlobalEvent = typeof Event === 'function' ?
     preventDefault() { this.defaultPrevented = true; }
 
     // TODO: what do these do in native NodeJS Event ?
-    stopPropagation() {}
-    stopImmediatePropagation() {}
+    stopPropagation() {
+      this._stopPropagationFlag = true;
+    }
+    
+    stopImmediatePropagation() {
+      this._stopPropagationFlag = true;
+      this._stopImmediatePropagationFlag = true;
+    }
   };
 
 exports.Event = GlobalEvent;
