@@ -30,7 +30,7 @@ eventTarget.removeEventListener('foo', basicHandler);
 eventTarget.dispatchEvent(new Event('foo'));
 assert(callCount, 1, 'basicHandler should not have been called after being removed');
 
-assert(eventTarget._getParent(), null, 'getParent should return null');
+assert(eventTarget.getParent(), null, 'getParent should return null');
 
 
 // check propagation now
@@ -64,23 +64,6 @@ buttonTarget.addEventListener(
   'click',
   (event) => {
     event.stopPropagation();
-    callCount++;
-  },
-  {
-    once: true,
-  },
-);
-containerTarget.addEventListener('click', basicHandler, { once: true });
-
-callCount = 0;
-buttonTarget.dispatchEvent(new Event('click', { bubbles: true }));
-assert(callCount, 1, 'listener should be called once before stopping bubbling');
-
-// check stop immediate propagation
-buttonTarget.addEventListener(
-  'click',
-  (event) => {
-    event.stopImmediatePropagation();
     callCount++;
   },
   {

@@ -219,10 +219,10 @@ export class Document extends NonElementParentNode implements globalThis.Documen
             isSameNode(node: any): boolean;
             compareDocumentPosition(target: any): number;
             isEqualNode(node: any): boolean;
-            _getParent(): any;
+            getParent(): any;
             getRootNode(): any;
             [PREV]: any;
-            dispatchEvent(event: any): any;
+            dispatchEvent(event: any): boolean;
         };
         readonly observedAttributes: any[];
         readonly ELEMENT_NODE: number;

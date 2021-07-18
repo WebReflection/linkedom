@@ -142,10 +142,7 @@ class Node extends EventTarget {
     return false;
   }
 
-  /**
-   * @protected
-   */
-  _getParent() {
+  getParent() {
     return this.parentNode;
   }
 
