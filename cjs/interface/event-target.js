@@ -6,4 +6,22 @@ const EventTarget = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* 
 /**
  * @implements globalThis.EventTarget
  */
-exports.EventTarget = EventTarget;
+class DOMEventTarget extends EventTarget {
+  getParent() {
+    return null;
+  }
+
+  dispatchEvent(event) {
+    super.dispatchEvent(event);
+
+    // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
+    if (event.bubbles && !event._stopPropagationFlag) {
+      const parent = this.getParent();
+      if (parent && parent.dispatchEvent) 
+        parent.dispatchEvent(event);
+    }
+    return true;
+  }
+}
+
+exports.EventTarget = DOMEventTarget;

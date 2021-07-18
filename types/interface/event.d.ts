@@ -13,6 +13,8 @@ declare const GlobalEvent: {
     new (type: any, eventInitDict?: {}): {
         type: any;
         bubbles: boolean;
+        _stopPropagationFlag: boolean;
+        _stopImmediatePropagationFlag: boolean;
         cancelable: boolean;
         eventPhase: number;
         timeStamp: number;

@@ -141,6 +141,10 @@ export class Node extends EventTarget {
     return false;
   }
 
+  getParent() {
+    return this.parentNode;
+  }
+
   getRootNode() {
     let root = this;
     while (root.parentNode)
