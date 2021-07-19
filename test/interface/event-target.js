@@ -77,10 +77,17 @@ buttonTarget.dispatchEvent(new Event('click', { bubbles: true }));
 assert(callCount, 1, 'listener should be called once before stopping bubbling');
 
 // check stop immediate propagation
+// specs mention for stopImmediatePropagation "set this’s stop propagation flag and this’s stop immediate propagation flag"
+// https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation
+// but Node don't do that - will check if that's a bug or expected for them
+const isNode16 = Event._stopImmediatePropagationFlag !== false;
 buttonTarget.addEventListener(
   'click',
   (event) => {
     event.stopImmediatePropagation();
+    if (isNode16) {
+      event.stopPropagation();
+    }
     callCount++;
   },
   {

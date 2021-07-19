@@ -19,7 +19,7 @@ const GlobalEvent = typeof Event === 'function' ?
     constructor(type, eventInitDict = {}) {
       this.type = type;
       this.bubbles = !!eventInitDict.bubbles;
-      this._stopPropagationFlag = false;
+      this.cancelBubble = false;
       this._stopImmediatePropagationFlag = false;
       this.cancelable = !!eventInitDict.cancelable;
       this.eventPhase = this.BUBBLING_PHASE;
@@ -38,11 +38,11 @@ const GlobalEvent = typeof Event === 'function' ?
 
     // TODO: what do these do in native NodeJS Event ?
     stopPropagation() {
-      this._stopPropagationFlag = true;
+      this.cancelBubble = true;
     }
     
     stopImmediatePropagation() {
-      this._stopPropagationFlag = true;
+      this.stopPropagation();
       this._stopImmediatePropagationFlag = true;
     }
   };
