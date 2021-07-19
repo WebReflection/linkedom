@@ -29,6 +29,7 @@ const {EventTarget} = require('./event-target.js');
 const {InputEvent} = require('./input-event.js');
 const {ImageClass} = require('./image.js');
 const {MutationObserverClass} = require('./mutation-observer.js');
+const {NamedNodeMap} = require('./named-node-map.js');
 const {NodeList} = require('./node-list.js');
 const {Range} = require('./range.js');
 const {Text} = require('./text.js');
@@ -48,6 +49,7 @@ const globalExports = assign(
     Event,
     EventTarget,
     InputEvent,
+    NamedNodeMap,
     NodeList
   }
 );
