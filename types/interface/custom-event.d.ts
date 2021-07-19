@@ -5,5 +5,6 @@ export { GlobalCustomEvent as CustomEvent };
 declare const GlobalCustomEvent: {
     new (type: any, eventInitDict?: {}): {
         detail: any;
+        stopImmediatePropagation(): void;
     };
 };
