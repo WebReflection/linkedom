@@ -43,11 +43,23 @@ const GlobalEvent = typeof Event === 'function' ?
     }
     
     stopImmediatePropagation() {
-      this.stopPropagation();
       this._stopImmediatePropagationFlag = true;
     }
   };
 
-exports.Event = GlobalEvent;
+
+
+  class DOMEvent extends GlobalEvent {
+    // specs: "set this’s stop propagation flag and this’s stop immediate propagation flag"
+    // https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation
+    // but Node don't do that so for now we extend it
+    stopImmediatePropagation() {
+      super.stopPropagation();
+      super.stopImmediatePropagation();
+    }
+  }
+  
+
+exports.Event = DOMEvent;
 
 /* c8 ignore stop */

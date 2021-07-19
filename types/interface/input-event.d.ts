@@ -1,7 +1,7 @@
 /**
  * @implements globalThis.InputEvent
  */
-export class InputEvent implements globalThis.InputEvent {
+export class InputEvent extends Event implements globalThis.InputEvent {
     constructor(type: any, inputEventInit?: {});
     inputType: any;
     data: any;
@@ -9,3 +9,4 @@ export class InputEvent implements globalThis.InputEvent {
     isComposing: any;
     ranges: any;
 }
+import { Event } from "./event.js";
