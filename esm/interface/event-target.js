@@ -6,6 +6,10 @@ import EventTarget from '@ungap/event-target';
  * @implements globalThis.EventTarget
  */
 class DOMEventTarget extends EventTarget {
+
+  /**
+   * @protected
+   */
   _getParent() {
     return null;
   }
