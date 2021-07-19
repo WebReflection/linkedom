@@ -2,10 +2,10 @@ const assert = require('../assert.js').for('NamedNodeMap');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {document} = parseHTML('<html><div tmp>abc</div></html>');
+const {document, NamedNodeMap} = parseHTML('<html><div tmp>abc</div></html>');
 
 let node = document.documentElement.firstElementChild;
-
+assert(typeof NamedNodeMap !== 'undefined', true, 'NamedNodeMap undefined in global export');
 assert(node.id, '', 'no id');
 assert(!node.hasAttribute('id'), true, 'no id');
 node.id = 'test';

@@ -31,6 +31,9 @@ exports.DOMParser = DOMParser;
 (m => {
   exports.NodeList = m.NodeList;
 })(require('./interface/node-list.js'));
+(m => {
+  exports.NamedNodeMap = m.NamedNodeMap;
+})(require('./interface/named-node-map.js'));
 
 const parseHTML = html => (new DOMParser).parseFromString(
   html, 'text/html'

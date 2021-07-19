@@ -15,6 +15,7 @@ export {Event} from './interface/event.js';
 export {EventTarget} from './interface/event-target.js';
 export {InputEvent} from './interface/input-event.js';
 export {NodeList} from './interface/node-list.js';
+export {NamedNodeMap} from './interface/named-node-map.js';
 
 export const parseHTML = html => (new DOMParser).parseFromString(
   html, 'text/html'

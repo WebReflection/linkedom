@@ -16,7 +16,7 @@ export const DATASET = Symbol('dataset');
 // used in Document to attach the DocType
 export const DOCTYPE = Symbol('doctype');
 
-// ised in parser and Document to attach once a DOMParser
+// used in parser and Document to attach once a DOMParser
 export const DOM_PARSER = Symbol('DOMParser');
 
 // used to reference an end node

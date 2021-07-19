@@ -23,7 +23,7 @@ exports.DATASET = DATASET;
 const DOCTYPE = Symbol('doctype');
 exports.DOCTYPE = DOCTYPE;
 
-// ised in parser and Document to attach once a DOMParser
+// used in parser and Document to attach once a DOMParser
 const DOM_PARSER = Symbol('DOMParser');
 exports.DOM_PARSER = DOM_PARSER;
 

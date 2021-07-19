@@ -30,6 +30,7 @@ import {InputEvent} from './input-event.js';
 import {ImageClass} from './image.js';
 import {MutationObserverClass} from './mutation-observer.js';
 import {NodeList} from './node-list.js';
+import {NamedNodeMap} from './named-node-map.js';
 import {Range} from './range.js';
 import {Text} from './text.js';
 import {TreeWalker} from './tree-walker.js';
@@ -48,6 +49,7 @@ const globalExports = assign(
     Event,
     EventTarget,
     InputEvent,
+    NamedNodeMap,
     NodeList
   }
 );
