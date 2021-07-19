@@ -142,7 +142,7 @@ class Node extends EventTarget {
     return false;
   }
 
-  getParent() {
+  _getParent() {
     return this.parentNode;
   }
 
