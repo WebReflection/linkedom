@@ -142,6 +142,9 @@ class Node extends EventTarget {
     return false;
   }
 
+  /**
+   * @protected
+   */
   _getParent() {
     return this.parentNode;
   }

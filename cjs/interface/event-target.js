@@ -7,6 +7,10 @@ const EventTarget = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* 
  * @implements globalThis.EventTarget
  */
 class DOMEventTarget extends EventTarget {
+
+  /**
+   * @protected
+   */
   _getParent() {
     return null;
   }
