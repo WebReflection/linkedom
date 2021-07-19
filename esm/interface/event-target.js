@@ -6,20 +6,20 @@ import EventTarget from '@ungap/event-target';
  * @implements globalThis.EventTarget
  */
 class DOMEventTarget extends EventTarget {
-  getParent() {
+  _getParent() {
     return null;
   }
 
   dispatchEvent(event) {
-    super.dispatchEvent(event);
+    const dispatched = super.dispatchEvent(event);
 
     // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
-    if (event.bubbles && !event._stopPropagationFlag) {
-      const parent = this.getParent();
+    if (dispatched && event.bubbles && !event._stopPropagationFlag) {
+      const parent = this._getParent();
       if (parent && parent.dispatchEvent) 
-        parent.dispatchEvent(event);
+        return parent.dispatchEvent(event);
     }
-    return true;
+    return dispatched;
   }
 }
 
