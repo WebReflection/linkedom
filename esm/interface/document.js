@@ -29,6 +29,7 @@ import {EventTarget} from './event-target.js';
 import {InputEvent} from './input-event.js';
 import {ImageClass} from './image.js';
 import {MutationObserverClass} from './mutation-observer.js';
+import {NamedNodeMap} from './named-node-map.js';
 import {NodeList} from './node-list.js';
 import {Range} from './range.js';
 import {Text} from './text.js';
@@ -48,6 +49,7 @@ const globalExports = assign(
     Event,
     EventTarget,
     InputEvent,
+    NamedNodeMap,
     NodeList
   }
 );
