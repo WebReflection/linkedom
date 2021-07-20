@@ -77,6 +77,7 @@ buttonTarget.dispatchEvent(new Event('click', { bubbles: true }));
 assert(callCount, 1, 'listener should be called once before stopping bubbling');
 
 // check stop immediate propagation
+buttonTarget.addEventListener('click', () => callCount++, { once: true });
 buttonTarget.addEventListener(
   'click',
   (event) => {
@@ -87,8 +88,9 @@ buttonTarget.addEventListener(
     once: true,
   },
 );
+buttonTarget.addEventListener('click', () => callCount++, { once: true });
 containerTarget.addEventListener('click', basicHandler, { once: true });
 
 callCount = 0;
 buttonTarget.dispatchEvent(new Event('click', { bubbles: true }));
-assert(callCount, 1, 'listener should be called once before stopping bubbling');
+assert(callCount, 2, '2 listeners should be called before stopping');
