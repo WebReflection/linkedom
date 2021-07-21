@@ -219,8 +219,10 @@ export class Document extends NonElementParentNode implements globalThis.Documen
             isSameNode(node: any): boolean;
             compareDocumentPosition(target: any): number;
             isEqualNode(node: any): boolean;
+            _getParent(): any;
             getRootNode(): any;
             [PREV]: any;
+            dispatchEvent(event: any): any;
         };
         readonly observedAttributes: any[];
         readonly ELEMENT_NODE: number;
@@ -231,7 +233,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
         readonly DOCUMENT_FRAGMENT_NODE: number;
         readonly DOCUMENT_TYPE_NODE: number;
     };
-    [EVENT_TARGET]: any;
+    [EVENT_TARGET]: EventTarget;
 }
 import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
 import { DocumentType } from "./document-type.js";
@@ -251,3 +253,4 @@ import { DOCTYPE } from "../shared/symbols.js";
 import { DOM_PARSER } from "../shared/symbols.js";
 import { IMAGE } from "../shared/symbols.js";
 import { EVENT_TARGET } from "../shared/symbols.js";
+import { EventTarget } from "./event-target.js";

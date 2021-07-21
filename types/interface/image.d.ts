@@ -181,8 +181,10 @@ export function ImageClass(ownerDocument: any): {
         isSameNode(node: any): boolean;
         compareDocumentPosition(target: any): number;
         isEqualNode(node: any): boolean;
+        _getParent(): any;
         getRootNode(): any;
         [PREV]: any;
+        dispatchEvent(event: any): any;
     };
     readonly observedAttributes: any[];
     readonly ELEMENT_NODE: number;

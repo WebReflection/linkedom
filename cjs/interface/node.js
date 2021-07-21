@@ -142,6 +142,13 @@ class Node extends EventTarget {
     return false;
   }
 
+  /**
+   * @protected
+   */
+  _getParent() {
+    return this.parentNode;
+  }
+
   getRootNode() {
     let root = this;
     while (root.parentNode)

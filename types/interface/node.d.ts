@@ -1,7 +1,7 @@
 /**
  * @implements globalThis.Node
  */
-export class Node implements globalThis.Node {
+export class Node extends EventTarget implements globalThis.Node {
     static get ELEMENT_NODE(): number;
     static get ATTRIBUTE_NODE(): number;
     static get TEXT_NODE(): number;
@@ -42,7 +42,6 @@ export class Node implements globalThis.Node {
     appendChild(): void;
     replaceChild(): void;
     removeChild(): void;
-    toString(): string;
     hasChildNodes(): boolean;
     isSameNode(node: any): boolean;
     compareDocumentPosition(target: any): number;
@@ -51,6 +50,7 @@ export class Node implements globalThis.Node {
     [NEXT]: any;
     [PREV]: any;
 }
+import { EventTarget } from "./event-target.js";
 import { NodeList } from "./node-list.js";
 import { NEXT } from "../shared/symbols.js";
 import { PREV } from "../shared/symbols.js";
