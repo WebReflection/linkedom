@@ -210,6 +210,25 @@ export class Document extends NonElementParentNode {
     return document;
   }
 
+  dispatchEvent(event) {
+    const dispatched = super.dispatchEvent(event);
+
+    // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
+    if (dispatched && event.bubbles && !event.cancelBubble) {
+      const view = this.defaultView;
+      if (view && view.dispatchEvent) {
+        const options = {
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          composed: event.composed,
+        };
+        // in Node 16.5 the same event can't be used for another dispatch
+        return view.dispatchEvent(new event.constructor(event.type, options));
+      }
+    }
+    return dispatched;
+  }
+
   importNode(externalNode) {
     // important: keep the signature length as *one*
     // or it would behave like old IE or Edge with polyfills
