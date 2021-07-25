@@ -2,6 +2,18 @@
 
 import EventTarget from '@ungap/event-target';
 
+function define(target, name, value) {
+  Object.defineProperty(
+    target,
+    name,
+    {
+      configurable: true,
+      writable: true,
+      value: value
+    }
+  );
+}
+
 /**
  * @implements globalThis.EventTarget
  */
@@ -15,6 +27,7 @@ class DOMEventTarget extends EventTarget {
   }
 
   dispatchEvent(event) {
+    const originalTarget = event.target || this;
     const dispatched = super.dispatchEvent(event);
 
     // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
@@ -26,8 +39,9 @@ class DOMEventTarget extends EventTarget {
           cancelable: event.cancelable,
           composed: event.composed,
         };
-        // in Node 16.5 the same event can't be used for another dispatch
-        return parent.dispatchEvent(new event.constructor(event.type, options));
+        const parentEvent = new event.constructor(event.type, options);
+        define(parentEvent, 'target', originalTarget);
+        return parent.dispatchEvent(parentEvent);
       }
     }
     return dispatched;
