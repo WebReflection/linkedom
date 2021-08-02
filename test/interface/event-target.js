@@ -36,6 +36,9 @@ assert(eventTarget._getParent(), null, 'getParent should return null');
 
 
 // check propagation now
+const BUBBLING_PHASE = 3;
+const AT_TARGET = 2;
+
 callCount = 0;
 const buttonTarget = document.getElementById('buttonTarget');
 const containerTarget = document.getElementById('container');
@@ -60,6 +63,11 @@ buttonTarget.addEventListener(
       5,
       'Event bubbling, composed path should have 5 EventTarget'
     );
+    assert(
+      event.eventPhase,
+      AT_TARGET,
+      'Event bubbling, eventPhase should be AT_TARGET'
+    );
   },
   { once: true }
 );
@@ -75,6 +83,11 @@ containerTarget.addEventListener('click', event => {
     event.currentTarget,
     containerTarget,
     'Event bubbling, current target should be the container'
+  );
+  assert(
+    event.eventPhase,
+    BUBBLING_PHASE,
+    'Event bubbling, eventPhase should be BUBBLING_PHASE'
   );
 }, { once: true });
 

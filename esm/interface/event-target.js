@@ -64,6 +64,7 @@ class DOMEventTarget {
 
   dispatchEvent(event) {
     let node = this;
+    event.eventPhase = event.CAPTURING_PHASE;
 
     // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
     while (node) {
