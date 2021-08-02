@@ -76,7 +76,7 @@ class DOMEventTarget {
     event._path.some(invokeListeners, event);
     event._path = [];
     event.eventPhase = event.NONE;
-    return !event.defaultPrevented && !event.cancelBubble;
+    return !event.defaultPrevented;
   }
 
 }
