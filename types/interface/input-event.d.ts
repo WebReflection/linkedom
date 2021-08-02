@@ -2,7 +2,6 @@
  * @implements globalThis.InputEvent
  */
 export class InputEvent extends Event implements globalThis.InputEvent {
-    constructor(type: any, inputEventInit?: {});
     inputType: any;
     data: any;
     dataTransfer: any;

@@ -1,12 +1,45 @@
 'use strict';
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
-const EventTarget = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('@ungap/event-target'));
+const wm = new WeakMap();
+
+function dispatch({options, target, listener}) {
+  if (options && options.once)
+    target.removeEventListener(this.type, listener);
+  if (typeof listener === 'function') {
+    listener.call(target, this);
+  } else {
+    listener.handleEvent(this);
+  }
+  return this._stopImmediatePropagationFlag;
+}
+
+function invokeListeners({currentTarget, target}) {
+  const secret = wm.get(currentTarget);
+  const listeners = secret && secret[this.type];
+  if (listeners) {
+    if (currentTarget === target) {
+      this.eventPhase = this.AT_TARGET;
+    } else {
+      this.eventPhase = this.BUBBLING_PHASE;
+    }
+    this.currentTarget = currentTarget;
+    this.target = target;
+    listeners.slice(0).some(dispatch, this);
+    delete this.currentTarget;
+    delete this.target;
+  }
+  return this.cancelBubble;
+}
 
 /**
  * @implements globalThis.EventTarget
  */
-class DOMEventTarget extends EventTarget {
+class DOMEventTarget {
+
+  constructor() {
+    wm.set(this, Object.create(null));
+  }
 
   /**
    * @protected
@@ -15,24 +48,36 @@ class DOMEventTarget extends EventTarget {
     return null;
   }
 
+  addEventListener(type, listener, options) {
+    const secret = wm.get(this);
+    const listeners = secret[type] || (secret[type] = []);
+    if (listeners.some(info => info.listener === listener)) {
+      return;
+    }
+    listeners.push({target: this, listener, options});
+  }
+
+  removeEventListener(type, listener) {
+    const secret = wm.get(this);
+    const listeners = secret[type] || (secret[type] = []);
+    secret[type] = listeners.filter(info => info.listener !== listener);
+  }
+
   dispatchEvent(event) {
-    const dispatched = super.dispatchEvent(event);
+    let node = this;
 
     // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
-    if (dispatched && event.bubbles && !event.cancelBubble) {
-      const parent = this._getParent();
-      if (parent && parent.dispatchEvent) {
-        const options = {
-          bubbles: event.bubbles,
-          cancelable: event.cancelable,
-          composed: event.composed,
-        };
-        // in Node 16.5 the same event can't be used for another dispatch
-        return parent.dispatchEvent(new event.constructor(event.type, options));
-      }
+    while (node) {
+      if (node.dispatchEvent)
+        event._path.push({currentTarget: node, target: this});
+      node = event.bubbles && node._getParent && node._getParent();
     }
-    return dispatched;
+    event._path.some(invokeListeners, event);
+    event._path = [];
+    event.eventPhase = event.NONE;
+    return !event.defaultPrevented && !event.cancelBubble;
   }
+
 }
 
 exports.EventTarget = DOMEventTarget;
