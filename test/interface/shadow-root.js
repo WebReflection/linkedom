@@ -17,4 +17,5 @@ try {
   assert(true, false, 'double shadowRoot should not be possible');
 } catch (ok) {}
 
-
+shadowRoot.innerHTML = '<div class="js-shadowChild">content</div>';
+assert(shadowRoot.innerHTML, '<div class="js-shadowChild">content</div>', 'shadowRoot innerHTML should be properly defined');

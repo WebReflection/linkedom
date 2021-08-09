@@ -17,7 +17,7 @@ import {
 import {
   CLASS_LIST, DATASET, STYLE,
   END, NEXT, PREV, START,
-  MIME, CUSTOM_ELEMENTS
+  MIME
 } from '../shared/symbols.js';
 
 import {
@@ -28,12 +28,12 @@ import {
 
 import {elementAsJSON} from '../shared/jsdon.js';
 import {matches, prepareMatch} from '../shared/matches.js';
-import {parseFromString} from '../shared/parse-from-string.js';
 
 import {isConnected, parentElement, previousSibling, nextSibling} from '../shared/node.js';
 import {previousElementSibling, nextElementSibling} from '../mixin/non-document-type-child-node.js';
 
 import {before, after, replaceWith, remove} from '../mixin/child-node.js';
+import {getInnerHtml, setInnerHtml} from '../mixin/inner-html.js';
 import {ParentNode} from '../mixin/parent-node.js';
 
 import {DOMStringMap} from '../dom/string-map.js';
@@ -157,15 +157,10 @@ export class Element extends ParentNode {
   }
 
   get innerHTML() {
-    return this.childNodes.join('');
+    return getInnerHtml(this);
   }
   set innerHTML(html) {
-    const {ownerDocument} = this;
-    const {constructor} = ownerDocument;
-    const document = new constructor;
-    document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
-    const {childNodes} = parseFromString(document, ignoreCase(this), html);
-    this.replaceChildren(...childNodes);
+    setInnerHtml(this, html);
   }
 
   get outerHTML() { return this.toString(); }
