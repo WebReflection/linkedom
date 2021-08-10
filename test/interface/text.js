@@ -59,6 +59,7 @@ assert(document.documentElement.lastChild, text, 'insertBefore(node, null)');
 node = document.createDocumentFragment();
 node.prepend('a', document.createTextNode('b'), 'c');
 assert(node.firstChild.nextElementSibling, null, 'nextElementSibling with text around');
+assert(document.documentElement.insertBefore(node, node), node, 'insertBefore(node, node) works');
 document.documentElement.insertBefore(node, text);
 node.append('a', '');
 node.normalize();

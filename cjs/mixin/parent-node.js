@@ -208,6 +208,8 @@ class ParentNode extends Node {
   }
 
   insertBefore(node, before = null) {
+    if (node === before)
+      return node;
     if (node === this)
       throw new Error('unable to append a node to itself');
     const next = before || this[END];
