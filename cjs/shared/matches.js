@@ -20,7 +20,10 @@ const getAttributeValue = (element, name) => element.getAttribute(name);
 
 const getChildren = ({childNodes}) => childNodes;
 
-const getName = ({localName}) => localName.toLowerCase();
+const getName = (element) => {
+  const {localName} = element;
+  return ignoreCase(element) ? localName.toLowerCase() : localName;
+};
 
 const getParent = ({parentNode}) => parentNode;
 
