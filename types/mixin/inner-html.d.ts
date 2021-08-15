@@ -1,2 +1,2 @@
-export function getInnerHtml(node: any): any;
-export function setInnerHtml(node: any, html: any): void;
+export function getInnerHtml(node: Node): string;
+export function setInnerHtml(node: Node, html: string): void;
