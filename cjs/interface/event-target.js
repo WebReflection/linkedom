@@ -1,7 +1,9 @@
 'use strict';
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
-const wm = new WeakMap();
+const {Dictionary} = require('../shared/dictionary.js');
+
+const eventTargetMap = new Map();
 
 function dispatch({options, target, listener}) {
   if (options && options.once)
@@ -15,7 +17,7 @@ function dispatch({options, target, listener}) {
 }
 
 function invokeListeners({currentTarget, target}) {
-  const secret = wm.get(currentTarget);
+  const secret = eventTargetMap.get(currentTarget);
   const listeners = secret && secret[this.type];
   if (listeners) {
     if (currentTarget === target) {
@@ -38,7 +40,7 @@ function invokeListeners({currentTarget, target}) {
 class DOMEventTarget {
 
   constructor() {
-    wm.set(this, Object.create(null));
+    eventTargetMap.set(this, new Dictionary());
   }
 
   /**
@@ -49,7 +51,7 @@ class DOMEventTarget {
   }
 
   addEventListener(type, listener, options) {
-    const secret = wm.get(this);
+    const secret = eventTargetMap.get(this);
     const listeners = secret[type] || (secret[type] = []);
     if (listeners.some(info => info.listener === listener)) {
       return;
@@ -58,7 +60,7 @@ class DOMEventTarget {
   }
 
   removeEventListener(type, listener) {
-    const secret = wm.get(this);
+    const secret = eventTargetMap.get(this);
     const listeners = secret[type] || (secret[type] = []);
     secret[type] = listeners.filter(info => info.listener !== listener);
   }
