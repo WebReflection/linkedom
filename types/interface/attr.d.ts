@@ -5,10 +5,10 @@ export class Attr extends Node implements globalThis.Attr {
     constructor(ownerDocument: any, name: any, value?: string);
     ownerElement: any;
     name: string;
-    set value(arg: any);
-    get value(): any;
+    set value(arg: string);
+    get value(): string;
     toJSON(): any[];
-    [VALUE]: any;
+    [VALUE]: string;
     [CHANGED]: boolean;
 }
 import { Node } from "./node.js";

@@ -9,14 +9,14 @@ export class Element extends ParentNode implements globalThis.Element {
     remove(): void;
     set id(arg: any);
     get id(): any;
-    set className(arg: string);
-    get className(): string;
+    set className(arg: any);
+    get className(): any;
     get tagName(): any;
-    get classList(): DOMTokenList;
-    get dataset(): DOMStringMap;
+    get classList(): any;
+    get dataset(): any;
     set nonce(arg: any);
     get nonce(): any;
-    get style(): CSSStyleDeclaration;
+    get style(): any;
     set tabIndex(arg: number);
     get tabIndex(): number;
     get innerText(): string;
@@ -50,14 +50,11 @@ export class Element extends ParentNode implements globalThis.Element {
     removeAttributeNS(_: any, name: any): void;
     setAttributeNS(_: any, name: any, value: any): void;
     setAttributeNodeNS(attr: any): import("../mixin/parent-node.js").NodeStruct;
-    [CLASS_LIST]: DOMTokenList;
-    [DATASET]: DOMStringMap;
-    [STYLE]: CSSStyleDeclaration;
+    [CLASS_LIST]: any;
+    [DATASET]: any;
+    [STYLE]: any;
 }
 import { ParentNode } from "../mixin/parent-node.js";
-import { DOMTokenList } from "../dom/token-list.js";
-import { DOMStringMap } from "../dom/string-map.js";
-import { CSSStyleDeclaration } from "./css-style-declaration.js";
 import { NodeList } from "./node-list.js";
 import { ShadowRoot } from "./shadow-root.js";
 import { CLASS_LIST } from "../shared/symbols.js";
