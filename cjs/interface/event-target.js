@@ -1,9 +1,8 @@
 'use strict';
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
-const {Dictionary} = require('../shared/dictionary.js');
-
 const eventTargetMap = new Map();
+const { create } = Object;
 
 function dispatch({options, target, listener}) {
   if (options && options.once)
@@ -40,7 +39,7 @@ function invokeListeners({currentTarget, target}) {
 class DOMEventTarget {
 
   constructor() {
-    eventTargetMap.set(this, new Dictionary());
+    eventTargetMap.set(this, create(null));
   }
 
   /**
