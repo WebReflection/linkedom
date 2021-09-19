@@ -3,7 +3,7 @@ export { GlobalCustomEvent as CustomEvent };
  * @implements globalThis.CustomEvent
  */
 declare const GlobalCustomEvent: {
-    new <T>(typeArg: string, eventInitDict?: CustomEventInit<T>): CustomEvent<T>;
+    new <T>(type: string, eventInitDict?: CustomEventInit<T>): CustomEvent<T>;
     prototype: CustomEvent<any>;
 } | {
     new (type: any, eventInitDict?: {}): {
