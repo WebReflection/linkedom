@@ -97,6 +97,7 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
       node = node.parentNode;
     }
   }, {
+    lowerCaseAttributeNames: false,
     decodeEntities: true,
     xmlMode: !isHTML
   });
