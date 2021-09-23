@@ -14,7 +14,7 @@
     "benchmark:html:ce": "node test/benchmark/linkedom.js --html --custom-elements; node test/benchmark/linkedom-cached.js --html --custom-elements; #node test/benchmark/jsdom.js --html --custom-elements",
     "benchmark:html:mo": "node test/benchmark/linkedom.js --html --mutation-observer --custom-elements; node test/benchmark/linkedom-cached.js --html --mutation-observer --custom-elements",
     "benchmark:html:nc": "node test/benchmark/linkedom.js --html --no-clone; node test/benchmark/linkedom-cached.js --html --no-clone; #node test/benchmark/jsdom.js --html --no-clone",
-    "build": "npm run tsc && npm run cjs && npm run test",
+    "build": "npm run tsc && npm run cjs && rollup -c rollup/es.config.js && npm run test",
     "cjs": "ascjs --no-default esm cjs",
     "tsc": "tsc -p .",
     "hello": "if [[ \"$(node --version)\" =~ ^v1[^2] ]]; then node --input-type=module -e \"import {DOMParser} from './esm/index.js';console.log('\\x1b[7m\\x1b[1m',(new DOMParser).parseFromString('<html>LinkeDOM<canvas /></html>','text/html').querySelectorAll('html')[0].firstChild.toString(),'\\x1b[0m')\"; fi",
