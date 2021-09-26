@@ -4,7 +4,7 @@
 
 <sup>**Social Media Photo by [JJ Ying](https://unsplash.com/@jjying) on [Unsplash](https://unsplash.com/)**</sup>
 
-A triple-linked lists based DOM with the following goals:
+A triple-linked lists based DOM-like namespace, for DOM-less environments, with the following goals:
 
   * **avoid** maximum callstack/recursion or **crashes**, even under heaviest conditions.
   * guarantee **linear performance** from small to big documents.
@@ -102,6 +102,24 @@ const {document, window} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>');
 
 
 ## F.A.Q.
+
+
+<details>
+  <summary><strong>Why "not too close"?</strong></summary>
+  <div>
+
+*LinkeDOM* has zero intention to:
+
+  * implement all things *JSDOM* already implemented. If you need a library which goal is to be 100% standrd compliant, please [use JSDOM](https://github.com/jsdom/jsdom) because *LinkeDOM* doens't wont' to be neirly as bloated nor as slow as *JSDOM* is
+  * implement features not interesting for *Server Side Rendering*. If you need to pretend your NodeJS, Worker, or any other environment, is a browser, please [use JSDOM](https://github.com/jsdom/jsdom)
+  * other points listed, or not, in the followung *F.A.Q.s*: this project will always prefer the minimal/fast approach over 100% compliant behavior. Again, if you are looking for 100% compliant behavior and you are not willing to have any compromise in the DOM, this is **not** the project you are looking for
+
+That's it, the rule of thumb is: do I want to be able to render anything, and as fast as possible, in a DOM-less env? *LinkeDOM* is great!
+
+Do I need a 100% spec compliant env that simulate a browser? I rather use *cypress* or *JSDOM* then, as *LinkeDOM* is not meant to be a replacement for neither projects.
+
+  </div>
+</details>
 
 <details>
   <summary><strong>Are live collections supported?</strong></summary>
