@@ -9177,85 +9177,53 @@ export const nullableAttribute = {
 };
 */
 
-/*! (c) Andrea Giammarchi - ISC */
-var self$1 = {};
-try {
-  self$1.EventTarget = (new EventTarget).constructor;
-} catch(EventTarget) {
-  (function (Object, wm) {
-    var create = Object.create;
-    var defineProperty = Object.defineProperty;
-    var proto = EventTarget.prototype;
-    define(proto, 'addEventListener', function (type, listener, options) {
-      for (var
-        secret = wm.get(this),
-        listeners = secret[type] || (secret[type] = []),
-        i = 0, length = listeners.length; i < length; i++
-      ) {
-        if (listeners[i].listener === listener)
-          return;
-      }
-      listeners.push({target: this, listener: listener, options: options});
-    });
-    define(proto, 'dispatchEvent', function (event) {
-      var secret = wm.get(this);
-      var listeners = secret[event.type];
-      if (listeners) {
-        define(event, 'target', this);
-        define(event, 'currentTarget', this);
-        listeners.slice(0).some(dispatch, event);
-        delete event.currentTarget;
-        delete event.target;
-      }
-      return true;
-    });
-    define(proto, 'removeEventListener', function (type, listener) {
-      for (var
-        secret = wm.get(this),
-        /* istanbul ignore next */
-        listeners = secret[type] || (secret[type] = []),
-        i = 0, length = listeners.length; i < length; i++
-      ) {
-        if (listeners[i].listener === listener) {
-          listeners.splice(i, 1);
-          return;
-        }
-      }
-    });
-    self$1.EventTarget = EventTarget;
-    function EventTarget() {      wm.set(this, create(null));
-    }
-    function define(target, name, value) {
-      defineProperty(
-        target,
-        name,
-        {
-          configurable: true,
-          writable: true,
-          value: value
-        }
-      );
-    }
-    function dispatch(info) {
-      var options = info.options;
-      if (options && options.once)
-        info.target.removeEventListener(this.type, info.listener);
-      if (typeof info.listener === 'function')
-        info.listener.call(info.target, this);
-      else
-        info.listener.handleEvent(this);
-      return this._stopImmediatePropagationFlag;
-    }
-  }(Object, new WeakMap));
-}
-var EventTarget$1 = self$1.EventTarget;
-
 // https://dom.spec.whatwg.org/#interface-eventtarget
+
+const wm = new WeakMap();
+
+function dispatch({ target, listener}) {
+  if (typeof listener === 'function') {
+    listener.call(target, this);
+  } else {
+    listener.handleEvent(this);
+  }
+  return this._stopImmediatePropagationFlag;
+}
+
+function invokeListeners({currentTarget, target}) {
+  const map = wm.get(currentTarget);
+  if (map && map.has(this.type)) {
+    const listeners = map.get(this.type);
+    if (currentTarget === target) {
+      this.eventPhase = this.AT_TARGET;
+    } else {
+      this.eventPhase = this.BUBBLING_PHASE;
+    }
+
+    this.currentTarget = currentTarget;
+    this.target = target;
+    for (const [listener, options] of listeners) {
+      if (options && options.once)
+        listeners.delete(listener);
+      if (dispatch.call(this, {target: this, listener}))
+        break;
+    }
+    wm.set(this, map.set(this.type, listeners));
+    delete this.currentTarget;
+    delete this.target;
+    return this.cancelBubble;
+  }
+}
+
 
 /**
  * @implements globalThis.EventTarget
  */
-class DOMEventTarget extends EventTarget$1 {
+class DOMEventTarget {
+
+  constructor() {
+    wm.set(this, new Map);
+  }
 
   /**
    * @protected
@@ -9264,24 +9232,44 @@ class DOMEventTarget extends EventTarget$1 {
     return null;
   }
 
+  addEventListener(type, listener, options) {
+    const map = wm.get(this);
+    if (!map.has(type)) 
+      map.set(type, new Map);
+    const listeners = map.get(type).set(listener, options);
+    wm.set(this, map.set(type, listeners));
+    
+  }
+
+  removeEventListener(type, listener) {
+    const map = wm.get(this);
+    if (map.has(type)) {
+      const listeners = map.get(type);
+      if (listeners.delete(listener) && !listeners.size) {
+        map.delete(type);
+      } else {
+        map.set(type, listeners);
+      }
+      wm.set(this, map);
+    }
+  }
+
   dispatchEvent(event) {
-    const dispatched = super.dispatchEvent(event);
+    let node = this;
+    event.eventPhase = event.CAPTURING_PHASE;
 
     // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
-    if (dispatched && event.bubbles && !event.cancelBubble) {
-      const parent = this._getParent();
-      if (parent && parent.dispatchEvent) {
-        const options = {
-          bubbles: event.bubbles,
-          cancelable: event.cancelable,
-          composed: event.composed,
-        };
-        // in Node 16.5 the same event can't be used for another dispatch
-        return parent.dispatchEvent(new event.constructor(event.type, options));
-      }
+    while (node) {
+      if (node.dispatchEvent)
+        event._path.push({currentTarget: node, target: this});
+      node = event.bubbles && node._getParent && node._getParent();
     }
-    return dispatched;
+    event._path.some(invokeListeners, event);
+    event._path = [];
+    event.eventPhase = event.NONE;
+    return !event.defaultPrevented;
   }
+
 }
 
 // https://dom.spec.whatwg.org/#interface-nodelist
@@ -12297,18 +12285,19 @@ function push(value, key) {
 /* c8 ignore start */
 
 // Node 15 has Event but 14 and 12 don't
-
 const BUBBLING_PHASE = 3;
+const AT_TARGET = 2;
 const CAPTURING_PHASE = 1;
+const NONE = 0;
 
 /**
  * @implements globalThis.Event
  */
-const GlobalEvent = typeof Event === 'function' ?
-  Event :
-  class Event {
+class GlobalEvent {
     static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    static get AT_TARGET() { return AT_TARGET; }
     static get CAPTURING_PHASE() { return CAPTURING_PHASE; }
+    static get NONE() { return NONE; }
 
     constructor(type, eventInitDict = {}) {
       this.type = type;
@@ -12316,43 +12305,35 @@ const GlobalEvent = typeof Event === 'function' ?
       this.cancelBubble = false;
       this._stopImmediatePropagationFlag = false;
       this.cancelable = !!eventInitDict.cancelable;
-      this.eventPhase = this.BUBBLING_PHASE;
+      this.eventPhase = this.NONE;
       this.timeStamp = Date.now();
       this.defaultPrevented = false;
       this.originalTarget = null;
       this.returnValue = null;
       this.srcElement = null;
       this.target = null;
+      this._path = [];
     }
 
     get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    get AT_TARGET() { return AT_TARGET; }
     get CAPTURING_PHASE() { return CAPTURING_PHASE; }
+    get NONE() { return NONE; }
 
     preventDefault() { this.defaultPrevented = true; }
 
-    // TODO: what do these do in native NodeJS Event ?
+    // simplified implementation, should be https://dom.spec.whatwg.org/#dom-event-composedpath
+    composedPath() {
+      return this._path;
+    }
+
     stopPropagation() {
       this.cancelBubble = true;
     }
     
     stopImmediatePropagation() {
+      this.stopPropagation();
       this._stopImmediatePropagationFlag = true;
-    }
-  };
-
-
-
-/**
- * @implements globalThis.Event
- */
-class DOMEvent extends GlobalEvent {
-    // specs: "set this’s stop propagation flag and this’s stop immediate propagation flag"
-    // https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation
-    // but Node don't do that so for now we extend it
-    stopImmediatePropagation() {
-      super.stopPropagation();
-      if (typeof super.stopImmediatePropagation === 'function')
-        super.stopImmediatePropagation();
     }
   }
 
@@ -12554,7 +12535,7 @@ class Element$1 extends ParentNode {
     return new Proxy(attributes, attributesHandler);
   }
 
-  focus() { this.dispatchEvent(new DOMEvent('focus')); }
+  focus() { this.dispatchEvent(new GlobalEvent('focus')); }
 
   getAttribute(name) {
     if (name === 'class')
@@ -12990,8 +12971,8 @@ class HTMLElement extends Element$1 {
   offsetWidth
   */
 
-  blur() { this.dispatchEvent(new DOMEvent('blur')); }
-  click() { this.dispatchEvent(new DOMEvent('click')); }
+  blur() { this.dispatchEvent(new GlobalEvent('blur')); }
+  click() { this.dispatchEvent(new GlobalEvent('click')); }
 
   // Boolean getters
   get accessKeyLabel() {
@@ -16240,7 +16221,7 @@ const Mime = {
  */
 const GlobalCustomEvent = typeof CustomEvent === 'function' ?
   CustomEvent :
-  class CustomEvent extends DOMEvent {
+  class CustomEvent extends GlobalEvent {
     constructor(type, eventInitDict = {}) {
       super(type, eventInitDict);
       this.detail = eventInitDict.detail;
@@ -16254,7 +16235,7 @@ const GlobalCustomEvent = typeof CustomEvent === 'function' ?
 /**
  * @implements globalThis.InputEvent
  */
-class InputEvent extends DOMEvent {
+class InputEvent extends GlobalEvent {
   constructor(type, inputEventInit = {}) {
     super(type, inputEventInit);
     this.inputType = inputEventInit.inputType;
@@ -16440,7 +16421,7 @@ const globalExports = assign(
   HTMLClasses,
   {
     CustomEvent: GlobalCustomEvent,
-    Event: DOMEvent,
+    Event: GlobalEvent,
     EventTarget: DOMEventTarget,
     InputEvent,
     NamedNodeMap,
@@ -16553,6 +16534,13 @@ class Document$1 extends NonElementParentNode {
 
   get isConnected() { return true; }
 
+  /**
+   * @protected
+   */
+   _getParent() {
+    return this[EVENT_TARGET];
+  }
+
   createAttribute(name) { return new Attr$1(this, name); }
   createComment(textContent) { return new Comment$1(this, textContent); }
   createDocumentFragment() { return new DocumentFragment$1(this); }
@@ -16568,7 +16556,7 @@ class Document$1 extends NonElementParentNode {
   createNodeIterator(root, whatToShow = -1) { return this.createTreeWalker(root, whatToShow); }
 
   createEvent(name) {
-    const event = create$1(name === 'Event' ? new DOMEvent('') : new GlobalCustomEvent(''));
+    const event = create$1(name === 'Event' ? new GlobalEvent('') : new GlobalCustomEvent(''));
     event.initEvent = event.initCustomEvent = (
       type,
       canBubble = false,
@@ -16923,4 +16911,4 @@ function Document() {
 
 setPrototypeOf(Document, Document$1).prototype = Document$1.prototype;
 
-export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, DOMEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };
+export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };

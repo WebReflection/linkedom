@@ -17,6 +17,7 @@ const basicHandler = () => {
 const eventTarget = new EventTarget();
 eventTarget.addEventListener('foo', basicHandler);
 eventTarget.addEventListener('foo', basicHandler);
+eventTarget.addEventListener('foo', () => {});
 eventTarget.dispatchEvent(new Event('foo'));
 assert(callCount, 1, 'basicHandler should have been called once');
 

@@ -1,12 +1,9 @@
 'use strict';
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
-const eventTargetMap = new Map();
-const { create } = Object;
+const wm = new WeakMap();
 
-function dispatch({options, target, listener}) {
-  if (options && options.once)
-    target.removeEventListener(this.type, listener);
+function dispatch({ target, listener}) {
   if (typeof listener === 'function') {
     listener.call(target, this);
   } else {
@@ -16,22 +13,30 @@ function dispatch({options, target, listener}) {
 }
 
 function invokeListeners({currentTarget, target}) {
-  const secret = eventTargetMap.get(currentTarget);
-  const listeners = secret && secret[this.type];
-  if (listeners) {
+  const map = wm.get(currentTarget);
+  if (map && map.has(this.type)) {
+    const listeners = map.get(this.type);
     if (currentTarget === target) {
       this.eventPhase = this.AT_TARGET;
     } else {
       this.eventPhase = this.BUBBLING_PHASE;
     }
+
     this.currentTarget = currentTarget;
     this.target = target;
-    listeners.slice(0).some(dispatch, this);
+    for (const [listener, options] of listeners) {
+      if (options && options.once)
+        listeners.delete(listener);
+      if (dispatch.call(this, {target: this, listener}))
+        break;
+    }
+    wm.set(this, map.set(this.type, listeners));
     delete this.currentTarget;
     delete this.target;
+    return this.cancelBubble;
   }
-  return this.cancelBubble;
 }
+
 
 /**
  * @implements globalThis.EventTarget
@@ -39,7 +44,7 @@ function invokeListeners({currentTarget, target}) {
 class DOMEventTarget {
 
   constructor() {
-    eventTargetMap.set(this, create(null));
+    wm.set(this, new Map);
   }
 
   /**
@@ -50,18 +55,25 @@ class DOMEventTarget {
   }
 
   addEventListener(type, listener, options) {
-    const secret = eventTargetMap.get(this);
-    const listeners = secret[type] || (secret[type] = []);
-    if (listeners.some(info => info.listener === listener)) {
-      return;
-    }
-    listeners.push({target: this, listener, options});
+    const map = wm.get(this);
+    if (!map.has(type)) 
+      map.set(type, new Map);
+    const listeners = map.get(type).set(listener, options);
+    wm.set(this, map.set(type, listeners));
+    
   }
 
   removeEventListener(type, listener) {
-    const secret = eventTargetMap.get(this);
-    const listeners = secret[type] || (secret[type] = []);
-    secret[type] = listeners.filter(info => info.listener !== listener);
+    const map = wm.get(this);
+    if (map.has(type)) {
+      const listeners = map.get(type);
+      if (listeners.delete(listener) && !listeners.size) {
+        map.delete(type);
+      } else {
+        map.set(type, listeners);
+      }
+      wm.set(this, map);
+    }
   }
 
   dispatchEvent(event) {
