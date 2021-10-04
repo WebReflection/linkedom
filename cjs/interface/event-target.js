@@ -30,7 +30,6 @@ function invokeListeners({currentTarget, target}) {
       if (dispatch.call(this, {target: this, listener}))
         break;
     }
-    wm.set(this, map.set(this.type, listeners));
     delete this.currentTarget;
     delete this.target;
     return this.cancelBubble;
@@ -58,8 +57,7 @@ class DOMEventTarget {
     const map = wm.get(this);
     if (!map.has(type)) 
       map.set(type, new Map);
-    const listeners = map.get(type).set(listener, options);
-    wm.set(this, map.set(type, listeners));
+    map.get(type).set(listener, options);
   }
 
   removeEventListener(type, listener) {
@@ -68,10 +66,7 @@ class DOMEventTarget {
       const listeners = map.get(type);
       if (listeners.delete(listener) && !listeners.size) {
         map.delete(type);
-      } else {
-        map.set(type, listeners);
       }
-      wm.set(this, map);
     }
   }
 
