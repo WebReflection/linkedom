@@ -15,7 +15,7 @@ const {
 } = require('../shared/attributes.js');
 
 const {
-  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, MIME, CUSTOM_ELEMENTS
+  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, MIME
 } = require('../shared/symbols.js');
 
 const {
@@ -26,12 +26,12 @@ const {
 
 const {elementAsJSON} = require('../shared/jsdon.js');
 const {matches, prepareMatch} = require('../shared/matches.js');
-const {parseFromString} = require('../shared/parse-from-string.js');
 
 const {isConnected, parentElement, previousSibling, nextSibling} = require('../shared/node.js');
 const {previousElementSibling, nextElementSibling} = require('../mixin/non-document-type-child-node.js');
 
 const {before, after, replaceWith, remove} = require('../mixin/child-node.js');
+const {getInnerHtml, setInnerHtml} = require('../mixin/inner-html.js');
 const {ParentNode} = require('../mixin/parent-node.js');
 
 const {DOMStringMap} = require('../dom/string-map.js');
@@ -155,15 +155,10 @@ class Element extends ParentNode {
   }
 
   get innerHTML() {
-    return this.childNodes.join('');
+    return getInnerHtml(this);
   }
   set innerHTML(html) {
-    const {ownerDocument} = this;
-    const {constructor} = ownerDocument;
-    const document = new constructor;
-    document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
-    const {childNodes} = parseFromString(document, ignoreCase(this), html);
-    this.replaceChildren(...childNodes);
+    setInnerHtml(this, html);
   }
 
   get outerHTML() { return this.toString(); }

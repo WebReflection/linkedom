@@ -12020,6 +12020,26 @@ class DocumentType$1 extends Node$1 {
   }
 }
 
+/**
+ * @param {Node} node
+ * @returns {String}
+ */
+const getInnerHtml = node => node.childNodes.join('');
+
+/**
+ * @param {Node} node
+ * @param {String} html
+ */
+const setInnerHtml = (node, html) => {
+  const {ownerDocument} = node;
+  const {constructor} = ownerDocument;
+  const document = new constructor;
+  document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
+  const {childNodes} = parseFromString(document, ignoreCase(node), html);
+
+  node.replaceChildren(...childNodes);
+};
+
 var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z])([A-Z]))/g, '$2$5-$3$6')
                              .toLowerCase();
 
@@ -12388,6 +12408,13 @@ class ShadowRoot$1 extends NonElementParentNode {
   constructor(ownerDocument) {
     super(ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
   }
+
+  get innerHTML() {
+    return getInnerHtml(this);
+  }
+  set innerHTML(html) {
+    setInnerHtml(this, html);
+  }
 }
 
 // https://dom.spec.whatwg.org/#interface-element
@@ -12502,15 +12529,10 @@ class Element$1 extends ParentNode {
   }
 
   get innerHTML() {
-    return this.childNodes.join('');
+    return getInnerHtml(this);
   }
   set innerHTML(html) {
-    const {ownerDocument} = this;
-    const {constructor} = ownerDocument;
-    const document = new constructor;
-    document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
-    const {childNodes} = parseFromString(document, ignoreCase(this), html);
-    this.replaceChildren(...childNodes);
+    setInnerHtml(this, html);
   }
 
   get outerHTML() { return this.toString(); }
