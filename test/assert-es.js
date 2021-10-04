@@ -8,7 +8,6 @@ for: Class => {
         console.error('', 'Expected:', String(expected));
         console.error('', 'Got instead:', String(expression));
         console.error('');
-        console.trace();
         process.exit(1);
       }
     };

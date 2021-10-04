@@ -9238,7 +9238,6 @@ class DOMEventTarget {
       map.set(type, new Map);
     const listeners = map.get(type).set(listener, options);
     wm.set(this, map.set(type, listeners));
-    
   }
 
   removeEventListener(type, listener) {
