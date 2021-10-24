@@ -184,7 +184,9 @@ export function ImageClass(ownerDocument: any): {
         _getParent(): any;
         getRootNode(): any;
         [PREV]: any;
-        dispatchEvent(event: any): any;
+        addEventListener(type: any, listener: any, options: any): void;
+        removeEventListener(type: any, listener: any): void;
+        dispatchEvent(event: any): boolean;
     };
     readonly observedAttributes: any[];
     readonly ELEMENT_NODE: number;

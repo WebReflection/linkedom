@@ -159,6 +159,13 @@ export class Document extends NonElementParentNode {
 
   get isConnected() { return true; }
 
+  /**
+   * @protected
+   */
+   _getParent() {
+    return this[EVENT_TARGET];
+  }
+
   createAttribute(name) { return new Attr(this, name); }
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }

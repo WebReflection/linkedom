@@ -7,5 +7,7 @@ declare class DOMEventTarget implements globalThis.EventTarget {
      * @protected
      */
     protected _getParent(): any;
-    dispatchEvent(event: any): any;
+    addEventListener(type: any, listener: any, options: any): void;
+    removeEventListener(type: any, listener: any): void;
+    dispatchEvent(event: any): boolean;
 }

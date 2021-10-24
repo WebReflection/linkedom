@@ -1,11 +1,49 @@
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
-import EventTarget from '@ungap/event-target';
+const wm = new WeakMap();
+
+function dispatch({ target, listener}) {
+  if (typeof listener === 'function') {
+    listener.call(target, this);
+  } else {
+    listener.handleEvent(this);
+  }
+  return this._stopImmediatePropagationFlag;
+}
+
+function invokeListeners({currentTarget, target}) {
+  const map = wm.get(currentTarget);
+  if (map && map.has(this.type)) {
+    const listeners = map.get(this.type);
+    if (currentTarget === target) {
+      this.eventPhase = this.AT_TARGET;
+    } else {
+      this.eventPhase = this.BUBBLING_PHASE;
+    }
+
+    this.currentTarget = currentTarget;
+    this.target = target;
+    for (const [listener, options] of listeners) {
+      if (options && options.once)
+        listeners.delete(listener);
+      if (dispatch.call(this, {target: this, listener}))
+        break;
+    }
+    delete this.currentTarget;
+    delete this.target;
+    return this.cancelBubble;
+  }
+}
+
 
 /**
  * @implements globalThis.EventTarget
  */
-class DOMEventTarget extends EventTarget {
+class DOMEventTarget {
+
+  constructor() {
+    wm.set(this, new Map);
+  }
 
   /**
    * @protected
@@ -14,24 +52,39 @@ class DOMEventTarget extends EventTarget {
     return null;
   }
 
-  dispatchEvent(event) {
-    const dispatched = super.dispatchEvent(event);
+  addEventListener(type, listener, options) {
+    const map = wm.get(this);
+    if (!map.has(type)) 
+      map.set(type, new Map);
+    map.get(type).set(listener, options);
+  }
 
-    // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
-    if (dispatched && event.bubbles && !event.cancelBubble) {
-      const parent = this._getParent();
-      if (parent && parent.dispatchEvent) {
-        const options = {
-          bubbles: event.bubbles,
-          cancelable: event.cancelable,
-          composed: event.composed,
-        };
-        // in Node 16.5 the same event can't be used for another dispatch
-        return parent.dispatchEvent(new event.constructor(event.type, options));
+  removeEventListener(type, listener) {
+    const map = wm.get(this);
+    if (map.has(type)) {
+      const listeners = map.get(type);
+      if (listeners.delete(listener) && !listeners.size) {
+        map.delete(type);
       }
     }
-    return dispatched;
   }
+
+  dispatchEvent(event) {
+    let node = this;
+    event.eventPhase = event.CAPTURING_PHASE;
+
+    // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
+    while (node) {
+      if (node.dispatchEvent)
+        event._path.push({currentTarget: node, target: this});
+      node = event.bubbles && node._getParent && node._getParent();
+    }
+    event._path.some(invokeListeners, event);
+    event._path = [];
+    event.eventPhase = event.NONE;
+    return !event.defaultPrevented;
+  }
+
 }
 
 export { DOMEventTarget as EventTarget };
