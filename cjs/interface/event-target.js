@@ -3,12 +3,11 @@
 
 const wm = new WeakMap();
 
-function dispatch({ target, listener}) {
-  if (typeof listener === 'function') {
+function dispatch({target, listener}) {
+  if (typeof listener === 'function')
     listener.call(target, this);
-  } else {
+  else
     listener.handleEvent(this);
-  }
   return this._stopImmediatePropagationFlag;
 }
 
@@ -64,9 +63,8 @@ class DOMEventTarget {
     const map = wm.get(this);
     if (map.has(type)) {
       const listeners = map.get(type);
-      if (listeners.delete(listener) && !listeners.size) {
+      if (listeners.delete(listener) && !listeners.size)
         map.delete(type);
-      }
     }
   }
 
