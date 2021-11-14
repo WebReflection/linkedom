@@ -24,6 +24,7 @@ const test = folder => getFiles(folder).then(files => {
 
 console.log(`\x1b[7m\x1b[1m ${'LinkeDOM'.padEnd(74)}\x1b[0m`);
 test('xml')
+.then(() => test('jsx'))
 .then(() => test('svg'))
 .then(() => test('html'))
 .then(() => test('interface'))
@@ -33,6 +34,7 @@ test('xml')
     console.log(`\x1b[7m\x1b[1m ${'LinkeDOM - Cached'.padEnd(74)}\x1b[0m`);
     global[Symbol.for('linkedom')] = require('../cjs/cached.js');
     test('xml')
+    .then(() => test('jsx'))
     .then(() => test('svg'))
     .then(() => test('html'))
     .then(() => test('interface'))

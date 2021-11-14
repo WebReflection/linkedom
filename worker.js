@@ -9440,9 +9440,10 @@ class Attr$1 extends Node$1 {
   }
 
   toString() {
-    const {name, [VALUE]: value} = this;
+    const {ownerDocument, name, [VALUE]: value} = this;
+    const doubleQuote = ownerDocument[MIME].unquotedJsonAttributes && /^\{(.[\s\S]?)+\}$/.test(value) ? '' : '"';
     return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+            name : `${name}=${doubleQuote}${value.replace(QUOTE, '&quot;')}${doubleQuote}`;
   }
 
   toJSON() {
@@ -9666,7 +9667,13 @@ class Comment$1 extends CharacterData$1 {
     return new Comment$1(ownerDocument, data);
   }
 
-  toString() { return `<!--${escape(this[VALUE])}-->`; }
+  toString() { 
+    const {ownerDocument} = this;
+    if (ownerDocument[MIME].escapeHtmlEntities) {
+      return `<!--${escape(this[VALUE])}-->`;
+    }
+    return `<!--${(this[VALUE])}-->`;
+  }
 }
 
 var lib$2 = {};
@@ -11654,7 +11661,13 @@ class Text$1 extends CharacterData$1 {
     return new Text$1(ownerDocument, data);
   }
 
-  toString() { return escape(this[VALUE]); }
+  toString() { 
+    const {ownerDocument} = this;
+    if (ownerDocument[MIME].escapeHtmlEntities) {
+      return escape(this[VALUE]);
+    }
+    return this[VALUE];
+  }
 }
 
 // https://dom.spec.whatwg.org/#interface-parentnode
@@ -16182,26 +16195,38 @@ const Mime = {
   'text/html': {
     docType: '<!DOCTYPE html>',
     ignoreCase: true,
+    escapeHtmlEntities: true,
     voidElements: /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i
   },
   'image/svg+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    escapeHtmlEntities: true,
     voidElements
   },
   'text/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    escapeHtmlEntities: true,
     voidElements
   },
   'application/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    escapeHtmlEntities: true,
     voidElements
   },
   'application/xhtml+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    escapeHtmlEntities: true,
+    voidElements
+  },
+  'text/jsx+xml': {
+    docType: '<?xml version="1.0" encoding="utf-8"?>',
+    ignoreCase: false,
+    escapeHtmlEntities: false,
+    unquotedJsonAttributes: true,
     voidElements
   }
 };
@@ -16763,11 +16788,18 @@ class XMLDocument extends Document$1 {
 }
 
 /**
+ * @implements globalThis.JSXDocument
+ */
+class JSXDocument extends Document$1 {
+  constructor() { super('text/jsx+xml'); }
+}
+
+/**
  * @implements globalThis.DOMParser
  */
 class DOMParser {
 
-  /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc */
+  /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument, "text/jsx+xml": JSXDocument }} MimeToDoc */
   /**
    * @template {keyof MimeToDoc} MIME
    * @param {string} markupLanguage
@@ -16782,6 +16814,10 @@ class DOMParser {
     }
     else if (mimeType === 'image/svg+xml')
       document = new SVGDocument;
+    else if (mimeType === 'text/jsx+xml') {
+      document = new JSXDocument;
+      isHTML = true;
+    }
     else
       document = new XMLDocument;
     document[DOM_PARSER] = DOMParser;

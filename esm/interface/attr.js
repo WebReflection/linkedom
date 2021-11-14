@@ -1,5 +1,5 @@
 import {ATTRIBUTE_NODE} from '../shared/constants.js';
-import {CHANGED, VALUE} from '../shared/symbols.js';
+import {CHANGED, VALUE, MIME} from '../shared/symbols.js';
 import {String} from '../shared/utils.js';
 import {attrAsJSON} from '../shared/jsdon.js';
 import {emptyAttributes} from '../shared/attributes.js';
@@ -40,9 +40,10 @@ export class Attr extends Node {
   }
 
   toString() {
-    const {name, [VALUE]: value} = this;
+    const {ownerDocument, name, [VALUE]: value} = this;
+    const doubleQuote = ownerDocument[MIME].unquotedJsonAttributes && /^\{(.[\s\S]?)+\}$/.test(value) ? '' : '"'
     return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+            name : `${name}=${doubleQuote}${value.replace(QUOTE, '&quot;')}${doubleQuote}`;
   }
 
   toJSON() {
