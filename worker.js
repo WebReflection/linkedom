@@ -9443,7 +9443,7 @@ class Attr$1 extends Node$1 {
     const {ownerDocument, name, [VALUE]: value} = this;
     const doubleQuote = ownerDocument[MIME].unquotedJsonAttributes && /^\{(.[\s\S]?)+\}$/.test(value) ? '' : '"';
     return emptyAttributes.has(name) && !value ?
-            name : `${name}=${doubleQuote}${value.replace(QUOTE, '&quot;')}${doubleQuote}`;
+            name : `${name}=${doubleQuote}${value.replace(QUOTE, doubleQuote ? '&quot;' : '"')}${doubleQuote}`;
   }
 
   toJSON() {
