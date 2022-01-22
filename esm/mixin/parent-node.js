@@ -80,6 +80,9 @@ export class ParentNode extends Node {
     return children;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstChild() {
     let {[NEXT]: next, [END]: end} = this;
     while (next.nodeType === ATTRIBUTE_NODE)
@@ -87,6 +90,9 @@ export class ParentNode extends Node {
     return next === end ? null : next;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstElementChild() {
     let {firstChild} = this;
     while (firstChild) {

@@ -11737,6 +11737,9 @@ class ParentNode extends Node$1 {
     return children;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstChild() {
     let {[NEXT]: next, [END]: end} = this;
     while (next.nodeType === ATTRIBUTE_NODE)
@@ -11744,6 +11747,9 @@ class ParentNode extends Node$1 {
     return next === end ? null : next;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstElementChild() {
     let {firstChild} = this;
     while (firstChild) {
@@ -12507,6 +12513,9 @@ class Element$1 extends ParentNode {
   // <contentRelated>
   get innerText() { return this.textContent; }
 
+  /**
+   * @returns {String}
+   */
   get textContent() {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;

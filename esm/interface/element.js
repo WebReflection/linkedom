@@ -139,6 +139,9 @@ export class Element extends ParentNode {
   // <contentRelated>
   get innerText() { return this.textContent; }
 
+  /**
+   * @returns {String}
+   */
   get textContent() {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;

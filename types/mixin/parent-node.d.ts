@@ -8,7 +8,10 @@
 }} NodeStruct */
 export class ParentNode extends Node {
     get children(): NodeList;
-    get firstElementChild(): any;
+    /**
+     * @returns {NodeStruct | null}
+     */
+    get firstElementChild(): NodeStruct;
     get lastElementChild(): any;
     get childElementCount(): number;
     prepend(...nodes: any[]): void;
