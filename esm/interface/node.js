@@ -83,10 +83,33 @@ export class Node extends EventTarget {
   normalize() {}
   cloneNode() { return null; }
   contains() { return false; }
-  insertBefore() {}
-  appendChild() {}
-  replaceChild() {}
-  removeChild() {}
+  /**
+   * Inserts a node before a reference node as a child of this parent node.
+   * @param {Node} newNode The node to be inserted.
+   * @param {Node} referenceNode The node before which newNode is inserted. If this is null, then newNode is inserted at the end of node's child nodes.
+   * @returns The added child
+   */
+  // eslint-disable-next-line no-unused-vars
+  insertBefore(newNode, referenceNode) { return newNode }
+  /**
+   * Adds a node to the end of the list of children of this node.
+   * @param {Node} child The node to append to the given parent node.
+   * @returns The appended child.
+   */
+  appendChild(child) { return child }
+  /**
+   * Replaces a child node within this node
+   * @param {Node} newChild The new node to replace oldChild.
+   * @param {Node} oldChild The child to be replaced.
+   * @returns The replaced Node. This is the same node as oldChild.
+   */
+  replaceChild(newChild, oldChild) { return oldChild }
+  /**
+   * Removes a child node from the DOM.
+   * @param {Node} child A Node that is the child node to be removed from the DOM.
+   * @returns The removed node.
+   */
+  removeChild(child) { return child }
   toString() { return ''; }
   /* c8 ignore stop */
 
