@@ -11693,7 +11693,7 @@ const insert = (parentNode, child, nodes) => {
     );
 };
 
-/** @typedef {{
+/** @typedef { import('../interface/element.js').Element & {
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
