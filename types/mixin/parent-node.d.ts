@@ -1,4 +1,4 @@
-/** @typedef {{
+/** @typedef { import('../interface/element.js').Element & {
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
@@ -8,6 +8,9 @@
 }} NodeStruct */
 export class ParentNode extends Node {
     get children(): NodeList;
+    /**
+     * @returns {NodeStruct | null}
+     */
     get firstElementChild(): NodeStruct;
     get lastElementChild(): any;
     get childElementCount(): number;
@@ -21,7 +24,7 @@ export class ParentNode extends Node {
     [PRIVATE]: any;
     [END]: NodeStruct;
 }
-export type NodeStruct = {
+export type NodeStruct = import('../interface/element.js').Element & {
     [typeof NEXT]: NodeStruct;
     [typeof PREV]: NodeStruct;
     [typeof START]: NodeStruct;

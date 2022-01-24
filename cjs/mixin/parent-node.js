@@ -37,7 +37,7 @@ const insert = (parentNode, child, nodes) => {
     );
 };
 
-/** @typedef {{
+/** @typedef { import('../interface/element.js').Element & {
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
@@ -81,6 +81,9 @@ class ParentNode extends Node {
     return children;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstChild() {
     let {[NEXT]: next, [END]: end} = this;
     while (next.nodeType === ATTRIBUTE_NODE)
@@ -88,6 +91,9 @@ class ParentNode extends Node {
     return next === end ? null : next;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstElementChild() {
     let {firstChild} = this;
     while (firstChild) {

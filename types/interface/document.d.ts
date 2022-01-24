@@ -7,9 +7,9 @@ export class Document extends NonElementParentNode implements globalThis.Documen
      * @type {globalThis.Document['defaultView']}
      */
     get defaultView(): Window & typeof globalThis;
-    set doctype(arg: DocumentType | import("../mixin/parent-node.js").NodeStruct);
-    get doctype(): DocumentType | import("../mixin/parent-node.js").NodeStruct;
-    get documentElement(): import("../mixin/parent-node.js").NodeStruct;
+    set doctype(arg: any);
+    get doctype(): any;
+    get documentElement(): any;
     createAttribute(name: any): Attr;
     createComment(textContent: any): Comment;
     createDocumentFragment(): DocumentFragment;
@@ -23,7 +23,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     importNode(externalNode: any, ...args: any[]): any;
     getElementsByTagNameNS(_: any, name: any): NodeList;
     createAttributeNS(_: any, name: any): Attr;
-    createElementNS(nsp: any, localName: any, options: any): Element;
+    createElementNS(nsp: any, localName: any, options: any): Element | SVGElement;
     [CUSTOM_ELEMENTS]: {
         active: boolean;
         registry: any;
@@ -40,15 +40,16 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     [EVENT_TARGET]: EventTarget;
 }
 import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
-import { DocumentType } from "./document-type.js";
 import { Attr } from "./attr.js";
 import { Comment } from "./comment.js";
 import { DocumentFragment } from "./document-fragment.js";
+import { DocumentType } from "./document-type.js";
 import { Element } from "./element.js";
 import { Range } from "./range.js";
 import { Text } from "./text.js";
 import { TreeWalker } from "./tree-walker.js";
 import { NodeList } from "./node-list.js";
+import { SVGElement } from "../svg/element.js";
 import { CUSTOM_ELEMENTS } from "../shared/symbols.js";
 import { MUTATION_OBSERVER } from "../shared/symbols.js";
 import { MIME } from "../shared/symbols.js";

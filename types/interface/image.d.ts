@@ -109,8 +109,8 @@ export function ImageClass(ownerDocument: any): {
         nonce: any;
         readonly style: any;
         tabIndex: number;
-        readonly innerText: string;
-        textContent: string;
+        readonly innerText: any;
+        textContent: any;
         innerHTML: string;
         outerHTML: string;
         readonly attributes: any;
@@ -146,8 +146,8 @@ export function ImageClass(ownerDocument: any): {
         [STYLE]: any;
         readonly childNodes: import("./node-list.js").NodeList;
         readonly children: import("./node-list.js").NodeList;
-        readonly firstChild: import("../mixin/parent-node.js").NodeStruct;
-        readonly firstElementChild: import("../mixin/parent-node.js").NodeStruct;
+        readonly firstChild: any;
+        readonly firstElementChild: any;
         readonly lastChild: any;
         readonly lastElementChild: any;
         readonly childElementCount: number;

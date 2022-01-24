@@ -9336,10 +9336,33 @@ class Node$1 extends DOMEventTarget {
   normalize() {}
   cloneNode() { return null; }
   contains() { return false; }
-  insertBefore() {}
-  appendChild() {}
-  replaceChild() {}
-  removeChild() {}
+  /**
+   * Inserts a node before a reference node as a child of this parent node.
+   * @param {Node} newNode The node to be inserted.
+   * @param {Node} referenceNode The node before which newNode is inserted. If this is null, then newNode is inserted at the end of node's child nodes.
+   * @returns The added child
+   */
+  // eslint-disable-next-line no-unused-vars
+  insertBefore(newNode, referenceNode) { return newNode }
+  /**
+   * Adds a node to the end of the list of children of this node.
+   * @param {Node} child The node to append to the given parent node.
+   * @returns The appended child.
+   */
+  appendChild(child) { return child }
+  /**
+   * Replaces a child node within this node
+   * @param {Node} newChild The new node to replace oldChild.
+   * @param {Node} oldChild The child to be replaced.
+   * @returns The replaced Node. This is the same node as oldChild.
+   */
+  replaceChild(newChild, oldChild) { return oldChild }
+  /**
+   * Removes a child node from the DOM.
+   * @param {Node} child A Node that is the child node to be removed from the DOM.
+   * @returns The removed node.
+   */
+  removeChild(child) { return child }
   toString() { return ''; }
   /* c8 ignore stop */
 
@@ -11670,7 +11693,7 @@ const insert = (parentNode, child, nodes) => {
     );
 };
 
-/** @typedef {{
+/** @typedef { import('../interface/element.js').Element & {
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
@@ -11714,6 +11737,9 @@ class ParentNode extends Node$1 {
     return children;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstChild() {
     let {[NEXT]: next, [END]: end} = this;
     while (next.nodeType === ATTRIBUTE_NODE)
@@ -11721,6 +11747,9 @@ class ParentNode extends Node$1 {
     return next === end ? null : next;
   }
 
+  /**
+   * @returns {NodeStruct | null}
+   */
   get firstElementChild() {
     let {firstChild} = this;
     while (firstChild) {
@@ -12484,6 +12513,9 @@ class Element$1 extends ParentNode {
   // <contentRelated>
   get innerText() { return this.textContent; }
 
+  /**
+   * @returns {String}
+   */
   get textContent() {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;
