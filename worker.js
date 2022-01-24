@@ -1,6 +1,6 @@
 function _mergeNamespaces(n, m) {
 	m.forEach(function (e) {
-		Object.keys(e).forEach(function (k) {
+		e && typeof e !== 'string' && !Array.isArray(e) && Object.keys(e).forEach(function (k) {
 			if (k !== 'default' && !(k in n)) {
 				var d = Object.getOwnPropertyDescriptor(e, k);
 				Object.defineProperty(n, k, d.get ? d : {
@@ -310,58 +310,39 @@ var __importDefault$6 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 Object.defineProperty(Tokenizer$1, "__esModule", { value: true });
 var decode_codepoint_1$1 = __importDefault$6(decode_codepoint$1);
 var decode_1 = decode$1;
-function whitespace$1(c) {
+function isWhitespace$1(c) {
     return (c === 32 /* Space */ ||
         c === 10 /* NewLine */ ||
         c === 9 /* Tab */ ||
         c === 12 /* FormFeed */ ||
         c === 13 /* CarriageReturn */);
 }
+function isEndOfTagSection(c) {
+    return c === 47 /* Slash */ || c === 62 /* Gt */ || isWhitespace$1(c);
+}
+function isNumber(c) {
+    return c >= 48 /* Zero */ && c <= 57 /* Nine */;
+}
 function isASCIIAlpha(c) {
     return ((c >= 97 /* LowerA */ && c <= 122 /* LowerZ */) ||
         (c >= 65 /* UpperA */ && c <= 90 /* UpperZ */));
 }
-function ifElseState(upper, SUCCESS, FAILURE) {
-    var upperCode = upper.charCodeAt(0);
-    var lowerCode = upper.toLowerCase().charCodeAt(0);
-    return function (t, c) {
-        if (c === lowerCode || c === upperCode) {
-            t._state = SUCCESS;
-        }
-        else {
-            t._state = FAILURE;
-            t._index--;
-        }
-    };
-}
-var stateBeforeCdata1 = ifElseState("C", 24 /* BeforeCdata2 */, 16 /* InDeclaration */);
-var stateBeforeCdata2 = ifElseState("D", 25 /* BeforeCdata3 */, 16 /* InDeclaration */);
-var stateBeforeCdata3 = ifElseState("A", 26 /* BeforeCdata4 */, 16 /* InDeclaration */);
-var stateBeforeCdata4 = ifElseState("T", 27 /* BeforeCdata5 */, 16 /* InDeclaration */);
-var stateBeforeCdata5 = ifElseState("A", 28 /* BeforeCdata6 */, 16 /* InDeclaration */);
-var stateBeforeScript1 = ifElseState("R", 35 /* BeforeScript2 */, 3 /* InTagName */);
-var stateBeforeScript2 = ifElseState("I", 36 /* BeforeScript3 */, 3 /* InTagName */);
-var stateBeforeScript3 = ifElseState("P", 37 /* BeforeScript4 */, 3 /* InTagName */);
-var stateBeforeScript4 = ifElseState("T", 38 /* BeforeScript5 */, 3 /* InTagName */);
-var stateAfterScript1 = ifElseState("R", 40 /* AfterScript2 */, 1 /* Text */);
-var stateAfterScript2 = ifElseState("I", 41 /* AfterScript3 */, 1 /* Text */);
-var stateAfterScript3 = ifElseState("P", 42 /* AfterScript4 */, 1 /* Text */);
-var stateAfterScript4 = ifElseState("T", 43 /* AfterScript5 */, 1 /* Text */);
-var stateBeforeStyle1 = ifElseState("Y", 45 /* BeforeStyle2 */, 3 /* InTagName */);
-var stateBeforeStyle2 = ifElseState("L", 46 /* BeforeStyle3 */, 3 /* InTagName */);
-var stateBeforeStyle3 = ifElseState("E", 47 /* BeforeStyle4 */, 3 /* InTagName */);
-var stateAfterStyle1 = ifElseState("Y", 49 /* AfterStyle2 */, 1 /* Text */);
-var stateAfterStyle2 = ifElseState("L", 50 /* AfterStyle3 */, 1 /* Text */);
-var stateAfterStyle3 = ifElseState("E", 51 /* AfterStyle4 */, 1 /* Text */);
-var stateBeforeSpecialT = ifElseState("I", 54 /* BeforeTitle1 */, 3 /* InTagName */);
-var stateBeforeTitle1 = ifElseState("T", 55 /* BeforeTitle2 */, 3 /* InTagName */);
-var stateBeforeTitle2 = ifElseState("L", 56 /* BeforeTitle3 */, 3 /* InTagName */);
-var stateBeforeTitle3 = ifElseState("E", 57 /* BeforeTitle4 */, 3 /* InTagName */);
-var stateBeforeSpecialTEnd = ifElseState("I", 58 /* AfterTitle1 */, 1 /* Text */);
-var stateAfterTitle1 = ifElseState("T", 59 /* AfterTitle2 */, 1 /* Text */);
-var stateAfterTitle2 = ifElseState("L", 60 /* AfterTitle3 */, 1 /* Text */);
-var stateAfterTitle3 = ifElseState("E", 61 /* AfterTitle4 */, 1 /* Text */);
-var stateBeforeNumericEntity = ifElseState("X", 66 /* InHexEntity */, 65 /* InNumericEntity */);
+/**
+ * Sequences used to match longer strings.
+ *
+ * We don't have `Script`, `Style`, or `Title` here. Instead, we re-use the *End
+ * sequences with an increased offset.
+ */
+var Sequences = {
+    Cdata: new Uint16Array([0x43, 0x44, 0x41, 0x54, 0x41, 0x5b]),
+    CdataEnd: new Uint16Array([0x5d, 0x5d, 0x3e]),
+    CommentEnd: new Uint16Array([0x2d, 0x2d, 0x3e]),
+    ScriptEnd: new Uint16Array([
+        0x3c, 0x2f, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74,
+    ]),
+    StyleEnd: new Uint16Array([0x3c, 0x2f, 0x73, 0x74, 0x79, 0x6c, 0x65]),
+    TitleEnd: new Uint16Array([0x3c, 0x2f, 0x74, 0x69, 0x74, 0x6c, 0x65]), // `</title`
+};
 var Tokenizer = /** @class */ (function () {
     function Tokenizer(_a, cbs) {
         var _b = _a.xmlMode, xmlMode = _b === void 0 ? false : _b, _c = _a.decodeEntities, decodeEntities = _c === void 0 ? true : _c;
@@ -382,15 +363,16 @@ var Tokenizer = /** @class */ (function () {
         /** Some behavior, eg. when decoding entities, is done while we are in another state. This keeps track of the other state type. */
         this.baseState = 1 /* Text */;
         /** For special parsing behavior inside of script and style tags. */
-        this.special = 1 /* None */;
+        this.isSpecial = false;
         /** Indicates whether the tokenizer has been paused. */
         this.running = true;
         /** Indicates whether the tokenizer has finished running / `.end` has been called. */
         this.ended = false;
+        this.sequenceIndex = 0;
         this.trieIndex = 0;
         this.trieCurrent = 0;
         this.trieResult = null;
-        this.trieExcess = 0;
+        this.entityExcess = 0;
         this.xmlMode = xmlMode;
         this.decodeEntities = decodeEntities;
         this.entityTrie = xmlMode ? decode_1.xmlDecodeTree : decode_1.htmlDecodeTree;
@@ -402,17 +384,14 @@ var Tokenizer = /** @class */ (function () {
         this._index = 0;
         this.bufferOffset = 0;
         this.baseState = 1 /* Text */;
-        this.special = 1 /* None */;
+        this.currentSequence = undefined;
         this.running = true;
         this.ended = false;
     };
     Tokenizer.prototype.write = function (chunk) {
         if (this.ended)
             return this.cbs.onerror(Error(".write() after done!"));
-        if (this.buffer.length)
-            this.buffer += chunk;
-        else
-            this.buffer = chunk;
+        this.buffer += chunk;
         this.parse();
     };
     Tokenizer.prototype.end = function (chunk) {
@@ -449,22 +428,144 @@ var Tokenizer = /** @class */ (function () {
         return this.bufferOffset + this._index;
     };
     Tokenizer.prototype.stateText = function (c) {
-        if (c === 60 /* Lt */) {
+        if (c === 60 /* Lt */ ||
+            (!this.decodeEntities && this.fastForwardTo(60 /* Lt */))) {
             if (this._index > this.sectionStart) {
                 this.cbs.ontext(this.getSection());
             }
             this._state = 2 /* BeforeTagName */;
             this.sectionStart = this._index;
         }
-        else if (this.decodeEntities &&
-            c === 38 /* Amp */ &&
-            (this.special === 1 /* None */ || this.special === 4 /* Title */)) {
-            if (this._index > this.sectionStart) {
-                this.cbs.ontext(this.getSection());
+        else if (this.decodeEntities && c === 38 /* Amp */) {
+            this._state = 25 /* BeforeEntity */;
+        }
+    };
+    Tokenizer.prototype.stateSpecialStartSequence = function (c) {
+        var isEnd = this.sequenceIndex === this.currentSequence.length;
+        var isMatch = isEnd
+            ? // If we are at the end of the sequence, make sure the tag name has ended
+                isEndOfTagSection(c)
+            : // Otherwise, do a case-insensitive comparison
+                (c | 0x20) === this.currentSequence[this.sequenceIndex];
+        if (!isMatch) {
+            this.isSpecial = false;
+        }
+        else if (!isEnd) {
+            this.sequenceIndex++;
+            return;
+        }
+        this.sequenceIndex = 0;
+        this._state = 3 /* InTagName */;
+        this.stateInTagName(c);
+    };
+    /** Look for an end tag. For <title> tags, also decode entities. */
+    Tokenizer.prototype.stateInSpecialTag = function (c) {
+        if (this.sequenceIndex === this.currentSequence.length) {
+            if (c === 62 /* Gt */ || isWhitespace$1(c)) {
+                var endOfText = this._index - this.currentSequence.length;
+                if (this.sectionStart < endOfText) {
+                    // Spoof the index so that reported locations match up.
+                    var actualIndex = this._index;
+                    this._index = endOfText;
+                    this.cbs.ontext(this.getSection());
+                    this._index = actualIndex;
+                }
+                this.isSpecial = false;
+                this.sectionStart = endOfText + 2; // Skip over the `</`
+                this.stateInClosingTagName(c);
+                return; // We are done; skip the rest of the function.
             }
-            this.baseState = 1 /* Text */;
-            this._state = 62 /* BeforeEntity */;
-            this.sectionStart = this._index;
+            this.sequenceIndex = 0;
+        }
+        if ((c | 0x20) === this.currentSequence[this.sequenceIndex]) {
+            this.sequenceIndex += 1;
+        }
+        else if (this.sequenceIndex === 0) {
+            if (this.currentSequence === Sequences.TitleEnd) {
+                // We have to parse entities in <title> tags.
+                if (this.decodeEntities && c === 38 /* Amp */) {
+                    this._state = 25 /* BeforeEntity */;
+                }
+            }
+            else if (this.fastForwardTo(60 /* Lt */)) {
+                // Outside of <title> tags, we can fast-forward.
+                this.sequenceIndex = 1;
+            }
+        }
+        else {
+            // If we see a `<`, set the sequence index to 1; useful for eg. `<</script>`.
+            this.sequenceIndex = Number(c === 60 /* Lt */);
+        }
+    };
+    Tokenizer.prototype.stateCDATASequence = function (c) {
+        if (c === Sequences.Cdata[this.sequenceIndex]) {
+            if (++this.sequenceIndex === Sequences.Cdata.length) {
+                this._state = 21 /* InCommentLike */;
+                this.currentSequence = Sequences.CdataEnd;
+                this.sequenceIndex = 0;
+                this.sectionStart = this._index + 1;
+            }
+        }
+        else {
+            this.sequenceIndex = 0;
+            this._state = 16 /* InDeclaration */;
+            this.stateInDeclaration(c); // Reconsume the character
+        }
+    };
+    /**
+     * When we wait for one specific character, we can speed things up
+     * by skipping through the buffer until we find it.
+     *
+     * @returns Whether the character was found.
+     */
+    Tokenizer.prototype.fastForwardTo = function (c) {
+        while (++this._index < this.buffer.length) {
+            if (this.buffer.charCodeAt(this._index) === c) {
+                return true;
+            }
+        }
+        /*
+         * We increment the index at the end of the `parse` loop,
+         * so set it to `buffer.length - 1` here.
+         *
+         * TODO: Refactor `parse` to increment index before calling states.
+         */
+        this._index = this.buffer.length - 1;
+        return false;
+    };
+    /**
+     * Comments and CDATA end with `-->` and `]]>`.
+     *
+     * Their common qualities are:
+     * - Their end sequences have a distinct character they start with.
+     * - That character is then repeated, so we have to check multiple repeats.
+     * - All characters but the start character of the sequence can be skipped.
+     */
+    Tokenizer.prototype.stateInCommentLike = function (c) {
+        if (c === this.currentSequence[this.sequenceIndex]) {
+            if (++this.sequenceIndex === this.currentSequence.length) {
+                // Remove 2 trailing chars
+                var section = this.buffer.slice(this.sectionStart, this._index - 2);
+                if (this.currentSequence === Sequences.CdataEnd) {
+                    this.cbs.oncdata(section);
+                }
+                else {
+                    this.cbs.oncomment(section);
+                }
+                this.sequenceIndex = 0;
+                this.sectionStart = this._index + 1;
+                this._state = 1 /* Text */;
+            }
+        }
+        else if (this.sequenceIndex === 0) {
+            // Fast-forward to the first character of the sequence
+            if (this.fastForwardTo(this.currentSequence[0])) {
+                this.sequenceIndex = 1;
+            }
+        }
+        else if (c !== this.currentSequence[this.sequenceIndex - 1]) {
+            // Allow long sequences, eg. --->, ]]]>
+            this.sequenceIndex = 0;
         }
     };
     /**
@@ -474,26 +575,16 @@ var Tokenizer = /** @class */ (function () {
      * We allow anything that wouldn't end the tag.
      */
     Tokenizer.prototype.isTagStartChar = function (c) {
-        return (isASCIIAlpha(c) ||
-            (this.xmlMode &&
-                !whitespace$1(c) &&
-                c !== 47 /* Slash */ &&
-                c !== 62 /* Gt */));
+        return this.xmlMode ? !isEndOfTagSection(c) : isASCIIAlpha(c);
+    };
+    Tokenizer.prototype.startSpecial = function (sequence, offset) {
+        this.isSpecial = true;
+        this.currentSequence = sequence;
+        this.sequenceIndex = offset;
+        this._state = 23 /* SpecialStartSequence */;
     };
     Tokenizer.prototype.stateBeforeTagName = function (c) {
-        if (c === 47 /* Slash */) {
-            this._state = 5 /* BeforeClosingTagName */;
-        }
-        else if (c === 60 /* Lt */) {
-            this.cbs.ontext(this.getSection());
-            this.sectionStart = this._index;
-        }
-        else if (c === 62 /* Gt */ ||
-            this.special !== 1 /* None */ ||
-            whitespace$1(c)) {
-            this._state = 1 /* Text */;
-        }
-        else if (c === 33 /* ExclamationMark */) {
+        if (c === 33 /* ExclamationMark */) {
             this._state = 15 /* BeforeDeclaration */;
             this.sectionStart = this._index + 1;
         }
@@ -501,23 +592,29 @@ var Tokenizer = /** @class */ (function () {
             this._state = 17 /* InProcessingInstruction */;
             this.sectionStart = this._index + 1;
         }
-        else if (!this.isTagStartChar(c)) {
-            this._state = 1 /* Text */;
+        else if (this.isTagStartChar(c)) {
+            var lower = c | 0x20;
+            this.sectionStart = this._index;
+            if (!this.xmlMode && lower === Sequences.TitleEnd[2]) {
+                this.startSpecial(Sequences.TitleEnd, 3);
+            }
+            else {
+                this._state =
+                    !this.xmlMode && lower === Sequences.ScriptEnd[2]
+                        ? 22 /* BeforeSpecialS */
+                        : 3 /* InTagName */;
+            }
+        }
+        else if (c === 47 /* Slash */) {
+            this._state = 5 /* BeforeClosingTagName */;
         }
         else {
-            this._state =
-                !this.xmlMode &&
-                    (c === 115 /* LowerS */ || c === 83 /* UpperS */)
-                    ? 32 /* BeforeSpecialS */
-                    : !this.xmlMode &&
-                        (c === 116 /* LowerT */ || c === 84 /* UpperT */)
-                        ? 52 /* BeforeSpecialT */
-                        : 3 /* InTagName */;
-            this.sectionStart = this._index;
+            this._state = 1 /* Text */;
+            this.stateText(c);
         }
     };
     Tokenizer.prototype.stateInTagName = function (c) {
-        if (c === 47 /* Slash */ || c === 62 /* Gt */ || whitespace$1(c)) {
+        if (isEndOfTagSection(c)) {
             this.cbs.onopentagname(this.getSection());
             this.sectionStart = -1;
             this._state = 8 /* BeforeAttributeName */;
@@ -525,35 +622,19 @@ var Tokenizer = /** @class */ (function () {
         }
     };
     Tokenizer.prototype.stateBeforeClosingTagName = function (c) {
-        if (whitespace$1(c)) ;
+        if (isWhitespace$1(c)) ;
         else if (c === 62 /* Gt */) {
             this._state = 1 /* Text */;
         }
-        else if (this.special !== 1 /* None */) {
-            if (this.special !== 4 /* Title */ &&
-                (c === 115 /* LowerS */ || c === 83 /* UpperS */)) {
-                this._state = 33 /* BeforeSpecialSEnd */;
-            }
-            else if (this.special === 4 /* Title */ &&
-                (c === 116 /* LowerT */ || c === 84 /* UpperT */)) {
-                this._state = 53 /* BeforeSpecialTEnd */;
-            }
-            else {
-                this._state = 1 /* Text */;
-                this.stateText(c);
-            }
-        }
-        else if (!this.isTagStartChar(c)) {
-            this._state = 20 /* InSpecialComment */;
-            this.sectionStart = this._index;
-        }
         else {
-            this._state = 6 /* InClosingTagName */;
+            this._state = this.isTagStartChar(c)
+                ? 6 /* InClosingTagName */
+                : 20 /* InSpecialComment */;
             this.sectionStart = this._index;
         }
     };
     Tokenizer.prototype.stateInClosingTagName = function (c) {
-        if (c === 62 /* Gt */ || whitespace$1(c)) {
+        if (c === 62 /* Gt */ || isWhitespace$1(c)) {
             this.cbs.onclosetag(this.getSection());
             this.sectionStart = -1;
             this._state = 7 /* AfterClosingTagName */;
@@ -562,7 +643,7 @@ var Tokenizer = /** @class */ (function () {
     };
     Tokenizer.prototype.stateAfterClosingTagName = function (c) {
         // Skip everything until ">"
-        if (c === 62 /* Gt */) {
+        if (c === 62 /* Gt */ || this.fastForwardTo(62 /* Gt */)) {
             this._state = 1 /* Text */;
             this.sectionStart = this._index + 1;
         }
@@ -570,13 +651,20 @@ var Tokenizer = /** @class */ (function () {
     Tokenizer.prototype.stateBeforeAttributeName = function (c) {
         if (c === 62 /* Gt */) {
             this.cbs.onopentagend();
-            this._state = 1 /* Text */;
+            if (this.isSpecial) {
+                this._state = 24 /* InSpecialTag */;
+                this.sequenceIndex = 0;
+            }
+            else {
+                this._state = 1 /* Text */;
+            }
+            this.baseState = this._state;
             this.sectionStart = this._index + 1;
         }
         else if (c === 47 /* Slash */) {
             this._state = 4 /* InSelfClosingTag */;
         }
-        else if (!whitespace$1(c)) {
+        else if (!isWhitespace$1(c)) {
             this._state = 9 /* InAttributeName */;
             this.sectionStart = this._index;
         }
@@ -585,19 +673,17 @@ var Tokenizer = /** @class */ (function () {
         if (c === 62 /* Gt */) {
             this.cbs.onselfclosingtag();
             this._state = 1 /* Text */;
+            this.baseState = 1 /* Text */;
             this.sectionStart = this._index + 1;
-            this.special = 1 /* None */; // Reset special state, in case of self-closing special tags
+            this.isSpecial = false; // Reset special state, in case of self-closing special tags
         }
-        else if (!whitespace$1(c)) {
+        else if (!isWhitespace$1(c)) {
             this._state = 8 /* BeforeAttributeName */;
             this.stateBeforeAttributeName(c);
         }
     };
     Tokenizer.prototype.stateInAttributeName = function (c) {
-        if (c === 61 /* Eq */ ||
-            c === 47 /* Slash */ ||
-            c === 62 /* Gt */ ||
-            whitespace$1(c)) {
+        if (c === 61 /* Eq */ || isEndOfTagSection(c)) {
             this.cbs.onattribname(this.getSection());
             this.sectionStart = -1;
             this._state = 10 /* AfterAttributeName */;
@@ -613,7 +699,7 @@ var Tokenizer = /** @class */ (function () {
             this._state = 8 /* BeforeAttributeName */;
             this.stateBeforeAttributeName(c);
         }
-        else if (!whitespace$1(c)) {
+        else if (!isWhitespace$1(c)) {
             this.cbs.onattribend(undefined);
             this._state = 9 /* InAttributeName */;
             this.sectionStart = this._index;
@@ -628,24 +714,23 @@ var Tokenizer = /** @class */ (function () {
             this._state = 13 /* InAttributeValueSq */;
             this.sectionStart = this._index + 1;
         }
-        else if (!whitespace$1(c)) {
+        else if (!isWhitespace$1(c)) {
             this.sectionStart = this._index;
             this._state = 14 /* InAttributeValueNq */;
             this.stateInAttributeValueNoQuotes(c); // Reconsume token
         }
     };
     Tokenizer.prototype.handleInAttributeValue = function (c, quote) {
-        if (c === quote) {
+        if (c === quote ||
+            (!this.decodeEntities && this.fastForwardTo(quote))) {
             this.cbs.onattribdata(this.getSection());
             this.sectionStart = -1;
             this.cbs.onattribend(String.fromCharCode(quote));
             this._state = 8 /* BeforeAttributeName */;
         }
         else if (this.decodeEntities && c === 38 /* Amp */) {
-            this.cbs.onattribdata(this.getSection());
             this.baseState = this._state;
-            this._state = 62 /* BeforeEntity */;
-            this.sectionStart = this._index;
+            this._state = 25 /* BeforeEntity */;
         }
     };
     Tokenizer.prototype.stateInAttributeValueDoubleQuotes = function (c) {
@@ -655,7 +740,7 @@ var Tokenizer = /** @class */ (function () {
         this.handleInAttributeValue(c, 39 /* SingleQuote */);
     };
     Tokenizer.prototype.stateInAttributeValueNoQuotes = function (c) {
-        if (whitespace$1(c) || c === 62 /* Gt */) {
+        if (isWhitespace$1(c) || c === 62 /* Gt */) {
             this.cbs.onattribdata(this.getSection());
             this.sectionStart = -1;
             this.cbs.onattribend(null);
@@ -663,29 +748,31 @@ var Tokenizer = /** @class */ (function () {
             this.stateBeforeAttributeName(c);
         }
         else if (this.decodeEntities && c === 38 /* Amp */) {
-            this.cbs.onattribdata(this.getSection());
             this.baseState = this._state;
-            this._state = 62 /* BeforeEntity */;
-            this.sectionStart = this._index;
+            this._state = 25 /* BeforeEntity */;
         }
     };
     Tokenizer.prototype.stateBeforeDeclaration = function (c) {
-        this._state =
-            c === 91 /* OpeningSquareBracket */
-                ? 23 /* BeforeCdata1 */
-                : c === 45 /* Dash */
+        if (c === 91 /* OpeningSquareBracket */) {
+            this._state = 19 /* CDATASequence */;
+            this.sequenceIndex = 0;
+        }
+        else {
+            this._state =
+                c === 45 /* Dash */
                     ? 18 /* BeforeComment */
                     : 16 /* InDeclaration */;
+        }
     };
     Tokenizer.prototype.stateInDeclaration = function (c) {
-        if (c === 62 /* Gt */) {
+        if (c === 62 /* Gt */ || this.fastForwardTo(62 /* Gt */)) {
             this.cbs.ondeclaration(this.getSection());
             this._state = 1 /* Text */;
             this.sectionStart = this._index + 1;
         }
     };
     Tokenizer.prototype.stateInProcessingInstruction = function (c) {
-        if (c === 62 /* Gt */) {
+        if (c === 62 /* Gt */ || this.fastForwardTo(62 /* Gt */)) {
             this.cbs.onprocessinginstruction(this.getSection());
             this._state = 1 /* Text */;
             this.sectionStart = this._index + 1;
@@ -693,138 +780,53 @@ var Tokenizer = /** @class */ (function () {
     };
     Tokenizer.prototype.stateBeforeComment = function (c) {
         if (c === 45 /* Dash */) {
-            this._state = 19 /* InComment */;
+            this._state = 21 /* InCommentLike */;
+            this.currentSequence = Sequences.CommentEnd;
+            // Allow short comments (eg. <!-->)
+            this.sequenceIndex = 2;
             this.sectionStart = this._index + 1;
         }
         else {
             this._state = 16 /* InDeclaration */;
         }
-    };
-    Tokenizer.prototype.stateInComment = function (c) {
-        if (c === 45 /* Dash */)
-            this._state = 21 /* AfterComment1 */;
     };
     Tokenizer.prototype.stateInSpecialComment = function (c) {
-        if (c === 62 /* Gt */) {
-            this.cbs.oncomment(this.buffer.substring(this.sectionStart, this._index));
+        if (c === 62 /* Gt */ || this.fastForwardTo(62 /* Gt */)) {
+            this.cbs.oncomment(this.getSection());
             this._state = 1 /* Text */;
             this.sectionStart = this._index + 1;
         }
-    };
-    Tokenizer.prototype.stateAfterComment1 = function (c) {
-        if (c === 45 /* Dash */) {
-            this._state = 22 /* AfterComment2 */;
-        }
-        else {
-            this._state = 19 /* InComment */;
-        }
-    };
-    Tokenizer.prototype.stateAfterComment2 = function (c) {
-        if (c === 62 /* Gt */) {
-            // Remove 2 trailing chars
-            this.cbs.oncomment(this.buffer.substring(this.sectionStart, this._index - 2));
-            this._state = 1 /* Text */;
-            this.sectionStart = this._index + 1;
-        }
-        else if (c !== 45 /* Dash */) {
-            this._state = 19 /* InComment */;
-        }
-        // Else: stay in AFTER_COMMENT_2 (`--->`)
-    };
-    Tokenizer.prototype.stateBeforeCdata6 = function (c) {
-        if (c === 91 /* OpeningSquareBracket */) {
-            this._state = 29 /* InCdata */;
-            this.sectionStart = this._index + 1;
-        }
-        else {
-            this._state = 16 /* InDeclaration */;
-            this.stateInDeclaration(c);
-        }
-    };
-    Tokenizer.prototype.stateInCdata = function (c) {
-        if (c === 93 /* ClosingSquareBracket */)
-            this._state = 30 /* AfterCdata1 */;
-    };
-    Tokenizer.prototype.stateAfterCdata1 = function (c) {
-        if (c === 93 /* ClosingSquareBracket */)
-            this._state = 31 /* AfterCdata2 */;
-        else
-            this._state = 29 /* InCdata */;
-    };
-    Tokenizer.prototype.stateAfterCdata2 = function (c) {
-        if (c === 62 /* Gt */) {
-            // Remove 2 trailing chars
-            this.cbs.oncdata(this.buffer.substring(this.sectionStart, this._index - 2));
-            this._state = 1 /* Text */;
-            this.sectionStart = this._index + 1;
-        }
-        else if (c !== 93 /* ClosingSquareBracket */) {
-            this._state = 29 /* InCdata */;
-        }
-        // Else: stay in AFTER_CDATA_2 (`]]]>`)
     };
     Tokenizer.prototype.stateBeforeSpecialS = function (c) {
-        if (c === 99 /* LowerC */ || c === 67 /* UpperC */) {
-            this._state = 34 /* BeforeScript1 */;
+        var lower = c | 0x20;
+        if (lower === Sequences.ScriptEnd[3]) {
+            this.startSpecial(Sequences.ScriptEnd, 4);
         }
-        else if (c === 116 /* LowerT */ || c === 84 /* UpperT */) {
-            this._state = 44 /* BeforeStyle1 */;
+        else if (lower === Sequences.StyleEnd[3]) {
+            this.startSpecial(Sequences.StyleEnd, 4);
         }
         else {
             this._state = 3 /* InTagName */;
             this.stateInTagName(c); // Consume the token again
         }
     };
-    Tokenizer.prototype.stateBeforeSpecialSEnd = function (c) {
-        if (this.special === 2 /* Script */ &&
-            (c === 99 /* LowerC */ || c === 67 /* UpperC */)) {
-            this._state = 39 /* AfterScript1 */;
-        }
-        else if (this.special === 3 /* Style */ &&
-            (c === 116 /* LowerT */ || c === 84 /* UpperT */)) {
-            this._state = 48 /* AfterStyle1 */;
-        }
-        else
-            this._state = 1 /* Text */;
-    };
-    Tokenizer.prototype.stateBeforeSpecialLast = function (c, special) {
-        if (c === 47 /* Slash */ || c === 62 /* Gt */ || whitespace$1(c)) {
-            this.special = special;
-        }
-        this._state = 3 /* InTagName */;
-        this.stateInTagName(c); // Consume the token again
-    };
-    Tokenizer.prototype.stateAfterSpecialLast = function (c, sectionStartOffset) {
-        if (c === 62 /* Gt */ || whitespace$1(c)) {
-            this.sectionStart = this._index - sectionStartOffset;
-            this.special = 1 /* None */;
-            this._state = 6 /* InClosingTagName */;
-            this.stateInClosingTagName(c); // Reconsume the token
-        }
-        else
-            this._state = 1 /* Text */;
-    };
     Tokenizer.prototype.stateBeforeEntity = function (c) {
+        // Start excess with 1 to include the '&'
+        this.entityExcess = 1;
         if (c === 35 /* Num */) {
-            this._state = 63 /* BeforeNumericEntity */;
+            this._state = 26 /* BeforeNumericEntity */;
         }
-        else if (c === 38 /* Amp */) {
-            // We have two `&` characters in a row. Emit the first one.
-            this.emitPartial(this.getSection());
-            this.sectionStart = this._index;
-        }
+        else if (c === 38 /* Amp */) ;
         else {
-            this._state = 64 /* InNamedEntity */;
             this.trieIndex = 0;
             this.trieCurrent = this.entityTrie[0];
             this.trieResult = null;
-            // Start excess with 1 to include the '&'
-            this.trieExcess = 1;
-            this._index--;
+            this._state = 27 /* InNamedEntity */;
+            this.stateInNamedEntity(c);
         }
     };
     Tokenizer.prototype.stateInNamedEntity = function (c) {
-        this.trieExcess += 1;
+        this.entityExcess += 1;
         this.trieIndex = (0, decode_1.determineBranch)(this.entityTrie, this.trieCurrent, this.trieIndex + 1, c);
         if (this.trieIndex < 0) {
             this.emitNamedEntity();
@@ -840,12 +842,18 @@ var Tokenizer = /** @class */ (function () {
                 this.trieIndex += 1;
             }
             else {
+                // Add 1 as we have already incremented the excess
+                var entityStart = this._index - this.entityExcess + 1;
+                if (entityStart > this.sectionStart) {
+                    this.emitPartial(this.buffer.substring(this.sectionStart, entityStart));
+                }
                 // If this is a surrogate pair, combine the higher bits from the node with the next byte
                 this.trieResult =
                     this.trieCurrent & decode_1.BinTrieFlags.MULTI_BYTE
                         ? String.fromCharCode(this.entityTrie[++this.trieIndex], this.entityTrie[++this.trieIndex])
                         : String.fromCharCode(this.entityTrie[++this.trieIndex]);
-                this.trieExcess = 0;
+                this.entityExcess = 0;
+                this.sectionStart = this._index + 1;
             }
         }
     };
@@ -853,14 +861,28 @@ var Tokenizer = /** @class */ (function () {
         if (this.trieResult) {
             this.emitPartial(this.trieResult);
         }
-        this.sectionStart = this._index - this.trieExcess + 1;
         this._state = this.baseState;
     };
+    Tokenizer.prototype.stateBeforeNumericEntity = function (c) {
+        if ((c | 0x20) === 120 /* LowerX */) {
+            this.entityExcess++;
+            this._state = 29 /* InHexEntity */;
+        }
+        else {
+            this._state = 28 /* InNumericEntity */;
+            this.stateInNumericEntity(c);
+        }
+    };
     Tokenizer.prototype.decodeNumericEntity = function (base, strict) {
-        var sectionStart = this.sectionStart + 2 + (base >> 4);
-        if (sectionStart !== this._index) {
+        var entityStart = this._index - this.entityExcess - 1;
+        var numberStart = entityStart + 2 + (base >> 4);
+        if (numberStart !== this._index) {
+            // Emit leading data if any
+            if (entityStart > this.sectionStart) {
+                this.emitPartial(this.buffer.substring(this.sectionStart, entityStart));
+            }
             // Parse entity
-            var entity = this.buffer.substring(sectionStart, this._index);
+            var entity = this.buffer.substring(numberStart, this._index);
             var parsed = parseInt(entity, base);
             this.emitPartial((0, decode_codepoint_1$1.default)(parsed));
             this.sectionStart = this._index + Number(strict);
@@ -871,7 +893,7 @@ var Tokenizer = /** @class */ (function () {
         if (c === 59 /* Semi */) {
             this.decodeNumericEntity(10, true);
         }
-        else if (c < 48 /* Zero */ || c > 57 /* Nine */) {
+        else if (!isNumber(c)) {
             if (this.allowLegacyEntity()) {
                 this.decodeNumericEntity(10, false);
             }
@@ -880,6 +902,9 @@ var Tokenizer = /** @class */ (function () {
             }
             this._index--;
         }
+        else {
+            this.entityExcess++;
+        }
     };
     Tokenizer.prototype.stateInHexEntity = function (c) {
         if (c === 59 /* Semi */) {
@@ -887,7 +912,7 @@ var Tokenizer = /** @class */ (function () {
         }
         else if ((c < 97 /* LowerA */ || c > 102 /* LowerF */) &&
             (c < 65 /* UpperA */ || c > 70 /* UpperF */) &&
-            (c < 48 /* Zero */ || c > 57 /* Nine */)) {
+            !isNumber(c)) {
             if (this.allowLegacyEntity()) {
                 this.decodeNumericEntity(16, false);
             }
@@ -896,9 +921,14 @@ var Tokenizer = /** @class */ (function () {
             }
             this._index--;
         }
+        else {
+            this.entityExcess++;
+        }
     };
     Tokenizer.prototype.allowLegacyEntity = function () {
-        return !this.xmlMode && this.baseState === 1 /* Text */;
+        return (!this.xmlMode &&
+            (this.baseState === 1 /* Text */ ||
+                this.baseState === 24 /* InSpecialTag */));
     };
     /**
      * Remove data that has already been consumed from the buffer.
@@ -906,8 +936,10 @@ var Tokenizer = /** @class */ (function () {
     Tokenizer.prototype.cleanup = function () {
         // If we are inside of text, emit what we already have.
         if (this.running &&
-            this._state === 1 /* Text */ &&
-            this.sectionStart !== this._index) {
+            this.sectionStart !== this._index &&
+            (this._state === 1 /* Text */ ||
+                (this._state === 24 /* InSpecialTag */ &&
+                    this.sequenceIndex === 0))) {
             // TODO: We could emit attribute data here as well.
             this.cbs.ontext(this.buffer.substr(this.sectionStart));
             this.sectionStart = this._index;
@@ -921,16 +953,28 @@ var Tokenizer = /** @class */ (function () {
             this.sectionStart = 0;
         }
     };
+    Tokenizer.prototype.shouldContinue = function () {
+        return this._index < this.buffer.length && this.running;
+    };
     /**
      * Iterates through the buffer, calling the function corresponding to the current state.
      *
      * States that are more likely to be hit are higher up, as a performance improvement.
      */
     Tokenizer.prototype.parse = function () {
-        while (this._index < this.buffer.length && this.running) {
+        while (this.shouldContinue()) {
             var c = this.buffer.charCodeAt(this._index);
             if (this._state === 1 /* Text */) {
                 this.stateText(c);
+            }
+            else if (this._state === 23 /* SpecialStartSequence */) {
+                this.stateSpecialStartSequence(c);
+            }
+            else if (this._state === 24 /* InSpecialTag */) {
+                this.stateInSpecialTag(c);
+            }
+            else if (this._state === 19 /* CDATASequence */) {
+                this.stateCDATASequence(c);
             }
             else if (this._state === 12 /* InAttributeValueDq */) {
                 this.stateInAttributeValueDoubleQuotes(c);
@@ -938,8 +982,8 @@ var Tokenizer = /** @class */ (function () {
             else if (this._state === 9 /* InAttributeName */) {
                 this.stateInAttributeName(c);
             }
-            else if (this._state === 19 /* InComment */) {
-                this.stateInComment(c);
+            else if (this._state === 21 /* InCommentLike */) {
+                this.stateInCommentLike(c);
             }
             else if (this._state === 20 /* InSpecialComment */) {
                 this.stateInSpecialComment(c);
@@ -971,11 +1015,8 @@ var Tokenizer = /** @class */ (function () {
             else if (this._state === 7 /* AfterClosingTagName */) {
                 this.stateAfterClosingTagName(c);
             }
-            else if (this._state === 32 /* BeforeSpecialS */) {
+            else if (this._state === 22 /* BeforeSpecialS */) {
                 this.stateBeforeSpecialS(c);
-            }
-            else if (this._state === 21 /* AfterComment1 */) {
-                this.stateAfterComment1(c);
             }
             else if (this._state === 14 /* InAttributeValueNq */) {
                 this.stateInAttributeValueNoQuotes(c);
@@ -989,150 +1030,36 @@ var Tokenizer = /** @class */ (function () {
             else if (this._state === 15 /* BeforeDeclaration */) {
                 this.stateBeforeDeclaration(c);
             }
-            else if (this._state === 22 /* AfterComment2 */) {
-                this.stateAfterComment2(c);
-            }
             else if (this._state === 18 /* BeforeComment */) {
                 this.stateBeforeComment(c);
-            }
-            else if (this._state === 33 /* BeforeSpecialSEnd */) {
-                this.stateBeforeSpecialSEnd(c);
-            }
-            else if (this._state === 53 /* BeforeSpecialTEnd */) {
-                stateBeforeSpecialTEnd(this, c);
-            }
-            else if (this._state === 39 /* AfterScript1 */) {
-                stateAfterScript1(this, c);
-            }
-            else if (this._state === 40 /* AfterScript2 */) {
-                stateAfterScript2(this, c);
-            }
-            else if (this._state === 41 /* AfterScript3 */) {
-                stateAfterScript3(this, c);
-            }
-            else if (this._state === 34 /* BeforeScript1 */) {
-                stateBeforeScript1(this, c);
-            }
-            else if (this._state === 35 /* BeforeScript2 */) {
-                stateBeforeScript2(this, c);
-            }
-            else if (this._state === 36 /* BeforeScript3 */) {
-                stateBeforeScript3(this, c);
-            }
-            else if (this._state === 37 /* BeforeScript4 */) {
-                stateBeforeScript4(this, c);
-            }
-            else if (this._state === 38 /* BeforeScript5 */) {
-                this.stateBeforeSpecialLast(c, 2 /* Script */);
-            }
-            else if (this._state === 42 /* AfterScript4 */) {
-                stateAfterScript4(this, c);
-            }
-            else if (this._state === 43 /* AfterScript5 */) {
-                this.stateAfterSpecialLast(c, 6);
-            }
-            else if (this._state === 44 /* BeforeStyle1 */) {
-                stateBeforeStyle1(this, c);
-            }
-            else if (this._state === 29 /* InCdata */) {
-                this.stateInCdata(c);
-            }
-            else if (this._state === 45 /* BeforeStyle2 */) {
-                stateBeforeStyle2(this, c);
-            }
-            else if (this._state === 46 /* BeforeStyle3 */) {
-                stateBeforeStyle3(this, c);
-            }
-            else if (this._state === 47 /* BeforeStyle4 */) {
-                this.stateBeforeSpecialLast(c, 3 /* Style */);
-            }
-            else if (this._state === 48 /* AfterStyle1 */) {
-                stateAfterStyle1(this, c);
-            }
-            else if (this._state === 49 /* AfterStyle2 */) {
-                stateAfterStyle2(this, c);
-            }
-            else if (this._state === 50 /* AfterStyle3 */) {
-                stateAfterStyle3(this, c);
-            }
-            else if (this._state === 51 /* AfterStyle4 */) {
-                this.stateAfterSpecialLast(c, 5);
-            }
-            else if (this._state === 52 /* BeforeSpecialT */) {
-                stateBeforeSpecialT(this, c);
-            }
-            else if (this._state === 54 /* BeforeTitle1 */) {
-                stateBeforeTitle1(this, c);
-            }
-            else if (this._state === 55 /* BeforeTitle2 */) {
-                stateBeforeTitle2(this, c);
-            }
-            else if (this._state === 56 /* BeforeTitle3 */) {
-                stateBeforeTitle3(this, c);
-            }
-            else if (this._state === 57 /* BeforeTitle4 */) {
-                this.stateBeforeSpecialLast(c, 4 /* Title */);
-            }
-            else if (this._state === 58 /* AfterTitle1 */) {
-                stateAfterTitle1(this, c);
-            }
-            else if (this._state === 59 /* AfterTitle2 */) {
-                stateAfterTitle2(this, c);
-            }
-            else if (this._state === 60 /* AfterTitle3 */) {
-                stateAfterTitle3(this, c);
-            }
-            else if (this._state === 61 /* AfterTitle4 */) {
-                this.stateAfterSpecialLast(c, 5);
             }
             else if (this._state === 17 /* InProcessingInstruction */) {
                 this.stateInProcessingInstruction(c);
             }
-            else if (this._state === 64 /* InNamedEntity */) {
+            else if (this._state === 27 /* InNamedEntity */) {
                 this.stateInNamedEntity(c);
             }
-            else if (this._state === 23 /* BeforeCdata1 */) {
-                stateBeforeCdata1(this, c);
-            }
-            else if (this._state === 62 /* BeforeEntity */) {
+            else if (this._state === 25 /* BeforeEntity */) {
                 this.stateBeforeEntity(c);
             }
-            else if (this._state === 24 /* BeforeCdata2 */) {
-                stateBeforeCdata2(this, c);
-            }
-            else if (this._state === 25 /* BeforeCdata3 */) {
-                stateBeforeCdata3(this, c);
-            }
-            else if (this._state === 30 /* AfterCdata1 */) {
-                this.stateAfterCdata1(c);
-            }
-            else if (this._state === 31 /* AfterCdata2 */) {
-                this.stateAfterCdata2(c);
-            }
-            else if (this._state === 26 /* BeforeCdata4 */) {
-                stateBeforeCdata4(this, c);
-            }
-            else if (this._state === 27 /* BeforeCdata5 */) {
-                stateBeforeCdata5(this, c);
-            }
-            else if (this._state === 28 /* BeforeCdata6 */) {
-                this.stateBeforeCdata6(c);
-            }
-            else if (this._state === 66 /* InHexEntity */) {
+            else if (this._state === 29 /* InHexEntity */) {
                 this.stateInHexEntity(c);
             }
-            else if (this._state === 65 /* InNumericEntity */) {
+            else if (this._state === 28 /* InNumericEntity */) {
                 this.stateInNumericEntity(c);
             }
             else {
                 // `this._state === State.BeforeNumericEntity`
-                stateBeforeNumericEntity(this, c);
+                this.stateBeforeNumericEntity(c);
             }
             this._index++;
         }
         this.cleanup();
     };
     Tokenizer.prototype.finish = function () {
+        if (this._state === 27 /* InNamedEntity */) {
+            this.emitNamedEntity();
+        }
         // If there is remaining data, emit it in a reasonable way
         if (this.sectionStart < this._index) {
             this.handleTrailingData();
@@ -1142,30 +1069,21 @@ var Tokenizer = /** @class */ (function () {
     /** Handle any trailing data. */
     Tokenizer.prototype.handleTrailingData = function () {
         var data = this.buffer.substr(this.sectionStart);
-        if (this._state === 29 /* InCdata */ ||
-            this._state === 30 /* AfterCdata1 */ ||
-            this._state === 31 /* AfterCdata2 */) {
-            this.cbs.oncdata(data);
-        }
-        else if (this._state === 19 /* InComment */ ||
-            this._state === 21 /* AfterComment1 */ ||
-            this._state === 22 /* AfterComment2 */) {
-            this.cbs.oncomment(data);
-        }
-        else if (this._state === 64 /* InNamedEntity */ && !this.xmlMode) {
-            // Increase excess for EOF
-            this.trieExcess++;
-            this.emitNamedEntity();
-            if (this.sectionStart < this._index) {
-                this._state = this.baseState;
-                this.handleTrailingData();
+        if (this._state === 21 /* InCommentLike */) {
+            if (this.currentSequence === Sequences.CdataEnd) {
+                this.cbs.oncdata(data);
+            }
+            else {
+                this.cbs.oncomment(data);
             }
         }
-        else if (this._state === 65 /* InNumericEntity */ && !this.xmlMode) {
+        else if (this._state === 28 /* InNumericEntity */ &&
+            this.allowLegacyEntity()) {
             this.decodeNumericEntity(10, false);
             // All trailing data will have been consumed
         }
-        else if (this._state === 66 /* InHexEntity */ && !this.xmlMode) {
+        else if (this._state === 29 /* InHexEntity */ &&
+            this.allowLegacyEntity()) {
             this.decodeNumericEntity(16, false);
             // All trailing data will have been consumed
         }
@@ -1186,7 +1104,8 @@ var Tokenizer = /** @class */ (function () {
         return this.buffer.substring(this.sectionStart, this._index);
     };
     Tokenizer.prototype.emitPartial = function (value) {
-        if (this.baseState !== 1 /* Text */) {
+        if (this.baseState !== 1 /* Text */ &&
+            this.baseState !== 24 /* InSpecialTag */) {
             this.cbs.onattribdata(value);
         }
         else {
@@ -1747,6 +1666,10 @@ var Node$2 = /** @class */ (function () {
     }
     Object.defineProperty(Node.prototype, "nodeType", {
         // Read-only aliases
+        /**
+         * [DOM spec](https://dom.spec.whatwg.org/#dom-node-nodetype)-compatible
+         * node {@link type}.
+         */
         get: function () {
             var _a;
             return (_a = nodeTypes.get(this.type)) !== null && _a !== void 0 ? _a : 1;
@@ -1756,6 +1679,10 @@ var Node$2 = /** @class */ (function () {
     });
     Object.defineProperty(Node.prototype, "parentNode", {
         // Read-write aliases for properties
+        /**
+         * Same as {@link parent}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
         get: function () {
             return this.parent;
         },
@@ -1766,6 +1693,10 @@ var Node$2 = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(Node.prototype, "previousSibling", {
+        /**
+         * Same as {@link prev}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
         get: function () {
             return this.prev;
         },
@@ -1776,6 +1707,10 @@ var Node$2 = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(Node.prototype, "nextSibling", {
+        /**
+         * Same as {@link next}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
         get: function () {
             return this.next;
         },
@@ -1813,6 +1748,10 @@ var DataNode = /** @class */ (function (_super) {
         return _this;
     }
     Object.defineProperty(DataNode.prototype, "nodeValue", {
+        /**
+         * Same as {@link data}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
         get: function () {
             return this.data;
         },
@@ -1876,6 +1815,7 @@ var NodeWithChildren = /** @class */ (function (_super) {
     }
     Object.defineProperty(NodeWithChildren.prototype, "firstChild", {
         // Aliases
+        /** First child of the node. */
         get: function () {
             var _a;
             return (_a = this.children[0]) !== null && _a !== void 0 ? _a : null;
@@ -1884,6 +1824,7 @@ var NodeWithChildren = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(NodeWithChildren.prototype, "lastChild", {
+        /** Last child of the node. */
         get: function () {
             return this.children.length > 0
                 ? this.children[this.children.length - 1]
@@ -1893,6 +1834,10 @@ var NodeWithChildren = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(NodeWithChildren.prototype, "childNodes", {
+        /**
+         * Same as {@link children}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
         get: function () {
             return this.children;
         },
@@ -1940,6 +1885,10 @@ var Element$3 = /** @class */ (function (_super) {
     }
     Object.defineProperty(Element.prototype, "tagName", {
         // DOM Level 1 aliases
+        /**
+         * Same as {@link name}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
         get: function () {
             return this.name;
         },
@@ -2043,6 +1992,9 @@ function cloneNode(node, recursive) {
         var children = recursive ? cloneChildren(node.children) : [];
         var clone_1 = new Element$3(node.name, __assign$1({}, node.attribs), children);
         children.forEach(function (child) { return (child.parent = clone_1); });
+        if (node.namespace != null) {
+            clone_1.namespace = node.namespace;
+        }
         if (node["x-attribsNamespace"]) {
             clone_1["x-attribsNamespace"] = __assign$1({}, node["x-attribsNamespace"]);
         }
@@ -2076,10 +2028,13 @@ function cloneNode(node, recursive) {
         result = instruction;
     }
     else {
-        throw new Error("Not implemented yet: " + node.type);
+        throw new Error("Not implemented yet: ".concat(node.type));
     }
     result.startIndex = node.startIndex;
     result.endIndex = node.endIndex;
+    if (node.sourceCodeLocation != null) {
+        result.sourceCodeLocation = node.sourceCodeLocation;
+    }
     return result;
 }
 node.cloneNode = cloneNode;
@@ -9709,10 +9664,14 @@ var lib$1 = {};
 
 var parse$6 = {};
 
-var __spreadArray$1 = (commonjsGlobal && commonjsGlobal.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray$1 = (commonjsGlobal && commonjsGlobal.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(parse$6, "__esModule", { value: true });
 parse$6.isTraversal = void 0;
@@ -9742,12 +9701,13 @@ var unpackPseudos = new Set([
     "not",
     "matches",
     "is",
+    "where",
     "host",
     "host-context",
 ]);
 var traversalNames = new Set(__spreadArray$1([
     "descendant"
-], Object.keys(Traversals).map(function (k) { return Traversals[k]; })));
+], Object.keys(Traversals).map(function (k) { return Traversals[k]; }), true));
 /**
  * Attributes that are case-insensitive in HTML.
  *
@@ -9931,7 +9891,6 @@ function parseSelector(subselects, selector, options, selectorIndex) {
             else if (firstChar === "[") {
                 stripWhitespace(1);
                 // Determine attribute name and namespace
-                var name_2 = void 0;
                 var namespace = null;
                 if (selector.charAt(selectorIndex) === "|") {
                     namespace = "";
@@ -9941,7 +9900,7 @@ function parseSelector(subselects, selector, options, selectorIndex) {
                     namespace = "*";
                     selectorIndex += 2;
                 }
-                name_2 = getName(0);
+                var name_2 = getName(0);
                 if (namespace === null &&
                     selector.charAt(selectorIndex) === "|" &&
                     selector.charAt(selectorIndex + 1) !== "=") {
@@ -10139,10 +10098,14 @@ function addToken(subselects, tokens) {
 
 var stringify$1 = {};
 
-var __spreadArray = (commonjsGlobal && commonjsGlobal.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (commonjsGlobal && commonjsGlobal.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(stringify$1, "__esModule", { value: true });
 var actionTypes = {
@@ -10156,7 +10119,7 @@ var actionTypes = {
 };
 var charsToEscape = new Set(__spreadArray(__spreadArray([], Object.keys(actionTypes)
     .map(function (typeKey) { return actionTypes[typeKey]; })
-    .filter(Boolean)), [
+    .filter(Boolean), true), [
     ":",
     "[",
     "]",
@@ -10165,7 +10128,7 @@ var charsToEscape = new Set(__spreadArray(__spreadArray([], Object.keys(actionTy
     "(",
     ")",
     "'",
-]));
+], false));
 /**
  * Turns `selector` back into a string.
  *
@@ -10441,7 +10404,7 @@ attributes.attributeRules = {
         if (/\s/.test(value)) {
             return boolbase_1$2.falseFunc;
         }
-        var regex = new RegExp("(?:^|\\s)" + escapeRegex(value) + "(?:$|\\s)", ignoreCase ? "i" : "");
+        var regex = new RegExp("(?:^|\\s)".concat(escapeRegex(value), "(?:$|\\s)"), ignoreCase ? "i" : "");
         return function element(elem) {
             var attr = adapter.getAttributeValue(elem, name);
             return (attr != null &&
@@ -10757,7 +10720,7 @@ exports.filters = {
     // Location specific methods
     "nth-child": function (next, rule, _a) {
         var adapter = _a.adapter, equals = _a.equals;
-        var func = nth_check_1.default(rule);
+        var func = (0, nth_check_1.default)(rule);
         if (func === boolbase_1.falseFunc)
             return boolbase_1.falseFunc;
         if (func === boolbase_1.trueFunc)
@@ -10777,7 +10740,7 @@ exports.filters = {
     },
     "nth-last-child": function (next, rule, _a) {
         var adapter = _a.adapter, equals = _a.equals;
-        var func = nth_check_1.default(rule);
+        var func = (0, nth_check_1.default)(rule);
         if (func === boolbase_1.falseFunc)
             return boolbase_1.falseFunc;
         if (func === boolbase_1.trueFunc)
@@ -10797,7 +10760,7 @@ exports.filters = {
     },
     "nth-of-type": function (next, rule, _a) {
         var adapter = _a.adapter, equals = _a.equals;
-        var func = nth_check_1.default(rule);
+        var func = (0, nth_check_1.default)(rule);
         if (func === boolbase_1.falseFunc)
             return boolbase_1.falseFunc;
         if (func === boolbase_1.trueFunc)
@@ -10819,7 +10782,7 @@ exports.filters = {
     },
     "nth-last-of-type": function (next, rule, _a) {
         var adapter = _a.adapter, equals = _a.equals;
-        var func = nth_check_1.default(rule);
+        var func = (0, nth_check_1.default)(rule);
         if (func === boolbase_1.falseFunc)
             return boolbase_1.falseFunc;
         if (func === boolbase_1.trueFunc)
@@ -10965,11 +10928,11 @@ pseudos.pseudos = {
 function verifyPseudoArgs(func, name, subselect) {
     if (subselect === null) {
         if (func.length > 2) {
-            throw new Error("pseudo-selector :" + name + " requires an argument");
+            throw new Error("pseudo-selector :".concat(name, " requires an argument"));
         }
     }
     else if (func.length === 2) {
-        throw new Error("pseudo-selector :" + name + " doesn't have any arguments");
+        throw new Error("pseudo-selector :".concat(name, " doesn't have any arguments"));
     }
 }
 pseudos.verifyPseudoArgs = verifyPseudoArgs;
@@ -11012,10 +10975,14 @@ aliases.aliases = {
 var subselects = {};
 
 (function (exports) {
-var __spreadArray = (commonjsGlobal && commonjsGlobal.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (commonjsGlobal && commonjsGlobal.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.subselects = exports.getNextSiblings = exports.ensureIsTag = exports.PLACEHOLDER_ELEMENT = void 0;
@@ -11049,16 +11016,17 @@ var is = function (next, token, options, context, compileToken) {
     return function (elem) { return func(elem) && next(elem); };
 };
 /*
- * :not, :has, :is and :matches have to compile selectors
+ * :not, :has, :is, :matches and :where have to compile selectors
  * doing this in src/pseudos.ts would lead to circular dependencies,
  * so we add them here
  */
 exports.subselects = {
     is: is,
     /**
-     * `:matches` is an alias for `:is`.
+     * `:matches` and `:where` are aliases for `:is`.
      */
     matches: is,
+    where: is,
     not: function (next, token, options, context, compileToken) {
         var opts = {
             xmlMode: !!options.xmlMode,
@@ -11106,7 +11074,7 @@ exports.subselects = {
                 context[0] = elem;
                 var childs = adapter.getChildren(elem);
                 var nextElements = shouldTestNextSiblings
-                    ? __spreadArray(__spreadArray([], childs), getNextSiblings(elem, adapter)) : childs;
+                    ? __spreadArray(__spreadArray([], childs, true), getNextSiblings(elem, adapter), true) : childs;
                 return (next(elem) && adapter.existsOne(hasElement, nextElements));
             };
         }
@@ -11151,10 +11119,10 @@ function compilePseudoSelector(next, selector, options, context, compileToken) {
     }
     if (name in aliases_1.aliases) {
         if (data != null) {
-            throw new Error("Pseudo " + name + " doesn't have any arguments");
+            throw new Error("Pseudo ".concat(name, " doesn't have any arguments"));
         }
         // The alias has to be parsed here, to make sure options are respected.
-        var alias = css_what_1.parse(aliases_1.aliases[name], options);
+        var alias = (0, css_what_1.parse)(aliases_1.aliases[name], options);
         return subselects_1.subselects.is(next, alias, options, context, compileToken);
     }
     if (name in filters_1.filters) {
@@ -11162,14 +11130,14 @@ function compilePseudoSelector(next, selector, options, context, compileToken) {
     }
     if (name in pseudos_1.pseudos) {
         var pseudo_1 = pseudos_1.pseudos[name];
-        pseudos_1.verifyPseudoArgs(pseudo_1, name, data);
+        (0, pseudos_1.verifyPseudoArgs)(pseudo_1, name, data);
         return pseudo_1 === boolbase_1.falseFunc
             ? boolbase_1.falseFunc
             : next === boolbase_1.trueFunc
                 ? function (elem) { return pseudo_1(elem, options, data); }
                 : function (elem) { return pseudo_1(elem, options, data) && next(elem); };
     }
-    throw new Error("unmatched pseudo-class :" + name);
+    throw new Error("unmatched pseudo-class :".concat(name));
 }
 exports.compilePseudoSelector = compilePseudoSelector;
 }(pseudoSelectors));
@@ -11189,7 +11157,7 @@ function compileGeneralSelector(next, selector, options, context, compileToken) 
         case "attribute":
             return attributes_1.attributeRules[selector.action](next, selector, options);
         case "pseudo":
-            return pseudo_selectors_1.compilePseudoSelector(next, selector, options, context, compileToken);
+            return (0, pseudo_selectors_1.compilePseudoSelector)(next, selector, options, context, compileToken);
         // Tags
         case "tag":
             return function tag(elem) {
@@ -11298,11 +11266,11 @@ var subselects_1 = subselects;
  */
 function compile(selector, options, context) {
     var next = compileUnsafe(selector, options, context);
-    return subselects_1.ensureIsTag(next, options.adapter);
+    return (0, subselects_1.ensureIsTag)(next, options.adapter);
 }
 compile$3.compile = compile;
 function compileUnsafe(selector, options, context) {
-    var token = typeof selector === "string" ? css_what_1.parse(selector, options) : selector;
+    var token = typeof selector === "string" ? (0, css_what_1.parse)(selector, options) : selector;
     return compileToken(token, options, context);
 }
 compile$3.compileUnsafe = compileUnsafe;
@@ -11330,7 +11298,7 @@ function absolutize(token, _a, context) {
     }));
     for (var _i = 0, token_1 = token; _i < token_1.length; _i++) {
         var t = token_1[_i];
-        if (t.length > 0 && procedure_1.isTraversal(t[0]) && t[0].type !== "descendant") ;
+        if (t.length > 0 && (0, procedure_1.isTraversal)(t[0]) && t[0].type !== "descendant") ;
         else if (hasContext && !t.some(includesScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
         }
@@ -11374,7 +11342,7 @@ function compileRules(rules, options, context) {
     return rules.reduce(function (previous, rule) {
         return previous === boolbase_1.falseFunc
             ? boolbase_1.falseFunc
-            : general_1.compileGeneralSelector(previous, rule, options, context, compileToken);
+            : (0, general_1.compileGeneralSelector)(previous, rule, options, context, compileToken);
     }, (_a = options.rootFunc) !== null && _a !== void 0 ? _a : boolbase_1.trueFunc);
 }
 function reduceRules(a, b) {
@@ -11449,7 +11417,7 @@ function getSelectorFunc(searchFunc) {
     return function select(query, elements, options) {
         var opts = convertOptionFormats(options);
         if (typeof query !== "function") {
-            query = compile_1.compileUnsafe(query, opts, elements);
+            query = (0, compile_1.compileUnsafe)(query, opts, elements);
         }
         var filteredElements = prepareContext(elements, opts.adapter, query.shouldTestNextSiblings);
         return searchFunc(query, filteredElements, opts);
@@ -11472,8 +11440,9 @@ exports.prepareContext = prepareContext;
 function appendNextSiblings(elem, adapter) {
     // Order matters because jQuery seems to check the children before the siblings
     var elems = Array.isArray(elem) ? elem.slice(0) : [elem];
-    for (var i = 0; i < elems.length; i++) {
-        var nextSiblings = subselects_1.getNextSiblings(elems[i], adapter);
+    var elemsLength = elems.length;
+    for (var i = 0; i < elemsLength; i++) {
+        var nextSiblings = (0, subselects_1.getNextSiblings)(elems[i], adapter);
         elems.push.apply(elems, nextSiblings);
     }
     return elems;
@@ -11520,7 +11489,7 @@ exports.selectOne = getSelectorFunc(function (query, elems, options) {
  */
 function is(elem, query, options) {
     var opts = convertOptionFormats(options);
-    return (typeof query === "function" ? query : compile_1.compile(query, opts))(elem);
+    return (typeof query === "function" ? query : (0, compile_1.compile)(query, opts))(elem);
 }
 exports.is = is;
 /**
