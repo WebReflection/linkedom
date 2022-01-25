@@ -1,4 +1,4 @@
-import {performance} from 'perf_hooks';
+import {performance} from '../../commonjs/perf_hooks.cjs';
 
 import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} from '../shared/constants.js';
 

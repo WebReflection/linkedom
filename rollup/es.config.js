@@ -19,7 +19,7 @@ export default {
 function shims() {
   return {
     resolveId(specifier) {
-      if(specifier === 'perf_hooks') {
+      if(specifier.endsWith('perf_hooks.cjs')) {
         return 'shim:perf_hooks';
       }
       if(specifier.endsWith('canvas.cjs')) {

@@ -1,5 +1,5 @@
 'use strict';
-const {performance} = require('perf_hooks');
+const {performance} = require('../../commonjs/perf_hooks.cjs');
 
 const {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} = require('../shared/constants.js');
 
