@@ -1,6 +1,6 @@
 'use strict';
 const {COMMENT_NODE} = require('../shared/constants.js');
-const {VALUE} = require('../shared/symbols.js');
+const {VALUE, MIME} = require('../shared/symbols.js');
 const {escape} = require('../shared/text-escaper.js');
 
 const {CharacterData} = require('./character-data.js');
@@ -18,6 +18,12 @@ class Comment extends CharacterData {
     return new Comment(ownerDocument, data);
   }
 
-  toString() { return `<!--${escape(this[VALUE])}-->`; }
+  toString() { 
+    const {ownerDocument} = this;
+    if (ownerDocument[MIME].escapeHtmlEntities) {
+      return `<!--${escape(this[VALUE])}-->`;
+    }
+    return `<!--${(this[VALUE])}-->`;
+  }
 }
 exports.Comment = Comment

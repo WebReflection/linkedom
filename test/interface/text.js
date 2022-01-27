@@ -1,6 +1,6 @@
 const assert = require('../assert.js').for('Text');
 
-const {parseHTML} = global[Symbol.for('linkedom')];
+const {parseHTML, DOMParser} = global[Symbol.for('linkedom')];
 
 const {document} = parseHTML('<html><div></div></html>');
 
@@ -67,3 +67,9 @@ assert(node.childNodes.length, 1, 'normalize() empty text');
 assert(text.nodeValue, 'text');
 text.nodeValue = '';
 assert(text.nodeValue, '');
+const jsxDocument = (new DOMParser).parseFromString('<html><!-- <> --><div foo={bar}><></div><img className="foo" src={getSrc()} />{eles.map(ele => (<div foo={ele.id}></div>))}</html>', 'text/jsx+xml');
+assert(
+    jsxDocument.getRootNode().toString(), 
+    '<html><!-- <> --><div foo={bar}><></div><img className="foo" src={getSrc()} />{eles.map(ele => (<div foo={ele.id} />))}</html>', 
+    'Must resemble JSX original form, no escaping, allow for JSON attributes'
+);

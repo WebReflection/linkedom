@@ -1,6 +1,6 @@
 'use strict';
 const {ATTRIBUTE_NODE} = require('../shared/constants.js');
-const {CHANGED, VALUE} = require('../shared/symbols.js');
+const {CHANGED, VALUE, MIME} = require('../shared/symbols.js');
 const {String} = require('../shared/utils.js');
 const {attrAsJSON} = require('../shared/jsdon.js');
 const {emptyAttributes} = require('../shared/attributes.js');
@@ -41,9 +41,10 @@ class Attr extends Node {
   }
 
   toString() {
-    const {name, [VALUE]: value} = this;
+    const {ownerDocument, name, [VALUE]: value} = this;
+    const doubleQuote = ownerDocument[MIME].unquotedJsonAttributes && /^\{(.[\s\S]?)+\}$/.test(value) ? '' : '"'
     return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+            name : `${name}=${doubleQuote}${value.replace(QUOTE, doubleQuote ? '&quot;' : '"')}${doubleQuote}`;
   }
 
   toJSON() {
