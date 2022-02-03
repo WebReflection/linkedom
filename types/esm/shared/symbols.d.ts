@@ -18,3 +18,4 @@ export const SHEET: unique symbol;
 export const START: unique symbol;
 export const STYLE: unique symbol;
 export const VALUE: unique symbol;
+export const WINDOW: unique symbol;

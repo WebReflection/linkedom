@@ -7,6 +7,7 @@ const {Document} = require('../interface/document.js');
 const {NodeList} = require('../interface/node-list.js');
 const {customElements} = require('../interface/custom-element-registry.js');
 
+const {WINDOW} = require('../shared/symbols.js');
 const {HTMLElement} = require('./element.js');
 
 const createHTMLElement = (ownerDocument, builtin, localName, options) => {
@@ -30,7 +31,7 @@ const createHTMLElement = (ownerDocument, builtin, localName, options) => {
 /**
  * @implements globalThis.HTMLDocument
  */
-class HTMLDocument extends Document {
+class _HTMLDocument extends Document {
   constructor() { super('text/html'); }
 
   get all() {
@@ -102,5 +103,55 @@ class HTMLDocument extends Document {
       element.setAttribute('is', options.is);
     return element;
   }
+}
+
+/** @typedef {{ [WINDOW] : Object }} Context */
+/**
+ * @constructor
+ * @param {Context} context
+ */
+class HTMLDocument extends _HTMLDocument {
+
+  constructor (context = {}) {
+    super();
+    const useState = (target, name) => {
+      return ((_0, _1={}) => {
+        const g = (name in _1) ? _1 : _0;
+        return {
+          get: () => g[name],
+          set: (v) => (g[name] = v) || true,
+        }
+      })(target, context[WINDOW]);
+    };
+    this[WINDOW] = {
+      set: (target, name, value) => {
+        return useState(target, name).set(value);
+      },
+      get: (target, name) => {
+        if (name === 'window') {
+          return new Proxy(target.window, this[WINDOW]);
+        }
+        return useState(target, name).get();
+      }
+    }
+  }
+
+  get defaultView() {
+    return new Proxy(super.defaultView, this[WINDOW])
+  }
+
+  get location() {
+    return this.defaultView.location;
+  }
+
+  set location(location) {
+    this.defaultView.location = location;
+  }
+
+  get all() { return super.all } 
+  get head() { return super.head } 
+  get body() { return super.body } 
+  get title() { return super.title } 
+  set title(v) { super.title = v } 
 }
 exports.HTMLDocument = HTMLDocument

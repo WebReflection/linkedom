@@ -4,6 +4,8 @@ const {Document: _Document} = require('./interface/document.js');
 
 const {illegalConstructor} = require('./shared/facades.js');
 const {setPrototypeOf} = require('./shared/object.js');
+const {WINDOW, MIME} = require('./shared/symbols.js');
+
 (m => {
   exports.parseJSON = m.parseJSON;
   exports.toJSON = m.toJSON;
@@ -15,6 +17,7 @@ const {setPrototypeOf} = require('./shared/object.js');
 (require('./shared/html-classes.js'));
 
 exports.DOMParser = DOMParser;
+exports.WINDOW = WINDOW;
 
 (m => {
   exports.CustomEvent = m.CustomEvent;
@@ -32,10 +35,12 @@ exports.DOMParser = DOMParser;
   exports.NodeList = m.NodeList;
 })(require('./interface/node-list.js'));
 
-const parseHTML = html => (new DOMParser).parseFromString(
-  html, 'text/html'
-).defaultView;
-exports.parseHTML = parseHTML;
+const parseHTML = (html, global={}) => {
+  return (new DOMParser).parseFromString(
+    html, { [MIME]: 'text/html', [WINDOW]: global }
+  ).defaultView;
+}
+exports.parseHTML = parseHTML
 
 function Document() {
   illegalConstructor();

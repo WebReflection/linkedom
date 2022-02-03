@@ -73,6 +73,9 @@ const STYLE = Symbol('style');
 // used to define generic values
 const VALUE = Symbol('value');
 
+// used in Document to set global values
+const WINDOW = Symbol('linkedomWindowProxy');
+
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function getDefaultExportFromCjs (x) {
@@ -16669,7 +16672,7 @@ const createHTMLElement$1 = (ownerDocument, builtin, localName, options) => {
 /**
  * @implements globalThis.HTMLDocument
  */
-class HTMLDocument extends Document$1 {
+class _HTMLDocument extends Document$1 {
   constructor() { super('text/html'); }
 
   get all() {
@@ -16743,6 +16746,56 @@ class HTMLDocument extends Document$1 {
   }
 }
 
+/** @typedef {{ [WINDOW] : Object }} Context */
+/**
+ * @constructor
+ * @param {Context} context
+ */
+class HTMLDocument extends _HTMLDocument {
+
+  constructor (context = {}) {
+    super();
+    const useState = (target, name) => {
+      return ((_0, _1={}) => {
+        const g = (name in _1) ? _1 : _0;
+        return {
+          get: () => g[name],
+          set: (v) => (g[name] = v) || true,
+        }
+      })(target, context[WINDOW]);
+    };
+    this[WINDOW] = {
+      set: (target, name, value) => {
+        return useState(target, name).set(value);
+      },
+      get: (target, name) => {
+        if (name === 'window') {
+          return new Proxy(target.window, this[WINDOW]);
+        }
+        return useState(target, name).get();
+      }
+    };
+  }
+
+  get defaultView() {
+    return new Proxy(super.defaultView, this[WINDOW])
+  }
+
+  get location() {
+    return this.defaultView.location;
+  }
+
+  set location(location) {
+    this.defaultView.location = location;
+  }
+
+  get all() { return super.all } 
+  get head() { return super.head } 
+  get body() { return super.body } 
+  get title() { return super.title } 
+  set title(v) { super.title = v; } 
+}
+
 /**
  * @implements globalThis.Document
  */
@@ -16769,17 +16822,25 @@ class XMLDocument extends Document$1 {
 class DOMParser {
 
   /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc */
+  /** @typedef {{ [x: symbol]: unknown, [MIME] : string }} Config */
   /**
    * @template {keyof MimeToDoc} MIME
    * @param {string} markupLanguage
-   * @param {MIME} mimeType
+   * @param {Config | string} config
    * @returns {MimeToDoc[MIME]}
    */
-  parseFromString(markupLanguage, mimeType) {
+  parseFromString(markupLanguage, config) {
+    const [mimeType, domOptions] = ((c) => {
+      if (typeof c === 'object') {
+        const {[MIME]: mime, ...rest} = c;
+        return [mime || 'text/html', rest]
+      }
+      return [c, {}]
+    })(config);
     let isHTML = false, document;
     if (mimeType === 'text/html') {
       isHTML = true;
-      document = new HTMLDocument;
+      document = new HTMLDocument(domOptions);
     }
     else if (mimeType === 'image/svg+xml')
       document = new SVGDocument;
@@ -16894,9 +16955,11 @@ const parseJSON = value => {
  */
 const toJSON = node => node.toJSON();
 
-const parseHTML = html => (new DOMParser).parseFromString(
-  html, 'text/html'
-).defaultView;
+const parseHTML = (html, global={}) => {
+  return (new DOMParser).parseFromString(
+    html, { [MIME]: 'text/html', [WINDOW]: global }
+  ).defaultView;
+};
 
 function Document() {
   illegalConstructor();
@@ -16904,4 +16967,4 @@ function Document() {
 
 setPrototypeOf(Document, Document$1).prototype = Document$1.prototype;
 
-export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };
+export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeList, SVGElement, ShadowRoot, Text, WINDOW, illegalConstructor, parseHTML, parseJSON, toJSON };

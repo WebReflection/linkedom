@@ -57,3 +57,6 @@ export const STYLE = Symbol('style');
 
 // used to define generic values
 export const VALUE = Symbol('value');
+
+// used in Document to set global values
+export const WINDOW = Symbol('linkedomWindowProxy');
