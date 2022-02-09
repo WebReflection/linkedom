@@ -48,6 +48,11 @@ assert(document.all[1], document.querySelector('head'));
 assert(document.all[2], document.querySelector('title'));
 assert(document.all[3], document.querySelector('body'));
 
+document = (new DOMParser).parseFromString('<!DOCTYPE html><html><body><div>foo</div></body></html>', 'text/html');
+assert(document.body.tagName, 'BODY');
+assert(document.body, document.querySelector('body'));
+assert(document.body.textContent, 'foo');
+
 // global listener
 let triggered = false;
 window.addEventListener('test', function once() {
