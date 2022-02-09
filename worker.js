@@ -8525,6 +8525,8 @@ const Classes = new WeakMap;
 
 const customElements = new WeakMap;
 
+const upgradingElements = new WeakMap;
+
 const attributeChangedCallback$1 = (element, attributeName, oldValue, newValue) => {
   if (
     reactive &&
@@ -8579,24 +8581,24 @@ const disconnectedCallback = element => {
 class CustomElementRegistry {
 
   /**
-   * @param {Document} ownerDocument 
+   * @param {Document} ownerDocument
    */
   constructor(ownerDocument) {
     /**
      * @private
      */
     this.ownerDocument = ownerDocument;
-  
+
     /**
      * @private
      */
     this.registry = new Map;
-  
+
     /**
      * @private
      */
     this.waiting = new Map;
-  
+
     /**
      * @private
      */
@@ -8663,11 +8665,11 @@ class CustomElementRegistry {
         for (const [key] of values)
           delete element[key];
 
-        setPrototypeOf(element, new Class(this.ownerDocument, ce));
+        setPrototypeOf(element, Class.prototype);
         customElements.set(element, {connected: isConnected});
 
-        for (const [key, value] of values)
-          element[key] = value;
+        upgradingElements.set(Class, { element, values });
+        new Class(this.ownerDocument, ce);
 
         for (const attr of attributes)
           element.setAttributeNode(attr);
@@ -12941,8 +12943,15 @@ class HTMLElement extends Element$1 {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
+    const {constructor: Class, [END]: end} = this;
+    if (upgradingElements.has(Class)) {
+      const {element, values } = upgradingElements.get(Class);
+      upgradingElements.delete(Class);
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
     if (!ownerDocument) {
-      const {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
       const {ownerDocument, localName, options} = Classes.get(Class);

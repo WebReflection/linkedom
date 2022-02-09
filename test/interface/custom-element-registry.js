@@ -2,7 +2,7 @@ const assert = require('../assert.js').for('CustomElementRegistry');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {HTMLElement, HTMLButtonElement, HTMLTemplateElement, customElements, document} = parseHTML('<html></html>');
+const {HTMLElement, HTMLButtonElement, HTMLTemplateElement, customElements, document} = parseHTML('<html><body><custom-element></custom-element></body></html>');
 
 class CE extends HTMLElement {}
 
@@ -176,3 +176,18 @@ document.documentElement.appendChild(outer);
 
 assert(args.splice(0).join(','), 'connected: outer-test,connected: button[is="inner-button"]', 'inner builtin elements get connected too');
 assert(outer.querySelector('button').toString(), '<button is="inner-button" test="123">OK</button>', 'button with the correct content');
+
+
+customElements.define('custom-element', class extends CE {
+  constructor(props) {
+    super(props);
+    this.constructorThis = () => {
+      return this
+    }
+  }
+  isCurrentThisSameAsConstructorThis() {
+    return this === this.constructorThis();
+  }
+})
+
+assert(document.querySelector('custom-element').isCurrentThisSameAsConstructorThis(), true, 'constructor this same as method this')

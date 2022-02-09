@@ -4,7 +4,7 @@ const {booleanAttribute, stringAttribute} = require('../shared/attributes.js');
 
 const {Event} = require('../interface/event.js');
 const {Element} = require('../interface/element.js');
-const {Classes, customElements} = require('../interface/custom-element-registry.js');
+const {Classes, customElements, upgradingElements } = require('../interface/custom-element-registry.js');
 
 const Level0 = new WeakMap;
 const level0 = {
@@ -32,8 +32,15 @@ class HTMLElement extends Element {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
+    const {constructor: Class, [END]: end} = this;
+    if (upgradingElements.has(Class)) {
+      const {element, values } = upgradingElements.get(Class);
+      upgradingElements.delete(Class);
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
     if (!ownerDocument) {
-      const {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
       const {ownerDocument, localName, options} = Classes.get(Class);

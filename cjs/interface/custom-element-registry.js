@@ -11,6 +11,9 @@ exports.Classes = Classes;
 const customElements = new WeakMap;
 exports.customElements = customElements;
 
+const upgradingElements = new WeakMap;
+exports.upgradingElements = upgradingElements;
+
 const attributeChangedCallback = (element, attributeName, oldValue, newValue) => {
   if (
     reactive &&
@@ -68,24 +71,24 @@ exports.disconnectedCallback = disconnectedCallback;
 class CustomElementRegistry {
 
   /**
-   * @param {Document} ownerDocument 
+   * @param {Document} ownerDocument
    */
   constructor(ownerDocument) {
     /**
      * @private
      */
     this.ownerDocument = ownerDocument;
-  
+
     /**
      * @private
      */
     this.registry = new Map;
-  
+
     /**
      * @private
      */
     this.waiting = new Map;
-  
+
     /**
      * @private
      */
@@ -152,11 +155,11 @@ class CustomElementRegistry {
         for (const [key] of values)
           delete element[key];
 
-        setPrototypeOf(element, new Class(this.ownerDocument, ce));
+        setPrototypeOf(element, Class.prototype);
         customElements.set(element, {connected: isConnected});
 
-        for (const [key, value] of values)
-          element[key] = value;
+        upgradingElements.set(Class, { element, values });
+        new Class(this.ownerDocument, ce)
 
         for (const attr of attributes)
           element.setAttributeNode(attr);

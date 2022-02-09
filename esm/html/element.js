@@ -3,7 +3,7 @@ import {booleanAttribute, stringAttribute} from '../shared/attributes.js';
 
 import {Event} from '../interface/event.js';
 import {Element} from '../interface/element.js';
-import {Classes, customElements} from '../interface/custom-element-registry.js';
+import {Classes, customElements, upgradingElements } from '../interface/custom-element-registry.js';
 
 const Level0 = new WeakMap;
 const level0 = {
@@ -31,8 +31,15 @@ export class HTMLElement extends Element {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
+    const {constructor: Class, [END]: end} = this;
+    if (upgradingElements.has(Class)) {
+      const {element, values } = upgradingElements.get(Class);
+      upgradingElements.delete(Class);
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
     if (!ownerDocument) {
-      const {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
       const {ownerDocument, localName, options} = Classes.get(Class);
