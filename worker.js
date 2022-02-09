@@ -8742,12 +8742,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     onopentag(name, attributes) {
       let create = true;
       if (isHTML) {
-        if (name === 'body') {
-          // Accessing the document.body property will create the <body>
-          node = document.body;
-          create = false;
-        }
-        else if (ownerSVGElement) {
+        if (ownerSVGElement) {
           node = append$1(node, document.createElementNS(SVG_NAMESPACE, name), active);
           node.ownerSVGElement = ownerSVGElement;
           create = false;
@@ -16697,7 +16692,7 @@ class HTMLDocument extends Document$1 {
   get head() {
     const {documentElement} = this;
     let {firstElementChild} = documentElement;
-    if (!firstElementChild) {
+    if (!firstElementChild || firstElementChild.tagName !== 'HEAD') {
       firstElementChild = this.createElement('head');
       documentElement.prepend(firstElementChild);
     }

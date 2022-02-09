@@ -38,6 +38,8 @@ document.title = '"hello"';
 assert(document.title, '"hello"', 'title not escaped');
 assert(document.toString(), '<!DOCTYPE html><html><head><title>"hello"</title></head></html>');
 assert(document.body.tagName, 'BODY');
+assert(document.head, document.querySelector('head'));
+assert(document.head.textContent, '"hello"');
 
 document.title = '&';
 assert(document.toString(), '<!DOCTYPE html><html><head><title>&</title></head><body></body></html>');

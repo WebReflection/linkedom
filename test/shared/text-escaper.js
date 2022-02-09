@@ -16,5 +16,5 @@ document.documentElement.innerHTML = BODY;
 assert(document.documentElement.toString(), REHTML);
 
 document.documentElement.innerHTML = '<body>&amp;amp;</body>';
-assert(document.documentElement.toString(), `<html id="html" class="live"><head></head><body>&amp;amp;</body></html>`);
+assert(document.documentElement.toString(), `<html id="html" class="live"><body>&amp;amp;</body></html>`);
 

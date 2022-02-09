@@ -57,12 +57,7 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
     onopentag(name, attributes) {
       let create = true;
       if (isHTML) {
-        if (name === 'body') {
-          // Accessing the document.body property will create the <body>
-          node = document.body;
-          create = false;
-        }
-        else if (ownerSVGElement) {
+        if (ownerSVGElement) {
           node = append(node, document.createElementNS(SVG_NAMESPACE, name), active);
           node.ownerSVGElement = ownerSVGElement;
           create = false;
