@@ -10,7 +10,6 @@ module.exports = {
           console.error('', message);
         console.error('', 'Expected:', String(expected));
         console.error('', 'Got instead:', String(expression));
-        console.error('', new Error().stack);
         console.error('');
         process.exit(1);
       }
