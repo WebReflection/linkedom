@@ -2,7 +2,13 @@ const assert = require('../assert.js').for('CustomElementRegistry');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {HTMLElement, HTMLButtonElement, HTMLTemplateElement, customElements, document} = parseHTML('<html><body><custom-element></custom-element></body></html>');
+const {HTMLElement, HTMLButtonElement, HTMLTemplateElement, customElements, document} = parseHTML(`
+<html>
+<body>
+    <custom-element></custom-element>
+    <custom-element-without-constructor-args></custom-element-without-constructor-args>
+</body>
+</html>`);
 
 class CE extends HTMLElement {}
 
@@ -190,3 +196,7 @@ customElements.define('custom-element', class extends CE {
 })
 
 assert(document.querySelector('custom-element').isCurrentThisSameAsConstructorThis(), true, 'constructor this same as method this')
+
+const ceWithoutConstructorArgs = document.querySelector('custom-element-without-constructor-args');
+customElements.define('custom-element-without-constructor-args', class extends HTMLElement {});
+assert(ceWithoutConstructorArgs.localName, 'custom-element-without-constructor-args', 'constructor without args');

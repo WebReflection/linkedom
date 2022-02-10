@@ -12944,21 +12944,27 @@ class HTMLElement extends Element$1 {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
-    if (ownerDocument) {
-      if (ownerDocument[UPGRADE]) {
-        const {element, values} = ownerDocument[UPGRADE];
-        ownerDocument[UPGRADE] = null;
-        for (const [key, value] of values)
-          element[key] = value;
-        return element;
-      }
-    }
-    else {
-      const {constructor: Class, [END]: end} = this;
+
+    const ownerLess = !ownerDocument;
+    let options;
+
+    if (ownerLess) {
+      const {constructor: Class} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
-      const {ownerDocument, localName, options} = Classes.get(Class);
-      this.ownerDocument = end.ownerDocument = ownerDocument;
+      ({ownerDocument, localName, options} = Classes.get(Class));
+    }
+
+    if (ownerDocument[UPGRADE]) {
+      const {element, values} = ownerDocument[UPGRADE];
+      ownerDocument[UPGRADE] = null;
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
+
+    if (ownerLess) {
+      this.ownerDocument = this[END].ownerDocument = ownerDocument;
       this.localName = localName;
       customElements.set(this, {connected: false});
       if (options.is)
