@@ -17,4 +17,5 @@ export const PRIVATE: unique symbol;
 export const SHEET: unique symbol;
 export const START: unique symbol;
 export const STYLE: unique symbol;
+export const UPGRADE: unique symbol;
 export const VALUE: unique symbol;

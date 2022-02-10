@@ -4,7 +4,7 @@ import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE,
 
 import {
   CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER,
-  DOCTYPE, END, NEXT, MIME, EVENT_TARGET
+  DOCTYPE, END, NEXT, MIME, EVENT_TARGET, UPGRADE
 } from '../shared/symbols.js';
 
 import {Facades, illegalConstructor} from '../shared/facades.js';
@@ -69,6 +69,7 @@ export class Document extends NonElementParentNode {
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
     this[IMAGE] = null;
+    this[UPGRADE] = null;
   }
 
   /**

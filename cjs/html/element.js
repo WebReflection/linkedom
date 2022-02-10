@@ -1,5 +1,5 @@
 'use strict';
-const {END} = require('../shared/symbols.js');
+const {END, UPGRADE} = require('../shared/symbols.js');
 const {booleanAttribute, stringAttribute} = require('../shared/attributes.js');
 
 const {Event} = require('../interface/event.js');
@@ -32,7 +32,16 @@ class HTMLElement extends Element {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
-    if (!ownerDocument) {
+    if (ownerDocument) {
+      if (ownerDocument[UPGRADE]) {
+        const {element, values} = ownerDocument[UPGRADE];
+        ownerDocument[UPGRADE] = null;
+        for (const [key, value] of values)
+          element[key] = value;
+        return element;
+      }
+    }
+    else {
       const {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');

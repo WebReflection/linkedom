@@ -4,7 +4,7 @@ const {performance} = require('../../commonjs/perf_hooks.cjs');
 const {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} = require('../shared/constants.js');
 
 const {
-  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, EVENT_TARGET
+  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, EVENT_TARGET, UPGRADE
 } = require('../shared/symbols.js');
 
 const {Facades, illegalConstructor} = require('../shared/facades.js');
@@ -69,6 +69,7 @@ class Document extends NonElementParentNode {
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
     this[IMAGE] = null;
+    this[UPGRADE] = null;
   }
 
   /**
