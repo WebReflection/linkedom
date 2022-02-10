@@ -1,6 +1,6 @@
 'use strict';
 const {ELEMENT_NODE} = require('../shared/constants.js');
-const {END, NEXT} = require('../shared/symbols.js');
+const {END, NEXT, UPGRADE} = require('../shared/symbols.js');
 const {entries, setPrototypeOf} = require('../shared/object.js');
 
 let reactive = false;
@@ -68,24 +68,24 @@ exports.disconnectedCallback = disconnectedCallback;
 class CustomElementRegistry {
 
   /**
-   * @param {Document} ownerDocument 
+   * @param {Document} ownerDocument
    */
   constructor(ownerDocument) {
     /**
      * @private
      */
     this.ownerDocument = ownerDocument;
-  
+
     /**
      * @private
      */
     this.registry = new Map;
-  
+
     /**
      * @private
      */
     this.waiting = new Map;
-  
+
     /**
      * @private
      */
@@ -139,7 +139,7 @@ class CustomElementRegistry {
   upgrade(element) {
     if (customElements.has(element))
       return;
-    const {registry} = this;
+    const {ownerDocument, registry} = this;
     const ce = element.getAttribute('is') || element.localName;
     if (registry.has(ce)) {
       const {Class, check} = registry.get(ce);
@@ -152,11 +152,11 @@ class CustomElementRegistry {
         for (const [key] of values)
           delete element[key];
 
-        setPrototypeOf(element, new Class(this.ownerDocument, ce));
-        customElements.set(element, {connected: isConnected});
+        setPrototypeOf(element, Class.prototype);
+        ownerDocument[UPGRADE] = {element, values};
+        new Class(ownerDocument, ce);
 
-        for (const [key, value] of values)
-          element[key] = value;
+        customElements.set(element, {connected: isConnected});
 
         for (const attr of attributes)
           element.setAttributeNode(attr);

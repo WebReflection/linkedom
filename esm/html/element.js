@@ -1,4 +1,4 @@
-import {END} from '../shared/symbols.js';
+import {END, UPGRADE} from '../shared/symbols.js';
 import {booleanAttribute, stringAttribute} from '../shared/attributes.js';
 
 import {Event} from '../interface/event.js';
@@ -31,7 +31,16 @@ export class HTMLElement extends Element {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
-    if (!ownerDocument) {
+    if (ownerDocument) {
+      if (ownerDocument[UPGRADE]) {
+        const {element, values} = ownerDocument[UPGRADE];
+        ownerDocument[UPGRADE] = null;
+        for (const [key, value] of values)
+          element[key] = value;
+        return element;
+      }
+    }
+    else {
       const {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');

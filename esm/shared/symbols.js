@@ -55,5 +55,8 @@ export const START = Symbol('start');
 // used to define special CSS style attribute
 export const STYLE = Symbol('style');
 
+// used to upgrade Custom Elements
+export const UPGRADE = Symbol('upgrade');
+
 // used to define generic values
 export const VALUE = Symbol('value');

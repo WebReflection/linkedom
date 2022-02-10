@@ -75,6 +75,10 @@ exports.START = START;
 const STYLE = Symbol('style');
 exports.STYLE = STYLE;
 
+// used to upgrade Custom Elements
+const UPGRADE = Symbol('upgrade');
+exports.UPGRADE = UPGRADE;
+
 // used to define generic values
 const VALUE = Symbol('value');
 exports.VALUE = VALUE;

@@ -37,6 +37,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     [DOCTYPE]: DocumentType;
     [DOM_PARSER]: any;
     [IMAGE]: any;
+    [UPGRADE]: any;
     [EVENT_TARGET]: EventTarget;
 }
 import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
@@ -56,5 +57,6 @@ import { MIME } from "../shared/symbols.js";
 import { DOCTYPE } from "../shared/symbols.js";
 import { DOM_PARSER } from "../shared/symbols.js";
 import { IMAGE } from "../shared/symbols.js";
+import { UPGRADE } from "../shared/symbols.js";
 import { EVENT_TARGET } from "../shared/symbols.js";
 import { EventTarget } from "./event-target.js";

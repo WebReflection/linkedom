@@ -70,6 +70,9 @@ const START = Symbol('start');
 // used to define special CSS style attribute
 const STYLE = Symbol('style');
 
+// used to upgrade Custom Elements
+const UPGRADE = Symbol('upgrade');
+
 // used to define generic values
 const VALUE = Symbol('value');
 
@@ -8579,24 +8582,24 @@ const disconnectedCallback = element => {
 class CustomElementRegistry {
 
   /**
-   * @param {Document} ownerDocument 
+   * @param {Document} ownerDocument
    */
   constructor(ownerDocument) {
     /**
      * @private
      */
     this.ownerDocument = ownerDocument;
-  
+
     /**
      * @private
      */
     this.registry = new Map;
-  
+
     /**
      * @private
      */
     this.waiting = new Map;
-  
+
     /**
      * @private
      */
@@ -8650,7 +8653,7 @@ class CustomElementRegistry {
   upgrade(element) {
     if (customElements.has(element))
       return;
-    const {registry} = this;
+    const {ownerDocument, registry} = this;
     const ce = element.getAttribute('is') || element.localName;
     if (registry.has(ce)) {
       const {Class, check} = registry.get(ce);
@@ -8663,11 +8666,11 @@ class CustomElementRegistry {
         for (const [key] of values)
           delete element[key];
 
-        setPrototypeOf(element, new Class(this.ownerDocument, ce));
-        customElements.set(element, {connected: isConnected});
+        setPrototypeOf(element, Class.prototype);
+        ownerDocument[UPGRADE] = {element, values};
+        new Class(ownerDocument, ce);
 
-        for (const [key, value] of values)
-          element[key] = value;
+        customElements.set(element, {connected: isConnected});
 
         for (const attr of attributes)
           element.setAttributeNode(attr);
@@ -12941,7 +12944,16 @@ class HTMLElement extends Element$1 {
 
   constructor(ownerDocument = null, localName = '') {
     super(ownerDocument, localName);
-    if (!ownerDocument) {
+    if (ownerDocument) {
+      if (ownerDocument[UPGRADE]) {
+        const {element, values} = ownerDocument[UPGRADE];
+        ownerDocument[UPGRADE] = null;
+        for (const [key, value] of values)
+          element[key] = value;
+        return element;
+      }
+    }
+    else {
       const {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
@@ -16437,6 +16449,7 @@ class Document$1 extends NonElementParentNode {
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
     this[IMAGE] = null;
+    this[UPGRADE] = null;
   }
 
   /**
