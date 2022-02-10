@@ -30,21 +30,27 @@ export class HTMLElement extends Element {
   static get observedAttributes() { return []; }
 
   constructor(ownerDocument = null, localName = '') {
+    const passedDocument = ownerDocument;
+    let options;
+
     super(ownerDocument, localName);
-    if (ownerDocument) {
-      if (ownerDocument[UPGRADE]) {
-        const {element, values} = ownerDocument[UPGRADE];
-        ownerDocument[UPGRADE] = null;
-        for (const [key, value] of values)
-          element[key] = value;
-        return element;
-      }
-    }
-    else {
-      const {constructor: Class, [END]: end} = this;
+
+    if (!passedDocument) {
+      var {constructor: Class, [END]: end} = this;
       if (!Classes.has(Class))
         throw new Error('unable to initialize this Custom Element');
-      const {ownerDocument, localName, options} = Classes.get(Class);
+      ({ownerDocument, localName, options} = Classes.get(Class));
+    }
+
+    if (ownerDocument[UPGRADE]) {
+      const {element, values} = ownerDocument[UPGRADE];
+      ownerDocument[UPGRADE] = null;
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
+
+    if (!passedDocument) {
       this.ownerDocument = end.ownerDocument = ownerDocument;
       this.localName = localName;
       customElements.set(this, {connected: false});
