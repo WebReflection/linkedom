@@ -25,7 +25,7 @@ function invokeListeners({currentTarget, target}) {
     for (const [listener, options] of listeners) {
       if (options && options.once)
         listeners.delete(listener);
-      if (dispatch.call(this, {target: this, listener}))
+      if (dispatch.call(this, {target: this.target, listener}))
         break;
     }
     delete this.currentTarget;
