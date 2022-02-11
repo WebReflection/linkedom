@@ -1,6 +1,5 @@
 import {COMMENT_NODE} from '../shared/constants.js';
 import {VALUE} from '../shared/symbols.js';
-import {escape} from '../shared/text-escaper.js';
 
 import {CharacterData} from './character-data.js';
 
@@ -17,5 +16,5 @@ export class Comment extends CharacterData {
     return new Comment(ownerDocument, data);
   }
 
-  toString() { return `<!--${escape(this[VALUE])}-->`; }
+  toString() { return `<!--${this[VALUE]}-->`; }
 }

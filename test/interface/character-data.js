@@ -2,7 +2,7 @@ const assert = require('../assert.js').for('CharacterData');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {document} = parseHTML('<html><!--comment-->text</html>');
+let {document} = parseHTML('<html><!--comment-->text</html>');
 
 const [comment, text] = document.documentElement.childNodes;
 
@@ -23,3 +23,8 @@ text.nodeValue = 'nodeValue';
 assert(text.data, 'nodeValue');
 assert(text.nodeValue, 'nodeValue');
 assert(text.textContent, 'nodeValue');
+
+({document} = parseHTML('<html><!-- a comment with a <div> tag --></html>'));
+assert(document.toString(), '<html><!-- a comment with a <div> tag --></html>');
+
+

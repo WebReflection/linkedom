@@ -9611,29 +9611,6 @@ class CharacterData$1 extends Node$1 {
   }
 }
 
-const {replace} = '';
-
-// escape
-const ca = /[<>&\xA0]/g;
-
-const esca = {
-  '\xA0': '&nbsp;',
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;'
-};
-
-const pe = m => esca[m];
-
-/**
- * Safely escape HTML entities such as `&`, `<`, `>` only.
- * @param {string} es the input to safely escape
- * @returns {string} the escaped input, and it **throws** an error if
- *  the input type is unexpected, except for boolean and numbers,
- *  converted as string.
- */
-const escape = es => replace.call(es, ca, pe);
-
 /**
  * @implements globalThis.Comment
  */
@@ -9647,7 +9624,7 @@ class Comment$1 extends CharacterData$1 {
     return new Comment$1(ownerDocument, data);
   }
 
-  toString() { return `<!--${escape(this[VALUE])}-->`; }
+  toString() { return `<!--${this[VALUE]}-->`; }
 }
 
 var lib$2 = {};
@@ -11614,6 +11591,29 @@ const matches = (element, selectors) => {
     adapter
   });
 };
+
+const {replace} = '';
+
+// escape
+const ca = /[<>&\xA0]/g;
+
+const esca = {
+  '\xA0': '&nbsp;',
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
+const pe = m => esca[m];
+
+/**
+ * Safely escape HTML entities such as `&`, `<`, `>` only.
+ * @param {string} es the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escape = es => replace.call(es, ca, pe);
 
 /**
  * @implements globalThis.Text
