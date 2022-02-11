@@ -1,5 +1,5 @@
 'use strict';
-const {DOM_PARSER} = require('../shared/symbols.js');
+const {DOM_PARSER, GLOBALS} = require('../shared/symbols.js');
 const {parseFromString} = require('../shared/parse-from-string.js');
 
 const {HTMLDocument} = require('../html/document.js');
@@ -18,7 +18,7 @@ class DOMParser {
    * @param {MIME} mimeType
    * @returns {MimeToDoc[MIME]}
    */
-  parseFromString(markupLanguage, mimeType) {
+  parseFromString(markupLanguage, mimeType, globals = null) {
     let isHTML = false, document;
     if (mimeType === 'text/html') {
       isHTML = true;
@@ -29,6 +29,8 @@ class DOMParser {
     else
       document = new XMLDocument;
     document[DOM_PARSER] = DOMParser;
+    if (globals)
+      document[GLOBALS] = globals;
     return markupLanguage ?
             parseFromString(document, isHTML, markupLanguage) :
             document;

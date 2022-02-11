@@ -35,6 +35,10 @@ exports.END = END;
 const EVENT_TARGET = Symbol('EventTarget');
 exports.EVENT_TARGET = EVENT_TARGET;
 
+// used to augment a created document defaultView
+const GLOBALS = Symbol('globals');
+exports.GLOBALS = GLOBALS;
+
 // used in both Canvas and Document to provide images
 const IMAGE = Symbol('image');
 exports.IMAGE = IMAGE;

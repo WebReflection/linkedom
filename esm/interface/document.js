@@ -3,7 +3,7 @@ import {performance} from '../../commonjs/perf_hooks.cjs';
 import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} from '../shared/constants.js';
 
 import {
-  CUSTOM_ELEMENTS, DOM_PARSER, IMAGE, MUTATION_OBSERVER,
+  CUSTOM_ELEMENTS, DOM_PARSER, GLOBALS, IMAGE, MUTATION_OBSERVER,
   DOCTYPE, END, NEXT, MIME, EVENT_TARGET, UPGRADE
 } from '../shared/symbols.js';
 
@@ -68,6 +68,7 @@ export class Document extends NonElementParentNode {
     /** @type {DocumentType} */
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
+    this[GLOBALS] = null;
     this[IMAGE] = null;
     this[UPGRADE] = null;
   }
@@ -130,7 +131,9 @@ export class Document extends NonElementParentNode {
                 this[MUTATION_OBSERVER] = new MutationObserverClass(this);
               return this[MUTATION_OBSERVER].class;
           }
-          return globalExports[name] || globalThis[name];
+          return (this[GLOBALS] && this[GLOBALS][name]) ||
+                  globalExports[name] ||
+                  globalThis[name];
         }
       }));
     return window.get(this);

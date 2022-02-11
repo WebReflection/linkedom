@@ -32,8 +32,8 @@ exports.DOMParser = DOMParser;
   exports.NodeList = m.NodeList;
 })(require('./interface/node-list.js'));
 
-const parseHTML = html => (new DOMParser).parseFromString(
-  html, 'text/html'
+const parseHTML = (html, globals = null) => (new DOMParser).parseFromString(
+  html, 'text/html', globals
 ).defaultView;
 exports.parseHTML = parseHTML;
 

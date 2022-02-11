@@ -7,6 +7,7 @@ export const DOCTYPE: unique symbol;
 export const DOM_PARSER: unique symbol;
 export const END: unique symbol;
 export const EVENT_TARGET: unique symbol;
+export const GLOBALS: unique symbol;
 export const IMAGE: unique symbol;
 export const MIME: unique symbol;
 export const MUTATION_OBSERVER: unique symbol;

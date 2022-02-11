@@ -66,3 +66,6 @@ assert(window.addEventListener, null);
 assert(typeof window.performance.now(), 'number');
 
 assert(parseHTML('<html><body><div>asdf</div></body></html>').document.body.outerHTML, '<body><div>asdf</div></body>');
+
+const location = {};
+assert(parseHTML('<html></html>', {location}).document.defaultView.location, location);

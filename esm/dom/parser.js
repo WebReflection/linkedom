@@ -1,4 +1,4 @@
-import {DOM_PARSER} from '../shared/symbols.js';
+import {DOM_PARSER, GLOBALS} from '../shared/symbols.js';
 import {parseFromString} from '../shared/parse-from-string.js';
 
 import {HTMLDocument} from '../html/document.js';
@@ -17,7 +17,7 @@ export class DOMParser {
    * @param {MIME} mimeType
    * @returns {MimeToDoc[MIME]}
    */
-  parseFromString(markupLanguage, mimeType) {
+  parseFromString(markupLanguage, mimeType, globals = null) {
     let isHTML = false, document;
     if (mimeType === 'text/html') {
       isHTML = true;
@@ -28,6 +28,8 @@ export class DOMParser {
     else
       document = new XMLDocument;
     document[DOM_PARSER] = DOMParser;
+    if (globals)
+      document[GLOBALS] = globals;
     return markupLanguage ?
             parseFromString(document, isHTML, markupLanguage) :
             document;

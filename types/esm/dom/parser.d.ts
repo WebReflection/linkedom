@@ -13,7 +13,7 @@ export class DOMParser implements globalThis.DOMParser {
         "text/html": HTMLDocument;
         "image/svg+xml": SVGDocument;
         "text/xml": XMLDocument;
-    }>(markupLanguage: string, mimeType: MIME): {
+    }>(markupLanguage: string, mimeType: MIME, globals?: any): {
         "text/html": HTMLDocument;
         "image/svg+xml": SVGDocument;
         "text/xml": XMLDocument;

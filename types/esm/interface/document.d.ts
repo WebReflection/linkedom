@@ -36,6 +36,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     /** @type {DocumentType} */
     [DOCTYPE]: DocumentType;
     [DOM_PARSER]: any;
+    [GLOBALS]: any;
     [IMAGE]: any;
     [UPGRADE]: any;
     [EVENT_TARGET]: EventTarget;
@@ -56,6 +57,7 @@ import { MUTATION_OBSERVER } from "../shared/symbols.js";
 import { MIME } from "../shared/symbols.js";
 import { DOCTYPE } from "../shared/symbols.js";
 import { DOM_PARSER } from "../shared/symbols.js";
+import { GLOBALS } from "../shared/symbols.js";
 import { IMAGE } from "../shared/symbols.js";
 import { UPGRADE } from "../shared/symbols.js";
 import { EVENT_TARGET } from "../shared/symbols.js";

@@ -40,6 +40,9 @@ const END = Symbol('end');
 // used in Document to make the globalThis an event target
 const EVENT_TARGET = Symbol('EventTarget');
 
+// used to augment a created document defaultView
+const GLOBALS = Symbol('globals');
+
 // used in both Canvas and Document to provide images
 const IMAGE = Symbol('image');
 
@@ -16454,6 +16457,7 @@ class Document$1 extends NonElementParentNode {
     /** @type {DocumentType} */
     this[DOCTYPE] = null;
     this[DOM_PARSER] = null;
+    this[GLOBALS] = null;
     this[IMAGE] = null;
     this[UPGRADE] = null;
   }
@@ -16516,7 +16520,9 @@ class Document$1 extends NonElementParentNode {
                 this[MUTATION_OBSERVER] = new MutationObserverClass(this);
               return this[MUTATION_OBSERVER].class;
           }
-          return globalExports[name] || globalThis[name];
+          return (this[GLOBALS] && this[GLOBALS][name]) ||
+                  globalExports[name] ||
+                  globalThis[name];
         }
       }));
     return window$1.get(this);
@@ -16794,7 +16800,7 @@ class DOMParser {
    * @param {MIME} mimeType
    * @returns {MimeToDoc[MIME]}
    */
-  parseFromString(markupLanguage, mimeType) {
+  parseFromString(markupLanguage, mimeType, globals = null) {
     let isHTML = false, document;
     if (mimeType === 'text/html') {
       isHTML = true;
@@ -16805,6 +16811,8 @@ class DOMParser {
     else
       document = new XMLDocument;
     document[DOM_PARSER] = DOMParser;
+    if (globals)
+      document[GLOBALS] = globals;
     return markupLanguage ?
             parseFromString(document, isHTML, markupLanguage) :
             document;
@@ -16913,8 +16921,8 @@ const parseJSON = value => {
  */
 const toJSON = node => node.toJSON();
 
-const parseHTML = html => (new DOMParser).parseFromString(
-  html, 'text/html'
+const parseHTML = (html, globals = null) => (new DOMParser).parseFromString(
+  html, 'text/html', globals
 ).defaultView;
 
 function Document() {

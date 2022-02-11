@@ -16,8 +16,8 @@ export {EventTarget} from './interface/event-target.js';
 export {InputEvent} from './interface/input-event.js';
 export {NodeList} from './interface/node-list.js';
 
-export const parseHTML = html => (new DOMParser).parseFromString(
-  html, 'text/html'
+export const parseHTML = (html, globals = null) => (new DOMParser).parseFromString(
+  html, 'text/html', globals
 ).defaultView;
 
 export function Document() {
