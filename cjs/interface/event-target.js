@@ -3,12 +3,12 @@
 
 const wm = new WeakMap();
 
-function dispatch({target, listener}) {
+function dispatch(event, listener) {
   if (typeof listener === 'function')
-    listener.call(target, this);
+    listener.call(event.target, event);
   else
-    listener.handleEvent(this);
-  return this._stopImmediatePropagationFlag;
+    listener.handleEvent(event);
+  return event._stopImmediatePropagationFlag;
 }
 
 function invokeListeners({currentTarget, target}) {
@@ -26,7 +26,7 @@ function invokeListeners({currentTarget, target}) {
     for (const [listener, options] of listeners) {
       if (options && options.once)
         listeners.delete(listener);
-      if (dispatch.call(this, {target: this, listener}))
+      if (dispatch(this, listener))
         break;
     }
     delete this.currentTarget;

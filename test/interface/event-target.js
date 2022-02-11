@@ -190,3 +190,12 @@ containerTarget.addEventListener('click', basicHandler, { once: true });
 callCount = 0;
 buttonTarget.dispatchEvent(new Event('click', { bubbles: true }));
 assert(callCount, 2, '2 listeners should be called before stopping');
+
+const cloned = buttonTarget.cloneNode(true);
+cloned.addEventListener('click', () => {
+  callCount++;
+});
+
+callCount = 0;
+cloned.click();
+assert(callCount, 1, 'button.click() should invoke the listener');
