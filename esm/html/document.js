@@ -52,7 +52,7 @@ export class HTMLDocument extends Document {
   get head() {
     const {documentElement} = this;
     let {firstElementChild} = documentElement;
-    if (!firstElementChild) {
+    if (!firstElementChild || firstElementChild.tagName !== 'HEAD') {
       firstElementChild = this.createElement('head');
       documentElement.prepend(firstElementChild);
     }
@@ -65,7 +65,7 @@ export class HTMLDocument extends Document {
   get body() {
     const {head} = this;
     let {nextElementSibling} = head;
-    if (!nextElementSibling) {
+    if (!nextElementSibling || nextElementSibling.tagName !== 'BODY') {
       nextElementSibling = this.createElement('body');
       head.after(nextElementSibling);
     }

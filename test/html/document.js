@@ -64,3 +64,5 @@ window.addEventListener = window.removeEventListener = window.dispatchEvent = nu
 assert(window.addEventListener, null);
 
 assert(typeof window.performance.now(), 'number');
+
+assert(parseHTML('<html><body><div>asdf</div></body></html>').document.body.outerHTML, '<body><div>asdf</div></body>');
