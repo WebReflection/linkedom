@@ -28,3 +28,9 @@ assert(node.toString(), '<div></div>', 'setter as null');
 node.id = '';
 node.className = '';
 assert(node.toString(), '<div></div>', 'setter as null');
+
+node.style.setProperty('background-color', 'purple');
+assert(node.toString(), '<div style="background-color:purple"></div>', 'setProperty');
+assert(node.style.getPropertyValue('background-color'), 'purple', 'getPropertyValue');
+node.style.removeProperty('background-color')
+assert(node.toString(), '<div></div>', 'removeProperty');

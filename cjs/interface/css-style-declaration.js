@@ -82,6 +82,21 @@ class CSSStyleDeclaration extends Map {
     refs.get(this).setAttribute('style', value);
   }
 
+  getPropertyValue(name) {
+    const self = this[PRIVATE];
+    return handler.get(self, name);
+  }
+
+  setProperty(name, value) {
+    const self = this[PRIVATE];
+    handler.set(self, name, value);
+  }
+
+  removeProperty(name) {
+    const self = this[PRIVATE];
+    handler.set(self, name, null);
+  }
+
   [Symbol.iterator]() {
     const keys = getKeys(this[PRIVATE]);
     const {length} = keys;
