@@ -67,5 +67,10 @@ assert(typeof window.performance.now(), 'number');
 
 assert(parseHTML('<html><body><div>asdf</div></body></html>').document.body.outerHTML, '<body><div>asdf</div></body>');
 
-const location = {};
-assert(parseHTML('<html></html>', {location}).document.defaultView.location, location);
+const location = {href: 'http://ok'};
+const withLocation = parseHTML('<html></html>', {location});
+assert(withLocation.document.defaultView.location, location);
+assert(withLocation.document.baseURI, location.href);
+
+const withBase = parseHTML('<html><base href="http://base"></html>', {location});
+assert(withBase.document.documentElement.baseURI, 'http://base');

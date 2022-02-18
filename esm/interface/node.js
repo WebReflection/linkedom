@@ -62,6 +62,22 @@ export class Node extends EventTarget {
   get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }
   get DOCUMENT_TYPE_NODE() { return DOCUMENT_TYPE_NODE; }
 
+  get baseURI() {
+    const ownerDocument = this.nodeType === DOCUMENT_NODE ?
+                            this : this.ownerDocument;
+    if (ownerDocument) {
+      const base = ownerDocument.querySelector('base');
+      if (base)
+        return base.getAttribute('href');
+
+      const {location} = ownerDocument.defaultView;
+      if (location)
+        return location.href;
+    }
+
+    return null;
+  }
+
   /* c8 ignore start */
   // mixin: node
   get isConnected() { return false; }

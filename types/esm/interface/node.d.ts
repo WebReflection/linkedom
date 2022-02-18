@@ -21,6 +21,7 @@ export class Node extends EventTarget implements globalThis.Node {
     get DOCUMENT_NODE(): number;
     get DOCUMENT_FRAGMENT_NODE(): number;
     get DOCUMENT_TYPE_NODE(): number;
+    get baseURI(): any;
     get isConnected(): boolean;
     get nodeName(): any;
     get parentElement(): any;

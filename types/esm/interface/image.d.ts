@@ -176,6 +176,7 @@ export function ImageClass(ownerDocument: any): {
         readonly DOCUMENT_NODE: number;
         readonly DOCUMENT_FRAGMENT_NODE: number;
         readonly DOCUMENT_TYPE_NODE: number;
+        readonly baseURI: any;
         nodeValue: any;
         hasChildNodes(): boolean;
         isSameNode(node: any): boolean;
