@@ -16952,6 +16952,13 @@ const parseJSON = value => {
  */
 const toJSON = node => node.toJSON();
 
+class NodeFilter {
+  static get SHOW_ALL() { return SHOW_ALL; }
+  static get SHOW_ELEMENT() { return SHOW_ELEMENT; }
+  static get SHOW_COMMENT() { return SHOW_COMMENT; }
+  static get SHOW_TEXT() { return SHOW_TEXT; }
+}
+
 const parseHTML = (html, globals = null) => (new DOMParser).parseFromString(
   html, 'text/html', globals
 ).defaultView;
@@ -16962,4 +16969,4 @@ function Document() {
 
 setPrototypeOf(Document, Document$1).prototype = Document$1.prototype;
 
-export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };
+export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeFilter, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };

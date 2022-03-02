@@ -1,6 +1,6 @@
 const assert = require('../assert.js').for('Node');
 
-const {parseHTML} = global[Symbol.for('linkedom')];
+const {parseHTML, NodeFilter} = global[Symbol.for('linkedom')];
 
 const {document} = parseHTML('<html><head /><body><div /></body></html>');
 
@@ -33,3 +33,8 @@ assert(body.COMMENT_NODE, body.constructor.COMMENT_NODE);
 assert(body.DOCUMENT_NODE, body.constructor.DOCUMENT_NODE);
 assert(body.DOCUMENT_TYPE_NODE, body.constructor.DOCUMENT_TYPE_NODE);
 assert(body.DOCUMENT_FRAGMENT_NODE, body.constructor.DOCUMENT_FRAGMENT_NODE);
+
+assert(NodeFilter.SHOW_ALL, -1, 'NodeFilter.SHOW_ALL');
+assert(NodeFilter.SHOW_ELEMENT, 1, 'NodeFilter.SHOW_ELEMENT');
+assert(NodeFilter.SHOW_TEXT, 4, 'NodeFilter.SHOW_TEXT');
+assert(NodeFilter.SHOW_COMMENT, 128, 'NodeFilter.SHOW_COMMENT');
