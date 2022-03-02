@@ -15,6 +15,7 @@ export {Event} from './interface/event.js';
 export {EventTarget} from './interface/event-target.js';
 export {InputEvent} from './interface/input-event.js';
 export {NodeList} from './interface/node-list.js';
+export {NodeFilter} from './interface/node-filter.js';
 
 export const parseHTML = (html, globals = null) => (new DOMParser).parseFromString(
   html, 'text/html', globals
