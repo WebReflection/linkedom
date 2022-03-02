@@ -31,6 +31,9 @@ exports.DOMParser = DOMParser;
 (m => {
   exports.NodeList = m.NodeList;
 })(require('./interface/node-list.js'));
+(m => {
+  exports.NodeFilter = m.NodeFilter;
+})(require('./interface/node-filter.js'));
 
 const parseHTML = (html, globals = null) => (new DOMParser).parseFromString(
   html, 'text/html', globals
