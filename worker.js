@@ -8444,10 +8444,10 @@ Object.defineProperty(exports, "RssHandler", { enumerable: true, get: function (
 
 var index = /*@__PURE__*/getDefaultExportFromCjs(lib$8);
 
-var HTMLParser2 = /*#__PURE__*/Object.freeze(/*#__PURE__*/_mergeNamespaces({
+var HTMLParser2 = /*#__PURE__*/_mergeNamespaces({
 	__proto__: null,
 	'default': index
-}, [lib$8]));
+}, [lib$8]);
 
 // Internal
 const NODE_END = -1;
@@ -11515,7 +11515,8 @@ const existsOne = (test, elements) => elements.some(
   )
 );
 
-const getAttributeValue = (element, name) => element.getAttribute(name);
+const getAttributeValue = (element, name) => name === 'class' ?
+                            element.classList.value : element.getAttribute(name);
 
 const getChildren = ({childNodes}) => childNodes;
 

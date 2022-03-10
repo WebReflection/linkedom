@@ -74,3 +74,6 @@ assert(withLocation.document.baseURI, location.href);
 
 const withBase = parseHTML('<html><base href="http://base"></html>', {location});
 assert(withBase.document.documentElement.baseURI, 'http://base');
+
+const {document: svg} = (new DOMParser).parseFromString('<svg class="foo-1"/>', 'text/html').defaultView.window;
+svg.querySelector('[class*="foo-"]');
