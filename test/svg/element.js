@@ -40,3 +40,9 @@ svg.setAttribute('test', 123);
 svg.setAttribute('style', 'width:100px');
 
 assert(svg.toString(), '<svg style="width:100px" test="123"><rect /></svg>');
+
+svg.className = 'a b c';
+assert(svg.getAttribute('class'), 'a b c');
+
+svg.setAttribute('class', 'd e');
+assert(svg.getAttribute('class'), 'd e');

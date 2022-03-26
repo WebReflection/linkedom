@@ -36,8 +36,16 @@ class SVGElement extends Element {
   }
   /* c8 ignore stop */
 
+  getAttribute(name) {
+    return name === 'class' ?
+      [...this.classList].join(' ') :
+      super.getAttribute(name);
+  }
+
   setAttribute(name, value) {
-    if (name === 'style') {
+    if (name === 'class')
+      this.className = value;
+    else if (name === 'style') {
       const {className} = this;
       className.baseVal = className.animVal = value;
     }
