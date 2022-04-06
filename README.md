@@ -4,7 +4,7 @@
 
 <sup>**Social Media Photo by [JJ Ying](https://unsplash.com/@jjying) on [Unsplash](https://unsplash.com/)**</sup>
 
-A triple-linked lists based DOM-like namespace, for DOM-less environments, with the following goals:
+A [triple-linked list](#data-structure) based DOM-like namespace, for DOM-less environments, with the following goals:
 
   * **avoid** maximum callstack/recursion or **crashes**, even under heaviest conditions.
   * guarantee **linear performance** from small to big documents.
@@ -99,6 +99,10 @@ function JSDOM(html) { return parseHTML(html); }
 const {document, window} = new JSDOM('<h1>Hello LinkeDOM 👋</h1>');
 ```
 
+
+## Data Structure
+
+The triple-linked list data structure is explained below in [How does it work?](#how-does-it-work), the [Deep Dive](./deep-dive.md), and the [presentation on Speakeasy JS](https://www.youtube.com/watch?v=PEESaD7Qkxs).
 
 
 ## F.A.Q.
