@@ -161,6 +161,21 @@ assert(args.splice(0).join(','), 'disconnected: outer-test,disconnected: inner-t
 outer.remove();
 assert(args.length, 0, 'should not trigger disconnected again');
 
+outer = document.createElement('outer-test');
+outer.attachShadow({ mode: "open" });
+outer.shadowRoot.innerHTML = '<div>OK<inner-test>OK</inner-test>OK<inner-test>OK</inner-test>OK</div><inner-test>OK</inner-test>';
+document.documentElement.appendChild(outer);
+
+assert(args.splice(0).join(','), 'connected: outer-test,connected: inner-test,connected: inner-test,connected: inner-test', 'inner elements of shadow roots get connected too');
+
+outer.remove();
+
+assert(args.splice(0).join(','), 'disconnected: outer-test,disconnected: inner-test,disconnected: inner-test,disconnected: inner-test', 'inner elements of shadow roots get disconnected too');
+
+outer.remove();
+assert(args.length, 0, 'should not trigger disconnected again for shadow roots');
+
+outer = document.createElement('outer-test');
 customElements.define('inner-button', class extends HTMLButtonElement {
   static get observedAttributes() { return ['test']; }
   attributeChangedCallback(name, oldValue, newValue) {

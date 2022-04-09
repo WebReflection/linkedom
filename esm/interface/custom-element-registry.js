@@ -34,7 +34,7 @@ const triggerConnected = createTrigger('connectedCallback', true);
 export const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
-    let {[NEXT]: next, [END]: end} = element;
+    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerConnected(next);
@@ -47,7 +47,7 @@ const triggerDisconnected = createTrigger('disconnectedCallback', false);
 export const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
-    let {[NEXT]: next, [END]: end} = element;
+    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerDisconnected(next);

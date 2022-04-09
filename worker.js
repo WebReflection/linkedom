@@ -8557,7 +8557,7 @@ const triggerConnected = createTrigger('connectedCallback', true);
 const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
-    let {[NEXT]: next, [END]: end} = element;
+    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerConnected(next);
@@ -8570,7 +8570,7 @@ const triggerDisconnected = createTrigger('disconnectedCallback', false);
 const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
-    let {[NEXT]: next, [END]: end} = element;
+    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerDisconnected(next);
@@ -9456,7 +9456,7 @@ const isConnected = ({ownerDocument, parentNode}) => {
   while (parentNode) {
     if (parentNode === ownerDocument)
       return true;
-    parentNode = parentNode.parentNode;
+    parentNode = parentNode.parentNode || parentNode.host;
   }
   return false;
 };
@@ -12414,8 +12414,9 @@ class NamedNodeMap extends Array {
  * @implements globalThis.ShadowRoot
  */
 class ShadowRoot$1 extends NonElementParentNode {
-  constructor(ownerDocument) {
-    super(ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+  constructor(host) {
+    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+    this.host = host;
   }
 
   get innerHTML() {
@@ -12679,7 +12680,7 @@ class Element$1 extends ParentNode {
       throw new Error('operation not supported');
     // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot$1(this.ownerDocument);
+    const shadowRoot = new ShadowRoot$1(this);
     shadowRoot.append(...this.childNodes);
     shadowRoots.set(this, {
       mode: init.mode,

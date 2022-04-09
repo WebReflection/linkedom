@@ -298,7 +298,7 @@ export class Element extends ParentNode {
       throw new Error('operation not supported');
     // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot(this.ownerDocument);
+    const shadowRoot = new ShadowRoot(this);
     shadowRoot.append(...this.childNodes);
     shadowRoots.set(this, {
       mode: init.mode,

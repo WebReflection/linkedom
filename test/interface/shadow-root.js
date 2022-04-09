@@ -12,6 +12,8 @@ const shadowRoot = documentElement.attachShadow({mode: 'open'});
 
 assert(documentElement.shadowRoot, shadowRoot, 'yes shadowRoot');
 
+assert(documentElement.shadowRoot.host, documentElement, 'yes shadowRoot.host');
+
 try {
   documentElement.attachShadow({mode: 'open'});
   assert(true, false, 'double shadowRoot should not be possible');

@@ -14,7 +14,7 @@ const isConnected = ({ownerDocument, parentNode}) => {
   while (parentNode) {
     if (parentNode === ownerDocument)
       return true;
-    parentNode = parentNode.parentNode;
+    parentNode = parentNode.parentNode || parentNode.host;
   }
   return false;
 };

@@ -2,7 +2,8 @@
  * @implements globalThis.ShadowRoot
  */
 export class ShadowRoot extends NonElementParentNode implements globalThis.ShadowRoot {
-    constructor(ownerDocument: any);
+    constructor(host: any);
+    host: any;
     set innerHTML(arg: any);
     get innerHTML(): any;
 }
