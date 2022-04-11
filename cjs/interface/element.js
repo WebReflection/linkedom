@@ -26,6 +26,7 @@ const {
 
 const {elementAsJSON} = require('../shared/jsdon.js');
 const {matches, prepareMatch} = require('../shared/matches.js');
+const {shadowRoots} = require('../shared/shadow-roots.js');
 
 const {isConnected, parentElement, previousSibling, nextSibling} = require('../shared/node.js');
 const {previousElementSibling, nextElementSibling} = require('../mixin/non-document-type-child-node.js');
@@ -65,7 +66,6 @@ const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
 };
 
-const shadowRoots = new WeakMap;
 // </utils>
 
 /**

@@ -1,6 +1,7 @@
 import {ELEMENT_NODE} from '../shared/constants.js';
 import {END, NEXT, UPGRADE} from '../shared/symbols.js';
 import {entries, setPrototypeOf} from '../shared/object.js';
+import {shadowRoots} from '../shared/shadow-roots.js';
 
 let reactive = false;
 
@@ -34,7 +35,9 @@ const triggerConnected = createTrigger('connectedCallback', true);
 export const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
-    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
+    let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerConnected(next);
@@ -47,7 +50,9 @@ const triggerDisconnected = createTrigger('disconnectedCallback', false);
 export const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
-    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
+    let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerDisconnected(next);

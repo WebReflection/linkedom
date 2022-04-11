@@ -8525,6 +8525,8 @@ const setAdjacent = (prev, next) => {
     next[PREV] = prev;
 };
 
+const shadowRoots = new WeakMap;
+
 let reactive = false;
 
 const Classes = new WeakMap;
@@ -8557,7 +8559,9 @@ const triggerConnected = createTrigger('connectedCallback', true);
 const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
-    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
+    let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerConnected(next);
@@ -8570,7 +8574,9 @@ const triggerDisconnected = createTrigger('disconnectedCallback', false);
 const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
-    let {[NEXT]: next, [END]: end} = element.shadowRoot || element;
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
+    let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
         triggerDisconnected(next);
@@ -12449,7 +12455,6 @@ const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
 };
 
-const shadowRoots = new WeakMap;
 // </utils>
 
 /**
