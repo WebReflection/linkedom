@@ -8525,6 +8525,8 @@ const setAdjacent = (prev, next) => {
     next[PREV] = prev;
 };
 
+const shadowRoots = new WeakMap;
+
 let reactive = false;
 
 const Classes = new WeakMap;
@@ -8557,6 +8559,8 @@ const triggerConnected = createTrigger('connectedCallback', true);
 const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
@@ -8570,6 +8574,8 @@ const triggerDisconnected = createTrigger('disconnectedCallback', false);
 const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
@@ -9456,7 +9462,7 @@ const isConnected = ({ownerDocument, parentNode}) => {
   while (parentNode) {
     if (parentNode === ownerDocument)
       return true;
-    parentNode = parentNode.parentNode;
+    parentNode = parentNode.parentNode || parentNode.host;
   }
   return false;
 };
@@ -12414,8 +12420,9 @@ class NamedNodeMap extends Array {
  * @implements globalThis.ShadowRoot
  */
 class ShadowRoot$1 extends NonElementParentNode {
-  constructor(ownerDocument) {
-    super(ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+  constructor(host) {
+    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+    this.host = host;
   }
 
   get innerHTML() {
@@ -12448,7 +12455,6 @@ const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
 };
 
-const shadowRoots = new WeakMap;
 // </utils>
 
 /**
@@ -12679,7 +12685,7 @@ class Element$1 extends ParentNode {
       throw new Error('operation not supported');
     // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot$1(this.ownerDocument);
+    const shadowRoot = new ShadowRoot$1(this);
     shadowRoot.append(...this.childNodes);
     shadowRoots.set(this, {
       mode: init.mode,

@@ -7,8 +7,9 @@ const {NonElementParentNode} = require('../mixin/non-element-parent-node.js');
  * @implements globalThis.ShadowRoot
  */
 class ShadowRoot extends NonElementParentNode {
-  constructor(ownerDocument) {
-    super(ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+  constructor(host) {
+    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+    this.host = host;
   }
 
   get innerHTML() {

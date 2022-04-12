@@ -2,6 +2,7 @@
 const {ELEMENT_NODE} = require('../shared/constants.js');
 const {END, NEXT, UPGRADE} = require('../shared/symbols.js');
 const {entries, setPrototypeOf} = require('../shared/object.js');
+const {shadowRoots} = require('../shared/shadow-roots.js');
 
 let reactive = false;
 
@@ -38,6 +39,8 @@ const triggerConnected = createTrigger('connectedCallback', true);
 const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
@@ -52,6 +55,8 @@ const triggerDisconnected = createTrigger('disconnectedCallback', false);
 const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
+    if (shadowRoots.has(element))
+      element = shadowRoots.get(element).shadowRoot;
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)

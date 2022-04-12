@@ -28,6 +28,7 @@ import {
 
 import {elementAsJSON} from '../shared/jsdon.js';
 import {matches, prepareMatch} from '../shared/matches.js';
+import {shadowRoots} from '../shared/shadow-roots.js';
 
 import {isConnected, parentElement, previousSibling, nextSibling} from '../shared/node.js';
 import {previousElementSibling, nextElementSibling} from '../mixin/non-document-type-child-node.js';
@@ -67,7 +68,6 @@ const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
 };
 
-const shadowRoots = new WeakMap;
 // </utils>
 
 /**
@@ -298,7 +298,7 @@ export class Element extends ParentNode {
       throw new Error('operation not supported');
     // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot(this.ownerDocument);
+    const shadowRoot = new ShadowRoot(this);
     shadowRoot.append(...this.childNodes);
     shadowRoots.set(this, {
       mode: init.mode,
