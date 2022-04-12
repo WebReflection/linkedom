@@ -31,13 +31,13 @@
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^21.0.2",
+    "@rollup/plugin-commonjs": "^21.0.3",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-node-resolve": "^13.2.0",
     "ascjs": "^5.0.1",
     "c8": "^7.11.0",
-    "eslint": "^8.10.0",
-    "rollup": "^2.70.0",
+    "eslint": "^8.13.0",
+    "rollup": "^2.70.1",
     "typescript": "4.5.5"
   },
   "module": "./esm/index.js",
@@ -55,7 +55,7 @@
     "./worker": "./worker.js"
   },
   "dependencies": {
-    "css-select": "^4.2.1",
+    "css-select": "^4.3.0",
     "cssom": "^0.5.0",
     "html-escaper": "^3.0.3",
     "htmlparser2": "^7.2.0",
