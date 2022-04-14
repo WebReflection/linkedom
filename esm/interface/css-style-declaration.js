@@ -13,10 +13,10 @@ const updateKeys = style => {
     if (attr) {
       style.set(PRIVATE, attr);
       for (const rule of attr[VALUE].split(/\s*;\s*/)) {
-        const [key, ...rest] = rule.split(':');
-        if (rest.length > 0) {
+        let [key, ...value] = rule.split(':');
+        if (value.length > 0) {
           key = key.trim();
-          const value = rest.join(':').trim();
+          value = value.join(':').trim();
           if (key && value)
             style.set(key, value);
         }
