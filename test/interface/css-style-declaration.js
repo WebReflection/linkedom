@@ -6,8 +6,9 @@ const {document} = parseHTML('');
 
 let node = document.createElement('div');
 assert(node.style.cssText, '', 'empty style');
-node.style.cssText = 'background-color: blue';
+node.style.cssText = 'background-color: blue; background-image: url("https://t.co/i.png");';
 assert(node.style.backgroundColor, 'blue', 'style getter');
+assert(node.style.backgroundImage, 'url("https://t.co/i.png")', 'style value with colon');
 assert(node.style.toString(), 'background-color:blue', 'cssText setter');
 assert([...node.style].join(','), 'background-color', 'iterable');
 assert(node.style.length, 1, 'style.length');
