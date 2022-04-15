@@ -16,7 +16,7 @@ const updateKeys = style => {
         let [key, ...rest] = rule.split(':');
         if (rest.length > 0) {
           key = key.trim();
-          const value = value.join(':').trim();
+          const value = rest.join(':').trim();
           if (key && value)
             style.set(key, value);
         }
