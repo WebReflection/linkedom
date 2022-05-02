@@ -1,7 +1,6 @@
 import {DOCUMENT_FRAGMENT_NODE} from './shared/constants.js';
 import {defineProperties, getOwnPropertyDescriptors} from './shared/object.js';
 
-import {Attr} from './interface/attr.js';
 import {CharacterData} from './interface/character-data.js';
 import {Element} from './interface/element.js';
 
@@ -18,23 +17,6 @@ import {
   reset
 } from './shared/cache.js';
 
-// Attr
-const {value: {
-  get: getAttributeValue,
-  set: setAttributeValue
-}} = getOwnPropertyDescriptors(Attr.prototype);
-
-defineProperties(Attr.prototype, {
-  value: {
-    get: getAttributeValue,
-    set(value) {
-      reset(this.ownerElement);
-      setAttributeValue.call(this, value);
-    }
-  }
-});
-
-
 // CharacterData
 // TODO: is txtContent really necessary to patch here?
 const {remove: removeCharacterData} = CharacterData.prototype;
@@ -47,11 +29,23 @@ defineProperties(CharacterData.prototype, {
 
 
 // Element
-const {remove: removeElement} = Element.prototype;
+const {
+  remove: removeElement,
+  setAttribute: setElAttribute,
+  removeAttribute: removeElAttribute,
+} = Element.prototype;
 defineProperties(Element.prototype, {
   remove: {value() {
     reset(this.parentNode);
     removeElement.call(this);
+  }},
+  setAttribute: {value(name, value) {
+    reset(this.parentNode);
+    setElAttribute.call(this, name, value);
+  }},
+  removeAttribute: {value(name) {
+    reset(this.parentNode);
+    removeElAttribute.call(this, name);
   }}
 });
 
