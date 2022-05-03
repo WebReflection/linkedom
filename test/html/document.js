@@ -2,6 +2,8 @@ const assert = require('../assert.js').for('HTMLDocument');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
+const {DocumentFragment} = require('../../cjs/interface/document-fragment.js');
+
 const {Document, DOMParser, window, setTimeout} = parseHTML(`
 <!doctype html>
 <html>
@@ -74,6 +76,8 @@ assert(withLocation.document.baseURI, location.href);
 
 const withBase = parseHTML('<html><base href="http://base"></html>', {location});
 assert(withBase.document.documentElement.baseURI, 'http://base');
+
+assert((new DocumentFragment).baseURI, null);
 
 const {document: svg} = (new DOMParser).parseFromString('<svg class="foo-1"/>', 'text/html').defaultView.window;
 assert(svg.querySelector('[class*="foo-"]'), svg.firstElementChild);
