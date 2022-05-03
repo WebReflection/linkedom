@@ -129,6 +129,15 @@ node.innerHTML = `<pre><code>echo &quot;&lt;table class='charts-css'&gt;&quot;</
 assert(node.innerHTML, `<pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre>`);
 assert(node.outerHTML, `<div b="2"><pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre></div>`);
 
+assert(node.querySelector('pre[c]'), null);
+node.childNodes[0].setAttribute('c', '3');
+assert(node.querySelector('pre[c]'), node.childNodes[0]);
+
+node.childNodes[0].setAttribute('d', '4');
+assert(node.querySelector('pre[d]'), node.childNodes[0]);
+node.childNodes[0].removeAttribute('d');
+assert(node.querySelector('pre[d]'), null);
+
 node.innerHTML = '';
 node.setAttribute('class', 'a b c');
 assert(node.getAttribute('class'), 'a b c');

@@ -48,13 +48,26 @@ defineProperties(CharacterData.prototype, {
 
 
 // Element
-const {remove: removeElement} = Element.prototype;
-defineProperties(Element.prototype, {
-  remove: {value() {
-    reset(this.parentNode);
-    removeElement.call(this);
-  }}
-});
+const elementProtoDescriptors = {};
+for (const name of [
+  'remove',
+  'setAttribute',
+  'setAttributeNS',
+  'setAttributeNode',
+  'setAttributeNodeNS',
+  'removeAttribute',
+  'removeAttributeNS',
+  'removeAttributeNode'
+]) {
+  const method = Element.prototype[name];
+  elementProtoDescriptors[name] = {
+    value() {
+      reset(this.parentNode);
+      return method.apply(this, arguments);
+    }
+  };
+}
+defineProperties(Element.prototype, elementProtoDescriptors);
 
 
 // ParentNode
