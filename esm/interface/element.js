@@ -144,7 +144,10 @@ export class Element extends ParentNode {
     while (next !== end) {
       if (next.nodeType === TEXT_NODE) {
         text.push(next.textContent.replace(/\s+/g, ' '));
-      } else if(text.length && next[NEXT] != end && BLOCK_ELEMENTS.includes(next.tagName)) {
+      } else if(
+        text.length && next[NEXT] != end &&
+        BLOCK_ELEMENTS.has(next.tagName)
+      ) {
         text.push('\n');
       }
       next = next[NEXT];

@@ -3496,6 +3496,9 @@ const DOCUMENT_NODE = 9;
 const DOCUMENT_TYPE_NODE = 10;
 const DOCUMENT_FRAGMENT_NODE = 11;
 
+// Elements
+const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'BR', 'BUTTON', 'CANVAS', 'CAPTION', 'COL', 'COLGROUP', 'DD', 'DIV', 'DL', 'DT', 'EMBED', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'UL', 'OL', 'P']);
+
 // TreeWalker
 const SHOW_ALL = -1;
 const SHOW_ELEMENT = 1;
@@ -7327,7 +7330,22 @@ class Element$1 extends ParentNode {
 
 
   // <contentRelated>
-  get innerText() { return this.textContent; }
+  get innerText() { 
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      if (next.nodeType === TEXT_NODE) {
+        text.push(next.textContent.replace(/\s+/g, ' '));
+      } else if(
+        text.length && next[NEXT] != end &&
+        BLOCK_ELEMENTS.has(next.tagName)
+      ) {
+        text.push('\n');
+      }
+      next = next[NEXT];
+    }
+    return text.join('');
+  }
 
   /**
    * @returns {String}
