@@ -3,6 +3,7 @@
 
 const {
   ATTRIBUTE_NODE,
+  BLOCK_ELEMENTS,
   COMMENT_NODE,
   ELEMENT_NODE,
   NODE_END,
@@ -135,7 +136,19 @@ class Element extends ParentNode {
 
 
   // <contentRelated>
-  get innerText() { return this.textContent; }
+  get innerText() { 
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      if (next.nodeType === TEXT_NODE) {
+        text.push(next.textContent.replace(/\s+/g, ' '));
+      } else if(text.length && next[NEXT] != end && BLOCK_ELEMENTS.includes(next.tagName)) {
+        text.push('\n');
+      }
+      next = next[NEXT];
+    }
+    return text.join('');
+  }
 
   /**
    * @returns {String}
