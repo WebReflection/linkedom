@@ -98,20 +98,20 @@ const adapter = {
   findOne
 };
 
-const prepareMatch = (element, selectors) => {
+const prepareMatch = (element, selectors, context) => {
   return CSSselect.compile(selectors, {
     xmlMode: !ignoreCase(element),
-    context: element,
+    context,
     adapter
   });
 };
 exports.prepareMatch = prepareMatch;
 
-const matches = (element, selectors) => {
+const matches = (element, selectors, context) => {
   return CSSselect.is(element, selectors, {
     strict: true,
     xmlMode: !ignoreCase(element),
-    context: element,
+    context,
     adapter
   });
 };

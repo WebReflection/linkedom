@@ -97,19 +97,19 @@ const adapter = {
   findOne
 };
 
-export const prepareMatch = (element, selectors) => {
+export const prepareMatch = (element, selector, context) => {
   return CSSselect.compile(selectors, {
     xmlMode: !ignoreCase(element),
-    context: element,
+    context,
     adapter
   });
 };
 
-export const matches = (element, selectors) => {
+export const matches = (element, selectors, context) => {
   return CSSselect.is(element, selectors, {
     strict: true,
     xmlMode: !ignoreCase(element),
-    context: element,
+    context,
     adapter
   });
 };

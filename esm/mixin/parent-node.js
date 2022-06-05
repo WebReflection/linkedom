@@ -179,7 +179,7 @@ export class ParentNode extends Node {
   }
 
   querySelector(selectors) {
-    const matches = prepareMatch(this, selectors);
+    const matches = prepareMatch(this, selectors, this);
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE && matches(next))
@@ -190,7 +190,7 @@ export class ParentNode extends Node {
   }
 
   querySelectorAll(selectors) {
-    const matches = prepareMatch(this, selectors);
+    const matches = prepareMatch(this, selectors, this);
     const elements = new NodeList;
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {

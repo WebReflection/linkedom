@@ -6410,17 +6410,19 @@ const adapter = {
   findOne
 };
 
-const prepareMatch = (element, selectors) => {
+const prepareMatch = (element, selectors, context) => {
   return compile(selectors, {
     xmlMode: !ignoreCase(element),
+    context,
     adapter
   });
 };
 
-const matches = (element, selectors) => {
+const matches = (element, selectors, context) => {
   return is(element, selectors, {
     strict: true,
     xmlMode: !ignoreCase(element),
+    context,
     adapter
   });
 };
@@ -6641,7 +6643,7 @@ class ParentNode extends Node$1 {
   }
 
   querySelector(selectors) {
-    const matches = prepareMatch(this, selectors);
+    const matches = prepareMatch(this, selectors, this);
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE && matches(next))
@@ -6652,7 +6654,7 @@ class ParentNode extends Node$1 {
   }
 
   querySelectorAll(selectors) {
-    const matches = prepareMatch(this, selectors);
+    const matches = prepareMatch(this, selectors, this);
     const elements = new NodeList;
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
