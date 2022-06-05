@@ -100,6 +100,7 @@ const adapter = {
 export const prepareMatch = (element, selectors) => {
   return CSSselect.compile(selectors, {
     xmlMode: !ignoreCase(element),
+    context: element,
     adapter
   });
 };
@@ -108,6 +109,7 @@ export const matches = (element, selectors) => {
   return CSSselect.is(element, selectors, {
     strict: true,
     xmlMode: !ignoreCase(element),
+    context: element,
     adapter
   });
 };
