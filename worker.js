@@ -8101,14 +8101,14 @@ class HTMLElement extends Element$1 {
 
 }
 
-const tagName$d = 'template';
+const tagName$e = 'template';
 
 /**
  * @implements globalThis.HTMLTemplateElement
  */
 class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
-    super(ownerDocument, tagName$d);
+    super(ownerDocument, tagName$e);
     const content = this.ownerDocument.createDocumentFragment();
     (this[CONTENT] = content)[PRIVATE] = this;
   }
@@ -8122,7 +8122,7 @@ class HTMLTemplateElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$d, HTMLTemplateElement);
+registerHTMLClass(tagName$e, HTMLTemplateElement);
 
 /**
  * @implements globalThis.HTMLHtmlElement
@@ -8146,18 +8146,18 @@ class TextElement extends HTMLElement {
   }
 }
 
-const tagName$c = 'script';
+const tagName$d = 'script';
 
 /**
  * @implements globalThis.HTMLScriptElement
  */
 class HTMLScriptElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$c) {
+  constructor(ownerDocument, localName = tagName$d) {
     super(ownerDocument, localName);
   }
 }
 
-registerHTMLClass(tagName$c, HTMLScriptElement);
+registerHTMLClass(tagName$d, HTMLScriptElement);
 
 /**
  * @implements globalThis.HTMLFrameElement
@@ -8168,14 +8168,23 @@ class HTMLFrameElement extends HTMLElement {
   }
 }
 
+const tagName$c = 'iframe';
+
 /**
  * @implements globalThis.HTMLIFrameElement
  */
 class HTMLIFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'iframe') {
+  constructor(ownerDocument, localName = tagName$c) {
     super(ownerDocument, localName);
   }
+
+  /* c8 ignore start */
+  get src() { return stringAttribute.get(this, 'src'); }
+  set src(value) { stringAttribute.set(this, 'src', value); }
+  /* c8 ignore stop */
 }
+
+registerHTMLClass(tagName$c, HTMLIFrameElement);
 
 /**
  * @implements globalThis.HTMLObjectElement
