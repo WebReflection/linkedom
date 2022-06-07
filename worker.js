@@ -6410,20 +6410,25 @@ const adapter = {
   findOne
 };
 
-const prepareMatch = (element, selectors) => {
-  return compile(selectors, {
+const prepareMatch = (element, selectors) => compile(
+  selectors,
+  {
+    context: selectors.includes(':scope') ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
-  });
-};
+  }
+);
 
-const matches = (element, selectors) => {
-  return is(element, selectors, {
+const matches = (element, selectors) => is(
+  element,
+  selectors,
+  {
     strict: true,
+    context: selectors.includes(':scope') ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
-  });
-};
+  }
+);
 
 const {replace} = '';
 

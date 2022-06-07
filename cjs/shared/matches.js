@@ -98,19 +98,24 @@ const adapter = {
   findOne
 };
 
-const prepareMatch = (element, selectors) => {
-  return CSSselect.compile(selectors, {
+const prepareMatch = (element, selectors) => CSSselect.compile(
+  selectors,
+  {
+    context: selectors.includes(':scope') ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
-  });
-};
+  }
+);
 exports.prepareMatch = prepareMatch;
 
-const matches = (element, selectors) => {
-  return CSSselect.is(element, selectors, {
+const matches = (element, selectors) => CSSselect.is(
+  element,
+  selectors,
+  {
     strict: true,
+    context: selectors.includes(':scope') ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
-  });
-};
+  }
+);
 exports.matches = matches;

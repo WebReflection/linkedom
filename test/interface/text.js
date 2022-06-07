@@ -33,6 +33,7 @@ document.documentElement.cloneNode(true);
 node.firstChild.firstChild.cloneNode(true);
 node.firstChild.firstChild.cloneNode();
 assert(node.firstChild.closest('p'), node.firstChild, 'closest(sameNode)');
+assert(node.firstChild.closest(':scope'), node.firstChild, 'closest(:scope)');
 assert(node.firstChild.closest('nope'), null, 'closest(nope)');
 assert(!node.firstChild.firstChild.isEqualNode(text), true, 'isEqualNode');
 assert(node.firstChild.firstChild.isEqualNode(node.firstChild.firstChild.cloneNode(true)), true, 'isEqualNode');

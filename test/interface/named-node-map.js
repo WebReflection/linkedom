@@ -71,6 +71,7 @@ node.toggleAttribute('disabled', true);
 assert(node.toString(), '<div disabled class="b c">abc</div>', 'toggle');
 assert(node.firstChild.previousElementSibling, null, 'previousElementSibling attributes');
 assert(node.matches('[disabled]'), true, 'yes matches');
+assert(node.matches(':scope[disabled]'), true, ':scope matches');
 node.toggleAttribute('disabled');
 assert(node.toString(), '<div class="b c">abc</div>', 'toggle');
 assert(document.getElementsByClassName('b')[0], node, 'getElementsByClassName');

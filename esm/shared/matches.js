@@ -97,17 +97,22 @@ const adapter = {
   findOne
 };
 
-export const prepareMatch = (element, selectors) => {
-  return CSSselect.compile(selectors, {
+export const prepareMatch = (element, selectors) => CSSselect.compile(
+  selectors,
+  {
+    context: selectors.includes(':scope') ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
-  });
-};
+  }
+);
 
-export const matches = (element, selectors) => {
-  return CSSselect.is(element, selectors, {
+export const matches = (element, selectors) => CSSselect.is(
+  element,
+  selectors,
+  {
     strict: true,
+    context: selectors.includes(':scope') ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
-  });
-};
+  }
+);
