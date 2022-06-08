@@ -8,6 +8,8 @@ export const getEnd = node => node.nodeType === ELEMENT_NODE ? node[END] : node;
 
 export const ignoreCase = ({ownerDocument}) => ownerDocument[MIME].ignoreCase;
 
+export const usesScopePseudoClass = (selectors) => selectors.split(/,/g).some(selector => /^\s*:(scope)\b/.test(selector));
+
 export const knownAdjacent = (prev, next) => {
   prev[NEXT] = next;
   next[PREV] = prev;

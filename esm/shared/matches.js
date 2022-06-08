@@ -1,7 +1,7 @@
 import * as CSSselect from 'css-select';
 
 import {ELEMENT_NODE, TEXT_NODE} from './constants.js';
-import {ignoreCase} from './utils.js';
+import {ignoreCase, usesScopePseudoClass} from './utils.js';
 
 const {isArray} = Array;
 
@@ -100,7 +100,7 @@ const adapter = {
 export const prepareMatch = (element, selectors) => CSSselect.compile(
   selectors,
   {
-    context: selectors.includes(':scope') ? element : void 0,
+    context: usesScopePseudoClass(selectors) ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
   }
@@ -111,7 +111,7 @@ export const matches = (element, selectors) => CSSselect.is(
   selectors,
   {
     strict: true,
-    context: selectors.includes(':scope') ? element : void 0,
+    context: usesScopePseudoClass(selectors) ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
   }

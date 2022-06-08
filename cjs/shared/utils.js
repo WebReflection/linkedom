@@ -11,6 +11,9 @@ exports.getEnd = getEnd;
 const ignoreCase = ({ownerDocument}) => ownerDocument[MIME].ignoreCase;
 exports.ignoreCase = ignoreCase;
 
+const usesScopePseudoClass = (selectors) => selectors.split(/,/g).some(selector => /^\s*:(scope)\b/.test(selector));
+exports.usesScopePseudoClass = usesScopePseudoClass;
+
 const knownAdjacent = (prev, next) => {
   prev[NEXT] = next;
   next[PREV] = prev;

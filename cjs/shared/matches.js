@@ -2,7 +2,7 @@
 const CSSselect = require('css-select');
 
 const {ELEMENT_NODE, TEXT_NODE} = require('./constants.js');
-const {ignoreCase} = require('./utils.js');
+const {ignoreCase, usesScopePseudoClass} = require('./utils.js');
 
 const {isArray} = Array;
 
@@ -101,7 +101,7 @@ const adapter = {
 const prepareMatch = (element, selectors) => CSSselect.compile(
   selectors,
   {
-    context: selectors.includes(':scope') ? element : void 0,
+    context: usesScopePseudoClass(selectors) ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
   }
@@ -113,7 +113,7 @@ const matches = (element, selectors) => CSSselect.is(
   selectors,
   {
     strict: true,
-    context: selectors.includes(':scope') ? element : void 0,
+    context: usesScopePseudoClass(selectors) ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
   }

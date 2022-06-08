@@ -72,6 +72,9 @@ assert(node.toString(), '<div disabled class="b c">abc</div>', 'toggle');
 assert(node.firstChild.previousElementSibling, null, 'previousElementSibling attributes');
 assert(node.matches('[disabled]'), true, 'yes matches');
 assert(node.matches(':scope[disabled]'), true, ':scope matches');
+assert(node.matches('[none],:scope'), true, ':scope matches in union');
+assert(node.matches(':root>[disabled]'), true, ':root matches');
+// assert(node.matches('[none],:root'), true, ':root matches in union');  // fails
 node.toggleAttribute('disabled');
 assert(node.toString(), '<div class="b c">abc</div>', 'toggle');
 assert(document.getElementsByClassName('b')[0], node, 'getElementsByClassName');

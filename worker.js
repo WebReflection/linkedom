@@ -6410,10 +6410,13 @@ const adapter = {
   findOne
 };
 
+// copied from '{cjs|esm}/shared/utils
+const usesScopePseudoClass = (selectors) => selectors.split(/,/g).some(selector => /^\s*:(scope)\b/.test(selector));
+
 const prepareMatch = (element, selectors) => compile(
   selectors,
   {
-    context: selectors.includes(':scope') ? element : void 0,
+    context: usesScopePseudoClass(selectors) ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
   }
@@ -6424,7 +6427,7 @@ const matches = (element, selectors) => is(
   selectors,
   {
     strict: true,
-    context: selectors.includes(':scope') ? element : void 0,
+    context: usesScopePseudoClass(selectors) ? element : void 0,
     xmlMode: !ignoreCase(element),
     adapter
   }
