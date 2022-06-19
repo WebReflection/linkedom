@@ -8146,7 +8146,7 @@ class TextElement extends HTMLElement {
   }
 }
 
-const tagName$d = 'script';
+const tagName$d = "script";
 
 /**
  * @implements globalThis.HTMLScriptElement
@@ -8157,80 +8157,67 @@ class HTMLScriptElement extends TextElement {
   }
 
   get innerHTML() {
-    return super.innerHTML || ''
+    return super.innerHTML || "";
   }
   set innerHTML(value) {
     super.textContent = value;
   }
 
-  get innerText() {
-    return super.innerText || ''
-  }
-  set innerText(value) {
-    super.textContent = value;
-  }
-  get textContent() {
-    return super.textContent || ''
-  }
-  set textContent(value) {
-    super.textContent = value;
-  }
-
   get type() {
-    return stringAttribute.get(this, 'type')
+    return stringAttribute.get(this, "type");
   }
   set type(value) {
-    stringAttribute.set(this, 'type', value);
+    stringAttribute.set(this, "type", value);
   }
 
   get src() {
-    return stringAttribute.get(this, 'src')
+    return stringAttribute.get(this, "src");
   }
   set src(value) {
-    stringAttribute.set(this, 'src', value);
+    stringAttribute.set(this, "src", value);
   }
 
   get defer() {
-    return booleanAttribute.get(this, 'defer')
+    return booleanAttribute.get(this, "defer");
   }
 
   set defer(value) {
-    booleanAttribute.set(this, 'defer', value);
+    booleanAttribute.set(this, "defer", value);
   }
 
   get crossOrigin() {
-    return stringAttribute.get(this, 'crossorigin')
+    return stringAttribute.get(this, "crossorigin");
   }
   set crossOrigin(value) {
-    stringAttribute.set(this, 'crossorigin', value);
+    stringAttribute.set(this, "crossorigin", value);
   }
 
   get nomodule() {
-    return booleanAttribute.get(this, 'nomodule')
+    return booleanAttribute.get(this, "nomodule");
   }
   set nomodule(value) {
-    booleanAttribute.set(this, 'nomodule', value);
+    booleanAttribute.set(this, "nomodule", value);
   }
 
   get referrerPolicy() {
-    return stringAttribute.get(this, 'referrerpolicy')
+    return stringAttribute.get(this, "referrerpolicy");
   }
   set referrerPolicy(value) {
-    stringAttribute.set(this, 'referrerpolicy', value);
+    stringAttribute.set(this, "referrerpolicy", value);
   }
 
   get nonce() {
-    return stringAttribute.get(this, 'nonce')
+    return stringAttribute.get(this, "nonce");
   }
   set nonce(value) {
-    stringAttribute.set(this, 'nonce', value);
+    stringAttribute.set(this, "nonce", value);
   }
 
   get async() {
-    return booleanAttribute.get(this, 'async')
+    return booleanAttribute.get(this, "async");
   }
   set async(value) {
-    booleanAttribute.set(this, 'async', value);
+    booleanAttribute.set(this, "async", value);
   }
 }
 
