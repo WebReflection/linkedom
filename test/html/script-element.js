@@ -107,4 +107,25 @@ assert(head.firstChild.innerHTML, 'html`<p>ok</p>`;', '<script>.innerHTML');
   assert(script.crossOrigin, `anonymous`, '<script>.crossorigin');
   assert(script.nomodule, true, '<script>.nomodule');
   assert(script.referrerPolicy, `no-referrer`, '<script>.referrerpolicy');
+  assert(
+    script.toString(),
+    `<script src="./main.js" type="module" nonce="111" async defer crossorigin="anonymous" nomodule referrerpolicy="no-referrer"></script>`
+  );
+
+  script.nonce = '222';
+  assert(script.nonce, '222', '<script>.nonce');
+  script.async = false;
+  assert(script.async, false, '<script>.async');
+  script.defer = false;
+  assert(script.defer, false, '<script>.defer');
+  script.crossOrigin = 'use-credentials';
+  assert(script.crossOrigin, 'use-credentials', '<script>.crossorigin');
+  script.nomodule = false;
+  assert(script.nomodule, false, '<script>.nomodule');
+  script.referrerPolicy = 'origin';
+  assert(script.referrerPolicy, 'origin', '<script>.referrerpolicy');
+  script.src = './main.js';
+  assert(script.src, './main.js', '<script>.src');
+  script.type = 'text/javascript';
+  assert(script.type, 'text/javascript', '<script>.type');
 }
