@@ -14,13 +14,6 @@ class HTMLScriptElement extends TextElement {
     super(ownerDocument, localName);
   }
 
-  get innerHTML() {
-    return super.innerHTML || '';
-  }
-  set innerHTML(value) {
-    super.textContent = value;
-  }
-
   get type() {
     return stringAttribute.get(this, 'type');
   }

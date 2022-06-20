@@ -93,7 +93,7 @@ head.firstChild.innerHTML = 'html`<p>ok</p>`;';
 assert(head.firstChild.innerHTML, 'html`<p>ok</p>`;', '<script>.innerHTML');
 {
   const { document } = parseHTML(
-    '<html><script src="./main.js" type="module"/></html>'
+    '<html><script src="./main.js" type="module" nonce="111" async defer crossorigin="anonymous" nomodule referrerpolicy="no-referrer"/></html>'
   );
 
   const { firstElementChild: script } = document.documentElement;
@@ -101,4 +101,10 @@ assert(head.firstChild.innerHTML, 'html`<p>ok</p>`;', '<script>.innerHTML');
   assert(script.src, `./main.js`, '<script>.src');
 
   assert(script.type, `module`, '<script>.type');
+  assert(script.nonce, '111', '<script>.nonce');
+  assert(script.async, true, '<script>.async');
+  assert(script.defer, true, '<script>.defer');
+  assert(script.crossOrigin, `anonymous`, '<script>.crossorigin');
+  assert(script.nomodule, true, '<script>.nomodule');
+  assert(script.referrerPolicy, `no-referrer`, '<script>.referrerpolicy');
 }
