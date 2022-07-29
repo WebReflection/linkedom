@@ -114,7 +114,7 @@ The triple-linked list data structure is explained below in [How does it work?](
 
 *LinkeDOM* has zero intention to:
 
-  * implement all things *JSDOM* already implemented. If you need a library which goal is to be 100% standrd compliant, please [use JSDOM](https://github.com/jsdom/jsdom) because *LinkeDOM* doens't wont' to be neirly as bloated nor as slow as *JSDOM* is
+  * implement all things *JSDOM* already implemented. If you need a library which goal is to be 100% standard compliant, please [use JSDOM](https://github.com/jsdom/jsdom) because *LinkeDOM* doesn't want to be neirly as bloated nor as slow as *JSDOM* is
   * implement features not interesting for *Server Side Rendering*. If you need to pretend your NodeJS, Worker, or any other environment, is a browser, please [use JSDOM](https://github.com/jsdom/jsdom)
   * other points listed, or not, in the followung *F.A.Q.s*: this project will always prefer the minimal/fast approach over 100% compliant behavior. Again, if you are looking for 100% compliant behavior and you are not willing to have any compromise in the DOM, this is **not** the project you are looking for
 
