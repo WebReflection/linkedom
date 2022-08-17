@@ -4170,7 +4170,7 @@ const stringAttribute = {
 
 const urlAttribute = {
   get(element, name) {
-    let attr = element.getAttribute(name);
+    const attr = element.getAttribute(name);
     if (attr) {
       try {
         return new URL(attr, element.baseURI).href;
@@ -4350,7 +4350,7 @@ class Node$1 extends DOMEventTarget {
         return location.href;
     }
 
-    return null;
+    return "about:blank";
   }
 
   /* c8 ignore start */
@@ -8296,7 +8296,7 @@ var CSSStyleSheet = {};
 var StyleSheet = {};
 
 //.CommonJS
-var CSSOM$c = {};
+var CSSOM$d = {};
 ///CommonJS
 
 
@@ -8304,20 +8304,20 @@ var CSSOM$c = {};
  * @constructor
  * @see http://dev.w3.org/csswg/cssom/#the-stylesheet-interface
  */
-CSSOM$c.StyleSheet = function StyleSheet() {
+CSSOM$d.StyleSheet = function StyleSheet() {
 	this.parentStyleSheet = null;
 };
 
 
 //.CommonJS
-StyleSheet.StyleSheet = CSSOM$c.StyleSheet;
+StyleSheet.StyleSheet = CSSOM$d.StyleSheet;
 
 var CSSStyleRule = {};
 
 var CSSRule = {};
 
 //.CommonJS
-var CSSOM$b = {};
+var CSSOM$c = {};
 ///CommonJS
 
 
@@ -8326,38 +8326,38 @@ var CSSOM$b = {};
  * @see http://dev.w3.org/csswg/cssom/#the-cssrule-interface
  * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
  */
-CSSOM$b.CSSRule = function CSSRule() {
+CSSOM$c.CSSRule = function CSSRule() {
 	this.parentRule = null;
 	this.parentStyleSheet = null;
 };
 
-CSSOM$b.CSSRule.UNKNOWN_RULE = 0;                 // obsolete
-CSSOM$b.CSSRule.STYLE_RULE = 1;
-CSSOM$b.CSSRule.CHARSET_RULE = 2;                 // obsolete
-CSSOM$b.CSSRule.IMPORT_RULE = 3;
-CSSOM$b.CSSRule.MEDIA_RULE = 4;
-CSSOM$b.CSSRule.FONT_FACE_RULE = 5;
-CSSOM$b.CSSRule.PAGE_RULE = 6;
-CSSOM$b.CSSRule.KEYFRAMES_RULE = 7;
-CSSOM$b.CSSRule.KEYFRAME_RULE = 8;
-CSSOM$b.CSSRule.MARGIN_RULE = 9;
-CSSOM$b.CSSRule.NAMESPACE_RULE = 10;
-CSSOM$b.CSSRule.COUNTER_STYLE_RULE = 11;
-CSSOM$b.CSSRule.SUPPORTS_RULE = 12;
-CSSOM$b.CSSRule.DOCUMENT_RULE = 13;
-CSSOM$b.CSSRule.FONT_FEATURE_VALUES_RULE = 14;
-CSSOM$b.CSSRule.VIEWPORT_RULE = 15;
-CSSOM$b.CSSRule.REGION_STYLE_RULE = 16;
+CSSOM$c.CSSRule.UNKNOWN_RULE = 0;                 // obsolete
+CSSOM$c.CSSRule.STYLE_RULE = 1;
+CSSOM$c.CSSRule.CHARSET_RULE = 2;                 // obsolete
+CSSOM$c.CSSRule.IMPORT_RULE = 3;
+CSSOM$c.CSSRule.MEDIA_RULE = 4;
+CSSOM$c.CSSRule.FONT_FACE_RULE = 5;
+CSSOM$c.CSSRule.PAGE_RULE = 6;
+CSSOM$c.CSSRule.KEYFRAMES_RULE = 7;
+CSSOM$c.CSSRule.KEYFRAME_RULE = 8;
+CSSOM$c.CSSRule.MARGIN_RULE = 9;
+CSSOM$c.CSSRule.NAMESPACE_RULE = 10;
+CSSOM$c.CSSRule.COUNTER_STYLE_RULE = 11;
+CSSOM$c.CSSRule.SUPPORTS_RULE = 12;
+CSSOM$c.CSSRule.DOCUMENT_RULE = 13;
+CSSOM$c.CSSRule.FONT_FEATURE_VALUES_RULE = 14;
+CSSOM$c.CSSRule.VIEWPORT_RULE = 15;
+CSSOM$c.CSSRule.REGION_STYLE_RULE = 16;
 
 
-CSSOM$b.CSSRule.prototype = {
-	constructor: CSSOM$b.CSSRule
+CSSOM$c.CSSRule.prototype = {
+	constructor: CSSOM$c.CSSRule
 	//FIXME
 };
 
 
 //.CommonJS
-CSSRule.CSSRule = CSSOM$b.CSSRule;
+CSSRule.CSSRule = CSSOM$c.CSSRule;
 
 var hasRequiredCSSStyleRule;
 
@@ -8658,7 +8658,7 @@ var CSSImportRule = {};
 var MediaList = {};
 
 //.CommonJS
-var CSSOM$a = {};
+var CSSOM$b = {};
 ///CommonJS
 
 
@@ -8666,13 +8666,13 @@ var CSSOM$a = {};
  * @constructor
  * @see http://dev.w3.org/csswg/cssom/#the-medialist-interface
  */
-CSSOM$a.MediaList = function MediaList(){
+CSSOM$b.MediaList = function MediaList(){
 	this.length = 0;
 };
 
-CSSOM$a.MediaList.prototype = {
+CSSOM$b.MediaList.prototype = {
 
-	constructor: CSSOM$a.MediaList,
+	constructor: CSSOM$b.MediaList,
 
 	/**
 	 * @return {string}
@@ -8716,147 +8716,139 @@ CSSOM$a.MediaList.prototype = {
 
 
 //.CommonJS
-MediaList.MediaList = CSSOM$a.MediaList;
+MediaList.MediaList = CSSOM$b.MediaList;
 
-var hasRequiredCSSImportRule;
-
-function requireCSSImportRule () {
-	if (hasRequiredCSSImportRule) return CSSImportRule;
-	hasRequiredCSSImportRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: CSSRule.CSSRule,
-		CSSStyleSheet: requireCSSStyleSheet().CSSStyleSheet,
-		MediaList: MediaList.MediaList
-	};
-	///CommonJS
+//.CommonJS
+var CSSOM$a = {
+	CSSRule: CSSRule.CSSRule,
+	CSSStyleSheet: requireCSSStyleSheet().CSSStyleSheet,
+	MediaList: MediaList.MediaList
+};
+///CommonJS
 
 
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#cssimportrule
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSImportRule
-	 */
-	CSSOM.CSSImportRule = function CSSImportRule() {
-		CSSOM.CSSRule.call(this);
-		this.href = "";
-		this.media = new CSSOM.MediaList();
-		this.styleSheet = new CSSOM.CSSStyleSheet();
-	};
+/**
+ * @constructor
+ * @see http://dev.w3.org/csswg/cssom/#cssimportrule
+ * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSImportRule
+ */
+CSSOM$a.CSSImportRule = function CSSImportRule() {
+	CSSOM$a.CSSRule.call(this);
+	this.href = "";
+	this.media = new CSSOM$a.MediaList();
+	this.styleSheet = new CSSOM$a.CSSStyleSheet();
+};
 
-	CSSOM.CSSImportRule.prototype = new CSSOM.CSSRule();
-	CSSOM.CSSImportRule.prototype.constructor = CSSOM.CSSImportRule;
-	CSSOM.CSSImportRule.prototype.type = 3;
+CSSOM$a.CSSImportRule.prototype = new CSSOM$a.CSSRule();
+CSSOM$a.CSSImportRule.prototype.constructor = CSSOM$a.CSSImportRule;
+CSSOM$a.CSSImportRule.prototype.type = 3;
 
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "cssText", {
-	  get: function() {
-	    var mediaText = this.media.mediaText;
-	    return "@import url(" + this.href + ")" + (mediaText ? " " + mediaText : "") + ";";
-	  },
-	  set: function(cssText) {
-	    var i = 0;
+Object.defineProperty(CSSOM$a.CSSImportRule.prototype, "cssText", {
+  get: function() {
+    var mediaText = this.media.mediaText;
+    return "@import url(" + this.href + ")" + (mediaText ? " " + mediaText : "") + ";";
+  },
+  set: function(cssText) {
+    var i = 0;
 
-	    /**
-	     * @import url(partial.css) screen, handheld;
-	     *        ||               |
-	     *        after-import     media
-	     *         |
-	     *         url
-	     */
-	    var state = '';
+    /**
+     * @import url(partial.css) screen, handheld;
+     *        ||               |
+     *        after-import     media
+     *         |
+     *         url
+     */
+    var state = '';
 
-	    var buffer = '';
-	    var index;
-	    for (var character; (character = cssText.charAt(i)); i++) {
+    var buffer = '';
+    var index;
+    for (var character; (character = cssText.charAt(i)); i++) {
 
-	      switch (character) {
-	        case ' ':
-	        case '\t':
-	        case '\r':
-	        case '\n':
-	        case '\f':
-	          if (state === 'after-import') {
-	            state = 'url';
-	          } else {
-	            buffer += character;
-	          }
-	          break;
+      switch (character) {
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\n':
+        case '\f':
+          if (state === 'after-import') {
+            state = 'url';
+          } else {
+            buffer += character;
+          }
+          break;
 
-	        case '@':
-	          if (!state && cssText.indexOf('@import', i) === i) {
-	            state = 'after-import';
-	            i += 'import'.length;
-	            buffer = '';
-	          }
-	          break;
+        case '@':
+          if (!state && cssText.indexOf('@import', i) === i) {
+            state = 'after-import';
+            i += 'import'.length;
+            buffer = '';
+          }
+          break;
 
-	        case 'u':
-	          if (state === 'url' && cssText.indexOf('url(', i) === i) {
-	            index = cssText.indexOf(')', i + 1);
-	            if (index === -1) {
-	              throw i + ': ")" not found';
-	            }
-	            i += 'url('.length;
-	            var url = cssText.slice(i, index);
-	            if (url[0] === url[url.length - 1]) {
-	              if (url[0] === '"' || url[0] === "'") {
-	                url = url.slice(1, -1);
-	              }
-	            }
-	            this.href = url;
-	            i = index;
-	            state = 'media';
-	          }
-	          break;
+        case 'u':
+          if (state === 'url' && cssText.indexOf('url(', i) === i) {
+            index = cssText.indexOf(')', i + 1);
+            if (index === -1) {
+              throw i + ': ")" not found';
+            }
+            i += 'url('.length;
+            var url = cssText.slice(i, index);
+            if (url[0] === url[url.length - 1]) {
+              if (url[0] === '"' || url[0] === "'") {
+                url = url.slice(1, -1);
+              }
+            }
+            this.href = url;
+            i = index;
+            state = 'media';
+          }
+          break;
 
-	        case '"':
-	          if (state === 'url') {
-	            index = cssText.indexOf('"', i + 1);
-	            if (!index) {
-	              throw i + ": '\"' not found";
-	            }
-	            this.href = cssText.slice(i + 1, index);
-	            i = index;
-	            state = 'media';
-	          }
-	          break;
+        case '"':
+          if (state === 'url') {
+            index = cssText.indexOf('"', i + 1);
+            if (!index) {
+              throw i + ": '\"' not found";
+            }
+            this.href = cssText.slice(i + 1, index);
+            i = index;
+            state = 'media';
+          }
+          break;
 
-	        case "'":
-	          if (state === 'url') {
-	            index = cssText.indexOf("'", i + 1);
-	            if (!index) {
-	              throw i + ': "\'" not found';
-	            }
-	            this.href = cssText.slice(i + 1, index);
-	            i = index;
-	            state = 'media';
-	          }
-	          break;
+        case "'":
+          if (state === 'url') {
+            index = cssText.indexOf("'", i + 1);
+            if (!index) {
+              throw i + ': "\'" not found';
+            }
+            this.href = cssText.slice(i + 1, index);
+            i = index;
+            state = 'media';
+          }
+          break;
 
-	        case ';':
-	          if (state === 'media') {
-	            if (buffer) {
-	              this.media.mediaText = buffer.trim();
-	            }
-	          }
-	          break;
+        case ';':
+          if (state === 'media') {
+            if (buffer) {
+              this.media.mediaText = buffer.trim();
+            }
+          }
+          break;
 
-	        default:
-	          if (state === 'media') {
-	            buffer += character;
-	          }
-	          break;
-	      }
-	    }
-	  }
-	});
+        default:
+          if (state === 'media') {
+            buffer += character;
+          }
+          break;
+      }
+    }
+  }
+});
 
 
-	//.CommonJS
-	CSSImportRule.CSSImportRule = CSSOM.CSSImportRule;
-	///CommonJS
-	return CSSImportRule;
-}
+//.CommonJS
+CSSImportRule.CSSImportRule = CSSOM$a.CSSImportRule;
 
 var CSSGroupingRule = {};
 
@@ -10174,7 +10166,7 @@ function requireParse () {
 	// The following modules cannot be included sooner due to the mutual dependency with parse.js
 	CSSOM.CSSStyleSheet = requireCSSStyleSheet().CSSStyleSheet;
 	CSSOM.CSSStyleRule = requireCSSStyleRule().CSSStyleRule;
-	CSSOM.CSSImportRule = requireCSSImportRule().CSSImportRule;
+	CSSOM.CSSImportRule = CSSImportRule.CSSImportRule;
 	CSSOM.CSSGroupingRule = CSSGroupingRule.CSSGroupingRule;
 	CSSOM.CSSMediaRule = CSSMediaRule.CSSMediaRule;
 	CSSOM.CSSConditionRule = CSSConditionRule.CSSConditionRule;
@@ -10362,7 +10354,6 @@ function requireCSSStyleDeclaration () {
 
 requireCSSStyleDeclaration().CSSStyleDeclaration;
 requireCSSStyleRule().CSSStyleRule;
-requireCSSImportRule().CSSImportRule;
 requireCSSFontFaceRule().CSSFontFaceRule;
 requireCSSStyleSheet().CSSStyleSheet;
 requireCSSKeyframeRule().CSSKeyframeRule;

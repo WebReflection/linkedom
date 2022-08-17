@@ -98,7 +98,7 @@ exports.stringAttribute = stringAttribute;
 
 const urlAttribute = {
   get(element, name) {
-    let attr = element.getAttribute(name);
+    const attr = element.getAttribute(name);
     if (attr) {
       try {
         return new URL(attr, element.baseURI).href;

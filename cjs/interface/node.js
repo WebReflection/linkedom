@@ -76,7 +76,7 @@ class Node extends EventTarget {
         return location.href;
     }
 
-    return null;
+    return "about:blank";
   }
 
   /* c8 ignore start */
