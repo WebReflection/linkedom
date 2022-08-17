@@ -4168,6 +4168,23 @@ const stringAttribute = {
   }
 };
 
+const urlAttribute = {
+  get(element, name) {
+    let attr = element.getAttribute(name);
+    if (attr) {
+      try {
+        return new URL(attr, element.baseURI).href;
+      } catch (err) {
+        return attr;
+      }
+    }
+    return '';
+  },
+  set(element, name, value) {
+    element.setAttribute(name, value);
+  }
+};
+
 /* oddly enough, this apparently is not a thing
 export const nullableAttribute = {
   get(element, name) {
@@ -10948,8 +10965,8 @@ class HTMLImageElement extends HTMLElement {
   get sizes() { return stringAttribute.get(this, 'sizes'); }
   set sizes(value) { stringAttribute.set(this, 'sizes', value); }
 
-  get src() { return stringAttribute.get(this, 'src'); }
-  set src(value) { stringAttribute.set(this, 'src', value); }
+  get src() { return urlAttribute.get(this, 'src'); }
+  set src(value) { urlAttribute.set(this, 'src', value); }
 
   get srcset() { return stringAttribute.get(this, 'srcset'); }
   set srcset(value) { stringAttribute.set(this, 'srcset', value); }
@@ -11010,6 +11027,11 @@ class HTMLAreaElement extends HTMLElement {
   constructor(ownerDocument, localName = 'area') {
     super(ownerDocument, localName);
   }
+
+  /* c8 ignore start */
+  get href() { return urlAttribute.get(this, 'href'); }
+  set href(value) { urlAttribute.set(this, 'href', value); }
+  /* c8 ignore stop */
 }
 
 /**
@@ -11041,8 +11063,8 @@ class HTMLAnchorElement extends HTMLElement {
   }
 
   /* c8 ignore start */ // copy paste from img.src, already covered
-  get href() { return encodeURI(stringAttribute.get(this, 'href')); }
-  set href(value) { stringAttribute.set(this, 'href', decodeURI(value)); }
+  get href() { return urlAttribute.get(this, 'href'); }
+  set href(value) { urlAttribute.set(this, 'href', value); }
 
   get download() { return encodeURI(stringAttribute.get(this, 'download')); }
   set download(value) { stringAttribute.set(this, 'download', decodeURI(value)); }

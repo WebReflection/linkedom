@@ -1,6 +1,6 @@
 'use strict';
 const {registerHTMLClass} = require('../shared/register-html-class.js');
-const {stringAttribute} = require('../shared/attributes.js');
+const {stringAttribute, urlAttribute} = require('../shared/attributes.js');
 
 const {HTMLElement} = require('./element.js');
 
@@ -15,8 +15,8 @@ class HTMLAnchorElement extends HTMLElement {
   }
 
   /* c8 ignore start */ // copy paste from img.src, already covered
-  get href() { return encodeURI(stringAttribute.get(this, 'href')); }
-  set href(value) { stringAttribute.set(this, 'href', decodeURI(value)); }
+  get href() { return urlAttribute.get(this, 'href'); }
+  set href(value) { urlAttribute.set(this, 'href', value); }
 
   get download() { return encodeURI(stringAttribute.get(this, 'download')); }
   set download(value) { stringAttribute.set(this, 'download', decodeURI(value)); }

@@ -1,5 +1,5 @@
 import {registerHTMLClass} from '../shared/register-html-class.js';
-import {numericAttribute, stringAttribute} from '../shared/attributes.js';
+import {numericAttribute, stringAttribute, urlAttribute} from '../shared/attributes.js';
 
 import {HTMLElement} from './element.js';
 
@@ -20,8 +20,8 @@ class HTMLImageElement extends HTMLElement {
   get sizes() { return stringAttribute.get(this, 'sizes'); }
   set sizes(value) { stringAttribute.set(this, 'sizes', value); }
 
-  get src() { return stringAttribute.get(this, 'src'); }
-  set src(value) { stringAttribute.set(this, 'src', value); }
+  get src() { return urlAttribute.get(this, 'src'); }
+  set src(value) { urlAttribute.set(this, 'src', value); }
 
   get srcset() { return stringAttribute.get(this, 'srcset'); }
   set srcset(value) { stringAttribute.set(this, 'srcset', value); }
