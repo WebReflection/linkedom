@@ -67,7 +67,7 @@ class Node extends EventTarget {
     const ownerDocument = this.nodeType === DOCUMENT_NODE ?
                             this : this.ownerDocument;
     if (ownerDocument) {
-      const base = ownerDocument.querySelector('base');
+      const base = ownerDocument.querySelector('base[href]');
       if (base)
         return base.getAttribute('href');
 
