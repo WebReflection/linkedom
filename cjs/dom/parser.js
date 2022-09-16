@@ -31,6 +31,8 @@ class DOMParser {
     document[DOM_PARSER] = DOMParser;
     if (globals)
       document[GLOBALS] = globals;
+    if (isHTML && markupLanguage === '...')
+      markupLanguage = '<!doctype html><html><head></head><body></body></html>';
     return markupLanguage ?
             parseFromString(document, isHTML, markupLanguage) :
             document;

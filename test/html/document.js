@@ -81,3 +81,5 @@ assert((new DocumentFragment).baseURI, null);
 
 const {document: svg} = (new DOMParser).parseFromString('<svg class="foo-1"/>', 'text/html').defaultView.window;
 assert(svg.querySelector('[class*="foo-"]'), svg.firstElementChild);
+
+assert((new DOMParser).parseFromString('...', 'text/html').firstElementChild.localName, 'html');
