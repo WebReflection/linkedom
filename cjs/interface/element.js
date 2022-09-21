@@ -136,7 +136,7 @@ class Element extends ParentNode {
 
 
   // <contentRelated>
-  get innerText() { 
+  get innerText() {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
@@ -394,7 +394,12 @@ class Element extends ParentNode {
           parentNode = node;
           break;
         }
-        case ATTRIBUTE_NODE:
+        case ATTRIBUTE_NODE: {
+          const attr = next.cloneNode(deep);
+          attr.ownerElement = next.ownerElement;
+          addNext(attr);
+          break;
+        }
         case TEXT_NODE:
         case COMMENT_NODE:
           addNext(next.cloneNode(deep));
