@@ -398,7 +398,7 @@ export class Element extends ParentNode {
         }
         case ATTRIBUTE_NODE: {
           const attr = next.cloneNode(deep);
-          attr.ownerElement = next.ownerElement;
+          attr.ownerElement = parentNode;
           addNext(attr);
           break;
         }
