@@ -12,5 +12,7 @@ export class HTMLInputElement extends HTMLElement implements globalThis.HTMLInpu
     get placeholder(): any;
     set type(arg: any);
     get type(): any;
+    set value(arg: any);
+    get value(): any;
 }
 import { HTMLElement } from "./element.js";

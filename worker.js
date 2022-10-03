@@ -10524,6 +10524,9 @@ class HTMLInputElement extends HTMLElement {
 
   get type() { return this.getAttribute('type'); }
   set type(value) { this.setAttribute('type', value); }
+
+  get value() { return stringAttribute.get(this, 'value'); }
+  set value(value) { stringAttribute.set(this, 'value', value); }
   /* c8 ignore stop */
 }
 
