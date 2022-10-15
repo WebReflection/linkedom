@@ -25,9 +25,9 @@ export class ParentNode extends Node {
     [END]: NodeStruct;
 }
 export type NodeStruct = import('../interface/element.js').Element & {
-    [typeof NEXT]: NodeStruct;
-    [typeof PREV]: NodeStruct;
-    [typeof START]: NodeStruct;
+    [NEXT]: NodeStruct;
+    [PREV]: NodeStruct;
+    [START]: NodeStruct;
     nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE;
     ownerDocument: Document;
     parentNode: ParentNode;
