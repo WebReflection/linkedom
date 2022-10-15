@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLProgressElement
- */
-export class HTMLProgressElement extends HTMLElement implements globalThis.HTMLProgressElement {
+export class HTMLProgressElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

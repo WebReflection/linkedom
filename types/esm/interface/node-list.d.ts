@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.NodeList
- */
-export class NodeList extends Array<any> implements globalThis.NodeList {
+export class NodeList extends Array<any> {
     constructor(arrayLength?: number);
     constructor(arrayLength: number);
     constructor(...items: any[]);

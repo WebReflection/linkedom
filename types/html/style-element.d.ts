@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLStyleElement
- */
-export class HTMLStyleElement extends TextElement implements globalThis.HTMLStyleElement {
+export class HTMLStyleElement extends TextElement {
     get sheet(): any;
     [SHEET]: any;
 }

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLTextAreaElement
- */
-export class HTMLTextAreaElement extends TextElement implements globalThis.HTMLTextAreaElement {
+export class HTMLTextAreaElement extends TextElement {
     set disabled(arg: any);
     get disabled(): any;
     set name(arg: any);

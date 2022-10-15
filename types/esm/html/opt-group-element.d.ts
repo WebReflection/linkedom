@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLOptGroupElement
- */
-export class HTMLOptGroupElement extends HTMLElement implements globalThis.HTMLOptGroupElement {
+export class HTMLOptGroupElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

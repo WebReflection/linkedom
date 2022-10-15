@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.XMLDocument
- */
-export class XMLDocument extends Document implements globalThis.XMLDocument {
+export class XMLDocument extends Document {
     constructor();
 }
 import { Document } from "../interface/document.js";

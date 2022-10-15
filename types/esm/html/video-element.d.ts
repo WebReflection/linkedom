@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLVideoElement
- */
-export class HTMLVideoElement extends HTMLElement implements globalThis.HTMLVideoElement {
+export class HTMLVideoElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLSourceElement
- */
-export class HTMLSourceElement extends HTMLElement implements globalThis.HTMLSourceElement {
+export class HTMLSourceElement extends HTMLElement {
     set src(arg: any);
     get src(): any;
     set srcset(arg: any);

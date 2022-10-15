@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.DOMTokenList
- */
-export class DOMTokenList extends Set<any> implements globalThis.DOMTokenList {
+export class DOMTokenList extends Set<any> {
     constructor(ownerElement: any);
     get length(): number;
     get value(): string;

@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLBodyElement
- */
-export class HTMLBodyElement extends HTMLElement implements globalThis.HTMLBodyElement {
+export class HTMLBodyElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLSelectElement
- */
-export class HTMLSelectElement extends HTMLElement implements globalThis.HTMLSelectElement {
+export class HTMLSelectElement extends HTMLElement {
     get options(): NodeList;
     set disabled(arg: any);
     get disabled(): any;

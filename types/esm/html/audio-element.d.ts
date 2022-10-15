@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLAudioElement
- */
-export class HTMLAudioElement extends HTMLElement implements globalThis.HTMLAudioElement {
+export class HTMLAudioElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

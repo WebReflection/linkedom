@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.Node
- */
-export class Node extends EventTarget implements globalThis.Node {
+export class Node extends EventTarget {
     static get ELEMENT_NODE(): number;
     static get ATTRIBUTE_NODE(): number;
     static get TEXT_NODE(): number;

@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLMenuElement
- */
-export class HTMLMenuElement extends HTMLElement implements globalThis.HTMLMenuElement {
+export class HTMLMenuElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

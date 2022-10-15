@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.CharacterData
- */
-export class CharacterData extends Node implements globalThis.CharacterData {
+export class CharacterData extends Node {
     constructor(ownerDocument: any, localName: any, nodeType: any, data: any);
     before(...nodes: any[]): void;
     after(...nodes: any[]): void;

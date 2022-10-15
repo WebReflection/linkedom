@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLOptionElement
- */
-export class HTMLOptionElement extends HTMLElement implements globalThis.HTMLOptionElement {
+export class HTMLOptionElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLParamElement
- */
-export class HTMLParamElement extends HTMLElement implements globalThis.HTMLParamElement {
+export class HTMLParamElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

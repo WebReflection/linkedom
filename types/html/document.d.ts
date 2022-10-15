@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLDocument
- */
-export class HTMLDocument extends Document implements globalThis.HTMLDocument {
+export class HTMLDocument extends Document {
     constructor();
     get all(): NodeList;
     /**

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLCanvasElement
- */
-export class HTMLCanvasElement extends HTMLElement implements globalThis.HTMLCanvasElement {
+export class HTMLCanvasElement extends HTMLElement {
     set width(arg: any);
     get width(): any;
     set height(arg: any);

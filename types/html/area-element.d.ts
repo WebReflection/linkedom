@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLAreaElement
- */
-export class HTMLAreaElement extends HTMLElement implements globalThis.HTMLAreaElement {
+export class HTMLAreaElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

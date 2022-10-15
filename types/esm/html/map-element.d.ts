@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLMapElement
- */
-export class HTMLMapElement extends HTMLElement implements globalThis.HTMLMapElement {
+export class HTMLMapElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

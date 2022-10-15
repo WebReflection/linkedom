@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.Document
- */
-export class Document extends NonElementParentNode implements globalThis.Document {
+export class Document extends NonElementParentNode {
     constructor(type: any);
     /**
      * @type {globalThis.Document['defaultView']}

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLAnchorElement
- */
-export class HTMLAnchorElement extends HTMLElement implements globalThis.HTMLAnchorElement {
+export class HTMLAnchorElement extends HTMLElement {
     set href(arg: string);
     get href(): string;
     set download(arg: string);

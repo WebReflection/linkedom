@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.InputEvent
- */
-export class InputEvent extends Event implements globalThis.InputEvent {
+export class InputEvent extends Event {
     inputType: any;
     data: any;
     dataTransfer: any;

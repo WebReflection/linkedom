@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLInputElement
- */
-export class HTMLInputElement extends HTMLElement implements globalThis.HTMLInputElement {
+export class HTMLInputElement extends HTMLElement {
     set autofocus(arg: any);
     get autofocus(): any;
     set disabled(arg: any);

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.DOMStringMap
- */
-export class DOMStringMap implements globalThis.DOMStringMap {
+export class DOMStringMap {
     /**
      * @param {Element} ref
      */

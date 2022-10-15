@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLFieldSetElement
- */
-export class HTMLFieldSetElement extends HTMLElement implements globalThis.HTMLFieldSetElement {
+export class HTMLFieldSetElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.Text
- */
-export class Text extends CharacterData implements globalThis.Text {
+export class Text extends CharacterData {
     constructor(ownerDocument: any, data?: string);
     get wholeText(): string;
 }

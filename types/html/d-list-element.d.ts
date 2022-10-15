@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLDListElement
- */
-export class HTMLDListElement extends HTMLElement implements globalThis.HTMLDListElement {
+export class HTMLDListElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

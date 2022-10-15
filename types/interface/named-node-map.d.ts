@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.NamedNodeMap
- */
-export class NamedNodeMap extends Array<any> implements globalThis.NamedNodeMap {
+export class NamedNodeMap extends Array<any> {
     constructor(ownerElement: any);
     ownerElement: any;
     getNamedItem(name: any): any;

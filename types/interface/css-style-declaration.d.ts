@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.CSSStyleDeclaration
- */
-export class CSSStyleDeclaration extends Map<any, any> implements globalThis.CSSStyleDeclaration {
+export class CSSStyleDeclaration extends Map<any, any> {
     constructor(element: any);
     set cssText(arg: string);
     get cssText(): string;

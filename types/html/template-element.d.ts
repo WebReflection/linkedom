@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLTemplateElement
- */
-export class HTMLTemplateElement extends HTMLElement implements globalThis.HTMLTemplateElement {
+export class HTMLTemplateElement extends HTMLElement {
     constructor(ownerDocument: any);
     get content(): any;
     [CONTENT]: any;

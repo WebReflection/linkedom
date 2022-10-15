@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.Attr
- */
-export class Attr extends Node implements globalThis.Attr {
+export class Attr extends Node {
     constructor(ownerDocument: any, name: any, value?: string);
     ownerElement: any;
     name: string;

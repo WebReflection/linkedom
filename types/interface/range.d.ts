@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.Range
- */
-export class Range implements globalThis.Range {
+export class Range {
     commonAncestorContainer: any;
     insertNode(newNode: any): void;
     selectNode(node: any): void;

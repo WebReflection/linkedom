@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.TreeWalker
- */
-export class TreeWalker implements globalThis.TreeWalker {
+export class TreeWalker {
     constructor(root: any, whatToShow?: number);
     root: any;
     currentNode: any;

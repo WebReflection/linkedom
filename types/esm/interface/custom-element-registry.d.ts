@@ -3,10 +3,7 @@ export const customElements: WeakMap<object, any>;
 export function attributeChangedCallback(element: any, attributeName: any, oldValue: any, newValue: any): void;
 export function connectedCallback(element: any): void;
 export function disconnectedCallback(element: any): void;
-/**
- * @implements globalThis.CustomElementRegistry
- */
-export class CustomElementRegistry implements globalThis.CustomElementRegistry {
+export class CustomElementRegistry {
     /**
      * @param {Document} ownerDocument
      */

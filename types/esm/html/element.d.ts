@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLElement
- */
-export class HTMLElement extends Element implements globalThis.HTMLElement {
+export class HTMLElement extends Element {
     static get observedAttributes(): any[];
     constructor(ownerDocument?: any, localName?: string);
     blur(): void;

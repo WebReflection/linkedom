@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLImageElement
- */
-export class HTMLImageElement extends HTMLElement implements globalThis.HTMLImageElement {
+export class HTMLImageElement extends HTMLElement {
     set alt(arg: any);
     get alt(): any;
     set sizes(arg: any);

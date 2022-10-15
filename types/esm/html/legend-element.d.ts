@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLLegendElement
- */
-export class HTMLLegendElement extends HTMLElement implements globalThis.HTMLLegendElement {
+export class HTMLLegendElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

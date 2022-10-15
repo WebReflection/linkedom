@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLScriptElement
- */
-export class HTMLScriptElement extends TextElement implements globalThis.HTMLScriptElement {
+export class HTMLScriptElement extends TextElement {
     set type(arg: any);
     get type(): any;
     set src(arg: any);

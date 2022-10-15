@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLBRElement
- */
-export class HTMLBRElement extends HTMLElement implements globalThis.HTMLBRElement {
+export class HTMLBRElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

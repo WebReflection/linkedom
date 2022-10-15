@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLTableCellElement
- */
-export class HTMLTableCellElement extends HTMLElement implements globalThis.HTMLTableCellElement {
+export class HTMLTableCellElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

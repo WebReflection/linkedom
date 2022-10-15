@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLFormElement
- */
-export class HTMLFormElement extends HTMLElement implements globalThis.HTMLFormElement {
+export class HTMLFormElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

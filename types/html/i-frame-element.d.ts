@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLIFrameElement
- */
-export class HTMLIFrameElement extends HTMLElement implements globalThis.HTMLIFrameElement {
+export class HTMLIFrameElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

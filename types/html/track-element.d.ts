@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLTrackElement
- */
-export class HTMLTrackElement extends HTMLElement implements globalThis.HTMLTrackElement {
+export class HTMLTrackElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLLinkElement
- */
-export class HTMLLinkElement extends HTMLElement implements globalThis.HTMLLinkElement {
+export class HTMLLinkElement extends HTMLElement {
     set disabled(arg: any);
     get disabled(): any;
     set href(arg: any);

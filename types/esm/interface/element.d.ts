@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.Element
- */
-export class Element extends ParentNode implements globalThis.Element {
+export class Element extends ParentNode {
     constructor(ownerDocument: any, localName: any);
     before(...nodes: any[]): void;
     after(...nodes: any[]): void;

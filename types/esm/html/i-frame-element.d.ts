@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLIFrameElement
- */
-export class HTMLIFrameElement extends HTMLElement implements globalThis.HTMLIFrameElement {
+export class HTMLIFrameElement extends HTMLElement {
     set src(arg: any);
     get src(): any;
 }

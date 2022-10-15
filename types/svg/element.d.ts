@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.SVGElement
- */
-export class SVGElement extends Element implements globalThis.SVGElement {
+export class SVGElement extends Element {
     constructor(ownerDocument: any, localName: any, ownerSVGElement?: any);
     ownerSVGElement: any;
 }

@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLFontElement
- */
-export class HTMLFontElement extends HTMLElement implements globalThis.HTMLFontElement {
+export class HTMLFontElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

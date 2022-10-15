@@ -1,8 +1,5 @@
 export { GlobalEvent as Event };
-/**
- * @implements globalThis.Event
- */
-declare class GlobalEvent implements globalThis.Event {
+declare class GlobalEvent {
     static get BUBBLING_PHASE(): number;
     static get AT_TARGET(): number;
     static get CAPTURING_PHASE(): number;

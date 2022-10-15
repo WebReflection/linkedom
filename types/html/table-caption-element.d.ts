@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLTableCaptionElement
- */
-export class HTMLTableCaptionElement extends HTMLElement implements globalThis.HTMLTableCaptionElement {
+export class HTMLTableCaptionElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLScriptElement
- */
-export class HTMLScriptElement extends TextElement implements globalThis.HTMLScriptElement {
+export class HTMLScriptElement extends TextElement {
 }
 import { TextElement } from "./text-element.js";

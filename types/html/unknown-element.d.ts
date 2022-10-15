@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.HTMLUnknownElement
- */
-export class HTMLUnknownElement extends HTMLElement implements globalThis.HTMLUnknownElement {
+export class HTMLUnknownElement extends HTMLElement {
 }
 import { HTMLElement } from "./element.js";

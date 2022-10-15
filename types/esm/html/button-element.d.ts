@@ -1,7 +1,4 @@
-/**
- * @implements globalThis.HTMLButtonElement
- */
-export class HTMLButtonElement extends HTMLElement implements globalThis.HTMLButtonElement {
+export class HTMLButtonElement extends HTMLElement {
     set disabled(arg: any);
     get disabled(): any;
     set name(arg: any);
