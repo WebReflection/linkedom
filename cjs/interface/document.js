@@ -56,9 +56,6 @@ const globalExports = assign(
 
 const window = new WeakMap;
 
-/**
- * @implements globalThis.Document
- */
 class Document extends NonElementParentNode {
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);

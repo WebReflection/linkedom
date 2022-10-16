@@ -3,9 +3,6 @@ import {documentTypeAsJSON} from '../shared/jsdon.js';
 
 import {Node} from './node.js';
 
-/**
- * @implements globalThis.DocumentType
- */
 export class DocumentType extends Node {
   constructor(ownerDocument, name, publicId = '', systemId = '') {
     super(ownerDocument, '#document-type', DOCUMENT_TYPE_NODE);

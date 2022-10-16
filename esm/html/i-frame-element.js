@@ -5,9 +5,6 @@ import {HTMLElement} from './element.js';
 
 const tagName = 'iframe';
 
-/**
- * @implements globalThis.HTMLIFrameElement
- */
 class HTMLIFrameElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

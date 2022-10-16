@@ -56,9 +56,6 @@ const globalExports = assign(
 
 const window = new WeakMap;
 
-/**
- * @implements globalThis.Document
- */
 export class Document extends NonElementParentNode {
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
@@ -174,7 +171,7 @@ export class Document extends NonElementParentNode {
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType(this, name, publicId, systemId); }
-  createElement(localName) { return new Element(this, localName); }
+  createElement(localName, options) { return new Element(this, localName); }
   createRange() {
     const range = new Range;
     range.commonAncestorContainer = this;

@@ -23,9 +23,6 @@ const level0 = {
   }
 };
 
-/**
- * @implements globalThis.HTMLElement
- */
 class HTMLElement extends Element {
 
   static get observedAttributes() { return []; }

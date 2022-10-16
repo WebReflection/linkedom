@@ -6,9 +6,6 @@ const {TextElement} = require('./text-element.js');
 
 const tagName = 'textarea';
 
-/**
- * @implements globalThis.HTMLTextAreaElement
- */
 class HTMLTextAreaElement extends TextElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

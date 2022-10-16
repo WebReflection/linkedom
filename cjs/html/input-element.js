@@ -6,9 +6,6 @@ const {HTMLElement} = require('./element.js');
 
 const tagName = 'input';
 
-/**
- * @implements globalThis.HTMLInputElement
- */
 class HTMLInputElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

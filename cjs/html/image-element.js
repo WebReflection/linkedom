@@ -6,9 +6,6 @@ const {HTMLElement} = require('./element.js');
 
 const tagName = 'img';
 
-/**
- * @implements globalThis.HTMLImageElement
- */
 class HTMLImageElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

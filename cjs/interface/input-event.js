@@ -7,9 +7,6 @@
 
 const {Event} = require('./event.js');
 
-/**
- * @implements globalThis.InputEvent
- */
 class InputEvent extends Event {
   constructor(type, inputEventInit = {}) {
     super(type, inputEventInit);

@@ -67,9 +67,6 @@ const disconnectedCallback = element => {
 };
 exports.disconnectedCallback = disconnectedCallback;
 
-/**
- * @implements globalThis.CustomElementRegistry
- */
 class CustomElementRegistry {
 
   /**

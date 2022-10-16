@@ -11,9 +11,6 @@ import {before, after, replaceWith, remove} from '../mixin/child-node.js';
 import {Node} from './node.js';
 import {moCallback} from './mutation-observer.js';
 
-/**
- * @implements globalThis.CharacterData
- */
 export class CharacterData extends Node {
 
   constructor(ownerDocument, localName, nodeType, data) {

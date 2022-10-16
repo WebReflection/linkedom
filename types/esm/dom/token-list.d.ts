@@ -3,6 +3,10 @@ export class DOMTokenList extends Set<any> {
     get length(): number;
     get value(): string;
     /**
+     * @param  {...string} tokens
+     */
+    add(...tokens: string[]): void;
+    /**
      * @param {string} token
      */
     contains(token: string): boolean;

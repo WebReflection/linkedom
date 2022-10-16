@@ -12,9 +12,6 @@ const {createCanvas} = Canvas;
 
 const tagName = 'canvas';
 
-/**
- * @implements globalThis.HTMLCanvasElement
- */
 class HTMLCanvasElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

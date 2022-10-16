@@ -6,9 +6,6 @@ const {HTMLElement} = require('./element.js');
 
 const tagName = 'source';
 
-/**
- * @implements globalThis.HTMLSourceElement
- */
 class HTMLSourceElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

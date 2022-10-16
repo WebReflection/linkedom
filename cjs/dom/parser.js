@@ -6,9 +6,6 @@ const {HTMLDocument} = require('../html/document.js');
 const {SVGDocument} = require('../svg/document.js');
 const {XMLDocument} = require('../xml/document.js');
 
-/**
- * @implements globalThis.DOMParser
- */
 class DOMParser {
 
   /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc */

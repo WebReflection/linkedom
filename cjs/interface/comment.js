@@ -4,9 +4,6 @@ const {VALUE} = require('../shared/symbols.js');
 
 const {CharacterData} = require('./character-data.js');
 
-/**
- * @implements globalThis.Comment
- */
 class Comment extends CharacterData {
   constructor(ownerDocument, data = '') {
     super(ownerDocument, '#comment', COMMENT_NODE, data);

@@ -7,9 +7,6 @@
 
 const {Event} = require('./event.js');
 
-/**
- * @implements globalThis.CustomEvent
- */
 const GlobalCustomEvent = typeof CustomEvent === 'function' ?
   CustomEvent :
   class CustomEvent extends Event {

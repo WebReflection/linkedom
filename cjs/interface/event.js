@@ -9,9 +9,6 @@ const AT_TARGET = 2;
 const CAPTURING_PHASE = 1;
 const NONE = 0;
 
-/**
- * @implements globalThis.Event
- */
 class GlobalEvent {
     static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
     static get AT_TARGET() { return AT_TARGET; }
@@ -49,7 +46,7 @@ class GlobalEvent {
     stopPropagation() {
       this.cancelBubble = true;
     }
-    
+
     stopImmediatePropagation() {
       this.stopPropagation();
       this._stopImmediatePropagationFlag = true;

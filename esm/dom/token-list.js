@@ -22,9 +22,6 @@ const update = ({[OWNER_ELEMENT]: ownerElement, value}) => {
     );
 };
 
-/**
- * @implements globalThis.DOMTokenList
- */
 export class DOMTokenList extends Set {
 
   constructor(ownerElement) {

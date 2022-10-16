@@ -104,7 +104,7 @@ const decodeMap = new Map([
     [158, 382],
     [159, 376],
 ]);
-const fromCodePoint = 
+const fromCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, node/no-unsupported-features/es-builtins
 (_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : function (codePoint) {
     let output = "";
@@ -2108,7 +2108,7 @@ const xmlCodeMap = new Map([
     [62, "&gt;"],
 ]);
 // For compatibility with node < 4, we wrap `codePointAt`
-const getCodePoint = 
+const getCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 String.prototype.codePointAt != null
     ? (str, index) => str.codePointAt(index)
@@ -3623,9 +3623,6 @@ const disconnectedCallback = element => {
   }
 };
 
-/**
- * @implements globalThis.CustomElementRegistry
- */
 class CustomElementRegistry {
 
   /**
@@ -4219,9 +4216,6 @@ function invokeListeners({currentTarget, target}) {
 }
 
 
-/**
- * @implements globalThis.EventTarget
- */
 class DOMEventTarget {
 
   constructor() {
@@ -4237,7 +4231,7 @@ class DOMEventTarget {
 
   addEventListener(type, listener, options) {
     const map = wm.get(this);
-    if (!map.has(type)) 
+    if (!map.has(type))
       map.set(type, new Map);
     map.get(type).set(listener, options);
   }
@@ -4271,9 +4265,6 @@ class DOMEventTarget {
 
 // https://dom.spec.whatwg.org/#interface-nodelist
 
-/**
- * @implements globalThis.NodeList
- */
 class NodeList extends Array {
   item(i) { return i < this.length ? this[i] : null; }
 }
@@ -4289,9 +4280,6 @@ const getParentNodeCount = ({parentNode}) => {
   return count;
 };
 
-/**
- * @implements globalThis.Node
- */
 class Node$1 extends DOMEventTarget {
 
   static get ELEMENT_NODE() { return ELEMENT_NODE; }
@@ -4455,9 +4443,6 @@ class Node$1 extends DOMEventTarget {
 
 const QUOTE = /"/g;
 
-/**
- * @implements globalThis.Attr
- */
 class Attr$1 extends Node$1 {
   constructor(ownerDocument, name, value = '') {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
@@ -4602,9 +4587,6 @@ const remove = (prev, current, next) => {
 
 // https://dom.spec.whatwg.org/#interface-characterdata
 
-/**
- * @implements globalThis.CharacterData
- */
 class CharacterData$1 extends Node$1 {
 
   constructor(ownerDocument, localName, nodeType, data) {
@@ -4674,9 +4656,6 @@ class CharacterData$1 extends Node$1 {
   }
 }
 
-/**
- * @implements globalThis.Comment
- */
 class Comment$1 extends CharacterData$1 {
   constructor(ownerDocument, data = '') {
     super(ownerDocument, '#comment', COMMENT_NODE, data);
@@ -5788,7 +5767,7 @@ function dynamicStatePseudo(name) {
 // While filters are precompiled, pseudos get called when they are needed
 const pseudos = {
     empty(elem, { adapter }) {
-        return !adapter.getChildren(elem).some((elem) => 
+        return !adapter.getChildren(elem).some((elem) =>
         // FIXME: `getText` call is potentially expensive.
         adapter.isTag(elem) || adapter.getText(elem) !== "");
     },
@@ -6453,9 +6432,6 @@ const pe = m => esca[m];
  */
 const escape = es => replace.call(es, ca, pe);
 
-/**
- * @implements globalThis.Text
- */
 class Text$1 extends CharacterData$1 {
   constructor(ownerDocument, data = '') {
     super(ownerDocument, '#text', TEXT_NODE, data);
@@ -6778,7 +6754,7 @@ class NonElementParentNode extends ParentNode {
       for (const node of this.childNodes)
         nonEPN.insertBefore(node.cloneNode(deep), end);
     }
-    return nonEPN; 
+    return nonEPN;
   }
 
   toString() {
@@ -6793,18 +6769,12 @@ class NonElementParentNode extends ParentNode {
   }
 }
 
-/**
- * @implements globalThis.DocumentFragment
- */
 class DocumentFragment$1 extends NonElementParentNode {
   constructor(ownerDocument) {
     super(ownerDocument, '#document-fragment', DOCUMENT_FRAGMENT_NODE);
   }
 }
 
-/**
- * @implements globalThis.DocumentType
- */
 class DocumentType$1 extends Node$1 {
   constructor(ownerDocument, name, publicId = '', systemId = '') {
     super(ownerDocument, '#document-type', DOCUMENT_TYPE_NODE);
@@ -6886,9 +6856,6 @@ const handler$2 = {
   }
 };
 
-/**
- * @implements globalThis.DOMStringMap
- */
 class DOMStringMap {
   /**
    * @param {Element} ref
@@ -6924,9 +6891,6 @@ const update = ({[OWNER_ELEMENT]: ownerElement, value}) => {
     );
 };
 
-/**
- * @implements globalThis.DOMTokenList
- */
 class DOMTokenList extends Set {
 
   constructor(ownerElement) {
@@ -7060,9 +7024,6 @@ const handler$1 = {
   }
 };
 
-/**
- * @implements globalThis.CSSStyleDeclaration
- */
 class CSSStyleDeclaration$1 extends Map {
   constructor(element) {
     super();
@@ -7135,9 +7096,6 @@ const AT_TARGET = 2;
 const CAPTURING_PHASE = 1;
 const NONE = 0;
 
-/**
- * @implements globalThis.Event
- */
 class GlobalEvent {
     static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
     static get AT_TARGET() { return AT_TARGET; }
@@ -7175,7 +7133,7 @@ class GlobalEvent {
     stopPropagation() {
       this.cancelBubble = true;
     }
-    
+
     stopImmediatePropagation() {
       this.stopPropagation();
       this._stopImmediatePropagationFlag = true;
@@ -7184,9 +7142,6 @@ class GlobalEvent {
 
 /* c8 ignore stop */
 
-/**
- * @implements globalThis.NamedNodeMap
- */
 class NamedNodeMap extends Array {
   constructor(ownerElement) {
     super();
@@ -7227,9 +7182,6 @@ class NamedNodeMap extends Array {
   /* c8 ignore stop */
 }
 
-/**
- * @implements globalThis.ShadowRoot
- */
 class ShadowRoot$1 extends NonElementParentNode {
   constructor(host) {
     super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
@@ -7268,9 +7220,6 @@ const isVoid = ({localName, ownerDocument}) => {
 
 // </utils>
 
-/**
- * @implements globalThis.Element
- */
 class Element$1 extends ParentNode {
   constructor(ownerDocument, localName) {
     super(ownerDocument, localName, ELEMENT_NODE);
@@ -7699,9 +7648,6 @@ const handler = {
   }
 };
 
-/**
- * @implements globalThis.SVGElement
- */
 class SVGElement$1 extends Element$1 {
   constructor(ownerDocument, localName, ownerSVGElement = null) {
     super(ownerDocument, localName);
@@ -7815,9 +7761,6 @@ const level0 = {
   }
 };
 
-/**
- * @implements globalThis.HTMLElement
- */
 class HTMLElement extends Element$1 {
 
   static get observedAttributes() { return []; }
@@ -8108,9 +8051,6 @@ class HTMLElement extends Element$1 {
 
 const tagName$e = 'template';
 
-/**
- * @implements globalThis.HTMLTemplateElement
- */
 class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
     super(ownerDocument, tagName$e);
@@ -8129,9 +8069,6 @@ class HTMLTemplateElement extends HTMLElement {
 
 registerHTMLClass(tagName$e, HTMLTemplateElement);
 
-/**
- * @implements globalThis.HTMLHtmlElement
- */
 class HTMLHtmlElement extends HTMLElement {
   constructor(ownerDocument, localName = 'html') {
     super(ownerDocument, localName);
@@ -8153,9 +8090,6 @@ class TextElement extends HTMLElement {
 
 const tagName$d = 'script';
 
-/**
- * @implements globalThis.HTMLScriptElement
- */
 class HTMLScriptElement extends TextElement {
   constructor(ownerDocument, localName = tagName$d) {
     super(ownerDocument, localName);
@@ -8221,9 +8155,6 @@ class HTMLScriptElement extends TextElement {
 
 registerHTMLClass(tagName$d, HTMLScriptElement);
 
-/**
- * @implements globalThis.HTMLFrameElement
- */
 class HTMLFrameElement extends HTMLElement {
   constructor(ownerDocument, localName = 'frame') {
     super(ownerDocument, localName);
@@ -8232,9 +8163,6 @@ class HTMLFrameElement extends HTMLElement {
 
 const tagName$c = 'iframe';
 
-/**
- * @implements globalThis.HTMLIFrameElement
- */
 class HTMLIFrameElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$c) {
     super(ownerDocument, localName);
@@ -8248,27 +8176,18 @@ class HTMLIFrameElement extends HTMLElement {
 
 registerHTMLClass(tagName$c, HTMLIFrameElement);
 
-/**
- * @implements globalThis.HTMLObjectElement
- */
 class HTMLObjectElement extends HTMLElement {
   constructor(ownerDocument, localName = 'object') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLHeadElement
- */
 class HTMLHeadElement extends HTMLElement {
   constructor(ownerDocument, localName = 'head') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLBodyElement
- */
 class HTMLBodyElement extends HTMLElement {
   constructor(ownerDocument, localName = 'body') {
     super(ownerDocument, localName);
@@ -9431,7 +9350,7 @@ CSSOM$2.CSSValueExpression.prototype._parseJSComment = function(token, idx) {
  * @return {Object|false}
  *					- idx:
  *					- text:
- *					or 
+ *					or
  *					false
  *
  */
@@ -9458,14 +9377,14 @@ CSSOM$2.CSSValueExpression.prototype._parseJSString = function(token, idx, sep) 
  * @return {Object|false}
  *				- idx:
  *				- regExp:
- *				or 
+ *				or
  *				false
  */
 
 /*
 
 all legal RegExp
- 
+
 /a/
 (/a/)
 [/a/]
@@ -10117,7 +10036,7 @@ function requireParse () {
 								hasAncestors = false;
 							}
 						}
-						
+
 						if (!hasAncestors) {
 							currentScope.__ends = i + 1;
 							styleSheet.cssRules.push(currentScope);
@@ -10358,9 +10277,6 @@ var parse$1 = requireParse().parse;
 
 const tagName$b = 'style';
 
-/**
- * @implements globalThis.HTMLStyleElement
- */
 class HTMLStyleElement extends TextElement {
   constructor(ownerDocument, localName = tagName$b) {
     super(ownerDocument, localName);
@@ -10400,99 +10316,66 @@ class HTMLStyleElement extends TextElement {
 
 registerHTMLClass(tagName$b, HTMLStyleElement);
 
-/**
- * @implements globalThis.HTMLTimeElement
- */
 class HTMLTimeElement extends HTMLElement {
   constructor(ownerDocument, localName = 'time') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLFieldSetElement
- */
 class HTMLFieldSetElement extends HTMLElement {
   constructor(ownerDocument, localName = 'fieldset') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLEmbedElement
- */
 class HTMLEmbedElement extends HTMLElement {
   constructor(ownerDocument, localName = 'embed') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLHRElement
- */
 class HTMLHRElement extends HTMLElement {
   constructor(ownerDocument, localName = 'hr') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLProgressElement
- */
 class HTMLProgressElement extends HTMLElement {
   constructor(ownerDocument, localName = 'progress') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLParagraphElement
- */
 class HTMLParagraphElement extends HTMLElement {
   constructor(ownerDocument, localName = 'p') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLTableElement
- */
 class HTMLTableElement extends HTMLElement {
   constructor(ownerDocument, localName = 'table') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLFrameSetElement
- */
 class HTMLFrameSetElement extends HTMLElement {
   constructor(ownerDocument, localName = 'frameset') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLLIElement
- */
 class HTMLLIElement extends HTMLElement {
   constructor(ownerDocument, localName = 'li') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLBaseElement
- */
 class HTMLBaseElement extends HTMLElement {
   constructor(ownerDocument, localName = 'base') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLDataListElement
- */
 class HTMLDataListElement extends HTMLElement {
   constructor(ownerDocument, localName = 'datalist') {
     super(ownerDocument, localName);
@@ -10501,9 +10384,6 @@ class HTMLDataListElement extends HTMLElement {
 
 const tagName$a = 'input';
 
-/**
- * @implements globalThis.HTMLInputElement
- */
 class HTMLInputElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$a) {
     super(ownerDocument, localName);
@@ -10532,27 +10412,18 @@ class HTMLInputElement extends HTMLElement {
 
 registerHTMLClass(tagName$a, HTMLInputElement);
 
-/**
- * @implements globalThis.HTMLParamElement
- */
 class HTMLParamElement extends HTMLElement {
   constructor(ownerDocument, localName = 'param') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLMediaElement
- */
 class HTMLMediaElement extends HTMLElement {
   constructor(ownerDocument, localName = 'media') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLAudioElement
- */
 class HTMLAudioElement extends HTMLElement {
   constructor(ownerDocument, localName = 'audio') {
     super(ownerDocument, localName);
@@ -10561,9 +10432,6 @@ class HTMLAudioElement extends HTMLElement {
 
 const tagName$9 = 'h1';
 
-/**
- * @implements globalThis.HTMLHeadingElement
- */
 class HTMLHeadingElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$9) {
     super(ownerDocument, localName);
@@ -10572,18 +10440,12 @@ class HTMLHeadingElement extends HTMLElement {
 
 registerHTMLClass([tagName$9, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
 
-/**
- * @implements globalThis.HTMLDirectoryElement
- */
 class HTMLDirectoryElement extends HTMLElement {
   constructor(ownerDocument, localName = 'dir') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLQuoteElement
- */
 class HTMLQuoteElement extends HTMLElement {
   constructor(ownerDocument, localName = 'quote') {
     super(ownerDocument, localName);
@@ -10604,9 +10466,6 @@ const {createCanvas} = Canvas$1;
 
 const tagName$8 = 'canvas';
 
-/**
- * @implements globalThis.HTMLCanvasElement
- */
 class HTMLCanvasElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$8) {
     super(ownerDocument, localName);
@@ -10642,54 +10501,36 @@ class HTMLCanvasElement extends HTMLElement {
 
 registerHTMLClass(tagName$8, HTMLCanvasElement);
 
-/**
- * @implements globalThis.HTMLLegendElement
- */
 class HTMLLegendElement extends HTMLElement {
   constructor(ownerDocument, localName = 'legend') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLOptionElement
- */
 class HTMLOptionElement extends HTMLElement {
   constructor(ownerDocument, localName = 'option') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLSpanElement
- */
 class HTMLSpanElement extends HTMLElement {
   constructor(ownerDocument, localName = 'span') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLMeterElement
- */
 class HTMLMeterElement extends HTMLElement {
   constructor(ownerDocument, localName = 'meter') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLVideoElement
- */
 class HTMLVideoElement extends HTMLElement {
   constructor(ownerDocument, localName = 'video') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLTableCellElement
- */
 class HTMLTableCellElement extends HTMLElement {
   constructor(ownerDocument, localName = 'td') {
     super(ownerDocument, localName);
@@ -10698,9 +10539,6 @@ class HTMLTableCellElement extends HTMLElement {
 
 const tagName$7 = 'title';
 
-/**
- * @implements globalThis.HTMLTitleElement
- */
 class HTMLTitleElement extends TextElement {
   constructor(ownerDocument, localName = tagName$7) {
     super(ownerDocument, localName);
@@ -10709,36 +10547,24 @@ class HTMLTitleElement extends TextElement {
 
 registerHTMLClass(tagName$7, HTMLTitleElement);
 
-/**
- * @implements globalThis.HTMLOutputElement
- */
 class HTMLOutputElement extends HTMLElement {
   constructor(ownerDocument, localName = 'output') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLTableRowElement
- */
 class HTMLTableRowElement extends HTMLElement {
   constructor(ownerDocument, localName = 'tr') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLDataElement
- */
 class HTMLDataElement extends HTMLElement {
   constructor(ownerDocument, localName = 'data') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLMenuElement
- */
 class HTMLMenuElement extends HTMLElement {
   constructor(ownerDocument, localName = 'menu') {
     super(ownerDocument, localName);
@@ -10747,9 +10573,6 @@ class HTMLMenuElement extends HTMLElement {
 
 const tagName$6 = 'select';
 
-/**
- * @implements globalThis.HTMLSelectElement
- */
 class HTMLSelectElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$6) {
     super(ownerDocument, localName);
@@ -10779,9 +10602,6 @@ class HTMLSelectElement extends HTMLElement {
 
 registerHTMLClass(tagName$6, HTMLSelectElement);
 
-/**
- * @implements globalThis.HTMLBRElement
- */
 class HTMLBRElement extends HTMLElement {
   constructor(ownerDocument, localName = 'br') {
     super(ownerDocument, localName);
@@ -10790,9 +10610,6 @@ class HTMLBRElement extends HTMLElement {
 
 const tagName$5 = 'button';
 
-/**
- * @implements globalThis.HTMLButtonElement
- */
 class HTMLButtonElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$5) {
     super(ownerDocument, localName);
@@ -10812,27 +10629,18 @@ class HTMLButtonElement extends HTMLElement {
 
 registerHTMLClass(tagName$5, HTMLButtonElement);
 
-/**
- * @implements globalThis.HTMLMapElement
- */
 class HTMLMapElement extends HTMLElement {
   constructor(ownerDocument, localName = 'map') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLOptGroupElement
- */
 class HTMLOptGroupElement extends HTMLElement {
   constructor(ownerDocument, localName = 'optgroup') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLDListElement
- */
 class HTMLDListElement extends HTMLElement {
   constructor(ownerDocument, localName = 'dl') {
     super(ownerDocument, localName);
@@ -10841,9 +10649,6 @@ class HTMLDListElement extends HTMLElement {
 
 const tagName$4 = 'textarea';
 
-/**
- * @implements globalThis.HTMLTextAreaElement
- */
 class HTMLTextAreaElement extends TextElement {
   constructor(ownerDocument, localName = tagName$4) {
     super(ownerDocument, localName);
@@ -10869,18 +10674,12 @@ class HTMLTextAreaElement extends TextElement {
 
 registerHTMLClass(tagName$4, HTMLTextAreaElement);
 
-/**
- * @implements globalThis.HTMLFontElement
- */
 class HTMLFontElement extends HTMLElement {
   constructor(ownerDocument, localName = 'font') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLDivElement
- */
 class HTMLDivElement extends HTMLElement {
   constructor(ownerDocument, localName = 'div') {
     super(ownerDocument, localName);
@@ -10889,9 +10688,6 @@ class HTMLDivElement extends HTMLElement {
 
 const tagName$3 = 'link';
 
-/**
- * @implements globalThis.HTMLLinkElement
- */
 class HTMLLinkElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$3) {
     super(ownerDocument, localName);
@@ -10921,18 +10717,12 @@ class HTMLLinkElement extends HTMLElement {
 
 registerHTMLClass(tagName$3, HTMLLinkElement);
 
-/**
- * @implements globalThis.HTMLSlotElement
- */
 class HTMLSlotElement extends HTMLElement {
   constructor(ownerDocument, localName = 'slot') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLFormElement
- */
 class HTMLFormElement extends HTMLElement {
   constructor(ownerDocument, localName = 'form') {
     super(ownerDocument, localName);
@@ -10941,9 +10731,6 @@ class HTMLFormElement extends HTMLElement {
 
 const tagName$2 = 'img';
 
-/**
- * @implements globalThis.HTMLImageElement
- */
 class HTMLImageElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$2) {
     super(ownerDocument, localName);
@@ -10975,63 +10762,42 @@ class HTMLImageElement extends HTMLElement {
 
 registerHTMLClass(tagName$2, HTMLImageElement);
 
-/**
- * @implements globalThis.HTMLPreElement
- */
 class HTMLPreElement extends HTMLElement {
   constructor(ownerDocument, localName = 'pre') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLUListElement
- */
 class HTMLUListElement extends HTMLElement {
   constructor(ownerDocument, localName = 'ul') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLMetaElement
- */
 class HTMLMetaElement extends HTMLElement {
   constructor(ownerDocument, localName = 'meta') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLPictureElement
- */
 class HTMLPictureElement extends HTMLElement {
   constructor(ownerDocument, localName = 'picture') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLAreaElement
- */
 class HTMLAreaElement extends HTMLElement {
   constructor(ownerDocument, localName = 'area') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLOListElement
- */
 class HTMLOListElement extends HTMLElement {
   constructor(ownerDocument, localName = 'ol') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLTableCaptionElement
- */
 class HTMLTableCaptionElement extends HTMLElement {
   constructor(ownerDocument, localName = 'caption') {
     super(ownerDocument, localName);
@@ -11040,9 +10806,6 @@ class HTMLTableCaptionElement extends HTMLElement {
 
 const tagName$1 = 'a';
 
-/**
- * @implements globalThis.HTMLAnchorElement
- */
 class HTMLAnchorElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$1) {
     super(ownerDocument, localName);
@@ -11066,36 +10829,24 @@ class HTMLAnchorElement extends HTMLElement {
 
 registerHTMLClass(tagName$1, HTMLAnchorElement);
 
-/**
- * @implements globalThis.HTMLLabelElement
- */
 class HTMLLabelElement extends HTMLElement {
   constructor(ownerDocument, localName = 'label') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLUnknownElement
- */
 class HTMLUnknownElement extends HTMLElement {
   constructor(ownerDocument, localName = 'unknown') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLModElement
- */
 class HTMLModElement extends HTMLElement {
   constructor(ownerDocument, localName = 'mod') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLDetailsElement
- */
 class HTMLDetailsElement extends HTMLElement {
   constructor(ownerDocument, localName = 'details') {
     super(ownerDocument, localName);
@@ -11104,9 +10855,6 @@ class HTMLDetailsElement extends HTMLElement {
 
 const tagName = 'source';
 
-/**
- * @implements globalThis.HTMLSourceElement
- */
 class HTMLSourceElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
@@ -11129,18 +10877,12 @@ class HTMLSourceElement extends HTMLElement {
 
 registerHTMLClass(tagName, HTMLSourceElement);
 
-/**
- * @implements globalThis.HTMLTrackElement
- */
 class HTMLTrackElement extends HTMLElement {
   constructor(ownerDocument, localName = 'track') {
     super(ownerDocument, localName);
   }
 }
 
-/**
- * @implements globalThis.HTMLMarqueeElement
- */
 class HTMLMarqueeElement extends HTMLElement {
   constructor(ownerDocument, localName = 'marquee') {
     super(ownerDocument, localName);
@@ -11252,9 +10994,6 @@ const Mime = {
 
 // https://dom.spec.whatwg.org/#interface-customevent
 
-/**
- * @implements globalThis.CustomEvent
- */
 const GlobalCustomEvent = typeof CustomEvent === 'function' ?
   CustomEvent :
   class CustomEvent extends GlobalEvent {
@@ -11268,9 +11007,6 @@ const GlobalCustomEvent = typeof CustomEvent === 'function' ?
 
 // https://dom.spec.whatwg.org/#interface-customevent
 
-/**
- * @implements globalThis.InputEvent
- */
 class InputEvent extends GlobalEvent {
   constructor(type, inputEventInit = {}) {
     super(type, inputEventInit);
@@ -11284,9 +11020,6 @@ class InputEvent extends GlobalEvent {
 /* c8 ignore stop */
 
 const ImageClass = ownerDocument =>
-/**
- * @implements globalThis.Image
- */
 class Image extends HTMLImageElement {
   constructor(width, height) {
     super(ownerDocument);
@@ -11318,9 +11051,6 @@ const deleteContents = ({[START]: start, [END]: end}, fragment = null) => {
   } while (start !== end);
 };
 
-/**
- * @implements globalThis.Range
- */
 class Range {
   constructor() {
     this[START] = null;
@@ -11416,9 +11146,6 @@ const isOK = ({nodeType}, mask) => {
   return 0;
 };
 
-/**
- * @implements globalThis.TreeWalker
- */
 class TreeWalker {
   constructor(root, whatToShow = SHOW_ALL) {
     this.root = root;
@@ -11467,9 +11194,6 @@ const globalExports = assign(
 
 const window = new WeakMap;
 
-/**
- * @implements globalThis.Document
- */
 class Document$1 extends NonElementParentNode {
   constructor(type) {
     super(null, '#document', DOCUMENT_NODE);
@@ -11713,9 +11437,6 @@ const createHTMLElement$1 = (ownerDocument, builtin, localName, options) => {
   return new HTMLElement(ownerDocument, localName);
 };
 
-/**
- * @implements globalThis.HTMLDocument
- */
 class HTMLDocument extends Document$1 {
   constructor() { super('text/html'); }
 
@@ -11790,9 +11511,6 @@ class HTMLDocument extends Document$1 {
   }
 }
 
-/**
- * @implements globalThis.Document
- */
 class SVGDocument extends Document$1 {
   constructor() { super('image/svg+xml'); }
   toString() {
@@ -11800,9 +11518,6 @@ class SVGDocument extends Document$1 {
   }
 }
 
-/**
- * @implements globalThis.XMLDocument
- */
 class XMLDocument extends Document$1 {
   constructor() { super('text/xml'); }
   toString() {
@@ -11810,9 +11525,6 @@ class XMLDocument extends Document$1 {
   }
 }
 
-/**
- * @implements globalThis.DOMParser
- */
 class DOMParser {
 
   /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc */
@@ -11939,7 +11651,7 @@ const parseJSON = value => {
 };
 
 /**
- * 
+ *
  * @param {Document|Element} node the Document or Element to serialize
  * @returns {jsdonValue[]} the linear jsdon serialized array
  */

@@ -25,9 +25,6 @@ const handler = {
   }
 };
 
-/**
- * @implements globalThis.DOMStringMap
- */
 export class DOMStringMap {
   /**
    * @param {Element} ref

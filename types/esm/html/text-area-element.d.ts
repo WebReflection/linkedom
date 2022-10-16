@@ -7,7 +7,7 @@ export class HTMLTextAreaElement extends TextElement {
     get placeholder(): any;
     set type(arg: any);
     get type(): any;
-    set value(arg: any);
-    get value(): any;
+    set value(arg: string);
+    get value(): string;
 }
 import { TextElement } from "./text-element.js";

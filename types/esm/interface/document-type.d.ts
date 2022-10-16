@@ -3,6 +3,7 @@ export class DocumentType extends Node {
     name: any;
     publicId: string;
     systemId: string;
+    cloneNode(): DocumentType;
     toJSON(): any[];
 }
 import { Node } from "./node.js";

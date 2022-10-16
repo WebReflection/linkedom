@@ -11,9 +11,6 @@ import {Node} from './node.js';
 
 const QUOTE = /"/g;
 
-/**
- * @implements globalThis.Attr
- */
 export class Attr extends Node {
   constructor(ownerDocument, name, value = '') {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);

@@ -1,9 +1,6 @@
 import {HTMLImageElement} from '../html/image-element.js';
 
 export const ImageClass = ownerDocument =>
-/**
- * @implements globalThis.Image
- */
 class Image extends HTMLImageElement {
   constructor(width, height) {
     super(ownerDocument);

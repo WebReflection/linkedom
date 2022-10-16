@@ -6,6 +6,10 @@ export class CharacterData extends Node {
     remove(): void;
     set data(arg: string);
     get data(): string;
+    set nodeValue(arg: string);
+    get nodeValue(): string;
+    set textContent(arg: string);
+    get textContent(): string;
     get length(): number;
     substringData(offset: any, count: any): string;
     appendData(data: any): void;

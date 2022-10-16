@@ -1,6 +1,3 @@
-/**
- * @implements globalThis.NamedNodeMap
- */
 export class NamedNodeMap extends Array {
   constructor(ownerElement) {
     super();

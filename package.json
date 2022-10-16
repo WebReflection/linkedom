@@ -3,7 +3,7 @@
   "version": "0.14.17",
   "description": "A triple-linked lists based DOM implementation",
   "main": "./cjs/index.js",
-  "types": "./types/index.d.ts",
+  "types": "./types/esm/index.d.ts",
   "scripts": {
     "benchmark": "node test/benchmark/linkedom.js",
     "benchmark:w3c": "node test/benchmark/linkedom.js --w3c; node test/benchmark/linkedom-cached.js --w3c; node test/benchmark/jsdom.js --w3c; node test/benchmark/basichtml.js --w3c",
@@ -34,6 +34,7 @@
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/node": "^18.11.0",
     "ascjs": "^5.0.1",
     "c8": "^7.11.2",
     "eslint": "^8.15.0",

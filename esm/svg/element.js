@@ -12,9 +12,6 @@ const handler = {
   }
 };
 
-/**
- * @implements globalThis.SVGElement
- */
 export class SVGElement extends Element {
   constructor(ownerDocument, localName, ownerSVGElement = null) {
     super(ownerDocument, localName);

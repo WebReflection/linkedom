@@ -12,9 +12,6 @@ const {Node} = require('./node.js');
 
 const QUOTE = /"/g;
 
-/**
- * @implements globalThis.Attr
- */
 class Attr extends Node {
   constructor(ownerDocument, name, value = '') {
     super(ownerDocument, '#attribute', ATTRIBUTE_NODE);

@@ -5,9 +5,6 @@ import {TextElement} from './text-element.js';
 
 const tagName = 'textarea';
 
-/**
- * @implements globalThis.HTMLTextAreaElement
- */
 class HTMLTextAreaElement extends TextElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
@@ -27,7 +24,12 @@ class HTMLTextAreaElement extends TextElement {
   set type(value) { this.setAttribute('type', value); }
 
   get value() { return this.textContent; }
-  set value(content) { this.textContent = content; }
+  set value(content) {
+    // this works around a ts bug with automatically inferring textContent when it's a getter/setter in the base class
+    // https://github.com/microsoft/TypeScript/issues/51191
+    /** @type {string} */
+    this.textContent = content;
+ }
   /* c8 ignore stop */
 }
 

@@ -71,9 +71,6 @@ const isVoid = ({localName, ownerDocument}) => {
 
 // </utils>
 
-/**
- * @implements globalThis.Element
- */
 export class Element extends ParentNode {
   constructor(ownerDocument, localName) {
     super(ownerDocument, localName, ELEMENT_NODE);

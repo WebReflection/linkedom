@@ -5,9 +5,6 @@ import {HTMLElement} from './element.js';
 
 const tagName = 'button';
 
-/**
- * @implements globalThis.HTMLButtonElement
- */
 class HTMLButtonElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

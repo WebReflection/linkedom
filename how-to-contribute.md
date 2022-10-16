@@ -64,9 +64,6 @@ This is an example of a class that is never used within the core:
 ```js
 import {HTMLElement} from './html-element.js';
 
-/**
- * @implements globalThis.HTMLExample
- */
 export class HTMLExample extends HTMLElement {
   constructor(ownerDocument, localName = 'example') {
     super(ownerDocument, localName);
@@ -80,9 +77,6 @@ In order to expose `HTMLExample` to the *parser*, so that it creates a specializ
 import {registerHTMLClass} from '../shared/register-html-class.js';
 import {HTMLElement} from './html-element.js';
 
-/**
- * @implements globalThis.HTMLExample
- */
 // NOTE: the export is not here anymore !
 class HTMLExample extends HTMLElement {
   constructor(ownerDocument, localName = 'example') {
@@ -107,9 +101,6 @@ Good thinking, and the `HTMLHeadingElement` is a good example to check out:
 import {registerHTMLClass} from '../shared/register-html-class.js';
 import {HTMLElement} from './html-element.js';
 
-/**
- * @implements globalThis.HTMLHeadingElement
- */
 class HTMLHeadingElement extends HTMLElement {
   constructor(ownerDocument, localName = 'h1') {
     super(ownerDocument, localName);

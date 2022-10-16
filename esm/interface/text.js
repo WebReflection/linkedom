@@ -4,9 +4,6 @@ import {escape} from '../shared/text-escaper.js';
 
 import {CharacterData} from './character-data.js';
 
-/**
- * @implements globalThis.Text
- */
 export class Text extends CharacterData {
   constructor(ownerDocument, data = '') {
     super(ownerDocument, '#text', TEXT_NODE, data);

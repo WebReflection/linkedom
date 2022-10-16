@@ -27,9 +27,6 @@ const createHTMLElement = (ownerDocument, builtin, localName, options) => {
   return new HTMLElement(ownerDocument, localName);
 };
 
-/**
- * @implements globalThis.HTMLDocument
- */
 class HTMLDocument extends Document {
   constructor() { super('text/html'); }
 

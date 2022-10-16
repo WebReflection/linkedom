@@ -34,8 +34,14 @@ export class Node extends EventTarget {
     set textContent(arg: any);
     get textContent(): any;
     normalize(): void;
-    cloneNode(): any;
-    contains(): boolean;
+    /**
+     * @param {boolean | undefined} deep
+     */
+    cloneNode(deep: boolean | undefined): any;
+    /**
+     * @param {Node} node
+     */
+    contains(node: Node): boolean;
     /**
      * Inserts a node before a reference node as a child of this parent node.
      * @param {Node} newNode The node to be inserted.

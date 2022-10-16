@@ -6,9 +6,6 @@
 
 import {Event} from './event.js';
 
-/**
- * @implements globalThis.InputEvent
- */
 export class InputEvent extends Event {
   constructor(type, inputEventInit = {}) {
     super(type, inputEventInit);

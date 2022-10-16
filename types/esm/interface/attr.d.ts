@@ -4,6 +4,7 @@ export class Attr extends Node {
     name: string;
     set value(arg: string);
     get value(): string;
+    cloneNode(): Attr;
     toJSON(): any[];
     [VALUE]: string;
     [CHANGED]: boolean;

@@ -31,9 +31,6 @@ const getParentNodeCount = ({parentNode}) => {
   return count;
 };
 
-/**
- * @implements globalThis.Node
- */
 export class Node extends EventTarget {
 
   static get ELEMENT_NODE() { return ELEMENT_NODE; }
@@ -97,8 +94,14 @@ export class Node extends EventTarget {
   get textContent() { return null; }
   set textContent(value) {}
   normalize() {}
-  cloneNode() { return null; }
-  contains() { return false; }
+  /**
+   * @param {boolean | undefined} deep
+   */
+  cloneNode(deep) { return null; }
+  /**
+   * @param {Node} node
+   */
+  contains(node) { return false; }
   /**
    * Inserts a node before a reference node as a child of this parent node.
    * @param {Node} newNode The node to be inserted.

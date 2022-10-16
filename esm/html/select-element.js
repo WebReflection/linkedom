@@ -6,9 +6,6 @@ import {NodeList} from '../interface/node-list.js';
 
 const tagName = 'select';
 
-/**
- * @implements globalThis.HTMLSelectElement
- */
 class HTMLSelectElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);

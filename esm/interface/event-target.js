@@ -35,9 +35,6 @@ function invokeListeners({currentTarget, target}) {
 }
 
 
-/**
- * @implements globalThis.EventTarget
- */
 class DOMEventTarget {
 
   constructor() {
@@ -53,7 +50,7 @@ class DOMEventTarget {
 
   addEventListener(type, listener, options) {
     const map = wm.get(this);
-    if (!map.has(type)) 
+    if (!map.has(type))
       map.set(type, new Map);
     map.get(type).set(listener, options);
   }

@@ -1,13 +1,17 @@
 /** @typedef { import('../interface/element.js').Element & {
-    [typeof NEXT]: NodeStruct,
-    [typeof PREV]: NodeStruct,
-    [typeof START]: NodeStruct,
+    [NEXT]: NodeStruct,
+    [PREV]: NodeStruct,
+    [START]: NodeStruct,
     nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE,
     ownerDocument: Document,
     parentNode: ParentNode,
 }} NodeStruct */
 export class ParentNode extends Node {
     get children(): NodeList;
+    /**
+     * @returns {NodeStruct | null}
+     */
+    get firstChild(): NodeStruct;
     /**
      * @returns {NodeStruct | null}
      */
@@ -21,13 +25,20 @@ export class ParentNode extends Node {
     getElementsByTagName(tagName: any): NodeList;
     querySelector(selectors: any): NodeStruct;
     querySelectorAll(selectors: any): NodeList;
+    appendChild(node: any): any;
+    contains(node: any): boolean;
+    insertBefore(node: any, before?: any): any;
+    removeChild(node: any): any;
+    replaceChild(node: any, replaced: any): any;
     [PRIVATE]: any;
+    /** @type {NodeStruct} */
+    [NEXT]: NodeStruct;
     [END]: NodeStruct;
 }
 export type NodeStruct = import('../interface/element.js').Element & {
-    [typeof NEXT]: NodeStruct;
-    [typeof PREV]: NodeStruct;
-    [typeof START]: NodeStruct;
+    [NEXT]: NodeStruct;
+    [PREV]: NodeStruct;
+    [START]: NodeStruct;
     nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE;
     ownerDocument: Document;
     parentNode: ParentNode;
@@ -35,8 +46,8 @@ export type NodeStruct = import('../interface/element.js').Element & {
 import { Node } from "../interface/node.js";
 import { NodeList } from "../interface/node-list.js";
 import { PRIVATE } from "../shared/symbols.js";
-import { END } from "../shared/symbols.js";
 import { NEXT } from "../shared/symbols.js";
+import { END } from "../shared/symbols.js";
 import { PREV } from "../shared/symbols.js";
 import { START } from "../shared/symbols.js";
 import { ATTRIBUTE_NODE } from "../shared/constants.js";

@@ -17,9 +17,6 @@ const deleteContents = ({[START]: start, [END]: end}, fragment = null) => {
   } while (start !== end);
 };
 
-/**
- * @implements globalThis.Range
- */
 export class Range {
   constructor() {
     this[START] = null;

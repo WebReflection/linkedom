@@ -1,7 +1,4 @@
 'use strict';
-/**
- * @implements globalThis.NamedNodeMap
- */
 class NamedNodeMap extends Array {
   constructor(ownerElement) {
     super();
