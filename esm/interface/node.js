@@ -97,10 +97,12 @@ export class Node extends EventTarget {
   /**
    * @param {boolean | undefined} deep
    */
+  // eslint-disable-next-line no-unused-vars
   cloneNode(deep) { return null; }
   /**
    * @param {Node} node
    */
+  // eslint-disable-next-line no-unused-vars
   contains(node) { return false; }
   /**
    * Inserts a node before a reference node as a child of this parent node.

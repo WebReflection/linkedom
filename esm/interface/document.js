@@ -171,6 +171,7 @@ export class Document extends NonElementParentNode {
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType(this, name, publicId, systemId); }
+  // eslint-disable-next-line no-unused-vars
   createElement(localName, options) { return new Element(this, localName); }
   createRange() {
     const range = new Range;
