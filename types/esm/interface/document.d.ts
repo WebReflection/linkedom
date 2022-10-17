@@ -1,9 +1,11 @@
 export class Document extends NonElementParentNode {
     constructor(type: any);
     /**
-     * @type {typeof globalThis}
+     * @type {typeof globalThis & {document: globalThis.Document & Document}}
      */
-    get defaultView(): typeof globalThis;
+    get defaultView(): typeof globalThis & {
+        document: globalThis.Document & Document;
+    };
     set doctype(arg: DocumentType | import("../mixin/parent-node.js").NodeStruct);
     get doctype(): DocumentType | import("../mixin/parent-node.js").NodeStruct;
     get documentElement(): import("../mixin/parent-node.js").NodeStruct;

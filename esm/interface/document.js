@@ -71,7 +71,7 @@ export class Document extends NonElementParentNode {
   }
 
   /**
-   * @type {typeof globalThis}
+   * @type {typeof globalThis & {document: globalThis.Document & Document}}
    */
   get defaultView() {
     if (!window.has(this))
