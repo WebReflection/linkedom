@@ -173,6 +173,9 @@ class Element extends ParentNode {
   get innerHTML() {
     return getInnerHtml(this);
   }
+  /**
+   * @param {string} html
+   */
   set innerHTML(html) {
     setInnerHtml(this, html);
   }

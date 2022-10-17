@@ -111,7 +111,7 @@ export function ImageClass(ownerDocument: any): {
         tabIndex: number;
         readonly innerText: string;
         textContent: string;
-        innerHTML: any;
+        innerHTML: string;
         outerHTML: string;
         readonly attributes: any;
         focus(): void;
