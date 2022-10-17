@@ -29,6 +29,10 @@ export const parentElement = ({parentNode}) => {
   return parentNode;
 };
 
+/**
+ *
+ * @param param0 {{[PREV]: any}}
+ */
 export const previousSibling = ({[PREV]: prev}) => {
   switch (prev ? prev.nodeType : 0) {
     case NODE_END:
