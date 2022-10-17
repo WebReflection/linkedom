@@ -5,12 +5,6 @@ export class CSSStyleDeclaration extends Map<any, any> {
     getPropertyValue(name: any): any;
     setProperty(name: any, value: any): void;
     removeProperty(name: any): void;
-    [Symbol.iterator](): {
-        next(): {
-            done: boolean;
-            value: any;
-        };
-    };
     get [PRIVATE](): CSSStyleDeclaration;
 }
 import { PRIVATE } from "../shared/symbols.js";

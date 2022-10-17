@@ -8,6 +8,6 @@ export { EventTarget } from "./interface/event-target.js";
 export { InputEvent } from "./interface/input-event.js";
 export { NodeList } from "./interface/node-list.js";
 export { NodeFilter } from "./interface/node-filter.js";
-export function parseHTML(html: any, globals?: any): globalThis.Document;
+export function parseHTML(html: any, globals?: any): typeof globalThis;
 import { DOMParser } from "./dom/parser.js";
 export { parseJSON, toJSON } from "./shared/parse-json.js";

@@ -14,7 +14,6 @@ export class HTMLDocument extends Document {
      * @type HTMLTitleElement
      */
     get title(): HTMLTitleElement;
-    createElement(localName: any, options: any): any;
 }
 import { Document } from "../interface/document.js";
 import { NodeList } from "../interface/node-list.js";

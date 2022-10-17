@@ -11,10 +11,6 @@ export class ParentNode extends Node {
     /**
      * @returns {NodeStruct | null}
      */
-    get firstChild(): NodeStruct;
-    /**
-     * @returns {NodeStruct | null}
-     */
     get firstElementChild(): NodeStruct;
     get lastElementChild(): any;
     get childElementCount(): number;
@@ -25,14 +21,7 @@ export class ParentNode extends Node {
     getElementsByTagName(tagName: any): NodeList;
     querySelector(selectors: any): NodeStruct;
     querySelectorAll(selectors: any): NodeList;
-    appendChild(node: any): any;
-    contains(node: any): boolean;
-    insertBefore(node: any, before?: any): any;
-    removeChild(node: any): any;
-    replaceChild(node: any, replaced: any): any;
     [PRIVATE]: any;
-    /** @type {NodeStruct} */
-    [NEXT]: NodeStruct;
     [END]: NodeStruct;
 }
 export type NodeStruct = import('../interface/element.js').Element & {
@@ -46,8 +35,8 @@ export type NodeStruct = import('../interface/element.js').Element & {
 import { Node } from "../interface/node.js";
 import { NodeList } from "../interface/node-list.js";
 import { PRIVATE } from "../shared/symbols.js";
-import { NEXT } from "../shared/symbols.js";
 import { END } from "../shared/symbols.js";
+import { NEXT } from "../shared/symbols.js";
 import { PREV } from "../shared/symbols.js";
 import { START } from "../shared/symbols.js";
 import { ATTRIBUTE_NODE } from "../shared/constants.js";

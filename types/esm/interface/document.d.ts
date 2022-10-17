@@ -1,16 +1,12 @@
 export class Document extends NonElementParentNode {
     constructor(type: any);
     /**
-     * @type {globalThis.Document['defaultView']}
+     * @type {typeof globalThis}
      */
-    get defaultView(): globalThis.Document;
+    get defaultView(): typeof globalThis;
     set doctype(arg: DocumentType | import("../mixin/parent-node.js").NodeStruct);
     get doctype(): DocumentType | import("../mixin/parent-node.js").NodeStruct;
     get documentElement(): import("../mixin/parent-node.js").NodeStruct;
-    /**
-     * @protected
-     */
-    protected _getParent(): EventTarget;
     createAttribute(name: any): Attr;
     createComment(textContent: any): Comment;
     createDocumentFragment(): DocumentFragment;
@@ -21,10 +17,7 @@ export class Document extends NonElementParentNode {
     createTreeWalker(root: any, whatToShow?: number): TreeWalker;
     createNodeIterator(root: any, whatToShow?: number): TreeWalker;
     createEvent(name: any): any;
-    cloneNode(deep?: boolean): any;
     importNode(externalNode: any, ...args: any[]): any;
-    querySelector(selectors: any): any;
-    querySelectorAll(selectors: any): any;
     getElementsByTagNameNS(_: any, name: any): NodeList;
     createAttributeNS(_: any, name: any): Attr;
     createElementNS(nsp: any, localName: any, options: any): Element | SVGElement;
@@ -47,7 +40,6 @@ export class Document extends NonElementParentNode {
 }
 import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
 import { DocumentType } from "./document-type.js";
-import { EventTarget } from "./event-target.js";
 import { Attr } from "./attr.js";
 import { Comment } from "./comment.js";
 import { DocumentFragment } from "./document-fragment.js";
@@ -66,3 +58,4 @@ import { GLOBALS } from "../shared/symbols.js";
 import { IMAGE } from "../shared/symbols.js";
 import { UPGRADE } from "../shared/symbols.js";
 import { EVENT_TARGET } from "../shared/symbols.js";
+import { EventTarget } from "./event-target.js";

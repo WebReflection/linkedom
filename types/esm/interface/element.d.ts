@@ -17,13 +17,8 @@ export class Element extends ParentNode {
     set tabIndex(arg: number);
     get tabIndex(): number;
     get innerText(): string;
-    set textContent(arg: string);
-    /**
-     * @returns {String}
-     */
-    get textContent(): string;
-    set innerHTML(arg: string);
-    get innerHTML(): string;
+    set innerHTML(arg: any);
+    get innerHTML(): any;
     set outerHTML(arg: string);
     get outerHTML(): string;
     get attributes(): any;
@@ -45,7 +40,6 @@ export class Element extends ParentNode {
     insertAdjacentElement(position: any, element: any): any;
     insertAdjacentHTML(position: any, html: any): void;
     insertAdjacentText(position: any, text: any): void;
-    cloneNode(deep?: boolean): any;
     toJSON(): any[];
     getAttributeNS(_: any, name: any): any;
     getElementsByTagNameNS(_: any, name: any): NodeList;
