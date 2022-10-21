@@ -34,6 +34,8 @@ class HTMLSelectElement extends HTMLElement {
   get name() { return this.getAttribute('name'); }
   set name(value) { this.setAttribute('name', value); }
   /* c8 ignore stop */
+
+  get value() { return this.querySelector('option[selected]')?.value; }
 }
 
 registerHTMLClass(tagName, HTMLSelectElement);
