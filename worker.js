@@ -1,3 +1,6 @@
+import { Writable } from 'stream';
+import { StringDecoder } from 'string_decoder';
+
 // used in Attr to signal changes
 const CHANGED = Symbol('changed');
 
@@ -1160,7 +1163,7 @@ const htmlIntegrationElements = new Set([
     "title",
 ]);
 const reNameEnd = /\s|\//;
-class Parser$1 {
+class Parser {
     constructor(cbs, options = {}) {
         var _a, _b, _c, _d, _e;
         this.options = options;
@@ -1551,1937 +1554,34 @@ class Parser$1 {
     }
 }
 
-/** Types of elements found in htmlparser2's DOM */
-var ElementType;
-(function (ElementType) {
-    /** Type for the root element of a document */
-    ElementType["Root"] = "root";
-    /** Type for Text */
-    ElementType["Text"] = "text";
-    /** Type for <? ... ?> */
-    ElementType["Directive"] = "directive";
-    /** Type for <!-- ... --> */
-    ElementType["Comment"] = "comment";
-    /** Type for <script> tags */
-    ElementType["Script"] = "script";
-    /** Type for <style> tags */
-    ElementType["Style"] = "style";
-    /** Type for Any tag */
-    ElementType["Tag"] = "tag";
-    /** Type for <![CDATA[ ... ]]> */
-    ElementType["CDATA"] = "cdata";
-    /** Type for <!doctype ...> */
-    ElementType["Doctype"] = "doctype";
-})(ElementType || (ElementType = {}));
+// Following the example in https://nodejs.org/api/stream.html#stream_decoding_buffers_in_a_writable_stream
+function isBuffer(_chunk, encoding) {
+    return encoding === "buffer";
+}
 /**
- * Tests whether an element is a tag or not.
+ * WritableStream makes the `Parser` interface available as a NodeJS stream.
  *
- * @param elem Element to test
+ * @see Parser
  */
-function isTag$2(elem) {
-    return (elem.type === ElementType.Tag ||
-        elem.type === ElementType.Script ||
-        elem.type === ElementType.Style);
-}
-// Exports for backwards compatibility
-/** Type for the root element of a document */
-const Root = ElementType.Root;
-/** Type for Text */
-const Text$3 = ElementType.Text;
-/** Type for <? ... ?> */
-const Directive = ElementType.Directive;
-/** Type for <!-- ... --> */
-const Comment$3 = ElementType.Comment;
-/** Type for <script> tags */
-const Script = ElementType.Script;
-/** Type for <style> tags */
-const Style = ElementType.Style;
-/** Type for Any tag */
-const Tag = ElementType.Tag;
-/** Type for <![CDATA[ ... ]]> */
-const CDATA$1 = ElementType.CDATA;
-/** Type for <!doctype ...> */
-const Doctype = ElementType.Doctype;
-
-var index = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    get ElementType () { return ElementType; },
-    isTag: isTag$2,
-    Root: Root,
-    Text: Text$3,
-    Directive: Directive,
-    Comment: Comment$3,
-    Script: Script,
-    Style: Style,
-    Tag: Tag,
-    CDATA: CDATA$1,
-    Doctype: Doctype
-});
-
-/**
- * This object will be used as the prototype for Nodes when creating a
- * DOM-Level-1-compliant structure.
- */
-class Node$2 {
-    constructor() {
-        /** Parent of the node */
-        this.parent = null;
-        /** Previous sibling */
-        this.prev = null;
-        /** Next sibling */
-        this.next = null;
-        /** The start index of the node. Requires `withStartIndices` on the handler to be `true. */
-        this.startIndex = null;
-        /** The end index of the node. Requires `withEndIndices` on the handler to be `true. */
-        this.endIndex = null;
-    }
-    // Read-write aliases for properties
-    /**
-     * Same as {@link parent}.
-     * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
-     */
-    get parentNode() {
-        return this.parent;
-    }
-    set parentNode(parent) {
-        this.parent = parent;
-    }
-    /**
-     * Same as {@link prev}.
-     * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
-     */
-    get previousSibling() {
-        return this.prev;
-    }
-    set previousSibling(prev) {
-        this.prev = prev;
-    }
-    /**
-     * Same as {@link next}.
-     * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
-     */
-    get nextSibling() {
-        return this.next;
-    }
-    set nextSibling(next) {
-        this.next = next;
-    }
-    /**
-     * Clone this node, and optionally its children.
-     *
-     * @param recursive Clone child nodes as well.
-     * @returns A clone of the node.
-     */
-    cloneNode(recursive = false) {
-        return cloneNode(this, recursive);
-    }
-}
-/**
- * A node that contains some data.
- */
-class DataNode extends Node$2 {
-    /**
-     * @param data The content of the data node
-     */
-    constructor(data) {
-        super();
-        this.data = data;
-    }
-    /**
-     * Same as {@link data}.
-     * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
-     */
-    get nodeValue() {
-        return this.data;
-    }
-    set nodeValue(data) {
-        this.data = data;
-    }
-}
-/**
- * Text within the document.
- */
-class Text$2 extends DataNode {
-    constructor() {
-        super(...arguments);
-        this.type = ElementType.Text;
-    }
-    get nodeType() {
-        return 3;
-    }
-}
-/**
- * Comments within the document.
- */
-class Comment$2 extends DataNode {
-    constructor() {
-        super(...arguments);
-        this.type = ElementType.Comment;
-    }
-    get nodeType() {
-        return 8;
-    }
-}
-/**
- * Processing instructions, including doc types.
- */
-class ProcessingInstruction extends DataNode {
-    constructor(name, data) {
-        super(data);
-        this.name = name;
-        this.type = ElementType.Directive;
-    }
-    get nodeType() {
-        return 1;
-    }
-}
-/**
- * A `Node` that can have children.
- */
-class NodeWithChildren extends Node$2 {
-    /**
-     * @param children Children of the node. Only certain node types can have children.
-     */
-    constructor(children) {
-        super();
-        this.children = children;
-    }
-    // Aliases
-    /** First child of the node. */
-    get firstChild() {
-        var _a;
-        return (_a = this.children[0]) !== null && _a !== void 0 ? _a : null;
-    }
-    /** Last child of the node. */
-    get lastChild() {
-        return this.children.length > 0
-            ? this.children[this.children.length - 1]
-            : null;
-    }
-    /**
-     * Same as {@link children}.
-     * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
-     */
-    get childNodes() {
-        return this.children;
-    }
-    set childNodes(children) {
-        this.children = children;
-    }
-}
-class CDATA extends NodeWithChildren {
-    constructor() {
-        super(...arguments);
-        this.type = ElementType.CDATA;
-    }
-    get nodeType() {
-        return 4;
-    }
-}
-/**
- * The root node of the document.
- */
-class Document$2 extends NodeWithChildren {
-    constructor() {
-        super(...arguments);
-        this.type = ElementType.Root;
-    }
-    get nodeType() {
-        return 9;
-    }
-}
-/**
- * An element within the DOM.
- */
-class Element$2 extends NodeWithChildren {
-    /**
-     * @param name Name of the tag, eg. `div`, `span`.
-     * @param attribs Object mapping attribute names to attribute values.
-     * @param children Children of the node.
-     */
-    constructor(name, attribs, children = [], type = name === "script"
-        ? ElementType.Script
-        : name === "style"
-            ? ElementType.Style
-            : ElementType.Tag) {
-        super(children);
-        this.name = name;
-        this.attribs = attribs;
-        this.type = type;
-    }
-    get nodeType() {
-        return 1;
-    }
-    // DOM Level 1 aliases
-    /**
-     * Same as {@link name}.
-     * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
-     */
-    get tagName() {
-        return this.name;
-    }
-    set tagName(name) {
-        this.name = name;
-    }
-    get attributes() {
-        return Object.keys(this.attribs).map((name) => {
-            var _a, _b;
-            return ({
-                name,
-                value: this.attribs[name],
-                namespace: (_a = this["x-attribsNamespace"]) === null || _a === void 0 ? void 0 : _a[name],
-                prefix: (_b = this["x-attribsPrefix"]) === null || _b === void 0 ? void 0 : _b[name],
-            });
-        });
-    }
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node is a `Element`, `false` otherwise.
- */
-function isTag$1(node) {
-    return isTag$2(node);
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node has the type `CDATA`, `false` otherwise.
- */
-function isCDATA(node) {
-    return node.type === ElementType.CDATA;
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node has the type `Text`, `false` otherwise.
- */
-function isText(node) {
-    return node.type === ElementType.Text;
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node has the type `Comment`, `false` otherwise.
- */
-function isComment(node) {
-    return node.type === ElementType.Comment;
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node has the type `ProcessingInstruction`, `false` otherwise.
- */
-function isDirective(node) {
-    return node.type === ElementType.Directive;
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node has the type `ProcessingInstruction`, `false` otherwise.
- */
-function isDocument(node) {
-    return node.type === ElementType.Root;
-}
-/**
- * @param node Node to check.
- * @returns `true` if the node has children, `false` otherwise.
- */
-function hasChildren(node) {
-    return Object.prototype.hasOwnProperty.call(node, "children");
-}
-/**
- * Clone a node, and optionally its children.
- *
- * @param recursive Clone child nodes as well.
- * @returns A clone of the node.
- */
-function cloneNode(node, recursive = false) {
-    let result;
-    if (isText(node)) {
-        result = new Text$2(node.data);
-    }
-    else if (isComment(node)) {
-        result = new Comment$2(node.data);
-    }
-    else if (isTag$1(node)) {
-        const children = recursive ? cloneChildren(node.children) : [];
-        const clone = new Element$2(node.name, { ...node.attribs }, children);
-        children.forEach((child) => (child.parent = clone));
-        if (node.namespace != null) {
-            clone.namespace = node.namespace;
-        }
-        if (node["x-attribsNamespace"]) {
-            clone["x-attribsNamespace"] = { ...node["x-attribsNamespace"] };
-        }
-        if (node["x-attribsPrefix"]) {
-            clone["x-attribsPrefix"] = { ...node["x-attribsPrefix"] };
-        }
-        result = clone;
-    }
-    else if (isCDATA(node)) {
-        const children = recursive ? cloneChildren(node.children) : [];
-        const clone = new CDATA(children);
-        children.forEach((child) => (child.parent = clone));
-        result = clone;
-    }
-    else if (isDocument(node)) {
-        const children = recursive ? cloneChildren(node.children) : [];
-        const clone = new Document$2(children);
-        children.forEach((child) => (child.parent = clone));
-        if (node["x-mode"]) {
-            clone["x-mode"] = node["x-mode"];
-        }
-        result = clone;
-    }
-    else if (isDirective(node)) {
-        const instruction = new ProcessingInstruction(node.name, node.data);
-        if (node["x-name"] != null) {
-            instruction["x-name"] = node["x-name"];
-            instruction["x-publicId"] = node["x-publicId"];
-            instruction["x-systemId"] = node["x-systemId"];
-        }
-        result = instruction;
-    }
-    else {
-        throw new Error(`Not implemented yet: ${node.type}`);
-    }
-    result.startIndex = node.startIndex;
-    result.endIndex = node.endIndex;
-    if (node.sourceCodeLocation != null) {
-        result.sourceCodeLocation = node.sourceCodeLocation;
-    }
-    return result;
-}
-function cloneChildren(childs) {
-    const children = childs.map((child) => cloneNode(child, true));
-    for (let i = 1; i < children.length; i++) {
-        children[i].prev = children[i - 1];
-        children[i - 1].next = children[i];
-    }
-    return children;
-}
-
-// Default options
-const defaultOpts = {
-    withStartIndices: false,
-    withEndIndices: false,
-    xmlMode: false,
-};
-class DomHandler {
-    /**
-     * @param callback Called once parsing has completed.
-     * @param options Settings for the handler.
-     * @param elementCB Callback whenever a tag is closed.
-     */
-    constructor(callback, options, elementCB) {
-        /** The elements of the DOM */
-        this.dom = [];
-        /** The root element for the DOM */
-        this.root = new Document$2(this.dom);
-        /** Indicated whether parsing has been completed. */
-        this.done = false;
-        /** Stack of open tags. */
-        this.tagStack = [this.root];
-        /** A data node that is still being written to. */
-        this.lastNode = null;
-        /** Reference to the parser instance. Used for location information. */
-        this.parser = null;
-        // Make it possible to skip arguments, for backwards-compatibility
-        if (typeof options === "function") {
-            elementCB = options;
-            options = defaultOpts;
-        }
-        if (typeof callback === "object") {
-            options = callback;
-            callback = undefined;
-        }
-        this.callback = callback !== null && callback !== void 0 ? callback : null;
-        this.options = options !== null && options !== void 0 ? options : defaultOpts;
-        this.elementCB = elementCB !== null && elementCB !== void 0 ? elementCB : null;
-    }
-    onparserinit(parser) {
-        this.parser = parser;
-    }
-    // Resets the handler back to starting state
-    onreset() {
-        this.dom = [];
-        this.root = new Document$2(this.dom);
-        this.done = false;
-        this.tagStack = [this.root];
-        this.lastNode = null;
-        this.parser = null;
-    }
-    // Signals the handler that parsing is done
-    onend() {
-        if (this.done)
-            return;
-        this.done = true;
-        this.parser = null;
-        this.handleCallback(null);
-    }
-    onerror(error) {
-        this.handleCallback(error);
-    }
-    onclosetag() {
-        this.lastNode = null;
-        const elem = this.tagStack.pop();
-        if (this.options.withEndIndices) {
-            elem.endIndex = this.parser.endIndex;
-        }
-        if (this.elementCB)
-            this.elementCB(elem);
-    }
-    onopentag(name, attribs) {
-        const type = this.options.xmlMode ? ElementType.Tag : undefined;
-        const element = new Element$2(name, attribs, undefined, type);
-        this.addNode(element);
-        this.tagStack.push(element);
-    }
-    ontext(data) {
-        const { lastNode } = this;
-        if (lastNode && lastNode.type === ElementType.Text) {
-            lastNode.data += data;
-            if (this.options.withEndIndices) {
-                lastNode.endIndex = this.parser.endIndex;
-            }
-        }
-        else {
-            const node = new Text$2(data);
-            this.addNode(node);
-            this.lastNode = node;
-        }
-    }
-    oncomment(data) {
-        if (this.lastNode && this.lastNode.type === ElementType.Comment) {
-            this.lastNode.data += data;
-            return;
-        }
-        const node = new Comment$2(data);
-        this.addNode(node);
-        this.lastNode = node;
-    }
-    oncommentend() {
-        this.lastNode = null;
-    }
-    oncdatastart() {
-        const text = new Text$2("");
-        const node = new CDATA([text]);
-        this.addNode(node);
-        text.parent = node;
-        this.lastNode = text;
-    }
-    oncdataend() {
-        this.lastNode = null;
-    }
-    onprocessinginstruction(name, data) {
-        const node = new ProcessingInstruction(name, data);
-        this.addNode(node);
-    }
-    handleCallback(error) {
-        if (typeof this.callback === "function") {
-            this.callback(error, this.dom);
-        }
-        else if (error) {
-            throw error;
-        }
-    }
-    addNode(node) {
-        const parent = this.tagStack[this.tagStack.length - 1];
-        const previousSibling = parent.children[parent.children.length - 1];
-        if (this.options.withStartIndices) {
-            node.startIndex = this.parser.startIndex;
-        }
-        if (this.options.withEndIndices) {
-            node.endIndex = this.parser.endIndex;
-        }
-        parent.children.push(node);
-        if (previousSibling) {
-            node.prev = previousSibling;
-            previousSibling.next = node;
-        }
-        node.parent = parent;
-        this.lastNode = null;
-    }
-}
-
-const xmlReplacer = /["&'<>$\x80-\uFFFF]/g;
-const xmlCodeMap = new Map([
-    [34, "&quot;"],
-    [38, "&amp;"],
-    [39, "&apos;"],
-    [60, "&lt;"],
-    [62, "&gt;"],
-]);
-// For compatibility with node < 4, we wrap `codePointAt`
-const getCodePoint = 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-String.prototype.codePointAt != null
-    ? (str, index) => str.codePointAt(index)
-    : // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-        (c, index) => (c.charCodeAt(index) & 0xfc00) === 0xd800
-            ? (c.charCodeAt(index) - 0xd800) * 0x400 +
-                c.charCodeAt(index + 1) -
-                0xdc00 +
-                0x10000
-            : c.charCodeAt(index);
-/**
- * Encodes all non-ASCII characters, as well as characters not valid in XML
- * documents using XML entities.
- *
- * If a character has no equivalent entity, a
- * numeric hexadecimal reference (eg. `&#xfc;`) will be used.
- */
-function encodeXML(str) {
-    let ret = "";
-    let lastIdx = 0;
-    let match;
-    while ((match = xmlReplacer.exec(str)) !== null) {
-        const i = match.index;
-        const char = str.charCodeAt(i);
-        const next = xmlCodeMap.get(char);
-        if (next !== undefined) {
-            ret += str.substring(lastIdx, i) + next;
-            lastIdx = i + 1;
-        }
-        else {
-            ret += `${str.substring(lastIdx, i)}&#x${getCodePoint(str, i).toString(16)};`;
-            // Increase by 1 if we have a surrogate pair
-            lastIdx = xmlReplacer.lastIndex += Number((char & 0xfc00) === 0xd800);
-        }
-    }
-    return ret + str.substr(lastIdx);
-}
-function getEscaper(regex, map) {
-    return function escape(data) {
-        let match;
-        let lastIdx = 0;
-        let result = "";
-        while ((match = regex.exec(data))) {
-            if (lastIdx !== match.index) {
-                result += data.substring(lastIdx, match.index);
-            }
-            // We know that this chararcter will be in the map.
-            result += map.get(match[0].charCodeAt(0));
-            // Every match will be of length 1
-            lastIdx = match.index + 1;
-        }
-        return result + data.substring(lastIdx);
-    };
-}
-/**
- * Encodes all characters that have to be escaped in HTML attributes,
- * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
- *
- * @param data String to escape.
- */
-const escapeAttribute = getEscaper(/["&\u00A0]/g, new Map([
-    [34, "&quot;"],
-    [38, "&amp;"],
-    [160, "&nbsp;"],
-]));
-/**
- * Encodes all characters that have to be escaped in HTML text,
- * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
- *
- * @param data String to escape.
- */
-const escapeText = getEscaper(/[&<>\u00A0]/g, new Map([
-    [38, "&amp;"],
-    [60, "&lt;"],
-    [62, "&gt;"],
-    [160, "&nbsp;"],
-]));
-
-/** The level of entities to support. */
-var EntityLevel;
-(function (EntityLevel) {
-    /** Support only XML entities. */
-    EntityLevel[EntityLevel["XML"] = 0] = "XML";
-    /** Support HTML entities, which are a superset of XML entities. */
-    EntityLevel[EntityLevel["HTML"] = 1] = "HTML";
-})(EntityLevel || (EntityLevel = {}));
-/** Determines whether some entities are allowed to be written without a trailing `;`. */
-var DecodingMode;
-(function (DecodingMode) {
-    /** Support legacy HTML entities. */
-    DecodingMode[DecodingMode["Legacy"] = 0] = "Legacy";
-    /** Do not support legacy HTML entities. */
-    DecodingMode[DecodingMode["Strict"] = 1] = "Strict";
-})(DecodingMode || (DecodingMode = {}));
-var EncodingMode;
-(function (EncodingMode) {
-    /**
-     * The output is UTF-8 encoded. Only characters that need escaping within
-     * HTML will be escaped.
-     */
-    EncodingMode[EncodingMode["UTF8"] = 0] = "UTF8";
-    /**
-     * The output consists only of ASCII characters. Characters that need
-     * escaping within HTML, and characters that aren't ASCII characters will
-     * be escaped.
-     */
-    EncodingMode[EncodingMode["ASCII"] = 1] = "ASCII";
-    /**
-     * Encode all characters that have an equivalent entity, as well as all
-     * characters that are not ASCII characters.
-     */
-    EncodingMode[EncodingMode["Extensive"] = 2] = "Extensive";
-    /**
-     * Encode all characters that have to be escaped in HTML attributes,
-     * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
-     */
-    EncodingMode[EncodingMode["Attribute"] = 3] = "Attribute";
-    /**
-     * Encode all characters that have to be escaped in HTML text,
-     * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
-     */
-    EncodingMode[EncodingMode["Text"] = 4] = "Text";
-})(EncodingMode || (EncodingMode = {}));
-
-const elementNames = new Map([
-    "altGlyph",
-    "altGlyphDef",
-    "altGlyphItem",
-    "animateColor",
-    "animateMotion",
-    "animateTransform",
-    "clipPath",
-    "feBlend",
-    "feColorMatrix",
-    "feComponentTransfer",
-    "feComposite",
-    "feConvolveMatrix",
-    "feDiffuseLighting",
-    "feDisplacementMap",
-    "feDistantLight",
-    "feDropShadow",
-    "feFlood",
-    "feFuncA",
-    "feFuncB",
-    "feFuncG",
-    "feFuncR",
-    "feGaussianBlur",
-    "feImage",
-    "feMerge",
-    "feMergeNode",
-    "feMorphology",
-    "feOffset",
-    "fePointLight",
-    "feSpecularLighting",
-    "feSpotLight",
-    "feTile",
-    "feTurbulence",
-    "foreignObject",
-    "glyphRef",
-    "linearGradient",
-    "radialGradient",
-    "textPath",
-].map((val) => [val.toLowerCase(), val]));
-const attributeNames = new Map([
-    "definitionURL",
-    "attributeName",
-    "attributeType",
-    "baseFrequency",
-    "baseProfile",
-    "calcMode",
-    "clipPathUnits",
-    "diffuseConstant",
-    "edgeMode",
-    "filterUnits",
-    "glyphRef",
-    "gradientTransform",
-    "gradientUnits",
-    "kernelMatrix",
-    "kernelUnitLength",
-    "keyPoints",
-    "keySplines",
-    "keyTimes",
-    "lengthAdjust",
-    "limitingConeAngle",
-    "markerHeight",
-    "markerUnits",
-    "markerWidth",
-    "maskContentUnits",
-    "maskUnits",
-    "numOctaves",
-    "pathLength",
-    "patternContentUnits",
-    "patternTransform",
-    "patternUnits",
-    "pointsAtX",
-    "pointsAtY",
-    "pointsAtZ",
-    "preserveAlpha",
-    "preserveAspectRatio",
-    "primitiveUnits",
-    "refX",
-    "refY",
-    "repeatCount",
-    "repeatDur",
-    "requiredExtensions",
-    "requiredFeatures",
-    "specularConstant",
-    "specularExponent",
-    "spreadMethod",
-    "startOffset",
-    "stdDeviation",
-    "stitchTiles",
-    "surfaceScale",
-    "systemLanguage",
-    "tableValues",
-    "targetX",
-    "targetY",
-    "textLength",
-    "viewBox",
-    "viewTarget",
-    "xChannelSelector",
-    "yChannelSelector",
-    "zoomAndPan",
-].map((val) => [val.toLowerCase(), val]));
-
-/*
- * Module dependencies
- */
-const unencodedElements = new Set([
-    "style",
-    "script",
-    "xmp",
-    "iframe",
-    "noembed",
-    "noframes",
-    "plaintext",
-    "noscript",
-]);
-function replaceQuotes(value) {
-    return value.replace(/"/g, "&quot;");
-}
-/**
- * Format attributes
- */
-function formatAttributes(attributes, opts) {
-    var _a;
-    if (!attributes)
-        return;
-    const encode = ((_a = opts.encodeEntities) !== null && _a !== void 0 ? _a : opts.decodeEntities) === false
-        ? replaceQuotes
-        : opts.xmlMode || opts.encodeEntities !== "utf8"
-            ? encodeXML
-            : escapeAttribute;
-    return Object.keys(attributes)
-        .map((key) => {
-        var _a, _b;
-        const value = (_a = attributes[key]) !== null && _a !== void 0 ? _a : "";
-        if (opts.xmlMode === "foreign") {
-            /* Fix up mixed-case attribute names */
-            key = (_b = attributeNames.get(key)) !== null && _b !== void 0 ? _b : key;
-        }
-        if (!opts.emptyAttrs && !opts.xmlMode && value === "") {
-            return key;
-        }
-        return `${key}="${encode(value)}"`;
-    })
-        .join(" ");
-}
-/**
- * Self-enclosing tags
- */
-const singleTag = new Set([
-    "area",
-    "base",
-    "basefont",
-    "br",
-    "col",
-    "command",
-    "embed",
-    "frame",
-    "hr",
-    "img",
-    "input",
-    "isindex",
-    "keygen",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr",
-]);
-/**
- * Renders a DOM node or an array of DOM nodes to a string.
- *
- * Can be thought of as the equivalent of the `outerHTML` of the passed node(s).
- *
- * @param node Node to be rendered.
- * @param options Changes serialization behavior
- */
-function render(node, options = {}) {
-    const nodes = "length" in node ? node : [node];
-    let output = "";
-    for (let i = 0; i < nodes.length; i++) {
-        output += renderNode(nodes[i], options);
-    }
-    return output;
-}
-function renderNode(node, options) {
-    switch (node.type) {
-        case Root:
-            return render(node.children, options);
-        // @ts-expect-error We don't use `Doctype` yet
-        case Doctype:
-        case Directive:
-            return renderDirective(node);
-        case Comment$3:
-            return renderComment(node);
-        case CDATA$1:
-            return renderCdata(node);
-        case Script:
-        case Style:
-        case Tag:
-            return renderTag(node, options);
-        case Text$3:
-            return renderText(node, options);
-    }
-}
-const foreignModeIntegrationPoints = new Set([
-    "mi",
-    "mo",
-    "mn",
-    "ms",
-    "mtext",
-    "annotation-xml",
-    "foreignObject",
-    "desc",
-    "title",
-]);
-const foreignElements = new Set(["svg", "math"]);
-function renderTag(elem, opts) {
-    var _a;
-    // Handle SVG / MathML in HTML
-    if (opts.xmlMode === "foreign") {
-        /* Fix up mixed-case element names */
-        elem.name = (_a = elementNames.get(elem.name)) !== null && _a !== void 0 ? _a : elem.name;
-        /* Exit foreign mode at integration points */
-        if (elem.parent &&
-            foreignModeIntegrationPoints.has(elem.parent.name)) {
-            opts = { ...opts, xmlMode: false };
-        }
-    }
-    if (!opts.xmlMode && foreignElements.has(elem.name)) {
-        opts = { ...opts, xmlMode: "foreign" };
+class WritableStream$1 extends Writable {
+    constructor(cbs, options) {
+        super({ decodeStrings: false });
+        this._decoder = new StringDecoder();
+        this._parser = new Parser(cbs, options);
     }
-    let tag = `<${elem.name}`;
-    const attribs = formatAttributes(elem.attribs, opts);
-    if (attribs) {
-        tag += ` ${attribs}`;
+    _write(chunk, encoding, cb) {
+        this._parser.write(isBuffer(chunk, encoding) ? this._decoder.write(chunk) : chunk);
+        cb();
     }
-    if (elem.children.length === 0 &&
-        (opts.xmlMode
-            ? // In XML mode or foreign mode, and user hasn't explicitly turned off self-closing tags
-                opts.selfClosingTags !== false
-            : // User explicitly asked for self-closing tags, even in HTML mode
-                opts.selfClosingTags && singleTag.has(elem.name))) {
-        if (!opts.xmlMode)
-            tag += " ";
-        tag += "/>";
+    _final(cb) {
+        this._parser.end(this._decoder.end());
+        cb();
     }
-    else {
-        tag += ">";
-        if (elem.children.length > 0) {
-            tag += render(elem.children, opts);
-        }
-        if (opts.xmlMode || !singleTag.has(elem.name)) {
-            tag += `</${elem.name}>`;
-        }
-    }
-    return tag;
-}
-function renderDirective(elem) {
-    return `<${elem.data}>`;
-}
-function renderText(elem, opts) {
-    var _a;
-    let data = elem.data || "";
-    // If entities weren't decoded, no need to encode them back
-    if (((_a = opts.encodeEntities) !== null && _a !== void 0 ? _a : opts.decodeEntities) !== false &&
-        !(!opts.xmlMode &&
-            elem.parent &&
-            unencodedElements.has(elem.parent.name))) {
-        data =
-            opts.xmlMode || opts.encodeEntities !== "utf8"
-                ? encodeXML(data)
-                : escapeText(data);
-    }
-    return data;
-}
-function renderCdata(elem) {
-    return `<![CDATA[${elem.children[0].data}]]>`;
-}
-function renderComment(elem) {
-    return `<!--${elem.data}-->`;
-}
-
-/**
- * @category Stringify
- * @deprecated Use the `dom-serializer` module directly.
- * @param node Node to get the outer HTML of.
- * @param options Options for serialization.
- * @returns `node`'s outer HTML.
- */
-function getOuterHTML(node, options) {
-    return render(node, options);
-}
-/**
- * @category Stringify
- * @deprecated Use the `dom-serializer` module directly.
- * @param node Node to get the inner HTML of.
- * @param options Options for serialization.
- * @returns `node`'s inner HTML.
- */
-function getInnerHTML(node, options) {
-    return hasChildren(node)
-        ? node.children.map((node) => getOuterHTML(node, options)).join("")
-        : "";
-}
-/**
- * Get a node's inner text. Same as `textContent`, but inserts newlines for `<br>` tags.
- *
- * @category Stringify
- * @deprecated Use `textContent` instead.
- * @param node Node to get the inner text of.
- * @returns `node`'s inner text.
- */
-function getText$1(node) {
-    if (Array.isArray(node))
-        return node.map(getText$1).join("");
-    if (isTag$1(node))
-        return node.name === "br" ? "\n" : getText$1(node.children);
-    if (isCDATA(node))
-        return getText$1(node.children);
-    if (isText(node))
-        return node.data;
-    return "";
-}
-/**
- * Get a node's text content.
- *
- * @category Stringify
- * @param node Node to get the text content of.
- * @returns `node`'s text content.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}
- */
-function textContent(node) {
-    if (Array.isArray(node))
-        return node.map(textContent).join("");
-    if (hasChildren(node) && !isComment(node)) {
-        return textContent(node.children);
-    }
-    if (isText(node))
-        return node.data;
-    return "";
-}
-/**
- * Get a node's inner text.
- *
- * @category Stringify
- * @param node Node to get the inner text of.
- * @returns `node`'s inner text.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Node/innerText}
- */
-function innerText(node) {
-    if (Array.isArray(node))
-        return node.map(innerText).join("");
-    if (hasChildren(node) && (node.type === ElementType.Tag || isCDATA(node))) {
-        return innerText(node.children);
-    }
-    if (isText(node))
-        return node.data;
-    return "";
-}
-
-/**
- * Get a node's children.
- *
- * @category Traversal
- * @param elem Node to get the children of.
- * @returns `elem`'s children, or an empty array.
- */
-function getChildren$1(elem) {
-    return hasChildren(elem) ? elem.children : [];
-}
-/**
- * Get a node's parent.
- *
- * @category Traversal
- * @param elem Node to get the parent of.
- * @returns `elem`'s parent node.
- */
-function getParent$1(elem) {
-    return elem.parent || null;
-}
-/**
- * Gets an elements siblings, including the element itself.
- *
- * Attempts to get the children through the element's parent first. If we don't
- * have a parent (the element is a root node), we walk the element's `prev` &
- * `next` to get all remaining nodes.
- *
- * @category Traversal
- * @param elem Element to get the siblings of.
- * @returns `elem`'s siblings.
- */
-function getSiblings$1(elem) {
-    const parent = getParent$1(elem);
-    if (parent != null)
-        return getChildren$1(parent);
-    const siblings = [elem];
-    let { prev, next } = elem;
-    while (prev != null) {
-        siblings.unshift(prev);
-        ({ prev } = prev);
-    }
-    while (next != null) {
-        siblings.push(next);
-        ({ next } = next);
-    }
-    return siblings;
-}
-/**
- * Gets an attribute from an element.
- *
- * @category Traversal
- * @param elem Element to check.
- * @param name Attribute name to retrieve.
- * @returns The element's attribute value, or `undefined`.
- */
-function getAttributeValue$1(elem, name) {
-    var _a;
-    return (_a = elem.attribs) === null || _a === void 0 ? void 0 : _a[name];
-}
-/**
- * Checks whether an element has an attribute.
- *
- * @category Traversal
- * @param elem Element to check.
- * @param name Attribute name to look for.
- * @returns Returns whether `elem` has the attribute `name`.
- */
-function hasAttrib$1(elem, name) {
-    return (elem.attribs != null &&
-        Object.prototype.hasOwnProperty.call(elem.attribs, name) &&
-        elem.attribs[name] != null);
-}
-/**
- * Get the tag name of an element.
- *
- * @category Traversal
- * @param elem The element to get the name for.
- * @returns The tag name of `elem`.
- */
-function getName$1(elem) {
-    return elem.name;
-}
-/**
- * Returns the next element sibling of a node.
- *
- * @category Traversal
- * @param elem The element to get the next sibling of.
- * @returns `elem`'s next sibling that is a tag.
- */
-function nextElementSibling$1(elem) {
-    let { next } = elem;
-    while (next !== null && !isTag$1(next))
-        ({ next } = next);
-    return next;
-}
-/**
- * Returns the previous element sibling of a node.
- *
- * @category Traversal
- * @param elem The element to get the previous sibling of.
- * @returns `elem`'s previous sibling that is a tag.
- */
-function prevElementSibling(elem) {
-    let { prev } = elem;
-    while (prev !== null && !isTag$1(prev))
-        ({ prev } = prev);
-    return prev;
-}
-
-/**
- * Remove an element from the dom
- *
- * @category Manipulation
- * @param elem The element to be removed
- */
-function removeElement(elem) {
-    if (elem.prev)
-        elem.prev.next = elem.next;
-    if (elem.next)
-        elem.next.prev = elem.prev;
-    if (elem.parent) {
-        const childs = elem.parent.children;
-        childs.splice(childs.lastIndexOf(elem), 1);
-    }
-}
-/**
- * Replace an element in the dom
- *
- * @category Manipulation
- * @param elem The element to be replaced
- * @param replacement The element to be added
- */
-function replaceElement(elem, replacement) {
-    const prev = (replacement.prev = elem.prev);
-    if (prev) {
-        prev.next = replacement;
-    }
-    const next = (replacement.next = elem.next);
-    if (next) {
-        next.prev = replacement;
-    }
-    const parent = (replacement.parent = elem.parent);
-    if (parent) {
-        const childs = parent.children;
-        childs[childs.lastIndexOf(elem)] = replacement;
-        elem.parent = null;
-    }
-}
-/**
- * Append a child to an element.
- *
- * @category Manipulation
- * @param elem The element to append to.
- * @param child The element to be added as a child.
- */
-function appendChild(elem, child) {
-    removeElement(child);
-    child.next = null;
-    child.parent = elem;
-    if (elem.children.push(child) > 1) {
-        const sibling = elem.children[elem.children.length - 2];
-        sibling.next = child;
-        child.prev = sibling;
-    }
-    else {
-        child.prev = null;
-    }
-}
-/**
- * Append an element after another.
- *
- * @category Manipulation
- * @param elem The element to append after.
- * @param next The element be added.
- */
-function append$2(elem, next) {
-    removeElement(next);
-    const { parent } = elem;
-    const currNext = elem.next;
-    next.next = currNext;
-    next.prev = elem;
-    elem.next = next;
-    next.parent = parent;
-    if (currNext) {
-        currNext.prev = next;
-        if (parent) {
-            const childs = parent.children;
-            childs.splice(childs.lastIndexOf(currNext), 0, next);
-        }
-    }
-    else if (parent) {
-        parent.children.push(next);
-    }
-}
-/**
- * Prepend a child to an element.
- *
- * @category Manipulation
- * @param elem The element to prepend before.
- * @param child The element to be added as a child.
- */
-function prependChild(elem, child) {
-    removeElement(child);
-    child.parent = elem;
-    child.prev = null;
-    if (elem.children.unshift(child) !== 1) {
-        const sibling = elem.children[1];
-        sibling.prev = child;
-        child.next = sibling;
-    }
-    else {
-        child.next = null;
-    }
-}
-/**
- * Prepend an element before another.
- *
- * @category Manipulation
- * @param elem The element to prepend before.
- * @param prev The element be added.
- */
-function prepend(elem, prev) {
-    removeElement(prev);
-    const { parent } = elem;
-    if (parent) {
-        const childs = parent.children;
-        childs.splice(childs.indexOf(elem), 0, prev);
-    }
-    if (elem.prev) {
-        elem.prev.next = prev;
-    }
-    prev.parent = parent;
-    prev.prev = elem.prev;
-    prev.next = elem;
-    elem.prev = prev;
-}
-
-/**
- * Search a node and its children for nodes passing a test function.
- *
- * @category Querying
- * @param test Function to test nodes on.
- * @param node Node to search. Will be included in the result set if it matches.
- * @param recurse Also consider child nodes.
- * @param limit Maximum number of nodes to return.
- * @returns All nodes passing `test`.
- */
-function filter(test, node, recurse = true, limit = Infinity) {
-    if (!Array.isArray(node))
-        node = [node];
-    return find(test, node, recurse, limit);
-}
-/**
- * Search an array of node and its children for nodes passing a test function.
- *
- * @category Querying
- * @param test Function to test nodes on.
- * @param nodes Array of nodes to search.
- * @param recurse Also consider child nodes.
- * @param limit Maximum number of nodes to return.
- * @returns All nodes passing `test`.
- */
-function find(test, nodes, recurse, limit) {
-    const result = [];
-    for (const elem of nodes) {
-        if (test(elem)) {
-            result.push(elem);
-            if (--limit <= 0)
-                break;
-        }
-        if (recurse && hasChildren(elem) && elem.children.length > 0) {
-            const children = find(test, elem.children, recurse, limit);
-            result.push(...children);
-            limit -= children.length;
-            if (limit <= 0)
-                break;
-        }
-    }
-    return result;
-}
-/**
- * Finds the first element inside of an array that matches a test function.
- *
- * @category Querying
- * @param test Function to test nodes on.
- * @param nodes Array of nodes to search.
- * @returns The first node in the array that passes `test`.
- * @deprecated Use `Array.prototype.find` directly.
- */
-function findOneChild(test, nodes) {
-    return nodes.find(test);
-}
-/**
- * Finds one element in a tree that passes a test.
- *
- * @category Querying
- * @param test Function to test nodes on.
- * @param nodes Array of nodes to search.
- * @param recurse Also consider child nodes.
- * @returns The first child node that passes `test`.
- */
-function findOne$1(test, nodes, recurse = true) {
-    let elem = null;
-    for (let i = 0; i < nodes.length && !elem; i++) {
-        const checked = nodes[i];
-        if (!isTag$1(checked)) {
-            continue;
-        }
-        else if (test(checked)) {
-            elem = checked;
-        }
-        else if (recurse && checked.children.length > 0) {
-            elem = findOne$1(test, checked.children, true);
-        }
-    }
-    return elem;
-}
-/**
- * @category Querying
- * @param test Function to test nodes on.
- * @param nodes Array of nodes to search.
- * @returns Whether a tree of nodes contains at least one node passing the test.
- */
-function existsOne$1(test, nodes) {
-    return nodes.some((checked) => isTag$1(checked) &&
-        (test(checked) ||
-            (checked.children.length > 0 &&
-                existsOne$1(test, checked.children))));
-}
-/**
- * Search and array of nodes and its children for elements passing a test function.
- *
- * Same as `find`, but limited to elements and with less options, leading to reduced complexity.
- *
- * @category Querying
- * @param test Function to test nodes on.
- * @param nodes Array of nodes to search.
- * @returns All nodes passing `test`.
- */
-function findAll$1(test, nodes) {
-    var _a;
-    const result = [];
-    const stack = nodes.filter(isTag$1);
-    let elem;
-    while ((elem = stack.shift())) {
-        const children = (_a = elem.children) === null || _a === void 0 ? void 0 : _a.filter(isTag$1);
-        if (children && children.length > 0) {
-            stack.unshift(...children);
-        }
-        if (test(elem))
-            result.push(elem);
-    }
-    return result;
-}
-
-const Checks = {
-    tag_name(name) {
-        if (typeof name === "function") {
-            return (elem) => isTag$1(elem) && name(elem.name);
-        }
-        else if (name === "*") {
-            return isTag$1;
-        }
-        return (elem) => isTag$1(elem) && elem.name === name;
-    },
-    tag_type(type) {
-        if (typeof type === "function") {
-            return (elem) => type(elem.type);
-        }
-        return (elem) => elem.type === type;
-    },
-    tag_contains(data) {
-        if (typeof data === "function") {
-            return (elem) => isText(elem) && data(elem.data);
-        }
-        return (elem) => isText(elem) && elem.data === data;
-    },
-};
-/**
- * @param attrib Attribute to check.
- * @param value Attribute value to look for.
- * @returns A function to check whether the a node has an attribute with a
- *   particular value.
- */
-function getAttribCheck(attrib, value) {
-    if (typeof value === "function") {
-        return (elem) => isTag$1(elem) && value(elem.attribs[attrib]);
-    }
-    return (elem) => isTag$1(elem) && elem.attribs[attrib] === value;
-}
-/**
- * @param a First function to combine.
- * @param b Second function to combine.
- * @returns A function taking a node and returning `true` if either of the input
- *   functions returns `true` for the node.
- */
-function combineFuncs(a, b) {
-    return (elem) => a(elem) || b(elem);
-}
-/**
- * @param options An object describing nodes to look for.
- * @returns A function executing all checks in `options` and returning `true` if
- *   any of them match a node.
- */
-function compileTest(options) {
-    const funcs = Object.keys(options).map((key) => {
-        const value = options[key];
-        return Object.prototype.hasOwnProperty.call(Checks, key)
-            ? Checks[key](value)
-            : getAttribCheck(key, value);
-    });
-    return funcs.length === 0 ? null : funcs.reduce(combineFuncs);
-}
-/**
- * @category Legacy Query Functions
- * @param options An object describing nodes to look for.
- * @param node The element to test.
- * @returns Whether the element matches the description in `options`.
- */
-function testElement(options, node) {
-    const test = compileTest(options);
-    return test ? test(node) : true;
-}
-/**
- * @category Legacy Query Functions
- * @param options An object describing nodes to look for.
- * @param nodes Nodes to search through.
- * @param recurse Also consider child nodes.
- * @param limit Maximum number of nodes to return.
- * @returns All nodes that match `options`.
- */
-function getElements(options, nodes, recurse, limit = Infinity) {
-    const test = compileTest(options);
-    return test ? filter(test, nodes, recurse, limit) : [];
-}
-/**
- * @category Legacy Query Functions
- * @param id The unique ID attribute value to look for.
- * @param nodes Nodes to search through.
- * @param recurse Also consider child nodes.
- * @returns The node with the supplied ID.
- */
-function getElementById(id, nodes, recurse = true) {
-    if (!Array.isArray(nodes))
-        nodes = [nodes];
-    return findOne$1(getAttribCheck("id", id), nodes, recurse);
-}
-/**
- * @category Legacy Query Functions
- * @param tagName Tag name to search for.
- * @param nodes Nodes to search through.
- * @param recurse Also consider child nodes.
- * @param limit Maximum number of nodes to return.
- * @returns All nodes with the supplied `tagName`.
- */
-function getElementsByTagName(tagName, nodes, recurse = true, limit = Infinity) {
-    return filter(Checks["tag_name"](tagName), nodes, recurse, limit);
-}
-/**
- * @category Legacy Query Functions
- * @param type Element type to look for.
- * @param nodes Nodes to search through.
- * @param recurse Also consider child nodes.
- * @param limit Maximum number of nodes to return.
- * @returns All nodes with the supplied `type`.
- */
-function getElementsByTagType(type, nodes, recurse = true, limit = Infinity) {
-    return filter(Checks["tag_type"](type), nodes, recurse, limit);
-}
-
-/**
- * Given an array of nodes, remove any member that is contained by another.
- *
- * @category Helpers
- * @param nodes Nodes to filter.
- * @returns Remaining nodes that aren't subtrees of each other.
- */
-function removeSubsets$1(nodes) {
-    let idx = nodes.length;
-    /*
-     * Check if each node (or one of its ancestors) is already contained in the
-     * array.
-     */
-    while (--idx >= 0) {
-        const node = nodes[idx];
-        /*
-         * Remove the node if it is not unique.
-         * We are going through the array from the end, so we only
-         * have to check nodes that preceed the node under consideration in the array.
-         */
-        if (idx > 0 && nodes.lastIndexOf(node, idx - 1) >= 0) {
-            nodes.splice(idx, 1);
-            continue;
-        }
-        for (let ancestor = node.parent; ancestor; ancestor = ancestor.parent) {
-            if (nodes.includes(ancestor)) {
-                nodes.splice(idx, 1);
-                break;
-            }
-        }
-    }
-    return nodes;
-}
-/**
- * @category Helpers
- * @see {@link http://dom.spec.whatwg.org/#dom-node-comparedocumentposition}
- */
-var DocumentPosition;
-(function (DocumentPosition) {
-    DocumentPosition[DocumentPosition["DISCONNECTED"] = 1] = "DISCONNECTED";
-    DocumentPosition[DocumentPosition["PRECEDING"] = 2] = "PRECEDING";
-    DocumentPosition[DocumentPosition["FOLLOWING"] = 4] = "FOLLOWING";
-    DocumentPosition[DocumentPosition["CONTAINS"] = 8] = "CONTAINS";
-    DocumentPosition[DocumentPosition["CONTAINED_BY"] = 16] = "CONTAINED_BY";
-})(DocumentPosition || (DocumentPosition = {}));
-/**
- * Compare the position of one node against another node in any other document.
- * The return value is a bitmask with the values from {@link DocumentPosition}.
- *
- * Document order:
- * > There is an ordering, document order, defined on all the nodes in the
- * > document corresponding to the order in which the first character of the
- * > XML representation of each node occurs in the XML representation of the
- * > document after expansion of general entities. Thus, the document element
- * > node will be the first node. Element nodes occur before their children.
- * > Thus, document order orders element nodes in order of the occurrence of
- * > their start-tag in the XML (after expansion of entities). The attribute
- * > nodes of an element occur after the element and before its children. The
- * > relative order of attribute nodes is implementation-dependent.
- *
- * Source:
- * http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order
- *
- * @category Helpers
- * @param nodeA The first node to use in the comparison
- * @param nodeB The second node to use in the comparison
- * @returns A bitmask describing the input nodes' relative position.
- *
- * See http://dom.spec.whatwg.org/#dom-node-comparedocumentposition for
- * a description of these values.
- */
-function compareDocumentPosition(nodeA, nodeB) {
-    const aParents = [];
-    const bParents = [];
-    if (nodeA === nodeB) {
-        return 0;
-    }
-    let current = hasChildren(nodeA) ? nodeA : nodeA.parent;
-    while (current) {
-        aParents.unshift(current);
-        current = current.parent;
-    }
-    current = hasChildren(nodeB) ? nodeB : nodeB.parent;
-    while (current) {
-        bParents.unshift(current);
-        current = current.parent;
-    }
-    const maxIdx = Math.min(aParents.length, bParents.length);
-    let idx = 0;
-    while (idx < maxIdx && aParents[idx] === bParents[idx]) {
-        idx++;
-    }
-    if (idx === 0) {
-        return DocumentPosition.DISCONNECTED;
-    }
-    const sharedParent = aParents[idx - 1];
-    const siblings = sharedParent.children;
-    const aSibling = aParents[idx];
-    const bSibling = bParents[idx];
-    if (siblings.indexOf(aSibling) > siblings.indexOf(bSibling)) {
-        if (sharedParent === nodeB) {
-            return DocumentPosition.FOLLOWING | DocumentPosition.CONTAINED_BY;
-        }
-        return DocumentPosition.FOLLOWING;
-    }
-    if (sharedParent === nodeA) {
-        return DocumentPosition.PRECEDING | DocumentPosition.CONTAINS;
-    }
-    return DocumentPosition.PRECEDING;
-}
-/**
- * Sort an array of nodes based on their relative position in the document and
- * remove any duplicate nodes. If the array contains nodes that do not belong to
- * the same document, sort order is unspecified.
- *
- * @category Helpers
- * @param nodes Array of DOM nodes.
- * @returns Collection of unique nodes, sorted in document order.
- */
-function uniqueSort(nodes) {
-    nodes = nodes.filter((node, i, arr) => !arr.includes(node, i + 1));
-    nodes.sort((a, b) => {
-        const relative = compareDocumentPosition(a, b);
-        if (relative & DocumentPosition.PRECEDING) {
-            return -1;
-        }
-        else if (relative & DocumentPosition.FOLLOWING) {
-            return 1;
-        }
-        return 0;
-    });
-    return nodes;
-}
-
-/**
- * Get the feed object from the root of a DOM tree.
- *
- * @category Feeds
- * @param doc - The DOM to to extract the feed from.
- * @returns The feed.
- */
-function getFeed(doc) {
-    const feedRoot = getOneElement(isValidFeed, doc);
-    return !feedRoot
-        ? null
-        : feedRoot.name === "feed"
-            ? getAtomFeed(feedRoot)
-            : getRssFeed(feedRoot);
-}
-/**
- * Parse an Atom feed.
- *
- * @param feedRoot The root of the feed.
- * @returns The parsed feed.
- */
-function getAtomFeed(feedRoot) {
-    var _a;
-    const childs = feedRoot.children;
-    const feed = {
-        type: "atom",
-        items: getElementsByTagName("entry", childs).map((item) => {
-            var _a;
-            const { children } = item;
-            const entry = { media: getMediaElements(children) };
-            addConditionally(entry, "id", "id", children);
-            addConditionally(entry, "title", "title", children);
-            const href = (_a = getOneElement("link", children)) === null || _a === void 0 ? void 0 : _a.attribs["href"];
-            if (href) {
-                entry.link = href;
-            }
-            const description = fetch("summary", children) || fetch("content", children);
-            if (description) {
-                entry.description = description;
-            }
-            const pubDate = fetch("updated", children);
-            if (pubDate) {
-                entry.pubDate = new Date(pubDate);
-            }
-            return entry;
-        }),
-    };
-    addConditionally(feed, "id", "id", childs);
-    addConditionally(feed, "title", "title", childs);
-    const href = (_a = getOneElement("link", childs)) === null || _a === void 0 ? void 0 : _a.attribs["href"];
-    if (href) {
-        feed.link = href;
-    }
-    addConditionally(feed, "description", "subtitle", childs);
-    const updated = fetch("updated", childs);
-    if (updated) {
-        feed.updated = new Date(updated);
-    }
-    addConditionally(feed, "author", "email", childs, true);
-    return feed;
-}
-/**
- * Parse a RSS feed.
- *
- * @param feedRoot The root of the feed.
- * @returns The parsed feed.
- */
-function getRssFeed(feedRoot) {
-    var _a, _b;
-    const childs = (_b = (_a = getOneElement("channel", feedRoot.children)) === null || _a === void 0 ? void 0 : _a.children) !== null && _b !== void 0 ? _b : [];
-    const feed = {
-        type: feedRoot.name.substr(0, 3),
-        id: "",
-        items: getElementsByTagName("item", feedRoot.children).map((item) => {
-            const { children } = item;
-            const entry = { media: getMediaElements(children) };
-            addConditionally(entry, "id", "guid", children);
-            addConditionally(entry, "title", "title", children);
-            addConditionally(entry, "link", "link", children);
-            addConditionally(entry, "description", "description", children);
-            const pubDate = fetch("pubDate", children);
-            if (pubDate)
-                entry.pubDate = new Date(pubDate);
-            return entry;
-        }),
-    };
-    addConditionally(feed, "title", "title", childs);
-    addConditionally(feed, "link", "link", childs);
-    addConditionally(feed, "description", "description", childs);
-    const updated = fetch("lastBuildDate", childs);
-    if (updated) {
-        feed.updated = new Date(updated);
-    }
-    addConditionally(feed, "author", "managingEditor", childs, true);
-    return feed;
-}
-const MEDIA_KEYS_STRING = ["url", "type", "lang"];
-const MEDIA_KEYS_INT = [
-    "fileSize",
-    "bitrate",
-    "framerate",
-    "samplingrate",
-    "channels",
-    "duration",
-    "height",
-    "width",
-];
-/**
- * Get all media elements of a feed item.
- *
- * @param where Nodes to search in.
- * @returns Media elements.
- */
-function getMediaElements(where) {
-    return getElementsByTagName("media:content", where).map((elem) => {
-        const { attribs } = elem;
-        const media = {
-            medium: attribs["medium"],
-            isDefault: !!attribs["isDefault"],
-        };
-        for (const attrib of MEDIA_KEYS_STRING) {
-            if (attribs[attrib]) {
-                media[attrib] = attribs[attrib];
-            }
-        }
-        for (const attrib of MEDIA_KEYS_INT) {
-            if (attribs[attrib]) {
-                media[attrib] = parseInt(attribs[attrib], 10);
-            }
-        }
-        if (attribs["expression"]) {
-            media.expression = attribs["expression"];
-        }
-        return media;
-    });
-}
-/**
- * Get one element by tag name.
- *
- * @param tagName Tag name to look for
- * @param node Node to search in
- * @returns The element or null
- */
-function getOneElement(tagName, node) {
-    return getElementsByTagName(tagName, node, true, 1)[0];
-}
-/**
- * Get the text content of an element with a certain tag name.
- *
- * @param tagName Tag name to look for.
- * @param where Node to search in.
- * @param recurse Whether to recurse into child nodes.
- * @returns The text content of the element.
- */
-function fetch(tagName, where, recurse = false) {
-    return textContent(getElementsByTagName(tagName, where, recurse, 1)).trim();
-}
-/**
- * Adds a property to an object if it has a value.
- *
- * @param obj Object to be extended
- * @param prop Property name
- * @param tagName Tag name that contains the conditionally added property
- * @param where Element to search for the property
- * @param recurse Whether to recurse into child nodes.
- */
-function addConditionally(obj, prop, tagName, where, recurse = false) {
-    const val = fetch(tagName, where, recurse);
-    if (val)
-        obj[prop] = val;
-}
-/**
- * Checks if an element is a feed root node.
- *
- * @param value The name of the element to check.
- * @returns Whether an element is a feed root node.
- */
-function isValidFeed(value) {
-    return value === "rss" || value === "feed" || value === "rdf:RDF";
-}
-
-var DomUtils = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    isTag: isTag$1,
-    isCDATA: isCDATA,
-    isText: isText,
-    isComment: isComment,
-    isDocument: isDocument,
-    hasChildren: hasChildren,
-    getOuterHTML: getOuterHTML,
-    getInnerHTML: getInnerHTML,
-    getText: getText$1,
-    textContent: textContent,
-    innerText: innerText,
-    getChildren: getChildren$1,
-    getParent: getParent$1,
-    getSiblings: getSiblings$1,
-    getAttributeValue: getAttributeValue$1,
-    hasAttrib: hasAttrib$1,
-    getName: getName$1,
-    nextElementSibling: nextElementSibling$1,
-    prevElementSibling: prevElementSibling,
-    removeElement: removeElement,
-    replaceElement: replaceElement,
-    appendChild: appendChild,
-    append: append$2,
-    prependChild: prependChild,
-    prepend: prepend,
-    filter: filter,
-    find: find,
-    findOneChild: findOneChild,
-    findOne: findOne$1,
-    existsOne: existsOne$1,
-    findAll: findAll$1,
-    testElement: testElement,
-    getElements: getElements,
-    getElementById: getElementById,
-    getElementsByTagName: getElementsByTagName,
-    getElementsByTagType: getElementsByTagType,
-    removeSubsets: removeSubsets$1,
-    get DocumentPosition () { return DocumentPosition; },
-    compareDocumentPosition: compareDocumentPosition,
-    uniqueSort: uniqueSort,
-    getFeed: getFeed
-});
-
-// Helper methods
-/**
- * Parses the data, returns the resulting document.
- *
- * @param data The data that should be parsed.
- * @param options Optional options for the parser and DOM builder.
- */
-function parseDocument(data, options) {
-    const handler = new DomHandler(undefined, options);
-    new Parser$1(handler, options).end(data);
-    return handler.root;
-}
-/**
- * Parses data, returns an array of the root nodes.
- *
- * Note that the root nodes still have a `Document` node as their parent.
- * Use `parseDocument` to get the `Document` node instead.
- *
- * @param data The data that should be parsed.
- * @param options Optional options for the parser and DOM builder.
- * @deprecated Use `parseDocument` instead.
- */
-function parseDOM(data, options) {
-    return parseDocument(data, options).children;
-}
-/**
- * Creates a parser instance, with an attached DOM handler.
- *
- * @param cb A callback that will be called once parsing has been completed.
- * @param options Optional options for the parser and DOM builder.
- * @param elementCb An optional callback that will be called every time a tag has been completed inside of the DOM.
- */
-function createDomStream(cb, options, elementCb) {
-    const handler = new DomHandler(cb, options, elementCb);
-    return new Parser$1(handler, options);
-}
-/**
- * Parse a feed.
- *
- * @param feed The feed that should be parsed, as a string.
- * @param options Optionally, options for parsing. When using this, you should set `xmlMode` to `true`.
- */
-function parseFeed(feed, options = { xmlMode: true }) {
-    return getFeed(parseDOM(feed, options));
 }
 
 var HTMLParser2 = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    Parser: Parser$1,
-    DomHandler: DomHandler,
-    parseDocument: parseDocument,
-    parseDOM: parseDOM,
-    createDomStream: createDomStream,
-    ElementType: index,
-    getFeed: getFeed,
-    parseFeed: parseFeed,
-    DefaultHandler: DomHandler,
-    Tokenizer: Tokenizer,
-    DomUtils: DomUtils
+    WritableStream: WritableStream$1
 });
 
 // Internal
@@ -3754,9 +1854,9 @@ class CustomElementRegistry {
   }
 }
 
-const {Parser} = HTMLParser2;
+const {WritableStream} = HTMLParser2;
 
-const append$1 = (self, node, active) => {
+const append$2 = (self, node, active) => {
   const end = self[END];
   node.parentNode = self;
   knownBoundaries(end[PREV], node, end);
@@ -3775,13 +1875,21 @@ const attribute = (element, end, attribute, value, active) => {
     attributeChangedCallback$1(element, attribute.name, null, value);
 };
 
+/**
+ * @template {HTMLDocument|SVGDocument|XMLDocument} DOC
+ * @template {string|NodeJS.ReadableStream} INPUT
+ * @param {DOC} document 
+ * @param {Boolean} isHTML 
+ * @param {INPUT} markupLanguage 
+ * @returns {INPUT extends string ? DOC : Promise<INPUT>}
+ */
 const parseFromString = (document, isHTML, markupLanguage) => {
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
   let node = document;
   let ownerSVGElement = null;
 
-  const content = new Parser({
+  const content = new WritableStream({
     // <!DOCTYPE ...>
     onprocessinginstruction(name, data) {
       if (name.toLowerCase() === '!doctype')
@@ -3793,20 +1901,20 @@ const parseFromString = (document, isHTML, markupLanguage) => {
       let create = true;
       if (isHTML) {
         if (ownerSVGElement) {
-          node = append$1(node, document.createElementNS(SVG_NAMESPACE, name), active);
+          node = append$2(node, document.createElementNS(SVG_NAMESPACE, name), active);
           node.ownerSVGElement = ownerSVGElement;
           create = false;
         }
         else if (name === 'svg' || name === 'SVG') {
           ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-          node = append$1(node, ownerSVGElement, active);
+          node = append$2(node, ownerSVGElement, active);
           create = false;
         }
         else if (active) {
           const ce = name.includes('-') ? name : (attributes.is || '');
           if (ce && registry.has(ce)) {
             const {Class} = registry.get(ce);
-            node = append$1(node, new Class, active);
+            node = append$2(node, new Class, active);
             delete attributes.is;
             create = false;
           }
@@ -3814,7 +1922,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
       }
 
       if (create)
-        node = append$1(node, document.createElement(name), false);
+        node = append$2(node, document.createElement(name), false);
 
       let end = node[END];
       for (const name of keys(attributes))
@@ -3822,8 +1930,8 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     },
 
     // #text, #comment
-    oncomment(data) { append$1(node, document.createComment(data), active); },
-    ontext(text) { append$1(node, document.createTextNode(text), active); },
+    oncomment(data) { append$2(node, document.createComment(data), active); },
+    ontext(text) { append$2(node, document.createTextNode(text), active); },
 
     // </tagName>
     onclosetag() {
@@ -3837,10 +1945,24 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     xmlMode: !isHTML
   });
 
-  content.write(markupLanguage);
-  content.end();
-
-  return document;
+  if (typeof markupLanguage === 'string') {
+    content.write(markupLanguage);
+    content.end();
+    return document;
+  } else {
+    return new Promise((resolve, reject) => {
+      markupLanguage.pipe(content);
+      markupLanguage.once('end', () => {
+        resolve(document);
+      });
+      const errorCb = err => {
+        content.end();
+        reject(err);
+      };
+      markupLanguage.once('error', errorCb);
+      content.once('error', errorCb);
+    });
+  }
 };
 
 const htmlClasses = new Map;
@@ -4534,7 +2656,7 @@ const nextSibling = node => {
 
 // https://dom.spec.whatwg.org/#nondocumenttypechildnode
 
-const nextElementSibling = node => {
+const nextElementSibling$1 = node => {
   let next = nextSibling(node);
   while (next && next.nodeType !== ELEMENT_NODE)
     next = nextSibling(next);
@@ -4619,7 +2741,7 @@ class CharacterData$1 extends Node$1 {
   get nextSibling() { return nextSibling(this); }
 
   get previousElementSibling() { return previousElementSibling(this); }
-  get nextElementSibling() { return nextElementSibling(this); }
+  get nextElementSibling() { return nextElementSibling$1(this); }
 
   before(...nodes) { before(this, nodes); }
   after(...nodes) { after(this, nodes); }
@@ -4677,18 +2799,1437 @@ class CharacterData$1 extends Node$1 {
 /**
  * @implements globalThis.Comment
  */
-class Comment$1 extends CharacterData$1 {
+class Comment$2 extends CharacterData$1 {
   constructor(ownerDocument, data = '') {
     super(ownerDocument, '#comment', COMMENT_NODE, data);
   }
 
   cloneNode() {
     const {ownerDocument, [VALUE]: data} = this;
-    return new Comment$1(ownerDocument, data);
+    return new Comment$2(ownerDocument, data);
   }
 
   toString() { return `<!--${this[VALUE]}-->`; }
 }
+
+/** Types of elements found in htmlparser2's DOM */
+var ElementType;
+(function (ElementType) {
+    /** Type for the root element of a document */
+    ElementType["Root"] = "root";
+    /** Type for Text */
+    ElementType["Text"] = "text";
+    /** Type for <? ... ?> */
+    ElementType["Directive"] = "directive";
+    /** Type for <!-- ... --> */
+    ElementType["Comment"] = "comment";
+    /** Type for <script> tags */
+    ElementType["Script"] = "script";
+    /** Type for <style> tags */
+    ElementType["Style"] = "style";
+    /** Type for Any tag */
+    ElementType["Tag"] = "tag";
+    /** Type for <![CDATA[ ... ]]> */
+    ElementType["CDATA"] = "cdata";
+    /** Type for <!doctype ...> */
+    ElementType["Doctype"] = "doctype";
+})(ElementType || (ElementType = {}));
+/**
+ * Tests whether an element is a tag or not.
+ *
+ * @param elem Element to test
+ */
+function isTag$2(elem) {
+    return (elem.type === ElementType.Tag ||
+        elem.type === ElementType.Script ||
+        elem.type === ElementType.Style);
+}
+// Exports for backwards compatibility
+/** Type for the root element of a document */
+const Root = ElementType.Root;
+/** Type for Text */
+const Text$2 = ElementType.Text;
+/** Type for <? ... ?> */
+const Directive = ElementType.Directive;
+/** Type for <!-- ... --> */
+const Comment$1 = ElementType.Comment;
+/** Type for <script> tags */
+const Script = ElementType.Script;
+/** Type for <style> tags */
+const Style = ElementType.Style;
+/** Type for Any tag */
+const Tag = ElementType.Tag;
+/** Type for <![CDATA[ ... ]]> */
+const CDATA = ElementType.CDATA;
+/** Type for <!doctype ...> */
+const Doctype = ElementType.Doctype;
+
+/**
+ * @param node Node to check.
+ * @returns `true` if the node is a `Element`, `false` otherwise.
+ */
+function isTag$1(node) {
+    return isTag$2(node);
+}
+/**
+ * @param node Node to check.
+ * @returns `true` if the node has the type `CDATA`, `false` otherwise.
+ */
+function isCDATA(node) {
+    return node.type === ElementType.CDATA;
+}
+/**
+ * @param node Node to check.
+ * @returns `true` if the node has the type `Text`, `false` otherwise.
+ */
+function isText(node) {
+    return node.type === ElementType.Text;
+}
+/**
+ * @param node Node to check.
+ * @returns `true` if the node has the type `Comment`, `false` otherwise.
+ */
+function isComment(node) {
+    return node.type === ElementType.Comment;
+}
+/**
+ * @param node Node to check.
+ * @returns `true` if the node has the type `ProcessingInstruction`, `false` otherwise.
+ */
+function isDocument(node) {
+    return node.type === ElementType.Root;
+}
+/**
+ * @param node Node to check.
+ * @returns `true` if the node has children, `false` otherwise.
+ */
+function hasChildren(node) {
+    return Object.prototype.hasOwnProperty.call(node, "children");
+}
+
+const xmlReplacer = /["&'<>$\x80-\uFFFF]/g;
+const xmlCodeMap = new Map([
+    [34, "&quot;"],
+    [38, "&amp;"],
+    [39, "&apos;"],
+    [60, "&lt;"],
+    [62, "&gt;"],
+]);
+// For compatibility with node < 4, we wrap `codePointAt`
+const getCodePoint = 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+String.prototype.codePointAt != null
+    ? (str, index) => str.codePointAt(index)
+    : // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+        (c, index) => (c.charCodeAt(index) & 0xfc00) === 0xd800
+            ? (c.charCodeAt(index) - 0xd800) * 0x400 +
+                c.charCodeAt(index + 1) -
+                0xdc00 +
+                0x10000
+            : c.charCodeAt(index);
+/**
+ * Encodes all non-ASCII characters, as well as characters not valid in XML
+ * documents using XML entities.
+ *
+ * If a character has no equivalent entity, a
+ * numeric hexadecimal reference (eg. `&#xfc;`) will be used.
+ */
+function encodeXML(str) {
+    let ret = "";
+    let lastIdx = 0;
+    let match;
+    while ((match = xmlReplacer.exec(str)) !== null) {
+        const i = match.index;
+        const char = str.charCodeAt(i);
+        const next = xmlCodeMap.get(char);
+        if (next !== undefined) {
+            ret += str.substring(lastIdx, i) + next;
+            lastIdx = i + 1;
+        }
+        else {
+            ret += `${str.substring(lastIdx, i)}&#x${getCodePoint(str, i).toString(16)};`;
+            // Increase by 1 if we have a surrogate pair
+            lastIdx = xmlReplacer.lastIndex += Number((char & 0xfc00) === 0xd800);
+        }
+    }
+    return ret + str.substr(lastIdx);
+}
+function getEscaper(regex, map) {
+    return function escape(data) {
+        let match;
+        let lastIdx = 0;
+        let result = "";
+        while ((match = regex.exec(data))) {
+            if (lastIdx !== match.index) {
+                result += data.substring(lastIdx, match.index);
+            }
+            // We know that this chararcter will be in the map.
+            result += map.get(match[0].charCodeAt(0));
+            // Every match will be of length 1
+            lastIdx = match.index + 1;
+        }
+        return result + data.substring(lastIdx);
+    };
+}
+/**
+ * Encodes all characters that have to be escaped in HTML attributes,
+ * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+ *
+ * @param data String to escape.
+ */
+const escapeAttribute = getEscaper(/["&\u00A0]/g, new Map([
+    [34, "&quot;"],
+    [38, "&amp;"],
+    [160, "&nbsp;"],
+]));
+/**
+ * Encodes all characters that have to be escaped in HTML text,
+ * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+ *
+ * @param data String to escape.
+ */
+const escapeText = getEscaper(/[&<>\u00A0]/g, new Map([
+    [38, "&amp;"],
+    [60, "&lt;"],
+    [62, "&gt;"],
+    [160, "&nbsp;"],
+]));
+
+/** The level of entities to support. */
+var EntityLevel;
+(function (EntityLevel) {
+    /** Support only XML entities. */
+    EntityLevel[EntityLevel["XML"] = 0] = "XML";
+    /** Support HTML entities, which are a superset of XML entities. */
+    EntityLevel[EntityLevel["HTML"] = 1] = "HTML";
+})(EntityLevel || (EntityLevel = {}));
+/** Determines whether some entities are allowed to be written without a trailing `;`. */
+var DecodingMode;
+(function (DecodingMode) {
+    /** Support legacy HTML entities. */
+    DecodingMode[DecodingMode["Legacy"] = 0] = "Legacy";
+    /** Do not support legacy HTML entities. */
+    DecodingMode[DecodingMode["Strict"] = 1] = "Strict";
+})(DecodingMode || (DecodingMode = {}));
+var EncodingMode;
+(function (EncodingMode) {
+    /**
+     * The output is UTF-8 encoded. Only characters that need escaping within
+     * HTML will be escaped.
+     */
+    EncodingMode[EncodingMode["UTF8"] = 0] = "UTF8";
+    /**
+     * The output consists only of ASCII characters. Characters that need
+     * escaping within HTML, and characters that aren't ASCII characters will
+     * be escaped.
+     */
+    EncodingMode[EncodingMode["ASCII"] = 1] = "ASCII";
+    /**
+     * Encode all characters that have an equivalent entity, as well as all
+     * characters that are not ASCII characters.
+     */
+    EncodingMode[EncodingMode["Extensive"] = 2] = "Extensive";
+    /**
+     * Encode all characters that have to be escaped in HTML attributes,
+     * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+     */
+    EncodingMode[EncodingMode["Attribute"] = 3] = "Attribute";
+    /**
+     * Encode all characters that have to be escaped in HTML text,
+     * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+     */
+    EncodingMode[EncodingMode["Text"] = 4] = "Text";
+})(EncodingMode || (EncodingMode = {}));
+
+const elementNames = new Map([
+    "altGlyph",
+    "altGlyphDef",
+    "altGlyphItem",
+    "animateColor",
+    "animateMotion",
+    "animateTransform",
+    "clipPath",
+    "feBlend",
+    "feColorMatrix",
+    "feComponentTransfer",
+    "feComposite",
+    "feConvolveMatrix",
+    "feDiffuseLighting",
+    "feDisplacementMap",
+    "feDistantLight",
+    "feDropShadow",
+    "feFlood",
+    "feFuncA",
+    "feFuncB",
+    "feFuncG",
+    "feFuncR",
+    "feGaussianBlur",
+    "feImage",
+    "feMerge",
+    "feMergeNode",
+    "feMorphology",
+    "feOffset",
+    "fePointLight",
+    "feSpecularLighting",
+    "feSpotLight",
+    "feTile",
+    "feTurbulence",
+    "foreignObject",
+    "glyphRef",
+    "linearGradient",
+    "radialGradient",
+    "textPath",
+].map((val) => [val.toLowerCase(), val]));
+const attributeNames = new Map([
+    "definitionURL",
+    "attributeName",
+    "attributeType",
+    "baseFrequency",
+    "baseProfile",
+    "calcMode",
+    "clipPathUnits",
+    "diffuseConstant",
+    "edgeMode",
+    "filterUnits",
+    "glyphRef",
+    "gradientTransform",
+    "gradientUnits",
+    "kernelMatrix",
+    "kernelUnitLength",
+    "keyPoints",
+    "keySplines",
+    "keyTimes",
+    "lengthAdjust",
+    "limitingConeAngle",
+    "markerHeight",
+    "markerUnits",
+    "markerWidth",
+    "maskContentUnits",
+    "maskUnits",
+    "numOctaves",
+    "pathLength",
+    "patternContentUnits",
+    "patternTransform",
+    "patternUnits",
+    "pointsAtX",
+    "pointsAtY",
+    "pointsAtZ",
+    "preserveAlpha",
+    "preserveAspectRatio",
+    "primitiveUnits",
+    "refX",
+    "refY",
+    "repeatCount",
+    "repeatDur",
+    "requiredExtensions",
+    "requiredFeatures",
+    "specularConstant",
+    "specularExponent",
+    "spreadMethod",
+    "startOffset",
+    "stdDeviation",
+    "stitchTiles",
+    "surfaceScale",
+    "systemLanguage",
+    "tableValues",
+    "targetX",
+    "targetY",
+    "textLength",
+    "viewBox",
+    "viewTarget",
+    "xChannelSelector",
+    "yChannelSelector",
+    "zoomAndPan",
+].map((val) => [val.toLowerCase(), val]));
+
+/*
+ * Module dependencies
+ */
+const unencodedElements = new Set([
+    "style",
+    "script",
+    "xmp",
+    "iframe",
+    "noembed",
+    "noframes",
+    "plaintext",
+    "noscript",
+]);
+function replaceQuotes(value) {
+    return value.replace(/"/g, "&quot;");
+}
+/**
+ * Format attributes
+ */
+function formatAttributes(attributes, opts) {
+    var _a;
+    if (!attributes)
+        return;
+    const encode = ((_a = opts.encodeEntities) !== null && _a !== void 0 ? _a : opts.decodeEntities) === false
+        ? replaceQuotes
+        : opts.xmlMode || opts.encodeEntities !== "utf8"
+            ? encodeXML
+            : escapeAttribute;
+    return Object.keys(attributes)
+        .map((key) => {
+        var _a, _b;
+        const value = (_a = attributes[key]) !== null && _a !== void 0 ? _a : "";
+        if (opts.xmlMode === "foreign") {
+            /* Fix up mixed-case attribute names */
+            key = (_b = attributeNames.get(key)) !== null && _b !== void 0 ? _b : key;
+        }
+        if (!opts.emptyAttrs && !opts.xmlMode && value === "") {
+            return key;
+        }
+        return `${key}="${encode(value)}"`;
+    })
+        .join(" ");
+}
+/**
+ * Self-enclosing tags
+ */
+const singleTag = new Set([
+    "area",
+    "base",
+    "basefont",
+    "br",
+    "col",
+    "command",
+    "embed",
+    "frame",
+    "hr",
+    "img",
+    "input",
+    "isindex",
+    "keygen",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+]);
+/**
+ * Renders a DOM node or an array of DOM nodes to a string.
+ *
+ * Can be thought of as the equivalent of the `outerHTML` of the passed node(s).
+ *
+ * @param node Node to be rendered.
+ * @param options Changes serialization behavior
+ */
+function render(node, options = {}) {
+    const nodes = "length" in node ? node : [node];
+    let output = "";
+    for (let i = 0; i < nodes.length; i++) {
+        output += renderNode(nodes[i], options);
+    }
+    return output;
+}
+function renderNode(node, options) {
+    switch (node.type) {
+        case Root:
+            return render(node.children, options);
+        // @ts-expect-error We don't use `Doctype` yet
+        case Doctype:
+        case Directive:
+            return renderDirective(node);
+        case Comment$1:
+            return renderComment(node);
+        case CDATA:
+            return renderCdata(node);
+        case Script:
+        case Style:
+        case Tag:
+            return renderTag(node, options);
+        case Text$2:
+            return renderText(node, options);
+    }
+}
+const foreignModeIntegrationPoints = new Set([
+    "mi",
+    "mo",
+    "mn",
+    "ms",
+    "mtext",
+    "annotation-xml",
+    "foreignObject",
+    "desc",
+    "title",
+]);
+const foreignElements = new Set(["svg", "math"]);
+function renderTag(elem, opts) {
+    var _a;
+    // Handle SVG / MathML in HTML
+    if (opts.xmlMode === "foreign") {
+        /* Fix up mixed-case element names */
+        elem.name = (_a = elementNames.get(elem.name)) !== null && _a !== void 0 ? _a : elem.name;
+        /* Exit foreign mode at integration points */
+        if (elem.parent &&
+            foreignModeIntegrationPoints.has(elem.parent.name)) {
+            opts = { ...opts, xmlMode: false };
+        }
+    }
+    if (!opts.xmlMode && foreignElements.has(elem.name)) {
+        opts = { ...opts, xmlMode: "foreign" };
+    }
+    let tag = `<${elem.name}`;
+    const attribs = formatAttributes(elem.attribs, opts);
+    if (attribs) {
+        tag += ` ${attribs}`;
+    }
+    if (elem.children.length === 0 &&
+        (opts.xmlMode
+            ? // In XML mode or foreign mode, and user hasn't explicitly turned off self-closing tags
+                opts.selfClosingTags !== false
+            : // User explicitly asked for self-closing tags, even in HTML mode
+                opts.selfClosingTags && singleTag.has(elem.name))) {
+        if (!opts.xmlMode)
+            tag += " ";
+        tag += "/>";
+    }
+    else {
+        tag += ">";
+        if (elem.children.length > 0) {
+            tag += render(elem.children, opts);
+        }
+        if (opts.xmlMode || !singleTag.has(elem.name)) {
+            tag += `</${elem.name}>`;
+        }
+    }
+    return tag;
+}
+function renderDirective(elem) {
+    return `<${elem.data}>`;
+}
+function renderText(elem, opts) {
+    var _a;
+    let data = elem.data || "";
+    // If entities weren't decoded, no need to encode them back
+    if (((_a = opts.encodeEntities) !== null && _a !== void 0 ? _a : opts.decodeEntities) !== false &&
+        !(!opts.xmlMode &&
+            elem.parent &&
+            unencodedElements.has(elem.parent.name))) {
+        data =
+            opts.xmlMode || opts.encodeEntities !== "utf8"
+                ? encodeXML(data)
+                : escapeText(data);
+    }
+    return data;
+}
+function renderCdata(elem) {
+    return `<![CDATA[${elem.children[0].data}]]>`;
+}
+function renderComment(elem) {
+    return `<!--${elem.data}-->`;
+}
+
+/**
+ * @category Stringify
+ * @deprecated Use the `dom-serializer` module directly.
+ * @param node Node to get the outer HTML of.
+ * @param options Options for serialization.
+ * @returns `node`'s outer HTML.
+ */
+function getOuterHTML(node, options) {
+    return render(node, options);
+}
+/**
+ * @category Stringify
+ * @deprecated Use the `dom-serializer` module directly.
+ * @param node Node to get the inner HTML of.
+ * @param options Options for serialization.
+ * @returns `node`'s inner HTML.
+ */
+function getInnerHTML(node, options) {
+    return hasChildren(node)
+        ? node.children.map((node) => getOuterHTML(node, options)).join("")
+        : "";
+}
+/**
+ * Get a node's inner text. Same as `textContent`, but inserts newlines for `<br>` tags.
+ *
+ * @category Stringify
+ * @deprecated Use `textContent` instead.
+ * @param node Node to get the inner text of.
+ * @returns `node`'s inner text.
+ */
+function getText$1(node) {
+    if (Array.isArray(node))
+        return node.map(getText$1).join("");
+    if (isTag$1(node))
+        return node.name === "br" ? "\n" : getText$1(node.children);
+    if (isCDATA(node))
+        return getText$1(node.children);
+    if (isText(node))
+        return node.data;
+    return "";
+}
+/**
+ * Get a node's text content.
+ *
+ * @category Stringify
+ * @param node Node to get the text content of.
+ * @returns `node`'s text content.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}
+ */
+function textContent(node) {
+    if (Array.isArray(node))
+        return node.map(textContent).join("");
+    if (hasChildren(node) && !isComment(node)) {
+        return textContent(node.children);
+    }
+    if (isText(node))
+        return node.data;
+    return "";
+}
+/**
+ * Get a node's inner text.
+ *
+ * @category Stringify
+ * @param node Node to get the inner text of.
+ * @returns `node`'s inner text.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Node/innerText}
+ */
+function innerText(node) {
+    if (Array.isArray(node))
+        return node.map(innerText).join("");
+    if (hasChildren(node) && (node.type === ElementType.Tag || isCDATA(node))) {
+        return innerText(node.children);
+    }
+    if (isText(node))
+        return node.data;
+    return "";
+}
+
+/**
+ * Get a node's children.
+ *
+ * @category Traversal
+ * @param elem Node to get the children of.
+ * @returns `elem`'s children, or an empty array.
+ */
+function getChildren$1(elem) {
+    return hasChildren(elem) ? elem.children : [];
+}
+/**
+ * Get a node's parent.
+ *
+ * @category Traversal
+ * @param elem Node to get the parent of.
+ * @returns `elem`'s parent node.
+ */
+function getParent$1(elem) {
+    return elem.parent || null;
+}
+/**
+ * Gets an elements siblings, including the element itself.
+ *
+ * Attempts to get the children through the element's parent first. If we don't
+ * have a parent (the element is a root node), we walk the element's `prev` &
+ * `next` to get all remaining nodes.
+ *
+ * @category Traversal
+ * @param elem Element to get the siblings of.
+ * @returns `elem`'s siblings.
+ */
+function getSiblings$1(elem) {
+    const parent = getParent$1(elem);
+    if (parent != null)
+        return getChildren$1(parent);
+    const siblings = [elem];
+    let { prev, next } = elem;
+    while (prev != null) {
+        siblings.unshift(prev);
+        ({ prev } = prev);
+    }
+    while (next != null) {
+        siblings.push(next);
+        ({ next } = next);
+    }
+    return siblings;
+}
+/**
+ * Gets an attribute from an element.
+ *
+ * @category Traversal
+ * @param elem Element to check.
+ * @param name Attribute name to retrieve.
+ * @returns The element's attribute value, or `undefined`.
+ */
+function getAttributeValue$1(elem, name) {
+    var _a;
+    return (_a = elem.attribs) === null || _a === void 0 ? void 0 : _a[name];
+}
+/**
+ * Checks whether an element has an attribute.
+ *
+ * @category Traversal
+ * @param elem Element to check.
+ * @param name Attribute name to look for.
+ * @returns Returns whether `elem` has the attribute `name`.
+ */
+function hasAttrib$1(elem, name) {
+    return (elem.attribs != null &&
+        Object.prototype.hasOwnProperty.call(elem.attribs, name) &&
+        elem.attribs[name] != null);
+}
+/**
+ * Get the tag name of an element.
+ *
+ * @category Traversal
+ * @param elem The element to get the name for.
+ * @returns The tag name of `elem`.
+ */
+function getName$1(elem) {
+    return elem.name;
+}
+/**
+ * Returns the next element sibling of a node.
+ *
+ * @category Traversal
+ * @param elem The element to get the next sibling of.
+ * @returns `elem`'s next sibling that is a tag.
+ */
+function nextElementSibling(elem) {
+    let { next } = elem;
+    while (next !== null && !isTag$1(next))
+        ({ next } = next);
+    return next;
+}
+/**
+ * Returns the previous element sibling of a node.
+ *
+ * @category Traversal
+ * @param elem The element to get the previous sibling of.
+ * @returns `elem`'s previous sibling that is a tag.
+ */
+function prevElementSibling(elem) {
+    let { prev } = elem;
+    while (prev !== null && !isTag$1(prev))
+        ({ prev } = prev);
+    return prev;
+}
+
+/**
+ * Remove an element from the dom
+ *
+ * @category Manipulation
+ * @param elem The element to be removed
+ */
+function removeElement(elem) {
+    if (elem.prev)
+        elem.prev.next = elem.next;
+    if (elem.next)
+        elem.next.prev = elem.prev;
+    if (elem.parent) {
+        const childs = elem.parent.children;
+        childs.splice(childs.lastIndexOf(elem), 1);
+    }
+}
+/**
+ * Replace an element in the dom
+ *
+ * @category Manipulation
+ * @param elem The element to be replaced
+ * @param replacement The element to be added
+ */
+function replaceElement(elem, replacement) {
+    const prev = (replacement.prev = elem.prev);
+    if (prev) {
+        prev.next = replacement;
+    }
+    const next = (replacement.next = elem.next);
+    if (next) {
+        next.prev = replacement;
+    }
+    const parent = (replacement.parent = elem.parent);
+    if (parent) {
+        const childs = parent.children;
+        childs[childs.lastIndexOf(elem)] = replacement;
+        elem.parent = null;
+    }
+}
+/**
+ * Append a child to an element.
+ *
+ * @category Manipulation
+ * @param elem The element to append to.
+ * @param child The element to be added as a child.
+ */
+function appendChild(elem, child) {
+    removeElement(child);
+    child.next = null;
+    child.parent = elem;
+    if (elem.children.push(child) > 1) {
+        const sibling = elem.children[elem.children.length - 2];
+        sibling.next = child;
+        child.prev = sibling;
+    }
+    else {
+        child.prev = null;
+    }
+}
+/**
+ * Append an element after another.
+ *
+ * @category Manipulation
+ * @param elem The element to append after.
+ * @param next The element be added.
+ */
+function append$1(elem, next) {
+    removeElement(next);
+    const { parent } = elem;
+    const currNext = elem.next;
+    next.next = currNext;
+    next.prev = elem;
+    elem.next = next;
+    next.parent = parent;
+    if (currNext) {
+        currNext.prev = next;
+        if (parent) {
+            const childs = parent.children;
+            childs.splice(childs.lastIndexOf(currNext), 0, next);
+        }
+    }
+    else if (parent) {
+        parent.children.push(next);
+    }
+}
+/**
+ * Prepend a child to an element.
+ *
+ * @category Manipulation
+ * @param elem The element to prepend before.
+ * @param child The element to be added as a child.
+ */
+function prependChild(elem, child) {
+    removeElement(child);
+    child.parent = elem;
+    child.prev = null;
+    if (elem.children.unshift(child) !== 1) {
+        const sibling = elem.children[1];
+        sibling.prev = child;
+        child.next = sibling;
+    }
+    else {
+        child.next = null;
+    }
+}
+/**
+ * Prepend an element before another.
+ *
+ * @category Manipulation
+ * @param elem The element to prepend before.
+ * @param prev The element be added.
+ */
+function prepend(elem, prev) {
+    removeElement(prev);
+    const { parent } = elem;
+    if (parent) {
+        const childs = parent.children;
+        childs.splice(childs.indexOf(elem), 0, prev);
+    }
+    if (elem.prev) {
+        elem.prev.next = prev;
+    }
+    prev.parent = parent;
+    prev.prev = elem.prev;
+    prev.next = elem;
+    elem.prev = prev;
+}
+
+/**
+ * Search a node and its children for nodes passing a test function.
+ *
+ * @category Querying
+ * @param test Function to test nodes on.
+ * @param node Node to search. Will be included in the result set if it matches.
+ * @param recurse Also consider child nodes.
+ * @param limit Maximum number of nodes to return.
+ * @returns All nodes passing `test`.
+ */
+function filter(test, node, recurse = true, limit = Infinity) {
+    if (!Array.isArray(node))
+        node = [node];
+    return find(test, node, recurse, limit);
+}
+/**
+ * Search an array of node and its children for nodes passing a test function.
+ *
+ * @category Querying
+ * @param test Function to test nodes on.
+ * @param nodes Array of nodes to search.
+ * @param recurse Also consider child nodes.
+ * @param limit Maximum number of nodes to return.
+ * @returns All nodes passing `test`.
+ */
+function find(test, nodes, recurse, limit) {
+    const result = [];
+    for (const elem of nodes) {
+        if (test(elem)) {
+            result.push(elem);
+            if (--limit <= 0)
+                break;
+        }
+        if (recurse && hasChildren(elem) && elem.children.length > 0) {
+            const children = find(test, elem.children, recurse, limit);
+            result.push(...children);
+            limit -= children.length;
+            if (limit <= 0)
+                break;
+        }
+    }
+    return result;
+}
+/**
+ * Finds the first element inside of an array that matches a test function.
+ *
+ * @category Querying
+ * @param test Function to test nodes on.
+ * @param nodes Array of nodes to search.
+ * @returns The first node in the array that passes `test`.
+ * @deprecated Use `Array.prototype.find` directly.
+ */
+function findOneChild(test, nodes) {
+    return nodes.find(test);
+}
+/**
+ * Finds one element in a tree that passes a test.
+ *
+ * @category Querying
+ * @param test Function to test nodes on.
+ * @param nodes Array of nodes to search.
+ * @param recurse Also consider child nodes.
+ * @returns The first child node that passes `test`.
+ */
+function findOne$1(test, nodes, recurse = true) {
+    let elem = null;
+    for (let i = 0; i < nodes.length && !elem; i++) {
+        const checked = nodes[i];
+        if (!isTag$1(checked)) {
+            continue;
+        }
+        else if (test(checked)) {
+            elem = checked;
+        }
+        else if (recurse && checked.children.length > 0) {
+            elem = findOne$1(test, checked.children, true);
+        }
+    }
+    return elem;
+}
+/**
+ * @category Querying
+ * @param test Function to test nodes on.
+ * @param nodes Array of nodes to search.
+ * @returns Whether a tree of nodes contains at least one node passing the test.
+ */
+function existsOne$1(test, nodes) {
+    return nodes.some((checked) => isTag$1(checked) &&
+        (test(checked) ||
+            (checked.children.length > 0 &&
+                existsOne$1(test, checked.children))));
+}
+/**
+ * Search and array of nodes and its children for elements passing a test function.
+ *
+ * Same as `find`, but limited to elements and with less options, leading to reduced complexity.
+ *
+ * @category Querying
+ * @param test Function to test nodes on.
+ * @param nodes Array of nodes to search.
+ * @returns All nodes passing `test`.
+ */
+function findAll$1(test, nodes) {
+    var _a;
+    const result = [];
+    const stack = nodes.filter(isTag$1);
+    let elem;
+    while ((elem = stack.shift())) {
+        const children = (_a = elem.children) === null || _a === void 0 ? void 0 : _a.filter(isTag$1);
+        if (children && children.length > 0) {
+            stack.unshift(...children);
+        }
+        if (test(elem))
+            result.push(elem);
+    }
+    return result;
+}
+
+const Checks = {
+    tag_name(name) {
+        if (typeof name === "function") {
+            return (elem) => isTag$1(elem) && name(elem.name);
+        }
+        else if (name === "*") {
+            return isTag$1;
+        }
+        return (elem) => isTag$1(elem) && elem.name === name;
+    },
+    tag_type(type) {
+        if (typeof type === "function") {
+            return (elem) => type(elem.type);
+        }
+        return (elem) => elem.type === type;
+    },
+    tag_contains(data) {
+        if (typeof data === "function") {
+            return (elem) => isText(elem) && data(elem.data);
+        }
+        return (elem) => isText(elem) && elem.data === data;
+    },
+};
+/**
+ * @param attrib Attribute to check.
+ * @param value Attribute value to look for.
+ * @returns A function to check whether the a node has an attribute with a
+ *   particular value.
+ */
+function getAttribCheck(attrib, value) {
+    if (typeof value === "function") {
+        return (elem) => isTag$1(elem) && value(elem.attribs[attrib]);
+    }
+    return (elem) => isTag$1(elem) && elem.attribs[attrib] === value;
+}
+/**
+ * @param a First function to combine.
+ * @param b Second function to combine.
+ * @returns A function taking a node and returning `true` if either of the input
+ *   functions returns `true` for the node.
+ */
+function combineFuncs(a, b) {
+    return (elem) => a(elem) || b(elem);
+}
+/**
+ * @param options An object describing nodes to look for.
+ * @returns A function executing all checks in `options` and returning `true` if
+ *   any of them match a node.
+ */
+function compileTest(options) {
+    const funcs = Object.keys(options).map((key) => {
+        const value = options[key];
+        return Object.prototype.hasOwnProperty.call(Checks, key)
+            ? Checks[key](value)
+            : getAttribCheck(key, value);
+    });
+    return funcs.length === 0 ? null : funcs.reduce(combineFuncs);
+}
+/**
+ * @category Legacy Query Functions
+ * @param options An object describing nodes to look for.
+ * @param node The element to test.
+ * @returns Whether the element matches the description in `options`.
+ */
+function testElement(options, node) {
+    const test = compileTest(options);
+    return test ? test(node) : true;
+}
+/**
+ * @category Legacy Query Functions
+ * @param options An object describing nodes to look for.
+ * @param nodes Nodes to search through.
+ * @param recurse Also consider child nodes.
+ * @param limit Maximum number of nodes to return.
+ * @returns All nodes that match `options`.
+ */
+function getElements(options, nodes, recurse, limit = Infinity) {
+    const test = compileTest(options);
+    return test ? filter(test, nodes, recurse, limit) : [];
+}
+/**
+ * @category Legacy Query Functions
+ * @param id The unique ID attribute value to look for.
+ * @param nodes Nodes to search through.
+ * @param recurse Also consider child nodes.
+ * @returns The node with the supplied ID.
+ */
+function getElementById(id, nodes, recurse = true) {
+    if (!Array.isArray(nodes))
+        nodes = [nodes];
+    return findOne$1(getAttribCheck("id", id), nodes, recurse);
+}
+/**
+ * @category Legacy Query Functions
+ * @param tagName Tag name to search for.
+ * @param nodes Nodes to search through.
+ * @param recurse Also consider child nodes.
+ * @param limit Maximum number of nodes to return.
+ * @returns All nodes with the supplied `tagName`.
+ */
+function getElementsByTagName(tagName, nodes, recurse = true, limit = Infinity) {
+    return filter(Checks["tag_name"](tagName), nodes, recurse, limit);
+}
+/**
+ * @category Legacy Query Functions
+ * @param type Element type to look for.
+ * @param nodes Nodes to search through.
+ * @param recurse Also consider child nodes.
+ * @param limit Maximum number of nodes to return.
+ * @returns All nodes with the supplied `type`.
+ */
+function getElementsByTagType(type, nodes, recurse = true, limit = Infinity) {
+    return filter(Checks["tag_type"](type), nodes, recurse, limit);
+}
+
+/**
+ * Given an array of nodes, remove any member that is contained by another.
+ *
+ * @category Helpers
+ * @param nodes Nodes to filter.
+ * @returns Remaining nodes that aren't subtrees of each other.
+ */
+function removeSubsets$1(nodes) {
+    let idx = nodes.length;
+    /*
+     * Check if each node (or one of its ancestors) is already contained in the
+     * array.
+     */
+    while (--idx >= 0) {
+        const node = nodes[idx];
+        /*
+         * Remove the node if it is not unique.
+         * We are going through the array from the end, so we only
+         * have to check nodes that preceed the node under consideration in the array.
+         */
+        if (idx > 0 && nodes.lastIndexOf(node, idx - 1) >= 0) {
+            nodes.splice(idx, 1);
+            continue;
+        }
+        for (let ancestor = node.parent; ancestor; ancestor = ancestor.parent) {
+            if (nodes.includes(ancestor)) {
+                nodes.splice(idx, 1);
+                break;
+            }
+        }
+    }
+    return nodes;
+}
+/**
+ * @category Helpers
+ * @see {@link http://dom.spec.whatwg.org/#dom-node-comparedocumentposition}
+ */
+var DocumentPosition;
+(function (DocumentPosition) {
+    DocumentPosition[DocumentPosition["DISCONNECTED"] = 1] = "DISCONNECTED";
+    DocumentPosition[DocumentPosition["PRECEDING"] = 2] = "PRECEDING";
+    DocumentPosition[DocumentPosition["FOLLOWING"] = 4] = "FOLLOWING";
+    DocumentPosition[DocumentPosition["CONTAINS"] = 8] = "CONTAINS";
+    DocumentPosition[DocumentPosition["CONTAINED_BY"] = 16] = "CONTAINED_BY";
+})(DocumentPosition || (DocumentPosition = {}));
+/**
+ * Compare the position of one node against another node in any other document.
+ * The return value is a bitmask with the values from {@link DocumentPosition}.
+ *
+ * Document order:
+ * > There is an ordering, document order, defined on all the nodes in the
+ * > document corresponding to the order in which the first character of the
+ * > XML representation of each node occurs in the XML representation of the
+ * > document after expansion of general entities. Thus, the document element
+ * > node will be the first node. Element nodes occur before their children.
+ * > Thus, document order orders element nodes in order of the occurrence of
+ * > their start-tag in the XML (after expansion of entities). The attribute
+ * > nodes of an element occur after the element and before its children. The
+ * > relative order of attribute nodes is implementation-dependent.
+ *
+ * Source:
+ * http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order
+ *
+ * @category Helpers
+ * @param nodeA The first node to use in the comparison
+ * @param nodeB The second node to use in the comparison
+ * @returns A bitmask describing the input nodes' relative position.
+ *
+ * See http://dom.spec.whatwg.org/#dom-node-comparedocumentposition for
+ * a description of these values.
+ */
+function compareDocumentPosition(nodeA, nodeB) {
+    const aParents = [];
+    const bParents = [];
+    if (nodeA === nodeB) {
+        return 0;
+    }
+    let current = hasChildren(nodeA) ? nodeA : nodeA.parent;
+    while (current) {
+        aParents.unshift(current);
+        current = current.parent;
+    }
+    current = hasChildren(nodeB) ? nodeB : nodeB.parent;
+    while (current) {
+        bParents.unshift(current);
+        current = current.parent;
+    }
+    const maxIdx = Math.min(aParents.length, bParents.length);
+    let idx = 0;
+    while (idx < maxIdx && aParents[idx] === bParents[idx]) {
+        idx++;
+    }
+    if (idx === 0) {
+        return DocumentPosition.DISCONNECTED;
+    }
+    const sharedParent = aParents[idx - 1];
+    const siblings = sharedParent.children;
+    const aSibling = aParents[idx];
+    const bSibling = bParents[idx];
+    if (siblings.indexOf(aSibling) > siblings.indexOf(bSibling)) {
+        if (sharedParent === nodeB) {
+            return DocumentPosition.FOLLOWING | DocumentPosition.CONTAINED_BY;
+        }
+        return DocumentPosition.FOLLOWING;
+    }
+    if (sharedParent === nodeA) {
+        return DocumentPosition.PRECEDING | DocumentPosition.CONTAINS;
+    }
+    return DocumentPosition.PRECEDING;
+}
+/**
+ * Sort an array of nodes based on their relative position in the document and
+ * remove any duplicate nodes. If the array contains nodes that do not belong to
+ * the same document, sort order is unspecified.
+ *
+ * @category Helpers
+ * @param nodes Array of DOM nodes.
+ * @returns Collection of unique nodes, sorted in document order.
+ */
+function uniqueSort(nodes) {
+    nodes = nodes.filter((node, i, arr) => !arr.includes(node, i + 1));
+    nodes.sort((a, b) => {
+        const relative = compareDocumentPosition(a, b);
+        if (relative & DocumentPosition.PRECEDING) {
+            return -1;
+        }
+        else if (relative & DocumentPosition.FOLLOWING) {
+            return 1;
+        }
+        return 0;
+    });
+    return nodes;
+}
+
+/**
+ * Get the feed object from the root of a DOM tree.
+ *
+ * @category Feeds
+ * @param doc - The DOM to to extract the feed from.
+ * @returns The feed.
+ */
+function getFeed(doc) {
+    const feedRoot = getOneElement(isValidFeed, doc);
+    return !feedRoot
+        ? null
+        : feedRoot.name === "feed"
+            ? getAtomFeed(feedRoot)
+            : getRssFeed(feedRoot);
+}
+/**
+ * Parse an Atom feed.
+ *
+ * @param feedRoot The root of the feed.
+ * @returns The parsed feed.
+ */
+function getAtomFeed(feedRoot) {
+    var _a;
+    const childs = feedRoot.children;
+    const feed = {
+        type: "atom",
+        items: getElementsByTagName("entry", childs).map((item) => {
+            var _a;
+            const { children } = item;
+            const entry = { media: getMediaElements(children) };
+            addConditionally(entry, "id", "id", children);
+            addConditionally(entry, "title", "title", children);
+            const href = (_a = getOneElement("link", children)) === null || _a === void 0 ? void 0 : _a.attribs["href"];
+            if (href) {
+                entry.link = href;
+            }
+            const description = fetch("summary", children) || fetch("content", children);
+            if (description) {
+                entry.description = description;
+            }
+            const pubDate = fetch("updated", children);
+            if (pubDate) {
+                entry.pubDate = new Date(pubDate);
+            }
+            return entry;
+        }),
+    };
+    addConditionally(feed, "id", "id", childs);
+    addConditionally(feed, "title", "title", childs);
+    const href = (_a = getOneElement("link", childs)) === null || _a === void 0 ? void 0 : _a.attribs["href"];
+    if (href) {
+        feed.link = href;
+    }
+    addConditionally(feed, "description", "subtitle", childs);
+    const updated = fetch("updated", childs);
+    if (updated) {
+        feed.updated = new Date(updated);
+    }
+    addConditionally(feed, "author", "email", childs, true);
+    return feed;
+}
+/**
+ * Parse a RSS feed.
+ *
+ * @param feedRoot The root of the feed.
+ * @returns The parsed feed.
+ */
+function getRssFeed(feedRoot) {
+    var _a, _b;
+    const childs = (_b = (_a = getOneElement("channel", feedRoot.children)) === null || _a === void 0 ? void 0 : _a.children) !== null && _b !== void 0 ? _b : [];
+    const feed = {
+        type: feedRoot.name.substr(0, 3),
+        id: "",
+        items: getElementsByTagName("item", feedRoot.children).map((item) => {
+            const { children } = item;
+            const entry = { media: getMediaElements(children) };
+            addConditionally(entry, "id", "guid", children);
+            addConditionally(entry, "title", "title", children);
+            addConditionally(entry, "link", "link", children);
+            addConditionally(entry, "description", "description", children);
+            const pubDate = fetch("pubDate", children);
+            if (pubDate)
+                entry.pubDate = new Date(pubDate);
+            return entry;
+        }),
+    };
+    addConditionally(feed, "title", "title", childs);
+    addConditionally(feed, "link", "link", childs);
+    addConditionally(feed, "description", "description", childs);
+    const updated = fetch("lastBuildDate", childs);
+    if (updated) {
+        feed.updated = new Date(updated);
+    }
+    addConditionally(feed, "author", "managingEditor", childs, true);
+    return feed;
+}
+const MEDIA_KEYS_STRING = ["url", "type", "lang"];
+const MEDIA_KEYS_INT = [
+    "fileSize",
+    "bitrate",
+    "framerate",
+    "samplingrate",
+    "channels",
+    "duration",
+    "height",
+    "width",
+];
+/**
+ * Get all media elements of a feed item.
+ *
+ * @param where Nodes to search in.
+ * @returns Media elements.
+ */
+function getMediaElements(where) {
+    return getElementsByTagName("media:content", where).map((elem) => {
+        const { attribs } = elem;
+        const media = {
+            medium: attribs["medium"],
+            isDefault: !!attribs["isDefault"],
+        };
+        for (const attrib of MEDIA_KEYS_STRING) {
+            if (attribs[attrib]) {
+                media[attrib] = attribs[attrib];
+            }
+        }
+        for (const attrib of MEDIA_KEYS_INT) {
+            if (attribs[attrib]) {
+                media[attrib] = parseInt(attribs[attrib], 10);
+            }
+        }
+        if (attribs["expression"]) {
+            media.expression = attribs["expression"];
+        }
+        return media;
+    });
+}
+/**
+ * Get one element by tag name.
+ *
+ * @param tagName Tag name to look for
+ * @param node Node to search in
+ * @returns The element or null
+ */
+function getOneElement(tagName, node) {
+    return getElementsByTagName(tagName, node, true, 1)[0];
+}
+/**
+ * Get the text content of an element with a certain tag name.
+ *
+ * @param tagName Tag name to look for.
+ * @param where Node to search in.
+ * @param recurse Whether to recurse into child nodes.
+ * @returns The text content of the element.
+ */
+function fetch(tagName, where, recurse = false) {
+    return textContent(getElementsByTagName(tagName, where, recurse, 1)).trim();
+}
+/**
+ * Adds a property to an object if it has a value.
+ *
+ * @param obj Object to be extended
+ * @param prop Property name
+ * @param tagName Tag name that contains the conditionally added property
+ * @param where Element to search for the property
+ * @param recurse Whether to recurse into child nodes.
+ */
+function addConditionally(obj, prop, tagName, where, recurse = false) {
+    const val = fetch(tagName, where, recurse);
+    if (val)
+        obj[prop] = val;
+}
+/**
+ * Checks if an element is a feed root node.
+ *
+ * @param value The name of the element to check.
+ * @returns Whether an element is a feed root node.
+ */
+function isValidFeed(value) {
+    return value === "rss" || value === "feed" || value === "rdf:RDF";
+}
+
+var DomUtils = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    isTag: isTag$1,
+    isCDATA: isCDATA,
+    isText: isText,
+    isComment: isComment,
+    isDocument: isDocument,
+    hasChildren: hasChildren,
+    getOuterHTML: getOuterHTML,
+    getInnerHTML: getInnerHTML,
+    getText: getText$1,
+    textContent: textContent,
+    innerText: innerText,
+    getChildren: getChildren$1,
+    getParent: getParent$1,
+    getSiblings: getSiblings$1,
+    getAttributeValue: getAttributeValue$1,
+    hasAttrib: hasAttrib$1,
+    getName: getName$1,
+    nextElementSibling: nextElementSibling,
+    prevElementSibling: prevElementSibling,
+    removeElement: removeElement,
+    replaceElement: replaceElement,
+    appendChild: appendChild,
+    append: append$1,
+    prependChild: prependChild,
+    prepend: prepend,
+    filter: filter,
+    find: find,
+    findOneChild: findOneChild,
+    findOne: findOne$1,
+    existsOne: existsOne$1,
+    findAll: findAll$1,
+    testElement: testElement,
+    getElements: getElements,
+    getElementById: getElementById,
+    getElementsByTagName: getElementsByTagName,
+    getElementsByTagType: getElementsByTagType,
+    removeSubsets: removeSubsets$1,
+    get DocumentPosition () { return DocumentPosition; },
+    compareDocumentPosition: compareDocumentPosition,
+    uniqueSort: uniqueSort,
+    getFeed: getFeed
+});
 
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -6542,7 +6083,7 @@ class ParentNode extends Node$1 {
     let {firstElementChild} = this;
     while (firstElementChild) {
       children.push(firstElementChild);
-      firstElementChild = nextElementSibling(firstElementChild);
+      firstElementChild = nextElementSibling$1(firstElementChild);
     }
     return children;
   }
@@ -7286,7 +6827,7 @@ class Element$1 extends ParentNode {
   get nextSibling() { return nextSibling(this); }
 
   get previousElementSibling() { return previousElementSibling(this); }
-  get nextElementSibling() { return nextElementSibling(this); }
+  get nextElementSibling() { return nextElementSibling$1(this); }
 
   before(...nodes) { before(this, nodes); }
   after(...nodes) { after(this, nodes); }
@@ -7753,8 +7294,8 @@ setPrototypeOf(CharacterData, CharacterData$1);
 CharacterData.prototype = CharacterData$1.prototype;
 
 function Comment() { illegalConstructor(); }
-setPrototypeOf(Comment, Comment$1);
-Comment.prototype = Comment$1.prototype;
+setPrototypeOf(Comment, Comment$2);
+Comment.prototype = Comment$2.prototype;
 
 function DocumentFragment() { illegalConstructor(); }
 setPrototypeOf(DocumentFragment, DocumentFragment$1);
@@ -11601,7 +11142,7 @@ class Document$1 extends NonElementParentNode {
   }
 
   createAttribute(name) { return new Attr$1(this, name); }
-  createComment(textContent) { return new Comment$1(this, textContent); }
+  createComment(textContent) { return new Comment$2(this, textContent); }
   createDocumentFragment() { return new DocumentFragment$1(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType$1(this, name, publicId, systemId); }
   createElement(localName) { return new Element$1(this, localName); }
@@ -11836,10 +11377,11 @@ class DOMParser {
 
   /** @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc */
   /**
+   * @template {string|NodeJS.ReadableStream} INPUT
    * @template {keyof MimeToDoc} MIME
-   * @param {string} markupLanguage
+   * @param {INPUT} markupLanguage
    * @param {MIME} mimeType
-   * @returns {MimeToDoc[MIME]}
+   * @returns {INPUT extends string ? MimeToDoc[MIME] : Promise<MimeToDoc[MIME]>}
    */
   parseFromString(markupLanguage, mimeType, globals = null) {
     let isHTML = false, document;
@@ -11920,7 +11462,7 @@ const parseJSON = value => {
         append(parentNode, new Text$1(document, array[i++]), end);
         break;
       case COMMENT_NODE:
-        append(parentNode, new Comment$1(document, array[i++]), end);
+        append(parentNode, new Comment$2(document, array[i++]), end);
         break;
       case DOCUMENT_TYPE_NODE: {
         const args = [document];

@@ -1,5 +1,5 @@
 'use strict';
-const HTMLParser2 = require('htmlparser2');
+const HTMLParser2 = require('htmlparser2/lib/WritableStream');
 
 const {ELEMENT_NODE, SVG_NAMESPACE} = require('./constants.js');
 const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('./symbols.js');
@@ -8,13 +8,19 @@ const {keys} = require('./object.js');
 const {knownBoundaries, knownSiblings} = require('./utils.js');
 const {attributeChangedCallback, connectedCallback} = require('../interface/custom-element-registry.js');
 
-const {Parser} = HTMLParser2;
+const {WritableStream} = HTMLParser2;
 
 // import {Mime} from './mime.js';
 // const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);
 // const VOID_ELEMENTS = new RegExp(`<(${VOID_SOURCE})([^>]*?)>`, 'gi');
 // const VOID_SANITIZER = (_, $1, $2) => `<${$1}${$2}${/\/$/.test($2) ? '' : ' /'}>`;
 // const voidSanitizer = html => html.replace(VOID_ELEMENTS, VOID_SANITIZER);
+
+/**
+ * @typedef {import('../html/document.js').HTMLDocument} HTMLDocument
+ * @typedef {import('../svg/document.js').SVGDocument} SVGDocument
+ * @typedef {import('../xml/document.js').XMLDocument} XMLDocument
+ */
 
 let notParsing = true;
 
@@ -40,6 +46,14 @@ const attribute = (element, end, attribute, value, active) => {
 const isNotParsing = () => notParsing;
 exports.isNotParsing = isNotParsing;
 
+/**
+ * @template {HTMLDocument|SVGDocument|XMLDocument} DOC
+ * @template {string|NodeJS.ReadableStream} INPUT
+ * @param {DOC} document 
+ * @param {Boolean} isHTML 
+ * @param {INPUT} markupLanguage 
+ * @returns {INPUT extends string ? DOC : Promise<INPUT>}
+ */
 const parseFromString = (document, isHTML, markupLanguage) => {
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
@@ -48,7 +62,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
 
   notParsing = false;
 
-  const content = new Parser({
+  const content = new WritableStream({
     // <!DOCTYPE ...>
     onprocessinginstruction(name, data) {
       if (name.toLowerCase() === '!doctype')
@@ -104,11 +118,26 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     xmlMode: !isHTML
   });
 
-  content.write(markupLanguage);
-  content.end();
-
-  notParsing = true;
-
-  return document;
+  if (typeof markupLanguage === 'string') {
+    content.write(markupLanguage);
+    content.end();
+    notParsing = true;
+    return document;
+  } else {
+    return new Promise((resolve, reject) => {
+      markupLanguage.pipe(content);
+      markupLanguage.once('end', () => {
+        notParsing = true;
+        resolve(document);
+      });
+      const errorCb = err => {
+        content.end();
+        notParsing = true;
+        reject(err);
+      }
+      markupLanguage.once('error', errorCb);
+      content.once('error', errorCb);
+    });
+  }
 };
 exports.parseFromString = parseFromString;
