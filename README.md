@@ -4,7 +4,9 @@
 
 <sup>**Social Media Photo by [JJ Ying](https://unsplash.com/@jjying) on [Unsplash](https://unsplash.com/)**</sup>
 
-A [triple-linked list](#data-structure) based DOM-like namespace, for DOM-less environments, with the following goals:
+### This is not a crawler!
+
+LinkeDOM is a [triple-linked list](#data-structure) based DOM-like namespace, for DOM-less environments, with the following goals:
 
   * **avoid** maximum callstack/recursion or **crashes**, even under heaviest conditions.
   * guarantee **linear performance** from small to big documents.
