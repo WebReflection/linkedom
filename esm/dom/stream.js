@@ -1,4 +1,4 @@
-import { Transform } from 'stream';
+import { Writable } from 'stream';
 import { WritableStream } from 'htmlparser2/lib/WritableStream';
 
 import {ELEMENT_NODE, SVG_NAMESPACE} from '../shared/constants';
@@ -35,9 +35,9 @@ import {XMLDocument} from '../xml/document.js'
  * @property {MIME extends 'text/html' ? true : false} isHTML
  * @property {StackItem[]} stack
  * @property {string} doctype
- * @extends {Transform}
+ * @extends {Writable}
  */
-class DOMStream extends Transform {
+class DOMStream extends Writable {
   /**
    * @param {MIME} mimeType
    * @param {FILTER} filter
@@ -147,7 +147,7 @@ class DOMStream extends Transform {
    * @param {string} encoding 
    * @param {() => void} callback 
    */
-  _transform(chunk, encoding, callback) {
+  _write(chunk, encoding, callback) {
     this.content._write(chunk, encoding, callback)
   }
 

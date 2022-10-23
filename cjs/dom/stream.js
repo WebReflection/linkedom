@@ -1,5 +1,5 @@
 'use strict';
-const { Transform } = require('stream');
+const { Writable } = require('stream');
 const { WritableStream } = require('htmlparser2/lib/WritableStream');
 
 const {ELEMENT_NODE, SVG_NAMESPACE} = require('../shared/constants');
@@ -36,9 +36,9 @@ const {XMLDocument} = require('../xml/document.js')
  * @property {MIME extends 'text/html' ? true : false} isHTML
  * @property {StackItem[]} stack
  * @property {string} doctype
- * @extends {Transform}
+ * @extends {Writable}
  */
-class DOMStream extends Transform {
+class DOMStream extends Writable {
   /**
    * @param {MIME} mimeType
    * @param {FILTER} filter
@@ -148,7 +148,7 @@ class DOMStream extends Transform {
    * @param {string} encoding 
    * @param {() => void} callback 
    */
-  _transform(chunk, encoding, callback) {
+  _write(chunk, encoding, callback) {
     this.content._write(chunk, encoding, callback)
   }
 
