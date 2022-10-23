@@ -1,4 +1,4 @@
-import * as HTMLParser2 from 'htmlparser2/lib/WritableStream';
+import {WritableStream} from 'htmlparser2/lib/WritableStream';
 
 import {ELEMENT_NODE, SVG_NAMESPACE} from './constants.js';
 import {CUSTOM_ELEMENTS, PREV, END, VALUE} from './symbols.js';
@@ -7,7 +7,6 @@ import {keys} from './object.js';
 import {knownBoundaries, knownSiblings} from './utils.js';
 import {attributeChangedCallback, connectedCallback} from '../interface/custom-element-registry.js';
 
-const {WritableStream} = HTMLParser2;
 
 // import {Mime} from './mime.js';
 // const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);

@@ -1,5 +1,5 @@
 'use strict';
-const HTMLParser2 = require('htmlparser2/lib/WritableStream');
+const {WritableStream} = require('htmlparser2/lib/WritableStream');
 
 const {ELEMENT_NODE, SVG_NAMESPACE} = require('./constants.js');
 const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('./symbols.js');
@@ -8,7 +8,6 @@ const {keys} = require('./object.js');
 const {knownBoundaries, knownSiblings} = require('./utils.js');
 const {attributeChangedCallback, connectedCallback} = require('../interface/custom-element-registry.js');
 
-const {WritableStream} = HTMLParser2;
 
 // import {Mime} from './mime.js';
 // const VOID_SOURCE = Mime['text/html'].voidElements.source.slice(4, -2);

@@ -1,10 +1,10 @@
 const fs = require('fs');
 const {join} = require('path');
 const {memoryUsage} = require('process');
-const {DOMParser} = require('../../cjs/index.js');
+const DOMStream = require('../../cjs/dom/stream.js');
 
-const parser = new DOMParser;
-let length = 0
+
+let length = 0;
 
 const logStatus = (message = 'total heap memory') => {
   const used = memoryUsage().heapUsed / 1024 / 1024;
@@ -13,23 +13,30 @@ const logStatus = (message = 'total heap memory') => {
     `\x1b[1m${message}:\x1b[0m ${Math.round(used * 100) / 100} MB`,
     `\x1b[1mtotal processed:\x1b[0m ${Math.round(processed * 100) / 100} MB`
   );
-};
+}
 
-logStatus('initial heap')
+logStatus('initial heap');
 
-const src = fs.createReadStream(join(__dirname, '../benchmark/html.html'));
+const domStream = new DOMStream('text/xml', (name) => {
+  return name === 'hotelName';
+});
+
+const src = fs.createReadStream(join(__dirname, './GB.xml'));
 src.on('data', chunk => {
   length += chunk.length;
   logStatus();
 });
 
 console.time(' parsing \x1b[2mcold\x1b[0m');
-parser.parseFromString(src, 'text/html').then(doc => {
+src.on('end', () => {
   console.timeEnd(' parsing \x1b[2mcold\x1b[0m');
   console.log();
-  logStatus('document heap');
-  console.log(doc);
-}).catch((o_O) => {
-  console.error(o_O);
-  console.warn(`⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`);
+  logStatus('end heap');
+})
+
+src.pipe(domStream).on('document', doc => {
+  console.log(doc.documentElement.outerHTML);
+  logStatus('doc heap');
 });
+
+setInterval(() => {}, 2000000);

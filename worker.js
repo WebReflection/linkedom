@@ -1563,7 +1563,7 @@ function isBuffer(_chunk, encoding) {
  *
  * @see Parser
  */
-class WritableStream$1 extends Writable {
+class WritableStream extends Writable {
     constructor(cbs, options) {
         super({ decodeStrings: false });
         this._decoder = new StringDecoder();
@@ -1578,11 +1578,6 @@ class WritableStream$1 extends Writable {
         cb();
     }
 }
-
-var HTMLParser2 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    WritableStream: WritableStream$1
-});
 
 // Internal
 const NODE_END = -1;
@@ -1853,8 +1848,6 @@ class CustomElementRegistry {
     return info && info.Class;
   }
 }
-
-const {WritableStream} = HTMLParser2;
 
 const append$2 = (self, node, active) => {
   const end = self[END];
