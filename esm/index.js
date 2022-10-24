@@ -1,4 +1,5 @@
 import {DOMParser} from './dom/parser.js';
+import {DOMStream} from './dom/stream.js';
 import {Document as _Document} from './interface/document.js';
 
 import {illegalConstructor} from './shared/facades.js';
@@ -9,6 +10,7 @@ export * from './shared/facades.js';
 export * from './shared/html-classes.js';
 
 export {DOMParser};
+export {DOMStream};
 
 export {CustomEvent} from './interface/custom-event.js';
 export {Event} from './interface/event.js';

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const {join} = require('path');
 const {memoryUsage} = require('process');
-const DOMStream = require('../../cjs/dom/stream.js');
+const {DOMStream} = require('../../cjs/index.js');
 
 
 let length = 0;

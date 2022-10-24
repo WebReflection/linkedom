@@ -9,9 +9,9 @@ const {keys} = require('../shared/object');
 const {knownBoundaries, knownSiblings} = require('../shared/utils');
 const {attributeChangedCallback, connectedCallback} = require('../interface/custom-element-registry.js');
 
-const {HTMLDocument} = require('../html/document.js')
-const {SVGDocument} = require('../svg/document.js')
-const {XMLDocument} = require('../xml/document.js')
+const {HTMLDocument} = require('../html/document.js');
+const {SVGDocument} = require('../svg/document.js');
+const {XMLDocument} = require('../xml/document.js');
 
 /**
  * @typedef {import('../interface/node').Node} Node
@@ -46,14 +46,14 @@ class DOMStream extends Writable {
    * @param {FILTER} filter
    */
   constructor (mimeType, filter) {
-    super()
-    this.mimeType = mimeType
-    if (mimeType === 'text/html') this.isHTML = true
-    this.filter = filter
+    super();
+    this.mimeType = mimeType;
+    if (mimeType === 'text/html') this.isHTML = true;
+    this.filter = filter;
     /** @type {StackItem[]} */
-    this.stack = []
-    this.init = this.init.bind(this)
-    this.init()
+    this.stack = [];
+    this.init = this.init.bind(this);
+    this.init();
     
     // EVENTS
     /** @type {Listener} */
@@ -75,16 +75,16 @@ class DOMStream extends Writable {
   }
 
   newDocument () {
-    let document
+    let document;
     if (this.mimeType === 'text/html') {
-      document = new HTMLDocument()
+      document = new HTMLDocument();
     } else if (this.mimeType === 'image/svg+xml') {
-      document = new SVGDocument()
+      document = new SVGDocument();
     } else {
-      document = new XMLDocument()
+      document = new XMLDocument();
     }
-    if (this.doctype) document.doctype = this.doctype
-    this.stack.push({ document, node: document })
+    if (this.doctype) document.doctype = this.doctype;
+    this.stack.push({ document, node: document });
   }
 
   init ()  {
@@ -99,7 +99,7 @@ class DOMStream extends Writable {
       onopentag: (name, attributes) => {
         if (this.filter(name, attributes)) this.newDocument()
         for (const item of this.stack) {
-          const { document } = item
+          const { document } = item;
           const { active, registry } = document[CUSTOM_ELEMENTS];
           let create = true;
           if (this.isHTML) {
@@ -126,7 +126,7 @@ class DOMStream extends Writable {
           for (const name of keys(attributes)) {
             this.attribute(item.node, end, document.createAttribute(name), attributes[name], active);
           }
-          if (!item.rootNode) item.rootNode = item.node
+          if (!item.rootNode) item.rootNode = item.node;
         }
       },
       // #text, #comment
@@ -169,14 +169,14 @@ class DOMStream extends Writable {
    * @param {() => void} callback 
    */
   _write(chunk, encoding, callback) {
-    this.content._write(chunk, encoding, callback)
+    this.content._write(chunk, encoding, callback);
   }
 
   /**
    * @param {() => void} callback 
    */
   _final(callback) {
-    this.content._final(callback)
+    this.content._final(callback);
   }
 
   append (self, node, active) {
@@ -198,5 +198,4 @@ class DOMStream extends Writable {
       attributeChangedCallback(element, attribute.name, null, value);
   }
 }
-
-module.exports = DOMStream
+exports.DOMStream = DOMStream

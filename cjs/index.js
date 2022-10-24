@@ -1,5 +1,6 @@
 'use strict';
 const {DOMParser} = require('./dom/parser.js');
+const {DOMStream} = require('./dom/stream.js');
 const {Document: _Document} = require('./interface/document.js');
 
 const {illegalConstructor} = require('./shared/facades.js');
@@ -15,6 +16,7 @@ const {setPrototypeOf} = require('./shared/object.js');
 (require('./shared/html-classes.js'));
 
 exports.DOMParser = DOMParser;
+exports.DOMStream = DOMStream;
 
 (m => {
   exports.CustomEvent = m.CustomEvent;
