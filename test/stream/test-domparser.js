@@ -18,8 +18,7 @@ const logStatus = (message = 'total heap memory') => {
 
 logStatus('initial heap');
 
-// const src = fs.createReadStream(join(__dirname, '../benchmark/html.html'));
-const src = fs.createReadStream(join(__dirname, './GB.xml'));
+const src = fs.createReadStream(join(__dirname, './big.xml'));
 src.on('data', chunk => {
   length += chunk.length;
   logStatus();

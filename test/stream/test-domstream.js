@@ -21,7 +21,7 @@ const domStream = new DOMStream('text/xml', (name) => {
   return name === 'hotelName';
 });
 
-const src = fs.createReadStream(join(__dirname, './GB.xml'));
+const src = fs.createReadStream(join(__dirname, './big.xml'));
 src.on('data', chunk => {
   length += chunk.length;
   logStatus();
