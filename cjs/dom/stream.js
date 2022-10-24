@@ -38,6 +38,16 @@ const {XMLDocument} = require('../xml/document.js');
  * @property {MIME extends 'text/html' ? true : false} isHTML
  * @property {StackItem[]} stack
  * @property {string} doctype
+ * 
+ * @property {Listener} addListener
+ * @property {Emitter} emit
+ * @property {Listener} on
+ * @property {Listener} once
+ * @property {Listener} prependListener
+ * @property {Listener} prependOnceListener
+ * @property {Listener} removeListener
+ * @property {Listener} off
+
  * @extends {Writable}
  */
 class DOMStream extends Writable {

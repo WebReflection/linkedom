@@ -23,6 +23,16 @@
  * @property {MIME extends 'text/html' ? true : false} isHTML
  * @property {StackItem[]} stack
  * @property {string} doctype
+ *
+ * @property {Listener} addListener
+ * @property {Emitter} emit
+ * @property {Listener} on
+ * @property {Listener} once
+ * @property {Listener} prependListener
+ * @property {Listener} prependOnceListener
+ * @property {Listener} removeListener
+ * @property {Listener} off
+
  * @extends {Writable}
  */
 export class DOMStream<MIME extends keyof MimeToDoc, FILTER extends Filter, StackItem extends {
