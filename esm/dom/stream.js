@@ -28,6 +28,8 @@ import {XMLDocument} from '../xml/document.js'
  *   ownerSVGElement: SVGElement|undefined
  *   rootNode: Node
  * }} StackItem
+ * @template {Writable['on'] & (name: 'document', listener: (doc: MimeToDoc[MIME]) => void) => this} Listener
+ * @template {Writable['emit'] & (name: 'document', doc: MimeToDoc[MIME]) => boolean} Emitter
  *
  * @property {MIME} mimeType
  * @property {FILTER} filter
@@ -51,6 +53,24 @@ class DOMStream extends Writable {
     this.stack = []
     this.init = this.init.bind(this)
     this.init()
+    
+    // EVENTS
+    /** @type {Listener} */
+    this.addListener = super.addListener;
+    /** @type {Emitter} */
+    this.emit = super.emit;
+    /** @type {Listener} */
+    this.on = super.on;
+    /** @type {Listener} */
+    this.once = super.once;
+    /** @type {Listener} */
+    this.prependListener = super.prependListener;
+    /** @type {Listener} */
+    this.prependOnceListener = super.prependOnceListener;
+    /** @type {Listener} */
+    this.removeListener = super.removeListener;
+    /** @type {Listener} */
+    this.off = super.off;
   }
 
   newDocument () {
