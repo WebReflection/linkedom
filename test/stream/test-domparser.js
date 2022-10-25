@@ -29,10 +29,9 @@ parser.parseFromString(src, 'text/xml').then(doc => {
   console.timeEnd(' parsing \x1b[2mcold\x1b[0m');
   console.log();
   logStatus('document heap');
-  console.log(doc.childElementCount)
+  const hotels = doc.querySelectorAll('hotelName')
+  console.log('Num of hotels:', hotels.length)
 }).catch((o_O) => {
   console.error(o_O);
   console.warn(`⚠ \x1b[1merror\x1b[0m - unable to parse the document: ${o_O.message}`);
 });
-
-setInterval(() => {}, 2000000)

@@ -127,7 +127,7 @@ export function ImageClass(ownerDocument: any): {
         toggleAttribute(name: any, force: any, ...args: any[]): boolean;
         readonly shadowRoot: any;
         attachShadow(init: any): import("./shadow-root.js").ShadowRoot;
-        matches(selectors: any): any;
+        matches(selectors: any): boolean;
         closest(selectors: any): any;
         insertAdjacentElement(position: any, element: any): any;
         insertAdjacentHTML(position: any, html: any): void;

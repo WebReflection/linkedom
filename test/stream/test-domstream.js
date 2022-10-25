@@ -34,9 +34,7 @@ src.on('end', () => {
   logStatus('end heap');
 })
 
-src.pipe(domStream).on('document', doc => {
+src.pipe(domStream).ondocument(doc => {
   console.log(doc.documentElement.outerHTML);
   logStatus('doc heap');
 });
-
-setInterval(() => {}, 2000000);

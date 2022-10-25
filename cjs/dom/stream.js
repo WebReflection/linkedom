@@ -1,6 +1,6 @@
 'use strict';
-const { Writable } = require('stream');
-const { WritableStream } = require('htmlparser2/lib/WritableStream');
+const {Writable} = require('stream');
+const {WritableStream} = require('htmlparser2/lib/WritableStream');
 
 const {ELEMENT_NODE, SVG_NAMESPACE} = require('../shared/constants');
 const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('../shared/symbols');
@@ -17,55 +17,33 @@ const {XMLDocument} = require('../xml/document.js');
  * @typedef {import('../interface/node').Node} Node
  * @typedef {import('../svg/element').SVGElement} SVGElement
  * @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc
- * @typedef {(name: string, attributes: Record<string, string>) => boolean} Filter
  */
 
 /**
  * @template {keyof MimeToDoc} MIME
- * @template {Filter} FILTER
- * @template {{
- *   document: MimeToDoc[MIME]
- *   node: MimeToDoc[MIME]|Node
- *   ownerSVGElement: SVGElement|undefined
- *   rootNode: Node
- * }} StackItem
- * @template {Writable['on'] & (name: 'document', listener: (doc: MimeToDoc[MIME]) => void) => this} Listener
- * @template {Writable['emit'] & (name: 'document', doc: MimeToDoc[MIME]) => boolean} Emitter
- *
  * @extends {Writable}
  */
 class DOMStream extends Writable {
   /**
    * @param {MIME} mimeType
-   * @param {FILTER} filter
+   * @param {(name: string, attributes: Record<string, string>) => boolean} filter
    */
   constructor (mimeType, filter) {
     super();
     this.mimeType = mimeType;
     if (mimeType === 'text/html') this.isHTML = true;
     this.filter = filter;
-    /** @type {StackItem[]} */
+    /**
+     * @type {{
+     *   document: MimeToDoc[MIME]
+     *   node: MimeToDoc[MIME]|Node
+     *   ownerSVGElement: SVGElement|undefined
+     *   rootNode: Node
+     * }[]}
+     */
     this.stack = [];
     this.init = this.init.bind(this);
     this.init();
-    
-    // EVENTS
-    /** @type {Listener} */
-    this.addListener = super.addListener;
-    /** @type {Emitter} */
-    this.emit = super.emit;
-    /** @type {Listener} */
-    this.on = super.on;
-    /** @type {Listener} */
-    this.once = super.once;
-    /** @type {Listener} */
-    this.prependListener = super.prependListener;
-    /** @type {Listener} */
-    this.prependOnceListener = super.prependOnceListener;
-    /** @type {Listener} */
-    this.removeListener = super.removeListener;
-    /** @type {Listener} */
-    this.off = super.off;
   }
 
   newDocument () {
@@ -82,7 +60,7 @@ class DOMStream extends Writable {
   }
 
   init ()  {
-    this.content = new WritableStream({
+    this.parserStream = new WritableStream({
       // <!DOCTYPE ...>
       onprocessinginstruction: (name, data) => {
         if (name.toLowerCase() === '!doctype') {
@@ -163,14 +141,23 @@ class DOMStream extends Writable {
    * @param {() => void} callback 
    */
   _write(chunk, encoding, callback) {
-    this.content._write(chunk, encoding, callback);
+    this.parserStream._write(chunk, encoding, callback);
   }
 
   /**
    * @param {() => void} callback 
    */
   _final(callback) {
-    this.content._final(callback);
+    this.parserStream._final(callback);
+  }
+
+  /**
+   * An alias for `docStream.on('document', doc => {...})`
+   * @param {(doc: MimeToDoc[MIME]) => void} listener 
+   */
+  ondocument (listener) {
+    this.on('document', listener)
+    return this
   }
 
   append (self, node, active) {

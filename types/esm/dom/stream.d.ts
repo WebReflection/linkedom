@@ -1,60 +1,44 @@
-/// <reference types="node" />
 /**
  * @typedef {import('../interface/node').Node} Node
  * @typedef {import('../svg/element').SVGElement} SVGElement
  * @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc
- * @typedef {(name: string, attributes: Record<string, string>) => boolean} Filter
  */
 /**
  * @template {keyof MimeToDoc} MIME
- * @template {Filter} FILTER
- * @template {{
- *   document: MimeToDoc[MIME]
- *   node: MimeToDoc[MIME]|Node
- *   ownerSVGElement: SVGElement|undefined
- *   rootNode: Node
- * }} StackItem
- * @template {Writable['on'] & (name: 'document', listener: (doc: MimeToDoc[MIME]) => void) => this} Listener
- * @template {Writable['emit'] & (name: 'document', doc: MimeToDoc[MIME]) => boolean} Emitter
- *
  * @extends {Writable}
  */
-export class DOMStream<MIME extends keyof MimeToDoc, FILTER extends Filter, StackItem extends {
-    document: MimeToDoc[MIME];
-    node: MimeToDoc[MIME] | Node;
-    ownerSVGElement: SVGElement | undefined;
-    rootNode: Node;
-}, Listener extends {
-    (event: "close", listener: () => void): Writable;
-    (event: "drain", listener: () => void): Writable;
-    (event: "error", listener: (err: Error) => void): Writable;
-    (event: "finish", listener: () => void): Writable;
-    (event: "pipe", listener: (src: import("stream").Readable) => void): Writable;
-    (event: "unpipe", listener: (src: import("stream").Readable) => void): Writable;
-    (event: string | symbol, listener: (...args: any[]) => void): Writable;
-} & ((name: 'document', listener: (doc: MimeToDoc[MIME]) => void) => any), Emitter extends {
-    (event: "close"): boolean;
-    (event: "drain"): boolean;
-    (event: "error", err: Error): boolean;
-    (event: "finish"): boolean;
-    (event: "pipe", src: import("stream").Readable): boolean;
-    (event: "unpipe", src: import("stream").Readable): boolean;
-    (event: string | symbol, ...args: any[]): boolean;
-} & ((name: 'document', doc: MimeToDoc[MIME]) => boolean)> extends Writable {
+export class DOMStream<MIME extends keyof MimeToDoc> extends Writable {
     /**
      * @param {MIME} mimeType
-     * @param {FILTER} filter
+     * @param {(name: string, attributes: Record<string, string>) => boolean} filter
      */
-    constructor(mimeType: MIME, filter: FILTER);
+    constructor(mimeType: MIME, filter: (name: string, attributes: Record<string, string>) => boolean);
     mimeType: MIME;
     isHTML: boolean;
-    filter: FILTER;
-    /** @type {StackItem[]} */
-    stack: StackItem[];
+    filter: (name: string, attributes: Record<string, string>) => boolean;
+    /**
+     * @type {{
+     *   document: MimeToDoc[MIME]
+     *   node: MimeToDoc[MIME]|Node
+     *   ownerSVGElement: SVGElement|undefined
+     *   rootNode: Node
+     * }[]}
+     */
+    stack: {
+        document: MimeToDoc[MIME];
+        node: MimeToDoc[MIME] | Node;
+        ownerSVGElement: SVGElement | undefined;
+        rootNode: Node;
+    }[];
     init(): void;
     newDocument(): void;
-    content: any;
-    doctype: any;
+    parserStream: WritableStream;
+    doctype: string;
+    /**
+     * An alias for `docStream.on('document', doc => {...})`
+     * @param {(doc: MimeToDoc[MIME]) => void} listener
+     */
+    ondocument(listener: (doc: MimeToDoc[MIME]) => void): DOMStream<MIME>;
     append(self: any, node: any, active: any): any;
     attribute(element: any, end: any, attribute: any, value: any, active: any): void;
 }
@@ -65,8 +49,8 @@ export type MimeToDoc = {
     "image/svg+xml": SVGDocument;
     "text/xml": XMLDocument;
 };
-export type Filter = (name: string, attributes: Record<string, string>) => boolean;
 import { Writable } from "stream";
+import { WritableStream } from "htmlparser2/lib/WritableStream";
 import { HTMLDocument } from "../html/document.js";
 import { SVGDocument } from "../svg/document.js";
 import { XMLDocument } from "../xml/document.js";

@@ -38,7 +38,7 @@ export class Element extends ParentNode implements globalThis.Element {
     toggleAttribute(name: any, force: any, ...args: any[]): boolean;
     get shadowRoot(): any;
     attachShadow(init: any): ShadowRoot;
-    matches(selectors: any): any;
+    matches(selectors: any): boolean;
     closest(selectors: any): Element;
     insertAdjacentElement(position: any, element: any): any;
     insertAdjacentHTML(position: any, html: any): void;
