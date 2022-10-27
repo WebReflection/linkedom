@@ -1,16 +1,15 @@
 import {Writable} from 'stream';
 import {WritableStream} from 'htmlparser2/lib/WritableStream';
 
-import {ELEMENT_NODE, SVG_NAMESPACE} from '../shared/constants';
-import {CUSTOM_ELEMENTS, PREV, END, VALUE} from '../shared/symbols';
+import {append, attribute} from '../shared/parse-from-string';
+import {SVG_NAMESPACE} from '../shared/constants';
+import {CUSTOM_ELEMENTS, END} from '../shared/symbols';
 import {keys} from '../shared/object';
-
-import {knownBoundaries, knownSiblings} from '../shared/utils';
-import {attributeChangedCallback, connectedCallback} from '../interface/custom-element-registry.js';
 
 import {HTMLDocument} from '../html/document.js';
 import {SVGDocument} from '../svg/document.js';
 import {XMLDocument} from '../xml/document.js';
+
 
 /**
  * @typedef {import('../interface/node').Node} Node
@@ -41,7 +40,6 @@ export class DOMStream extends Writable {
      * }[]}
      */
     this.stack = [];
-    this.init = this.init.bind(this);
     this.init();
   }
 
@@ -75,27 +73,27 @@ export class DOMStream extends Writable {
           let create = true;
           if (this.isHTML) {
             if (item.ownerSVGElement) {
-              item.node = this.append(item.node, document.createElementNS(SVG_NAMESPACE, name), active);
+              item.node = append(item.node, document.createElementNS(SVG_NAMESPACE, name), active);
               item.node.ownerSVGElement = item.ownerSVGElement;
               create = false;
             } else if (name === 'svg' || name === 'SVG') {
               item.ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-              item.node = this.append(item.node, item.ownerSVGElement, active);
+              item.node = append(item.node, item.ownerSVGElement, active);
               create = false;
             } else if (active) {
               const ce = name.includes('-') ? name : (attributes.is || '');
               if (ce && registry.has(ce)) {
                 const {Class} = registry.get(ce);
-                item.node = this.append(item.node, new Class, active);
+                item.node = append(item.node, new Class, active);
                 delete attributes.is;
                 create = false;
               }
             }
           }
-          if (create) item.node = this.append(item.node, document.createElement(name), false);
+          if (create) item.node = append(item.node, document.createElement(name), false);
           let end = item.node[END];
           for (const name of keys(attributes)) {
-            this.attribute(item.node, end, document.createAttribute(name), attributes[name], active);
+            attribute(item.node, end, document.createAttribute(name), attributes[name], active);
           }
           if (!item.rootNode) item.rootNode = item.node;
         }
@@ -104,13 +102,13 @@ export class DOMStream extends Writable {
       oncomment: (data) => {
         for (const { document, node } of this.stack) {
           const { active } = document[CUSTOM_ELEMENTS];
-          this.append(node, document.createComment(data), active);
+          append(node, document.createComment(data), active);
         }
       },
       ontext: (text) => {
         for (const { document, node } of this.stack) {
           const { active } = document[CUSTOM_ELEMENTS];
-          this.append(node, document.createTextNode(text), active);
+          append(node, document.createTextNode(text), active);
         }
       },
       // </tagName>
@@ -132,6 +130,7 @@ export class DOMStream extends Writable {
       decodeEntities: true,
       xmlMode: !this.isHTML
     })
+    this.parserStream.on('error', err => this.emit('error', err))
   }
 
   /**
@@ -159,22 +158,13 @@ export class DOMStream extends Writable {
     return this
   }
 
-  append (self, node, active) {
-    const end = self[END];
-    node.parentNode = self;
-    knownBoundaries(end[PREV], node, end);
-    if (active && node.nodeType === ELEMENT_NODE)
-      connectedCallback(node);
-    return node;
-  }
-
-  attribute (element, end, attribute, value, active) {
-    attribute[VALUE] = value;
-    attribute.ownerElement = element;
-    knownSiblings(end[PREV], attribute, end);
-    if (attribute.name === 'class')
-      element.className = value;
-    if (active)
-      attributeChangedCallback(element, attribute.name, null, value);
-  }
+  /**
+   * An alias for `docStream.on('error', err => {...})`
+   * or `docStream.parserStream.on('error', err => {...})` 
+   * @param {(err: Error) => void} listener 
+   */
+  onerror (listener) {
+    this.on('error', listener)
+    return this
+  }  
 }

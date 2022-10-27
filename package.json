@@ -11,14 +11,17 @@
     "benchmark:dom": "node test/benchmark/linkedom.js --dom; node test/benchmark/linkedom-cached.js --dom; node test/benchmark/jsdom.js --dom; node test/benchmark/basichtml.js --dom",
     "benchmark:dom:ce": "node test/benchmark/linkedom.js --dom --custom-elements; node test/benchmark/linkedom-cached.js --dom --custom-elements; node test/benchmark/jsdom.js --dom --custom-elements; node test/benchmark/basichtml.js --dom --custom-elements",
     "benchmark:html": "node test/benchmark/jsdon.js --html; node test/benchmark/linkedom.js --html; node test/benchmark/linkedom-cached.js --html; #node test/benchmark/jsdom.js --html",
+    "benchmark:html:st": "node test/benchmark/linkedom.js --html; node test/benchmark/linkedom.js --html --html-as-stream",
     "benchmark:html:ce": "node test/benchmark/linkedom.js --html --custom-elements; node test/benchmark/linkedom-cached.js --html --custom-elements; #node test/benchmark/jsdom.js --html --custom-elements",
     "benchmark:html:mo": "node test/benchmark/linkedom.js --html --mutation-observer --custom-elements; node test/benchmark/linkedom-cached.js --html --mutation-observer --custom-elements",
     "benchmark:html:nc": "node test/benchmark/linkedom.js --html --no-clone; node test/benchmark/linkedom-cached.js --html --no-clone; #node test/benchmark/jsdom.js --html --no-clone",
+    "domstream": "node test/benchmark/domstream.js",
     "build": "npm run tsc && npm run cjs && rollup -c rollup/es.config.js && npm run test",
     "cjs": "ascjs --no-default esm cjs",
     "tsc": "tsc -p .",
     "hello": "if [[ \"$(node --version)\" =~ ^v1[^2] ]]; then node --input-type=module -e \"import {DOMParser} from './esm/index.js';console.log('\\x1b[7m\\x1b[1m',(new DOMParser).parseFromString('<html>LinkeDOM<canvas /></html>','text/html').querySelectorAll('html')[0].firstChild.toString(),'\\x1b[0m')\"; fi",
-    "test": "eslint esm/ && npm run hello && node test/benchmark/linkedom.js --w3c --mutation-observer --custom-elements && c8 node test/index.js && c8 report -r html",
+    "test": "eslint esm/ && npm run hello && node test/benchmark/linkedom.js --w3c --mutation-observer --custom-elements && node test/benchmark/linkedom.js --w3c --mutation-observer --custom-elements --html-as-stream && node test/benchmark/domstream.js --silent && npm run c8",
+    "c8": "c8 node test/index.js && c8 report -r html",
     "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
   },
   "keywords": [
@@ -36,8 +39,11 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/node": "^18.11.0",
     "ascjs": "^5.0.1",
+    "basichtml": "^2.4.9",
     "c8": "^7.11.2",
     "eslint": "^8.15.0",
+    "jsdom": "^20.0.1",
+    "jsdon": "^0.1.15",
     "rollup": "^2.72.0",
     "typescript": "4.5"
   },
@@ -70,5 +76,9 @@
   "bugs": {
     "url": "https://github.com/WebReflection/linkedom/issues"
   },
-  "homepage": "https://github.com/WebReflection/linkedom#readme"
+  "homepage": "https://github.com/WebReflection/linkedom#readme",
+  "optionalDependencies": {
+    "basichtml": "^2.4.9",
+    "jsdon": "^0.1.15"
+  }
 }

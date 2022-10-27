@@ -30,8 +30,8 @@ export class DOMStream<MIME extends keyof MimeToDoc> extends Writable {
         ownerSVGElement: SVGElement | undefined;
         rootNode: Node;
     }[];
-    init(): void;
     newDocument(): void;
+    init(): void;
     parserStream: WritableStream;
     doctype: string;
     /**
@@ -39,8 +39,12 @@ export class DOMStream<MIME extends keyof MimeToDoc> extends Writable {
      * @param {(doc: MimeToDoc[MIME]) => void} listener
      */
     ondocument(listener: (doc: MimeToDoc[MIME]) => void): DOMStream<MIME>;
-    append(self: any, node: any, active: any): any;
-    attribute(element: any, end: any, attribute: any, value: any, active: any): void;
+    /**
+     * An alias for `docStream.on('error', err => {...})`
+     * or `docStream.parserStream.on('error', err => {...})`
+     * @param {(err: Error) => void} listener
+     */
+    onerror(listener: (err: Error) => void): DOMStream<MIME>;
 }
 export type Node = import('../interface/node').Node;
 export type SVGElement = import('../svg/element').SVGElement;

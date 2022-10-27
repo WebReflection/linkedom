@@ -15,6 +15,7 @@ const bench = (name, count, times) => {
   return total;
 };
 
+// eslint-disable-next-line no-control-regex
 const clean = str => browser ? str.replace(/\x1b\[\dm/g, '') : str;
 
 const crawl = (element, kind) => {
@@ -28,7 +29,15 @@ const crawl = (element, kind) => {
 
 const sleep = ms => new Promise($ => setTimeout($, ms));
 
-const onContent = async (createDocument, html, times, logHeap = () => {}, cloneBench = true, customElements = false, mutationObserver = false) => {
+const onContent = async ({
+  createDocument,
+  html,
+  times,
+  logHeap = () => {},
+  cloneBench = true,
+  customElements = false,
+  mutationObserver = false
+}) => {
 
   console.time(clean('\x1b[1mtotal benchmark time\x1b[0m'));
 
@@ -38,7 +47,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
   let document;
   try {
     console.time(clean(' parsing \x1b[2mcold\x1b[0m'));
-    document = createDocument(html.toString());
+    document = await createDocument(html);
     console.timeEnd(clean(' parsing \x1b[2mcold\x1b[0m'));
     console.log();
     logHeap('document heap');
@@ -221,6 +230,7 @@ const onContent = async (createDocument, html, times, logHeap = () => {}, cloneB
   if (cloneBench) {
     await sleep(100);
     console.time(' html.innerHTML');
+    // eslint-disable-next-line no-self-assign
     document.documentElement.innerHTML = document.documentElement.innerHTML;
     console.timeEnd(' html.innerHTML');
   }

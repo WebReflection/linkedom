@@ -22,7 +22,7 @@ import {attributeChangedCallback, connectedCallback} from '../interface/custom-e
 
 let notParsing = true;
 
-const append = (self, node, active) => {
+export const append = (self, node, active) => {
   const end = self[END];
   node.parentNode = self;
   knownBoundaries(end[PREV], node, end);
@@ -31,7 +31,7 @@ const append = (self, node, active) => {
   return node;
 };
 
-const attribute = (element, end, attribute, value, active) => {
+export const attribute = (element, end, attribute, value, active) => {
   attribute[VALUE] = value;
   attribute.ownerElement = element;
   knownSiblings(end[PREV], attribute, end);

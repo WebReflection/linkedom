@@ -28,6 +28,7 @@ test('xml')
 .then(() => test('html'))
 .then(() => test('interface'))
 .then(() => test('shared'))
+.then(() => test('stream'))
 .then(() => {
   setTimeout(() => {
     console.log(`\x1b[7m\x1b[1m ${'LinkeDOM - Cached'.padEnd(74)}\x1b[0m`);

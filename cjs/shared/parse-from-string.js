@@ -31,6 +31,7 @@ const append = (self, node, active) => {
     connectedCallback(node);
   return node;
 };
+exports.append = append;
 
 const attribute = (element, end, attribute, value, active) => {
   attribute[VALUE] = value;
@@ -41,6 +42,7 @@ const attribute = (element, end, attribute, value, active) => {
   if (active)
     attributeChangedCallback(element, attribute.name, null, value);
 };
+exports.attribute = attribute;
 
 const isNotParsing = () => notParsing;
 exports.isNotParsing = isNotParsing;
