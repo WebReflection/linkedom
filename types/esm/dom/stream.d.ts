@@ -21,14 +21,14 @@ export class DOMStream<MIME extends keyof MimeToDoc> extends Writable {
      *   document: MimeToDoc[MIME]
      *   node: MimeToDoc[MIME]|Node
      *   ownerSVGElement: SVGElement|undefined
-     *   rootNode: Node
+     *   rootNode: Node|undefined
      * }[]}
      */
     stack: {
         document: MimeToDoc[MIME];
         node: MimeToDoc[MIME] | Node;
         ownerSVGElement: SVGElement | undefined;
-        rootNode: Node;
+        rootNode: Node | undefined;
     }[];
     newDocument(): void;
     init(): void;

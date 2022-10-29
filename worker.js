@@ -1855,6 +1855,15 @@ class CustomElementRegistry {
   }
 }
 
+/**
+ * @typedef {import('../interface/node').Node} Node
+ * @typedef {import('../svg/element').SVGElement} SVGElement
+ * @typedef {import('../html/document.js').HTMLDocument} HTMLDocument
+ * @typedef {import('../svg/document').SVGDocument} SVGDocument
+ * @typedef {import('../xml/document').XMLDocument} XMLDocument
+ * @typedef {{ "text/html": HTMLDocument, "image/svg+xml": SVGDocument, "text/xml": XMLDocument }} MimeToDoc
+ */
+
 const append$2 = (self, node, active) => {
   const end = self[END];
   node.parentNode = self;
@@ -1875,6 +1884,112 @@ const attribute = (element, end, attribute, value, active) => {
 };
 
 /**
+ * @param {string} name
+ * @param {string} data
+ */
+const onprocessinginstruction = (name, data) => {
+  if (name.toLowerCase() === '!doctype')
+    return data.slice(name.length).trim();
+};
+
+/**
+ * @template {{
+ *   document: MimeToDoc[keyof MimeToDoc]
+ *   node: MimeToDoc[keyof MimeToDoc]|Node
+ *   ownerSVGElement: SVGElement|undefined
+ *   rootNode: Node|undefined
+ * }} StackItem
+ * @param {string} name
+ * @param {Record<string, string>} attributes
+ * @param {StackItem} item
+ * @param {boolean} isHTML
+ */
+const onopentag = (name, attributes, item, isHTML) => {
+  const { document } = item;
+  const { active, registry } = document[CUSTOM_ELEMENTS];
+  let create = true;
+  if (isHTML) {
+    if (item.ownerSVGElement) {
+      item.node = append$2(item.node, document.createElementNS(SVG_NAMESPACE, name), active);
+      item.node.ownerSVGElement = item.ownerSVGElement;
+      create = false;
+    } else if (name === 'svg' || name === 'SVG') {
+      item.ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
+      item.node = append$2(item.node, item.ownerSVGElement, active);
+      create = false;
+    } else if (active) {
+      const ce = name.includes('-') ? name : (attributes.is || '');
+      if (ce && registry.has(ce)) {
+        const {Class} = registry.get(ce);
+        item.node = append$2(item.node, new Class, active);
+        delete attributes.is;
+        create = false;
+      }
+    }
+  }
+  if (create) item.node = append$2(item.node, document.createElement(name), false);
+  let end = item.node[END];
+  for (const name of keys(attributes)) {
+    attribute(item.node, end, document.createAttribute(name), attributes[name], active);
+  }
+  if (!item.rootNode) item.rootNode = item.node;
+};
+
+/**
+ * @template {{
+ *   document: MimeToDoc[keyof MimeToDoc]
+ *   node: MimeToDoc[keyof MimeToDoc]|Node
+ *   ownerSVGElement: SVGElement|undefined
+ *   rootNode: Node|undefined
+ * }} StackItem
+ * @param {string} data 
+ * @param {StackItem} item
+ */
+const oncomment = (data, item) => {
+  const { document, node } = item;
+  const { active } = document[CUSTOM_ELEMENTS];
+  append$2(node, document.createComment(data), active);
+};
+
+/**
+ * @template {{
+ *   document: MimeToDoc[keyof MimeToDoc]
+ *   node: MimeToDoc[keyof MimeToDoc]|Node
+ *   ownerSVGElement: SVGElement|undefined
+ *   rootNode: Node|undefined
+ * }} StackItem
+ * @param {string} data 
+ * @param {StackItem} item
+ */
+const ontext = (text, item) => {
+  const { document, node } = item;
+  const { active } = document[CUSTOM_ELEMENTS];
+  append$2(node, document.createTextNode(text), active);
+};
+
+/**
+ * @template {{
+ *   document: MimeToDoc[keyof MimeToDoc]
+ *   node: MimeToDoc[keyof MimeToDoc]|Node
+ *   ownerSVGElement: SVGElement|undefined
+ *   rootNode: Node|undefined
+ * }} StackItem
+ * @param {StackItem} item
+ * @param {boolean} isHTML
+ * @param {((document: MimeToDoc[keyof MimeToDoc]) => void)|undefined} cb
+ */
+const onclosetag = (item, isHTML, cb) => {
+  const { document } = item;
+  if (isHTML && item.node === item.ownerSVGElement) {
+    item.ownerSVGElement = undefined;
+  }
+  if (item.node === item.rootNode) {
+    cb && cb(document);
+  }
+  item.node = item.node.parentNode;
+};
+
+/**
  * @template {HTMLDocument|SVGDocument|XMLDocument} DOC
  * @template {string|NodeJS.ReadableStream} INPUT
  * @param {DOC} document 
@@ -1883,60 +1998,35 @@ const attribute = (element, end, attribute, value, active) => {
  * @returns {INPUT extends string ? DOC : Promise<INPUT>}
  */
 const parseFromString = (document, isHTML, markupLanguage) => {
-  const {active, registry} = document[CUSTOM_ELEMENTS];
-
-  let node = document;
-  let ownerSVGElement = null;
+  /**
+   * @type {{
+   *   document: DOC
+   *   node: DOC|Node
+   *   ownerSVGElement: SVGElement|undefined
+   *   rootNode: Node|undefined
+   * }}
+   */
+  const item = { document, node: document };
 
   const content = new WritableStream({
     // <!DOCTYPE ...>
     onprocessinginstruction(name, data) {
-      if (name.toLowerCase() === '!doctype')
-        document.doctype = data.slice(name.length).trim();
+      document.doctype = onprocessinginstruction(name, data);
     },
-
     // <tagName>
     onopentag(name, attributes) {
-      let create = true;
-      if (isHTML) {
-        if (ownerSVGElement) {
-          node = append$2(node, document.createElementNS(SVG_NAMESPACE, name), active);
-          node.ownerSVGElement = ownerSVGElement;
-          create = false;
-        }
-        else if (name === 'svg' || name === 'SVG') {
-          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-          node = append$2(node, ownerSVGElement, active);
-          create = false;
-        }
-        else if (active) {
-          const ce = name.includes('-') ? name : (attributes.is || '');
-          if (ce && registry.has(ce)) {
-            const {Class} = registry.get(ce);
-            node = append$2(node, new Class, active);
-            delete attributes.is;
-            create = false;
-          }
-        }
-      }
-
-      if (create)
-        node = append$2(node, document.createElement(name), false);
-
-      let end = node[END];
-      for (const name of keys(attributes))
-        attribute(node, end, document.createAttribute(name), attributes[name], active);
+      onopentag(name, attributes, item, isHTML);
     },
-
     // #text, #comment
-    oncomment(data) { append$2(node, document.createComment(data), active); },
-    ontext(text) { append$2(node, document.createTextNode(text), active); },
-
+    oncomment(data) {
+      oncomment(data, item);
+    },
+    ontext(text) { 
+      ontext(text, item);
+    },
     // </tagName>
     onclosetag() {
-      if (isHTML && node === ownerSVGElement)
-        ownerSVGElement = null;
-      node = node.parentNode;
+     onclosetag(item, isHTML);
     }
   }, {
     lowerCaseAttributeNames: false,
@@ -1947,12 +2037,12 @@ const parseFromString = (document, isHTML, markupLanguage) => {
   if (typeof markupLanguage === 'string') {
     content.write(markupLanguage);
     content.end();
-    return document;
+    return item.document;
   } else {
     return new Promise((resolve, reject) => {
       markupLanguage.pipe(content);
       markupLanguage.once('end', () => {
-        resolve(document);
+        resolve(item.document);
       });
       const errorCb = err => {
         content.end();
@@ -7824,7 +7914,7 @@ var CSSStyleSheet = {};
 var StyleSheet = {};
 
 //.CommonJS
-var CSSOM$d = {};
+var CSSOM$c = {};
 ///CommonJS
 
 
@@ -7832,20 +7922,20 @@ var CSSOM$d = {};
  * @constructor
  * @see http://dev.w3.org/csswg/cssom/#the-stylesheet-interface
  */
-CSSOM$d.StyleSheet = function StyleSheet() {
+CSSOM$c.StyleSheet = function StyleSheet() {
 	this.parentStyleSheet = null;
 };
 
 
 //.CommonJS
-StyleSheet.StyleSheet = CSSOM$d.StyleSheet;
+StyleSheet.StyleSheet = CSSOM$c.StyleSheet;
 
 var CSSStyleRule = {};
 
 var CSSRule = {};
 
 //.CommonJS
-var CSSOM$c = {};
+var CSSOM$b = {};
 ///CommonJS
 
 
@@ -7854,38 +7944,38 @@ var CSSOM$c = {};
  * @see http://dev.w3.org/csswg/cssom/#the-cssrule-interface
  * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
  */
-CSSOM$c.CSSRule = function CSSRule() {
+CSSOM$b.CSSRule = function CSSRule() {
 	this.parentRule = null;
 	this.parentStyleSheet = null;
 };
 
-CSSOM$c.CSSRule.UNKNOWN_RULE = 0;                 // obsolete
-CSSOM$c.CSSRule.STYLE_RULE = 1;
-CSSOM$c.CSSRule.CHARSET_RULE = 2;                 // obsolete
-CSSOM$c.CSSRule.IMPORT_RULE = 3;
-CSSOM$c.CSSRule.MEDIA_RULE = 4;
-CSSOM$c.CSSRule.FONT_FACE_RULE = 5;
-CSSOM$c.CSSRule.PAGE_RULE = 6;
-CSSOM$c.CSSRule.KEYFRAMES_RULE = 7;
-CSSOM$c.CSSRule.KEYFRAME_RULE = 8;
-CSSOM$c.CSSRule.MARGIN_RULE = 9;
-CSSOM$c.CSSRule.NAMESPACE_RULE = 10;
-CSSOM$c.CSSRule.COUNTER_STYLE_RULE = 11;
-CSSOM$c.CSSRule.SUPPORTS_RULE = 12;
-CSSOM$c.CSSRule.DOCUMENT_RULE = 13;
-CSSOM$c.CSSRule.FONT_FEATURE_VALUES_RULE = 14;
-CSSOM$c.CSSRule.VIEWPORT_RULE = 15;
-CSSOM$c.CSSRule.REGION_STYLE_RULE = 16;
+CSSOM$b.CSSRule.UNKNOWN_RULE = 0;                 // obsolete
+CSSOM$b.CSSRule.STYLE_RULE = 1;
+CSSOM$b.CSSRule.CHARSET_RULE = 2;                 // obsolete
+CSSOM$b.CSSRule.IMPORT_RULE = 3;
+CSSOM$b.CSSRule.MEDIA_RULE = 4;
+CSSOM$b.CSSRule.FONT_FACE_RULE = 5;
+CSSOM$b.CSSRule.PAGE_RULE = 6;
+CSSOM$b.CSSRule.KEYFRAMES_RULE = 7;
+CSSOM$b.CSSRule.KEYFRAME_RULE = 8;
+CSSOM$b.CSSRule.MARGIN_RULE = 9;
+CSSOM$b.CSSRule.NAMESPACE_RULE = 10;
+CSSOM$b.CSSRule.COUNTER_STYLE_RULE = 11;
+CSSOM$b.CSSRule.SUPPORTS_RULE = 12;
+CSSOM$b.CSSRule.DOCUMENT_RULE = 13;
+CSSOM$b.CSSRule.FONT_FEATURE_VALUES_RULE = 14;
+CSSOM$b.CSSRule.VIEWPORT_RULE = 15;
+CSSOM$b.CSSRule.REGION_STYLE_RULE = 16;
 
 
-CSSOM$c.CSSRule.prototype = {
-	constructor: CSSOM$c.CSSRule
+CSSOM$b.CSSRule.prototype = {
+	constructor: CSSOM$b.CSSRule
 	//FIXME
 };
 
 
 //.CommonJS
-CSSRule.CSSRule = CSSOM$c.CSSRule;
+CSSRule.CSSRule = CSSOM$b.CSSRule;
 
 var hasRequiredCSSStyleRule;
 
@@ -8186,7 +8276,7 @@ var CSSImportRule = {};
 var MediaList = {};
 
 //.CommonJS
-var CSSOM$b = {};
+var CSSOM$a = {};
 ///CommonJS
 
 
@@ -8194,13 +8284,13 @@ var CSSOM$b = {};
  * @constructor
  * @see http://dev.w3.org/csswg/cssom/#the-medialist-interface
  */
-CSSOM$b.MediaList = function MediaList(){
+CSSOM$a.MediaList = function MediaList(){
 	this.length = 0;
 };
 
-CSSOM$b.MediaList.prototype = {
+CSSOM$a.MediaList.prototype = {
 
-	constructor: CSSOM$b.MediaList,
+	constructor: CSSOM$a.MediaList,
 
 	/**
 	 * @return {string}
@@ -8244,7 +8334,7 @@ CSSOM$b.MediaList.prototype = {
 
 
 //.CommonJS
-MediaList.MediaList = CSSOM$b.MediaList;
+MediaList.MediaList = CSSOM$a.MediaList;
 
 var hasRequiredCSSImportRule;
 
@@ -8389,7 +8479,7 @@ function requireCSSImportRule () {
 var CSSGroupingRule = {};
 
 //.CommonJS
-var CSSOM$a = {
+var CSSOM$9 = {
 	CSSRule: CSSRule.CSSRule
 };
 ///CommonJS
@@ -8399,13 +8489,13 @@ var CSSOM$a = {
  * @constructor
  * @see https://drafts.csswg.org/cssom/#the-cssgroupingrule-interface
  */
-CSSOM$a.CSSGroupingRule = function CSSGroupingRule() {
-	CSSOM$a.CSSRule.call(this);
+CSSOM$9.CSSGroupingRule = function CSSGroupingRule() {
+	CSSOM$9.CSSRule.call(this);
 	this.cssRules = [];
 };
 
-CSSOM$a.CSSGroupingRule.prototype = new CSSOM$a.CSSRule();
-CSSOM$a.CSSGroupingRule.prototype.constructor = CSSOM$a.CSSGroupingRule;
+CSSOM$9.CSSGroupingRule.prototype = new CSSOM$9.CSSRule();
+CSSOM$9.CSSGroupingRule.prototype.constructor = CSSOM$9.CSSGroupingRule;
 
 
 /**
@@ -8424,11 +8514,11 @@ CSSOM$a.CSSGroupingRule.prototype.constructor = CSSOM$a.CSSGroupingRule;
  * @see https://www.w3.org/TR/cssom-1/#dom-cssgroupingrule-insertrule
  * @return {number} The index within the grouping rule's collection of the newly inserted rule.
  */
- CSSOM$a.CSSGroupingRule.prototype.insertRule = function insertRule(rule, index) {
+ CSSOM$9.CSSGroupingRule.prototype.insertRule = function insertRule(rule, index) {
 	if (index < 0 || index > this.cssRules.length) {
 		throw new RangeError("INDEX_SIZE_ERR");
 	}
-	var cssRule = CSSOM$a.parse(rule).cssRules[0];
+	var cssRule = CSSOM$9.parse(rule).cssRules[0];
 	cssRule.parentRule = this;
 	this.cssRules.splice(index, 0, cssRule);
 	return index;
@@ -8446,7 +8536,7 @@ CSSOM$a.CSSGroupingRule.prototype.constructor = CSSOM$a.CSSGroupingRule;
  * @param {number} index within the grouping rule's rule list of the rule to remove.
  * @see https://www.w3.org/TR/cssom-1/#dom-cssgroupingrule-deleterule
  */
- CSSOM$a.CSSGroupingRule.prototype.deleteRule = function deleteRule(index) {
+ CSSOM$9.CSSGroupingRule.prototype.deleteRule = function deleteRule(index) {
 	if (index < 0 || index >= this.cssRules.length) {
 		throw new RangeError("INDEX_SIZE_ERR");
 	}
@@ -8454,14 +8544,14 @@ CSSOM$a.CSSGroupingRule.prototype.constructor = CSSOM$a.CSSGroupingRule;
 };
 
 //.CommonJS
-CSSGroupingRule.CSSGroupingRule = CSSOM$a.CSSGroupingRule;
+CSSGroupingRule.CSSGroupingRule = CSSOM$9.CSSGroupingRule;
 
 var CSSMediaRule = {};
 
 var CSSConditionRule = {};
 
 //.CommonJS
-var CSSOM$9 = {
+var CSSOM$8 = {
   CSSRule: CSSRule.CSSRule,
   CSSGroupingRule: CSSGroupingRule.CSSGroupingRule
 };
@@ -8472,21 +8562,21 @@ var CSSOM$9 = {
  * @constructor
  * @see https://www.w3.org/TR/css-conditional-3/#the-cssconditionrule-interface
  */
-CSSOM$9.CSSConditionRule = function CSSConditionRule() {
-  CSSOM$9.CSSGroupingRule.call(this);
+CSSOM$8.CSSConditionRule = function CSSConditionRule() {
+  CSSOM$8.CSSGroupingRule.call(this);
   this.cssRules = [];
 };
 
-CSSOM$9.CSSConditionRule.prototype = new CSSOM$9.CSSGroupingRule();
-CSSOM$9.CSSConditionRule.prototype.constructor = CSSOM$9.CSSConditionRule;
-CSSOM$9.CSSConditionRule.prototype.conditionText = '';
-CSSOM$9.CSSConditionRule.prototype.cssText = '';
+CSSOM$8.CSSConditionRule.prototype = new CSSOM$8.CSSGroupingRule();
+CSSOM$8.CSSConditionRule.prototype.constructor = CSSOM$8.CSSConditionRule;
+CSSOM$8.CSSConditionRule.prototype.conditionText = '';
+CSSOM$8.CSSConditionRule.prototype.cssText = '';
 
 //.CommonJS
-CSSConditionRule.CSSConditionRule = CSSOM$9.CSSConditionRule;
+CSSConditionRule.CSSConditionRule = CSSOM$8.CSSConditionRule;
 
 //.CommonJS
-var CSSOM$8 = {
+var CSSOM$7 = {
 	CSSRule: CSSRule.CSSRule,
 	CSSGroupingRule: CSSGroupingRule.CSSGroupingRule,
 	CSSConditionRule: CSSConditionRule.CSSConditionRule,
@@ -8500,17 +8590,17 @@ var CSSOM$8 = {
  * @see http://dev.w3.org/csswg/cssom/#cssmediarule
  * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSMediaRule
  */
-CSSOM$8.CSSMediaRule = function CSSMediaRule() {
-	CSSOM$8.CSSConditionRule.call(this);
-	this.media = new CSSOM$8.MediaList();
+CSSOM$7.CSSMediaRule = function CSSMediaRule() {
+	CSSOM$7.CSSConditionRule.call(this);
+	this.media = new CSSOM$7.MediaList();
 };
 
-CSSOM$8.CSSMediaRule.prototype = new CSSOM$8.CSSConditionRule();
-CSSOM$8.CSSMediaRule.prototype.constructor = CSSOM$8.CSSMediaRule;
-CSSOM$8.CSSMediaRule.prototype.type = 4;
+CSSOM$7.CSSMediaRule.prototype = new CSSOM$7.CSSConditionRule();
+CSSOM$7.CSSMediaRule.prototype.constructor = CSSOM$7.CSSMediaRule;
+CSSOM$7.CSSMediaRule.prototype.type = 4;
 
 // https://opensource.apple.com/source/WebCore/WebCore-7611.1.21.161.3/css/CSSMediaRule.cpp
-Object.defineProperties(CSSOM$8.CSSMediaRule.prototype, {
+Object.defineProperties(CSSOM$7.CSSMediaRule.prototype, {
   "conditionText": {
     get: function() {
       return this.media.mediaText;
@@ -8536,12 +8626,12 @@ Object.defineProperties(CSSOM$8.CSSMediaRule.prototype, {
 
 
 //.CommonJS
-CSSMediaRule.CSSMediaRule = CSSOM$8.CSSMediaRule;
+CSSMediaRule.CSSMediaRule = CSSOM$7.CSSMediaRule;
 
 var CSSSupportsRule = {};
 
 //.CommonJS
-var CSSOM$7 = {
+var CSSOM$6 = {
   CSSRule: CSSRule.CSSRule,
   CSSGroupingRule: CSSGroupingRule.CSSGroupingRule,
   CSSConditionRule: CSSConditionRule.CSSConditionRule
@@ -8553,15 +8643,15 @@ var CSSOM$7 = {
  * @constructor
  * @see https://drafts.csswg.org/css-conditional-3/#the-csssupportsrule-interface
  */
-CSSOM$7.CSSSupportsRule = function CSSSupportsRule() {
-  CSSOM$7.CSSConditionRule.call(this);
+CSSOM$6.CSSSupportsRule = function CSSSupportsRule() {
+  CSSOM$6.CSSConditionRule.call(this);
 };
 
-CSSOM$7.CSSSupportsRule.prototype = new CSSOM$7.CSSConditionRule();
-CSSOM$7.CSSSupportsRule.prototype.constructor = CSSOM$7.CSSSupportsRule;
-CSSOM$7.CSSSupportsRule.prototype.type = 12;
+CSSOM$6.CSSSupportsRule.prototype = new CSSOM$6.CSSConditionRule();
+CSSOM$6.CSSSupportsRule.prototype.constructor = CSSOM$6.CSSSupportsRule;
+CSSOM$6.CSSSupportsRule.prototype.type = 12;
 
-Object.defineProperty(CSSOM$7.CSSSupportsRule.prototype, "cssText", {
+Object.defineProperty(CSSOM$6.CSSSupportsRule.prototype, "cssText", {
   get: function() {
     var cssTexts = [];
 
@@ -8574,7 +8664,7 @@ Object.defineProperty(CSSOM$7.CSSSupportsRule.prototype, "cssText", {
 });
 
 //.CommonJS
-CSSSupportsRule.CSSSupportsRule = CSSOM$7.CSSSupportsRule;
+CSSSupportsRule.CSSSupportsRule = CSSOM$6.CSSSupportsRule;
 
 var CSSFontFaceRule = {};
 
@@ -8625,7 +8715,7 @@ function requireCSSFontFaceRule () {
 var CSSHostRule = {};
 
 //.CommonJS
-var CSSOM$6 = {
+var CSSOM$5 = {
 	CSSRule: CSSRule.CSSRule
 };
 ///CommonJS
@@ -8635,19 +8725,19 @@ var CSSOM$6 = {
  * @constructor
  * @see http://www.w3.org/TR/shadow-dom/#host-at-rule
  */
-CSSOM$6.CSSHostRule = function CSSHostRule() {
-	CSSOM$6.CSSRule.call(this);
+CSSOM$5.CSSHostRule = function CSSHostRule() {
+	CSSOM$5.CSSRule.call(this);
 	this.cssRules = [];
 };
 
-CSSOM$6.CSSHostRule.prototype = new CSSOM$6.CSSRule();
-CSSOM$6.CSSHostRule.prototype.constructor = CSSOM$6.CSSHostRule;
-CSSOM$6.CSSHostRule.prototype.type = 1001;
+CSSOM$5.CSSHostRule.prototype = new CSSOM$5.CSSRule();
+CSSOM$5.CSSHostRule.prototype.constructor = CSSOM$5.CSSHostRule;
+CSSOM$5.CSSHostRule.prototype.type = 1001;
 //FIXME
 //CSSOM.CSSHostRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
 //CSSOM.CSSHostRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
 
-Object.defineProperty(CSSOM$6.CSSHostRule.prototype, "cssText", {
+Object.defineProperty(CSSOM$5.CSSHostRule.prototype, "cssText", {
 	get: function() {
 		var cssTexts = [];
 		for (var i=0, length=this.cssRules.length; i < length; i++) {
@@ -8659,46 +8749,54 @@ Object.defineProperty(CSSOM$6.CSSHostRule.prototype, "cssText", {
 
 
 //.CommonJS
-CSSHostRule.CSSHostRule = CSSOM$6.CSSHostRule;
+CSSHostRule.CSSHostRule = CSSOM$5.CSSHostRule;
 
 var CSSKeyframeRule = {};
 
-//.CommonJS
-var CSSOM$5 = {
-	CSSRule: CSSRule.CSSRule,
-	CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration
-};
-///CommonJS
+var hasRequiredCSSKeyframeRule;
+
+function requireCSSKeyframeRule () {
+	if (hasRequiredCSSKeyframeRule) return CSSKeyframeRule;
+	hasRequiredCSSKeyframeRule = 1;
+	//.CommonJS
+	var CSSOM = {
+		CSSRule: CSSRule.CSSRule,
+		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration
+	};
+	///CommonJS
 
 
-/**
- * @constructor
- * @see http://www.w3.org/TR/css3-animations/#DOM-CSSKeyframeRule
- */
-CSSOM$5.CSSKeyframeRule = function CSSKeyframeRule() {
-	CSSOM$5.CSSRule.call(this);
-	this.keyText = '';
-	this.style = new CSSOM$5.CSSStyleDeclaration();
-	this.style.parentRule = this;
-};
+	/**
+	 * @constructor
+	 * @see http://www.w3.org/TR/css3-animations/#DOM-CSSKeyframeRule
+	 */
+	CSSOM.CSSKeyframeRule = function CSSKeyframeRule() {
+		CSSOM.CSSRule.call(this);
+		this.keyText = '';
+		this.style = new CSSOM.CSSStyleDeclaration();
+		this.style.parentRule = this;
+	};
 
-CSSOM$5.CSSKeyframeRule.prototype = new CSSOM$5.CSSRule();
-CSSOM$5.CSSKeyframeRule.prototype.constructor = CSSOM$5.CSSKeyframeRule;
-CSSOM$5.CSSKeyframeRule.prototype.type = 8;
-//FIXME
-//CSSOM.CSSKeyframeRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
-//CSSOM.CSSKeyframeRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
+	CSSOM.CSSKeyframeRule.prototype = new CSSOM.CSSRule();
+	CSSOM.CSSKeyframeRule.prototype.constructor = CSSOM.CSSKeyframeRule;
+	CSSOM.CSSKeyframeRule.prototype.type = 8;
+	//FIXME
+	//CSSOM.CSSKeyframeRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
+	//CSSOM.CSSKeyframeRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
 
-// http://www.opensource.apple.com/source/WebCore/WebCore-955.66.1/css/WebKitCSSKeyframeRule.cpp
-Object.defineProperty(CSSOM$5.CSSKeyframeRule.prototype, "cssText", {
-  get: function() {
-    return this.keyText + " {" + this.style.cssText + "} ";
-  }
-});
+	// http://www.opensource.apple.com/source/WebCore/WebCore-955.66.1/css/WebKitCSSKeyframeRule.cpp
+	Object.defineProperty(CSSOM.CSSKeyframeRule.prototype, "cssText", {
+	  get: function() {
+	    return this.keyText + " {" + this.style.cssText + "} ";
+	  }
+	});
 
 
-//.CommonJS
-CSSKeyframeRule.CSSKeyframeRule = CSSOM$5.CSSKeyframeRule;
+	//.CommonJS
+	CSSKeyframeRule.CSSKeyframeRule = CSSOM.CSSKeyframeRule;
+	///CommonJS
+	return CSSKeyframeRule;
+}
 
 var CSSKeyframesRule = {};
 
@@ -9702,7 +9800,7 @@ function requireParse () {
 	CSSOM.CSSFontFaceRule = requireCSSFontFaceRule().CSSFontFaceRule;
 	CSSOM.CSSHostRule = CSSHostRule.CSSHostRule;
 	CSSOM.CSSStyleDeclaration = requireCSSStyleDeclaration().CSSStyleDeclaration;
-	CSSOM.CSSKeyframeRule = CSSKeyframeRule.CSSKeyframeRule;
+	CSSOM.CSSKeyframeRule = requireCSSKeyframeRule().CSSKeyframeRule;
 	CSSOM.CSSKeyframesRule = CSSKeyframesRule.CSSKeyframesRule;
 	CSSOM.CSSValueExpression = CSSValueExpression.CSSValueExpression;
 	CSSOM.CSSDocumentRule = CSSDocumentRule.CSSDocumentRule;
@@ -9876,7 +9974,7 @@ function requireCSSStyleDeclaration () {
 	CSSMediaRule: CSSMediaRule.CSSMediaRule,
 	CSSSupportsRule: CSSSupportsRule.CSSSupportsRule,
 	CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
-	CSSKeyframeRule: CSSKeyframeRule.CSSKeyframeRule,
+	CSSKeyframeRule: requireCSSKeyframeRule().CSSKeyframeRule,
 	CSSKeyframesRule: CSSKeyframesRule.CSSKeyframesRule
 });
 
@@ -9885,6 +9983,7 @@ requireCSSStyleRule().CSSStyleRule;
 requireCSSImportRule().CSSImportRule;
 requireCSSFontFaceRule().CSSFontFaceRule;
 requireCSSStyleSheet().CSSStyleSheet;
+requireCSSKeyframeRule().CSSKeyframeRule;
 var parse$1 = requireParse().parse;
 
 const tagName$c = 'style';
@@ -11419,10 +11518,10 @@ class DOMStream extends Writable {
      *   document: MimeToDoc[MIME]
      *   node: MimeToDoc[MIME]|Node
      *   ownerSVGElement: SVGElement|undefined
-     *   rootNode: Node
+     *   rootNode: Node|undefined
      * }[]}
      */
-    this.stack = [];
+    this.stack = []; // LIFO
     this.init();
   }
 
@@ -11443,69 +11542,33 @@ class DOMStream extends Writable {
     this.parserStream = new WritableStream({
       // <!DOCTYPE ...>
       onprocessinginstruction: (name, data) => {
-        if (name.toLowerCase() === '!doctype') {
-          this.doctype = data.slice(name.length).trim();
-        }
+        this.doctype = onprocessinginstruction(name, data);
       },
       // <tagName>
       onopentag: (name, attributes) => {
         if (this.filter(name, attributes)) this.newDocument();
         for (const item of this.stack) {
-          const { document } = item;
-          const { active, registry } = document[CUSTOM_ELEMENTS];
-          let create = true;
-          if (this.isHTML) {
-            if (item.ownerSVGElement) {
-              item.node = append$2(item.node, document.createElementNS(SVG_NAMESPACE, name), active);
-              item.node.ownerSVGElement = item.ownerSVGElement;
-              create = false;
-            } else if (name === 'svg' || name === 'SVG') {
-              item.ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-              item.node = append$2(item.node, item.ownerSVGElement, active);
-              create = false;
-            } else if (active) {
-              const ce = name.includes('-') ? name : (attributes.is || '');
-              if (ce && registry.has(ce)) {
-                const {Class} = registry.get(ce);
-                item.node = append$2(item.node, new Class, active);
-                delete attributes.is;
-                create = false;
-              }
-            }
-          }
-          if (create) item.node = append$2(item.node, document.createElement(name), false);
-          let end = item.node[END];
-          for (const name of keys(attributes)) {
-            attribute(item.node, end, document.createAttribute(name), attributes[name], active);
-          }
-          if (!item.rootNode) item.rootNode = item.node;
+          onopentag(name, attributes, item, this.isHTML);
         }
       },
       // #text, #comment
       oncomment: (data) => {
-        for (const { document, node } of this.stack) {
-          const { active } = document[CUSTOM_ELEMENTS];
-          append$2(node, document.createComment(data), active);
+        for (const item of this.stack) {
+          oncomment(data, item);
         }
       },
       ontext: (text) => {
-        for (const { document, node } of this.stack) {
-          const { active } = document[CUSTOM_ELEMENTS];
-          append$2(node, document.createTextNode(text), active);
+        for (const item of this.stack) {
+          ontext(text, item);
         }
       },
       // </tagName>
       onclosetag: () => {
         for (const item of this.stack) {
-          const { document } = item;
-          if (this.isHTML && item.node === item.ownerSVGElement) {
-            item.ownerSVGElement = undefined;
-          }
-          if (item.node === item.rootNode) {
+          onclosetag(item, this.isHTML, document => {
             this.emit('document', document);
             this.stack.length -= 1;
-          }
-          item.node = item.node.parentNode;
+          });
         }
       }
     }, {

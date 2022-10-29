@@ -2,10 +2,9 @@
 const {Writable} = require('stream');
 const {WritableStream} = require('htmlparser2/lib/WritableStream');
 
-const {append, attribute} = require('../shared/parse-from-string');
-const {SVG_NAMESPACE} = require('../shared/constants');
-const {CUSTOM_ELEMENTS, END} = require('../shared/symbols');
-const {keys} = require('../shared/object');
+const {
+  onprocessinginstruction,  onopentag,  oncomment,  ontext,  onclosetag
+} = require('../shared/parser-handlers')
 
 const {HTMLDocument} = require('../html/document.js');
 const {SVGDocument} = require('../svg/document.js');
@@ -37,10 +36,10 @@ class DOMStream extends Writable {
      *   document: MimeToDoc[MIME]
      *   node: MimeToDoc[MIME]|Node
      *   ownerSVGElement: SVGElement|undefined
-     *   rootNode: Node
+     *   rootNode: Node|undefined
      * }[]}
      */
-    this.stack = [];
+    this.stack = []; // LIFO
     this.init();
   }
 
@@ -61,69 +60,33 @@ class DOMStream extends Writable {
     this.parserStream = new WritableStream({
       // <!DOCTYPE ...>
       onprocessinginstruction: (name, data) => {
-        if (name.toLowerCase() === '!doctype') {
-          this.doctype = data.slice(name.length).trim();
-        }
+        this.doctype = onprocessinginstruction(name, data);
       },
       // <tagName>
       onopentag: (name, attributes) => {
-        if (this.filter(name, attributes)) this.newDocument()
+        if (this.filter(name, attributes)) this.newDocument();
         for (const item of this.stack) {
-          const { document } = item;
-          const { active, registry } = document[CUSTOM_ELEMENTS];
-          let create = true;
-          if (this.isHTML) {
-            if (item.ownerSVGElement) {
-              item.node = append(item.node, document.createElementNS(SVG_NAMESPACE, name), active);
-              item.node.ownerSVGElement = item.ownerSVGElement;
-              create = false;
-            } else if (name === 'svg' || name === 'SVG') {
-              item.ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-              item.node = append(item.node, item.ownerSVGElement, active);
-              create = false;
-            } else if (active) {
-              const ce = name.includes('-') ? name : (attributes.is || '');
-              if (ce && registry.has(ce)) {
-                const {Class} = registry.get(ce);
-                item.node = append(item.node, new Class, active);
-                delete attributes.is;
-                create = false;
-              }
-            }
-          }
-          if (create) item.node = append(item.node, document.createElement(name), false);
-          let end = item.node[END];
-          for (const name of keys(attributes)) {
-            attribute(item.node, end, document.createAttribute(name), attributes[name], active);
-          }
-          if (!item.rootNode) item.rootNode = item.node;
+          onopentag(name, attributes, item, this.isHTML);
         }
       },
       // #text, #comment
       oncomment: (data) => {
-        for (const { document, node } of this.stack) {
-          const { active } = document[CUSTOM_ELEMENTS];
-          append(node, document.createComment(data), active);
+        for (const item of this.stack) {
+          oncomment(data, item);
         }
       },
       ontext: (text) => {
-        for (const { document, node } of this.stack) {
-          const { active } = document[CUSTOM_ELEMENTS];
-          append(node, document.createTextNode(text), active);
+        for (const item of this.stack) {
+          ontext(text, item);
         }
       },
       // </tagName>
       onclosetag: () => {
         for (const item of this.stack) {
-          const { document } = item
-          if (this.isHTML && item.node === item.ownerSVGElement) {
-            item.ownerSVGElement = undefined;
-          }
-          if (item.node === item.rootNode) {
+          onclosetag(item, this.isHTML, document => {
             this.emit('document', document);
             this.stack.length -= 1;
-          }
-          item.node = item.node.parentNode;
+          })
         }
       }
     }, {

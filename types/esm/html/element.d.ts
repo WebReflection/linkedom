@@ -164,7 +164,5 @@ export class HTMLElement extends Element implements globalThis.HTMLElement {
     get onpointerover(): any;
     set onpointerup(arg: any);
     get onpointerup(): any;
-    set innerHTML(arg: string);
-    get innerHTML(): string;
 }
 import { Element } from "../interface/element.js";

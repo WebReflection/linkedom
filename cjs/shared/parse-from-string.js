@@ -1,12 +1,9 @@
 'use strict';
 const {WritableStream} = require('htmlparser2/lib/WritableStream');
 
-const {ELEMENT_NODE, SVG_NAMESPACE} = require('./constants.js');
-const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('./symbols.js');
-const {keys} = require('./object.js');
-
-const {knownBoundaries, knownSiblings} = require('./utils.js');
-const {attributeChangedCallback, connectedCallback} = require('../interface/custom-element-registry.js');
+const {
+  onprocessinginstruction,  onopentag,  oncomment,  ontext,  onclosetag
+} = require('../shared/parser-handlers')
 
 
 // import {Mime} from './mime.js';
@@ -22,28 +19,6 @@ const {attributeChangedCallback, connectedCallback} = require('../interface/cust
  */
 
 let notParsing = true;
-
-const append = (self, node, active) => {
-  const end = self[END];
-  node.parentNode = self;
-  knownBoundaries(end[PREV], node, end);
-  if (active && node.nodeType === ELEMENT_NODE)
-    connectedCallback(node);
-  return node;
-};
-exports.append = append;
-
-const attribute = (element, end, attribute, value, active) => {
-  attribute[VALUE] = value;
-  attribute.ownerElement = element;
-  knownSiblings(end[PREV], attribute, end);
-  if (attribute.name === 'class')
-    element.className = value;
-  if (active)
-    attributeChangedCallback(element, attribute.name, null, value);
-};
-exports.attribute = attribute;
-
 const isNotParsing = () => notParsing;
 exports.isNotParsing = isNotParsing;
 
@@ -56,62 +31,36 @@ exports.isNotParsing = isNotParsing;
  * @returns {INPUT extends string ? DOC : Promise<INPUT>}
  */
 const parseFromString = (document, isHTML, markupLanguage) => {
-  const {active, registry} = document[CUSTOM_ELEMENTS];
-
-  let node = document;
-  let ownerSVGElement = null;
-
+  /**
+   * @type {{
+   *   document: DOC
+   *   node: DOC|Node
+   *   ownerSVGElement: SVGElement|undefined
+   *   rootNode: Node|undefined
+   * }}
+   */
+  const item = { document, node: document }
   notParsing = false;
 
   const content = new WritableStream({
     // <!DOCTYPE ...>
     onprocessinginstruction(name, data) {
-      if (name.toLowerCase() === '!doctype')
-        document.doctype = data.slice(name.length).trim();
+      document.doctype = onprocessinginstruction(name, data);
     },
-
     // <tagName>
     onopentag(name, attributes) {
-      let create = true;
-      if (isHTML) {
-        if (ownerSVGElement) {
-          node = append(node, document.createElementNS(SVG_NAMESPACE, name), active);
-          node.ownerSVGElement = ownerSVGElement;
-          create = false;
-        }
-        else if (name === 'svg' || name === 'SVG') {
-          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-          node = append(node, ownerSVGElement, active);
-          create = false;
-        }
-        else if (active) {
-          const ce = name.includes('-') ? name : (attributes.is || '');
-          if (ce && registry.has(ce)) {
-            const {Class} = registry.get(ce);
-            node = append(node, new Class, active);
-            delete attributes.is;
-            create = false;
-          }
-        }
-      }
-
-      if (create)
-        node = append(node, document.createElement(name), false);
-
-      let end = node[END];
-      for (const name of keys(attributes))
-        attribute(node, end, document.createAttribute(name), attributes[name], active);
+      onopentag(name, attributes, item, isHTML);
     },
-
     // #text, #comment
-    oncomment(data) { append(node, document.createComment(data), active); },
-    ontext(text) { append(node, document.createTextNode(text), active); },
-
+    oncomment(data) {
+      oncomment(data, item);
+    },
+    ontext(text) { 
+      ontext(text, item);
+    },
     // </tagName>
     onclosetag() {
-      if (isHTML && node === ownerSVGElement)
-        ownerSVGElement = null;
-      node = node.parentNode;
+     onclosetag(item, isHTML)
     }
   }, {
     lowerCaseAttributeNames: false,
@@ -123,13 +72,13 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     content.write(markupLanguage);
     content.end();
     notParsing = true;
-    return document;
+    return item.document;
   } else {
     return new Promise((resolve, reject) => {
       markupLanguage.pipe(content);
       markupLanguage.once('end', () => {
         notParsing = true;
-        resolve(document);
+        resolve(item.document);
       });
       const errorCb = err => {
         content.end();
