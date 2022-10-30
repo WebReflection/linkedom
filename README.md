@@ -4,8 +4,6 @@
 
 <sup>**Social Media Photo by [JJ Ying](https://unsplash.com/@jjying) on [Unsplash](https://unsplash.com/)**</sup>
 
-### This is ~~not a~~ better than a crawler! :3
-
 LinkeDOM is a [triple-linked list](#data-structure) based DOM-like namespace, for DOM-less environments, with the following goals:
 
   * **avoid** maximum callstack/recursion or **crashes**, even under heaviest conditions.
