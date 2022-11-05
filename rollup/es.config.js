@@ -1,4 +1,5 @@
 import {nodeResolve} from '@rollup/plugin-node-resolve';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 
@@ -6,6 +7,7 @@ export default {
   input: './esm/index.js',
   plugins: [
     shims(),
+    nodePolyfills(),
     nodeResolve(),
     commonjs(),
     json()

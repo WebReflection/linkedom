@@ -10,5 +10,6 @@
         "sourceType": "module"
     },
     "rules": {
-    }
+    },
+    "ignorePatterns": ["worker.js"]
 }

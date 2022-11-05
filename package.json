@@ -45,6 +45,7 @@
     "jsdom": "^20.0.1",
     "jsdon": "^0.1.15",
     "rollup": "^2.72.0",
+    "rollup-plugin-polyfill-node": "^0.11.0",
     "typescript": "4.5"
   },
   "module": "./esm/index.js",
