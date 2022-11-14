@@ -60,6 +60,13 @@ assert(
   'Issue #9 - <script> node'
 );
 
+head.innerHTML = `<script type="application/ld+json">{}</script>`;
+head.querySelector("script").text = `{"change": true}`;
+assert(
+  document.toString(),
+  '<!DOCTYPE html><html><head><script type="application/ld+json">{"change": true}</script></head></html>'
+);
+
 head.innerHTML = `<script>
 <!--comment-->
 function test() {

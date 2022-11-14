@@ -70,6 +70,9 @@ class HTMLScriptElement extends TextElement {
   set async(value) {
     booleanAttribute.set(this, 'async', value);
   }
+
+  get text() { return this.textContent; }
+  set text(content) { this.textContent = content; }
 }
 
 registerHTMLClass(tagName, HTMLScriptElement);
