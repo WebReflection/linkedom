@@ -16,5 +16,7 @@ export class HTMLScriptElement extends TextElement implements globalThis.HTMLScr
     get referrerPolicy(): any;
     set async(arg: any);
     get async(): any;
+    set text(arg: any);
+    get text(): any;
 }
 import { TextElement } from "./text-element.js";
