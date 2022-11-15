@@ -66,6 +66,10 @@ assert(
   document.toString(),
   '<!DOCTYPE html><html><head><script type="application/ld+json">{"change": true}</script></head></html>'
 );
+assert(
+  head.querySelector("script").text,
+  `{"change": true}`
+);
 
 head.innerHTML = `<script>
 <!--comment-->

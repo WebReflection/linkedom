@@ -10,15 +10,12 @@ const {Event} = require('./event.js');
 /**
  * @implements globalThis.CustomEvent
  */
-const GlobalCustomEvent = typeof CustomEvent === 'function' ?
-  CustomEvent :
-  class CustomEvent extends Event {
-    constructor(type, eventInitDict = {}) {
-      super(type, eventInitDict);
-      this.detail = eventInitDict.detail;
-    }
-  };
-
-exports.CustomEvent = GlobalCustomEvent;
+class CustomEvent extends Event {
+  constructor(type, eventInitDict = {}) {
+    super(type, eventInitDict);
+    this.detail = eventInitDict.detail;
+  }
+}
+exports.CustomEvent = CustomEvent
 
 /* c8 ignore stop */

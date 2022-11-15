@@ -6859,7 +6859,7 @@ const setInnerHtml = (node, html) => {
   node.replaceChildren(...childNodes);
 };
 
-var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z])([A-Z]))/g, '$2$5-$3$6')
+var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6')
                              .toLowerCase();
 
 const refs$1 = new WeakMap;
@@ -11295,14 +11295,12 @@ const Mime = {
 /**
  * @implements globalThis.CustomEvent
  */
-const GlobalCustomEvent = typeof CustomEvent === 'function' ?
-  CustomEvent :
-  class CustomEvent extends GlobalEvent {
-    constructor(type, eventInitDict = {}) {
-      super(type, eventInitDict);
-      this.detail = eventInitDict.detail;
-    }
-  };
+class CustomEvent extends GlobalEvent {
+  constructor(type, eventInitDict = {}) {
+    super(type, eventInitDict);
+    this.detail = eventInitDict.detail;
+  }
+}
 
 /* c8 ignore stop */
 
@@ -11496,7 +11494,7 @@ const globalExports = assign(
   Facades,
   HTMLClasses,
   {
-    CustomEvent: GlobalCustomEvent,
+    CustomEvent,
     Event: GlobalEvent,
     EventTarget: DOMEventTarget,
     InputEvent,
@@ -11636,7 +11634,7 @@ class Document$1 extends NonElementParentNode {
   createNodeIterator(root, whatToShow = -1) { return this.createTreeWalker(root, whatToShow); }
 
   createEvent(name) {
-    const event = create$1(name === 'Event' ? new GlobalEvent('') : new GlobalCustomEvent(''));
+    const event = create$1(name === 'Event' ? new GlobalEvent('') : new CustomEvent(''));
     event.initEvent = event.initCustomEvent = (
       type,
       canBubble = false,
@@ -12002,4 +12000,4 @@ function Document() {
 
 setPrototypeOf(Document, Document$1).prototype = Document$1.prototype;
 
-export { Attr, CharacterData, Comment, GlobalCustomEvent as CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeFilter, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };
+export { Attr, CharacterData, Comment, CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeFilter, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };

@@ -9,15 +9,11 @@ import {Event} from './event.js';
 /**
  * @implements globalThis.CustomEvent
  */
-const GlobalCustomEvent = typeof CustomEvent === 'function' ?
-  CustomEvent :
-  class CustomEvent extends Event {
-    constructor(type, eventInitDict = {}) {
-      super(type, eventInitDict);
-      this.detail = eventInitDict.detail;
-    }
-  };
-
-export {GlobalCustomEvent as CustomEvent};
+export class CustomEvent extends Event {
+  constructor(type, eventInitDict = {}) {
+    super(type, eventInitDict);
+    this.detail = eventInitDict.detail;
+  }
+}
 
 /* c8 ignore stop */
