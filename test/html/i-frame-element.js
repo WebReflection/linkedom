@@ -13,10 +13,10 @@ assert(iframe.src, './test.html', 'Issue #82 - <iframe>.src');
   const { document } = parseHTML("<html><body><iframe></iframe></body></html>");
   const iframe = document.body.querySelector("iframe");
 
-  iframe.srcdoc = `<html><span>Test</span></html>`;
+  iframe.srcdoc = `<html><span style="color: red">Test</span></html>`;
   assert(
     document.body.innerHTML,
-    `<iframe srcdoc="<html><span>Test</span></html>"></iframe>`
+    `<iframe srcdoc="<html><span style=&quot;color: red&quot;>Test</span></html>"></iframe>`
   );
 }
 
