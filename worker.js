@@ -6856,8 +6856,19 @@ const setInnerHtml = (node, html) => {
   document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
   const {childNodes} = parseFromString(document, ignoreCase(node), html);
 
-  node.replaceChildren(...childNodes);
+  node.replaceChildren(...childNodes.map(setOwnerDocument, ownerDocument));
 };
+
+function setOwnerDocument(node) {
+  node.ownerDocument = this;
+  switch (node.nodeType) {
+    case ELEMENT_NODE:
+    case DOCUMENT_FRAGMENT_NODE:
+      node.childNodes.forEach(setOwnerDocument, this);
+      break;
+  }
+  return node;
+}
 
 var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6')
                              .toLowerCase();

@@ -83,3 +83,8 @@ const {document: svg} = (new DOMParser).parseFromString('<svg class="foo-1"/>', 
 assert(svg.querySelector('[class*="foo-"]'), svg.firstElementChild);
 
 assert((new DOMParser).parseFromString('...', 'text/html').firstElementChild.localName, 'html');
+
+const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></head><body></body></html>`, 'text/html').defaultView.window.document;
+issue187.body.innerHTML = '<span></span>';
+let span = issue187.body.firstElementChild;
+assert(span.ownerDocument.body, issue187.body);

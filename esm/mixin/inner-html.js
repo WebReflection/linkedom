@@ -1,3 +1,4 @@
+import {ELEMENT_NODE, DOCUMENT_FRAGMENT_NODE} from '../shared/constants.js';
 import {CUSTOM_ELEMENTS} from '../shared/symbols.js';
 import {parseFromString} from '../shared/parse-from-string.js';
 import {ignoreCase} from '../shared/utils.js';
@@ -20,5 +21,16 @@ export const setInnerHtml = (node, html) => {
   document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
   const {childNodes} = parseFromString(document, ignoreCase(node), html);
 
-  node.replaceChildren(...childNodes);
+  node.replaceChildren(...childNodes.map(setOwnerDocument, ownerDocument));
 };
+
+function setOwnerDocument(node) {
+  node.ownerDocument = this;
+  switch (node.nodeType) {
+    case ELEMENT_NODE:
+    case DOCUMENT_FRAGMENT_NODE:
+      node.childNodes.forEach(setOwnerDocument, this);
+      break;
+  }
+  return node;
+}
