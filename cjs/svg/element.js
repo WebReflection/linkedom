@@ -1,6 +1,7 @@
 'use strict';
-const { Element } = require('../interface/element.js');
-const { SVG_NAMESPACE } = require("../shared/constants.js");
+const {Element} = require('../interface/element.js');
+const {SVG_NAMESPACE} = require("../shared/constants.js");
+
 const classNames = new WeakMap;
 
 const handler = {

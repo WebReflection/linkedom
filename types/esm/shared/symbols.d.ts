@@ -20,3 +20,4 @@ export const START: unique symbol;
 export const STYLE: unique symbol;
 export const UPGRADE: unique symbol;
 export const VALUE: unique symbol;
+export const NS: unique symbol;

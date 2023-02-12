@@ -2,7 +2,10 @@
  * @implements globalThis.Element
  */
 export class Element extends ParentNode implements globalThis.Element {
-    constructor(ownerDocument: any, localName: any);
+    /**
+     * @returns {String}
+     */
+    get namespaceURI(): string;
     before(...nodes: any[]): void;
     after(...nodes: any[]): void;
     replaceWith(...nodes: any[]): void;
@@ -53,6 +56,7 @@ export class Element extends ParentNode implements globalThis.Element {
     [CLASS_LIST]: any;
     [DATASET]: any;
     [STYLE]: any;
+    [NS]: any;
 }
 import { ParentNode } from "../mixin/parent-node.js";
 import { NodeList } from "./node-list.js";
@@ -60,3 +64,4 @@ import { ShadowRoot } from "./shadow-root.js";
 import { CLASS_LIST } from "../shared/symbols.js";
 import { DATASET } from "../shared/symbols.js";
 import { STYLE } from "../shared/symbols.js";
+import { NS } from "../shared/symbols.js";

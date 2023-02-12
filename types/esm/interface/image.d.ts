@@ -90,6 +90,7 @@ export function ImageClass(ownerDocument: any): {
         onpointerout: any;
         onpointerover: any;
         onpointerup: any;
+        readonly namespaceURI: string;
         readonly isConnected: boolean;
         readonly parentElement: any;
         readonly previousSibling: any;
@@ -144,6 +145,7 @@ export function ImageClass(ownerDocument: any): {
         [CLASS_LIST]: any;
         [DATASET]: any;
         [STYLE]: any;
+        [NS]: any;
         readonly childNodes: import("./node-list.js").NodeList;
         readonly children: import("./node-list.js").NodeList;
         readonly firstChild: import("../mixin/parent-node.js").NodeStruct;
