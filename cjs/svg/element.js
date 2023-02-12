@@ -1,6 +1,6 @@
 'use strict';
-const {Element} = require('../interface/element.js');
-
+const { Element } = require('../interface/element.js');
+const { SVG_NAMESPACE } = require("../shared/constants.js");
 const classNames = new WeakMap;
 
 const handler = {
@@ -18,7 +18,7 @@ const handler = {
  */
 class SVGElement extends Element {
   constructor(ownerDocument, localName, ownerSVGElement = null) {
-    super(ownerDocument, localName);
+    super(ownerDocument, localName, SVG_NAMESPACE);
     this.ownerSVGElement = ownerSVGElement;
   }
 

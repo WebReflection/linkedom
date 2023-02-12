@@ -86,3 +86,7 @@ exports.UPGRADE = UPGRADE;
 // used to define generic values
 const VALUE = Symbol('value');
 exports.VALUE = VALUE;
+
+// used to defined the namespace of an Element
+const NS = Symbol('ns')
+exports.NS = NS

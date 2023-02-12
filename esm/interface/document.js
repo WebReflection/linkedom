@@ -269,10 +269,10 @@ export class Document extends NonElementParentNode {
   createAttributeNS(_, name) {
     return this.createAttribute(name);
   }
-  createElementNS(nsp, localName, options) {
+  createElementNS(nsp, localName) {
     return nsp === SVG_NAMESPACE ?
             new SVGElement(this, localName, null) :
-            this.createElement(localName, options);
+            new Element(this, localName, nsp);
   }
   /* c8 ignore stop */
 }

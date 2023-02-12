@@ -88,3 +88,10 @@ const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></h
 issue187.body.innerHTML = '<span></span>';
 let span = issue187.body.firstElementChild;
 assert(span.ownerDocument.body, issue187.body);
+
+// namespaces
+const issue189Div = document.createElementNS("http://www.w3.org/1999/xhtml", "DIV")
+assert(issue189Div.namespaceURI, 'http://www.w3.org/1999/xhtml', '<div> element, when created with createElementNS() must keep its namespace')
+
+const issue189Rect = document.createElementNS("http://www.w3.org/2000/svg", "RECT")
+assert(issue189Rect.namespaceURI, 'http://www.w3.org/2000/svg', '<rect> element, when created with createElementNS() must keep its namespace')

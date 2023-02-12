@@ -16,7 +16,7 @@ const {
 } = require('../shared/attributes.js');
 
 const {
-  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, MIME
+  CLASS_LIST, DATASET, STYLE, END, NEXT, PREV, START, MIME, NS
 } = require('../shared/symbols.js');
 
 const {
@@ -73,11 +73,19 @@ const isVoid = ({localName, ownerDocument}) => {
  * @implements globalThis.Element
  */
 class Element extends ParentNode {
-  constructor(ownerDocument, localName) {
+  constructor(ownerDocument, localName, nsp) {
     super(ownerDocument, localName, ELEMENT_NODE);
     this[CLASS_LIST] = null;
     this[DATASET] = null;
     this[STYLE] = null;
+    this[NS] = nsp
+  }
+
+  /**
+   * @returns {String}
+   */
+  get namespaceURI() {
+    return this[NS]
   }
 
   // <Mixins>

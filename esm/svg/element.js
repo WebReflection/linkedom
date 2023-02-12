@@ -1,4 +1,5 @@
 import {Element} from '../interface/element.js';
+import {SVG_NAMESPACE} from "../shared/constants.js";
 
 const classNames = new WeakMap;
 
@@ -17,7 +18,7 @@ const handler = {
  */
 export class SVGElement extends Element {
   constructor(ownerDocument, localName, ownerSVGElement = null) {
-    super(ownerDocument, localName);
+    super(ownerDocument, localName, SVG_NAMESPACE);
     this.ownerSVGElement = ownerSVGElement;
   }
 

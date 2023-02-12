@@ -23,7 +23,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     importNode(externalNode: any, ...args: any[]): any;
     getElementsByTagNameNS(_: any, name: any): NodeList;
     createAttributeNS(_: any, name: any): Attr;
-    createElementNS(nsp: any, localName: any, options: any): Element | SVGElement;
+    createElementNS(nsp: any, localName: any): Element | SVGElement;
     [CUSTOM_ELEMENTS]: {
         active: boolean;
         registry: any;

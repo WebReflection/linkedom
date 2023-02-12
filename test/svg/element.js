@@ -18,7 +18,8 @@ assert(svg.ownerSVGElement, null, '<svg> ownerSVGElement is null');
 assert(svg.firstChild.ownerSVGElement, svg, '<rect> has an ownerSVGElement');
 assert(document.toString(), '<div><svg><rect /></svg></div>', 'svg nodes are OK');
 assert(document.documentElement.cloneNode(true).outerHTML, '<div><svg><rect /></svg></div>', 'svg cloned');
-
+assert(svg.namespaceURI, 'http://www.w3.org/2000/svg', '<svg> has a specific namespaceURI');
+assert(svg.firstChild.namespaceURI, 'http://www.w3.org/2000/svg', '<rect /> has a specific namespaceURI')
 assert(JSON.stringify(document), '[9,1,"div",1,"svg",1,"rect",-4]');
 assert(JSON.stringify(svg), '[1,"svg",1,"rect",-2]');
 

@@ -18,7 +18,7 @@ import {
 import {
   CLASS_LIST, DATASET, STYLE,
   END, NEXT, PREV, START,
-  MIME
+  MIME, NS
 } from '../shared/symbols.js';
 
 import {
@@ -75,11 +75,19 @@ const isVoid = ({localName, ownerDocument}) => {
  * @implements globalThis.Element
  */
 export class Element extends ParentNode {
-  constructor(ownerDocument, localName) {
+  constructor(ownerDocument, localName, nsp) {
     super(ownerDocument, localName, ELEMENT_NODE);
     this[CLASS_LIST] = null;
     this[DATASET] = null;
     this[STYLE] = null;
+    this[NS] = nsp
+  }
+
+  /**
+   * @returns {String}
+   */
+  get namespaceURI() {
+    return this[NS]
   }
 
   // <Mixins>
