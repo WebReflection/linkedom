@@ -6870,7 +6870,7 @@ function setOwnerDocument(node) {
   return node;
 }
 
-var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6')
+var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z])([A-Z]))/g, '$2$5-$3$6')
                              .toLowerCase();
 
 const refs$1 = new WeakMap;
@@ -7295,6 +7295,9 @@ class Element$1 extends ParentNode {
   get parentElement() { return parentElement(this); }
   get previousSibling() { return previousSibling(this); }
   get nextSibling() { return nextSibling(this); }
+  get namespaceURI() {
+    return 'http://www.w3.org/1999/xhtml';
+  }
 
   get previousElementSibling() { return previousElementSibling(this); }
   get nextElementSibling() { return nextElementSibling(this); }
@@ -7732,6 +7735,10 @@ class SVGElement$1 extends Element$1 {
     classList.add(...value.split(/\s+/));
   }
   /* c8 ignore stop */
+
+  get namespaceURI() {
+    return 'http://www.w3.org/2000/svg';
+  }
 
   getAttribute(name) {
     return name === 'class' ?

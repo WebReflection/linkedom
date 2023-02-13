@@ -94,6 +94,7 @@ export function ImageClass(ownerDocument: any): {
         readonly parentElement: any;
         readonly previousSibling: any;
         readonly nextSibling: any;
+        readonly namespaceURI: string;
         readonly previousElementSibling: any;
         readonly nextElementSibling: any;
         before(...nodes: any[]): void;

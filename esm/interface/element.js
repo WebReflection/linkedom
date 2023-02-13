@@ -87,6 +87,9 @@ export class Element extends ParentNode {
   get parentElement() { return parentElement(this); }
   get previousSibling() { return previousSibling(this); }
   get nextSibling() { return nextSibling(this); }
+  get namespaceURI() {
+    return 'http://www.w3.org/1999/xhtml';
+  }
 
   get previousElementSibling() { return previousElementSibling(this); }
   get nextElementSibling() { return nextElementSibling(this); }

@@ -35,6 +35,10 @@ export class SVGElement extends Element {
   }
   /* c8 ignore stop */
 
+  get namespaceURI() {
+    return 'http://www.w3.org/2000/svg';
+  }
+
   getAttribute(name) {
     return name === 'class' ?
       [...this.classList].join(' ') :

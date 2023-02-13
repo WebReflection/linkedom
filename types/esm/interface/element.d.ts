@@ -3,6 +3,7 @@
  */
 export class Element extends ParentNode implements globalThis.Element {
     constructor(ownerDocument: any, localName: any);
+    get namespaceURI(): string;
     before(...nodes: any[]): void;
     after(...nodes: any[]): void;
     replaceWith(...nodes: any[]): void;

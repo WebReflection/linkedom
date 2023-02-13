@@ -16,3 +16,5 @@ assert(div.firstChild.toString(), '<p>hello</p>');
 div.innerHTML = '<span></span>'
 div.firstChild.outerHTML = '<p>hello</p> world';
 assert(div.toString(), '<div><p>hello</p> world</div>');
+
+assert(div.namespaceURI, 'http://www.w3.org/1999/xhtml');

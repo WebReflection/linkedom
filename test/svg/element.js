@@ -46,3 +46,4 @@ assert(svg.getAttribute('class'), 'a b c');
 
 svg.setAttribute('class', 'd e');
 assert(svg.getAttribute('class'), 'd e');
+assert(svg.namespaceURI, 'http://www.w3.org/2000/svg');
