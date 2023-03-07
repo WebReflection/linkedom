@@ -10,5 +10,7 @@ export class HTMLMetaElement extends HTMLElement implements globalThis.HTMLMetaE
     get content(): any;
     set charset(arg: any);
     get charset(): any;
+    set media(arg: any);
+    get media(): any;
 }
 import { HTMLElement } from "./element.js";

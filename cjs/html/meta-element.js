@@ -12,8 +12,10 @@ class HTMLMetaElement extends HTMLElement {
     super(ownerDocument, localName);
   }
 
+  /* c8 ignore start */
   get name() { return stringAttribute.get(this, 'name'); }
   set name(value) { stringAttribute.set(this, 'name', value); }
+  /* c8 ignore stop */
 
   get httpEquiv() { return stringAttribute.get(this, 'http-equiv'); }
   set httpEquiv(value) { stringAttribute.set(this, 'http-equiv', value); }
@@ -23,6 +25,11 @@ class HTMLMetaElement extends HTMLElement {
 
   get charset() { return stringAttribute.get(this, 'charset'); }
   set charset(value) { stringAttribute.set(this, 'charset', value); }
+
+  /* c8 ignore start */
+  get media() { return stringAttribute.get(this, 'media'); }
+  set media(value) { stringAttribute.set(this, 'media', value); }
+  /* c8 ignore stop */
 
 }
 exports.HTMLMetaElement = HTMLMetaElement
