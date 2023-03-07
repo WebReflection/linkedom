@@ -55,3 +55,13 @@ assert(f.toString(), '<meta http-equiv="default-style" content="text/css">');
 // assert httpEquiv & content attribute
 assert(f.httpEquiv, 'default-style');
 assert(f.content, 'text/css');
+
+// name="theme-color" & content & media
+const {document: themeColor} = parseHTML('<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)">')
+const {lastElementChild: g} = themeColor;
+// assert toString
+assert(g.toString(), '<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)">')
+// assert name & content attribute
+assert(g.name, 'theme-color');
+assert(g.content, '#ffffff');
+assert(g.media, '(prefers-color-scheme: dark)');
