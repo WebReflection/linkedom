@@ -55,6 +55,16 @@
     "./package.json": "./package.json",
     "./worker": "./worker.js"
   },
+  "typesVersions": {
+    "*": {
+      "cached": [
+        "./types/esm/index.d.ts"
+      ],
+      "worker": [
+        "./types/esm/index.d.ts"
+      ]
+    }
+  },
   "dependencies": {
     "css-select": "^5.1.0",
     "cssom": "^0.5.0",
