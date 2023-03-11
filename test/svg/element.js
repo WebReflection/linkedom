@@ -91,3 +91,16 @@ assert(svgElement2.viewBox.animVal.x, 100);
 assert(svgElement2.viewBox.animVal.y, 200);
 assert(svgElement2.viewBox.animVal.width, 300);
 assert(svgElement2.viewBox.animVal.height, 400);
+
+// manually set viewbox baseval attributes
+svgElement2.viewBox.baseVal.x = 1;
+svgElement2.viewBox.baseVal.y = 2;
+svgElement2.viewBox.baseVal.width = 3;
+svgElement2.viewBox.baseVal.height = 4;
+svgElement2.viewBox = {
+  baseVal: { x: 1, y: 2, width: 3, height: 4 },
+  animVal: { x: 1, y: 2, width: 3, height: 4 }
+}
+
+// assert viewbox attribute
+assert(svgElement2.getAttribute('viewbox'), '1 2 3 4');
