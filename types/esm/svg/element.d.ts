@@ -4,6 +4,8 @@
 export class SVGElement extends Element implements globalThis.SVGElement {
     constructor(ownerDocument: any, localName: any, ownerSVGElement?: any);
     ownerSVGElement: any;
+    set viewBox(arg: any);
+    get viewBox(): any;
     set innerHTML(arg: string);
     get innerHTML(): string;
 }

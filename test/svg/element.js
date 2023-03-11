@@ -47,3 +47,47 @@ assert(svg.getAttribute('class'), 'a b c');
 svg.setAttribute('class', 'd e');
 assert(svg.getAttribute('class'), 'd e');
 assert(svg.namespaceURI, 'http://www.w3.org/2000/svg');
+
+// make svg with a viewBox
+const svgDocument = (new DOMParser).parseFromString(`<!doctype html><html><svg viewBox="0 0 100 100"><rect /></svg></html>`, 'text/html');
+const svgElement = svgDocument.querySelector('svg');
+// assert viewbox attribute
+assert(svgElement.getAttribute('viewbox'), '0 0 100 100');
+// assert viewbox property
+assert(svgElement.viewBox.baseVal.x, 0);
+assert(svgElement.viewBox.baseVal.y, 0);
+assert(svgElement.viewBox.baseVal.width, 100);
+assert(svgElement.viewBox.baseVal.height, 100);
+assert(svgElement.viewBox.animVal.x, 0);
+assert(svgElement.viewBox.animVal.y, 0);
+assert(svgElement.viewBox.animVal.width, 100);
+assert(svgElement.viewBox.animVal.height, 100);
+// set viewBox manually 100 200 300 400
+svgElement.setAttribute('viewbox', '100 200 300 400');
+// assert viewbox property
+assert(svgElement.getAttribute('viewbox'), '100 200 300 400');
+assert(svgElement.viewBox.baseVal.x, 100);
+assert(svgElement.viewBox.baseVal.y, 200);
+assert(svgElement.viewBox.baseVal.width, 300);
+assert(svgElement.viewBox.baseVal.height, 400);
+assert(svgElement.viewBox.animVal.x, 100);
+assert(svgElement.viewBox.animVal.y, 200);
+assert(svgElement.viewBox.animVal.width, 300);
+assert(svgElement.viewBox.animVal.height, 400);
+
+// make svg without a viewBox
+const svgDocument2 = (new DOMParser).parseFromString(`<!doctype html><html><svg><rect /></svg></html>`, 'text/html');
+const svgElement2 = svgDocument2.querySelector('svg');
+// assert viewbox property
+assert(svgElement2.getAttribute('viewbox'), '');
+svgElement2.setAttribute('viewbox', '100 200 300 400');
+// assert viewbox property
+assert(svgElement2.getAttribute('viewbox'), '100 200 300 400');
+assert(svgElement2.viewBox.baseVal.x, 100);
+assert(svgElement2.viewBox.baseVal.y, 200);
+assert(svgElement2.viewBox.baseVal.width, 300);
+assert(svgElement2.viewBox.baseVal.height, 400);
+assert(svgElement2.viewBox.animVal.x, 100);
+assert(svgElement2.viewBox.animVal.y, 200);
+assert(svgElement2.viewBox.animVal.width, 300);
+assert(svgElement2.viewBox.animVal.height, 400);

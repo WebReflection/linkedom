@@ -104,7 +104,7 @@ const decodeMap = new Map([
     [158, 382],
     [159, 376],
 ]);
-const fromCodePoint = 
+const fromCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, node/no-unsupported-features/es-builtins
 (_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : function (codePoint) {
     let output = "";
@@ -2108,7 +2108,7 @@ const xmlCodeMap = new Map([
     [62, "&gt;"],
 ]);
 // For compatibility with node < 4, we wrap `codePointAt`
-const getCodePoint = 
+const getCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 String.prototype.codePointAt != null
     ? (str, index) => str.codePointAt(index)
@@ -4237,7 +4237,7 @@ class DOMEventTarget {
 
   addEventListener(type, listener, options) {
     const map = wm.get(this);
-    if (!map.has(type)) 
+    if (!map.has(type))
       map.set(type, new Map);
     map.get(type).set(listener, options);
   }
@@ -5788,7 +5788,7 @@ function dynamicStatePseudo(name) {
 // While filters are precompiled, pseudos get called when they are needed
 const pseudos = {
     empty(elem, { adapter }) {
-        return !adapter.getChildren(elem).some((elem) => 
+        return !adapter.getChildren(elem).some((elem) =>
         // FIXME: `getText` call is potentially expensive.
         adapter.isTag(elem) || adapter.getText(elem) !== "");
     },
@@ -6778,7 +6778,7 @@ class NonElementParentNode extends ParentNode {
       for (const node of this.childNodes)
         nonEPN.insertBefore(node.cloneNode(deep), end);
     }
-    return nonEPN; 
+    return nonEPN;
   }
 
   toString() {
@@ -7186,7 +7186,7 @@ class GlobalEvent {
     stopPropagation() {
       this.cancelBubble = true;
     }
-    
+
     stopImmediatePropagation() {
       this.stopPropagation();
       this._stopImmediatePropagationFlag = true;
@@ -7702,6 +7702,7 @@ class Element$1 extends ParentNode {
 }
 
 const classNames = new WeakMap;
+const viewBoxes = new WeakMap;
 
 const handler = {
   get(target, name) {
@@ -7720,6 +7721,24 @@ class SVGElement$1 extends Element$1 {
   constructor(ownerDocument, localName, ownerSVGElement = null) {
     super(ownerDocument, localName);
     this.ownerSVGElement = ownerSVGElement;
+  }
+
+  get viewBox() {
+    if (!viewBoxes.has(this)) {
+      const obj = makeValObj(stringAttribute.get(this, 'viewBox'));
+      const proxyObj = { baseVal: obj, animVal: obj };
+      viewBoxes.set(this, new Proxy(proxyObj, handler));
+    }
+    return viewBoxes.get(this)
+  }
+
+  set viewBox(value) {
+    if (!viewBoxes.has(this)) {
+      const { x, y, width, height } = this.viewBox.baseVal;
+      const obj = { baseVal: { x, y, width, height }, animVal: { x, y, width, height } };
+      viewBoxes.set(this, new Proxy(obj, handler));
+    }
+    Object.assign(viewBoxes.get(this), value);
   }
 
   get className() {
@@ -7741,9 +7760,12 @@ class SVGElement$1 extends Element$1 {
   }
 
   getAttribute(name) {
-    return name === 'class' ?
-      [...this.classList].join(' ') :
-      super.getAttribute(name);
+    if (name === 'class')
+      return [...this.classList].join(' ')
+    if (name === 'viewbox') {
+      return this.viewBox.baseVal  ? makeViewboxString(this.viewBox.baseVal) : '';
+    }
+    return super.getAttribute(name);
   }
 
   setAttribute(name, value) {
@@ -7752,9 +7774,24 @@ class SVGElement$1 extends Element$1 {
     else if (name === 'style') {
       const {className} = this;
       className.baseVal = className.animVal = value;
+    } else if (name === 'viewbox') {
+      this.viewBox.baseVal = makeValObj(value);
+      this.viewBox.animVal = makeValObj(value);
     }
     super.setAttribute(name, value);
   }
+}
+
+// makeValObj :: String -> Object{x, y, width, height}
+function makeValObj(str) {
+  if (!str) return '';
+  const [x, y, width, height] = str.split(/\s+/).map(Number);
+  return { x, y, width, height };
+}
+
+// makeViewboxString :: Object{x, y, width, height} -> String
+function makeViewboxString(obj) {
+  return `${obj.x} ${obj.y} ${obj.width} ${obj.height}`;
 }
 
 /* c8 ignore start */
@@ -8125,12 +8162,14 @@ class HTMLElement extends Element$1 {
 }
 
 const tagName$g = 'template';
+const tagName$g = 'template';
 
 /**
  * @implements globalThis.HTMLTemplateElement
  */
 class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
+    super(ownerDocument, tagName$g);
     super(ownerDocument, tagName$g);
     const content = this.ownerDocument.createDocumentFragment();
     (this[CONTENT] = content)[PRIVATE] = this;
@@ -8145,6 +8184,7 @@ class HTMLTemplateElement extends HTMLElement {
   }
 }
 
+registerHTMLClass(tagName$g, HTMLTemplateElement);
 registerHTMLClass(tagName$g, HTMLTemplateElement);
 
 /**
@@ -8170,11 +8210,13 @@ class TextElement extends HTMLElement {
 }
 
 const tagName$f = 'script';
+const tagName$f = 'script';
 
 /**
  * @implements globalThis.HTMLScriptElement
  */
 class HTMLScriptElement extends TextElement {
+  constructor(ownerDocument, localName = tagName$f) {
   constructor(ownerDocument, localName = tagName$f) {
     super(ownerDocument, localName);
   }
@@ -8241,6 +8283,7 @@ class HTMLScriptElement extends TextElement {
 }
 
 registerHTMLClass(tagName$f, HTMLScriptElement);
+registerHTMLClass(tagName$f, HTMLScriptElement);
 
 /**
  * @implements globalThis.HTMLFrameElement
@@ -8252,11 +8295,13 @@ class HTMLFrameElement extends HTMLElement {
 }
 
 const tagName$e = 'iframe';
+const tagName$e = 'iframe';
 
 /**
  * @implements globalThis.HTMLIFrameElement
  */
 class HTMLIFrameElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName$e) {
   constructor(ownerDocument, localName = tagName$e) {
     super(ownerDocument, localName);
   }
@@ -8276,15 +8321,16 @@ class HTMLIFrameElement extends HTMLElement {
 
   get allowFullscreen() { return booleanAttribute.get(this, "allowfullscreen"); }
   set allowFullscreen(value) { booleanAttribute.set(this, "allowfullscreen", value); }
-  
+
   get referrerPolicy() { return stringAttribute.get(this, "referrerpolicy"); }
   set referrerPolicy(value) { stringAttribute.set(this, "referrerpolicy", value); }
-  
+
   get loading() { return stringAttribute.get(this, "loading"); }
   set loading(value) { stringAttribute.set(this, "loading", value); }
   /* c8 ignore stop */
 }
 
+registerHTMLClass(tagName$e, HTMLIFrameElement);
 registerHTMLClass(tagName$e, HTMLIFrameElement);
 
 /**
@@ -9470,7 +9516,7 @@ CSSOM$2.CSSValueExpression.prototype._parseJSComment = function(token, idx) {
  * @return {Object|false}
  *					- idx:
  *					- text:
- *					or 
+ *					or
  *					false
  *
  */
@@ -9497,14 +9543,14 @@ CSSOM$2.CSSValueExpression.prototype._parseJSString = function(token, idx, sep) 
  * @return {Object|false}
  *				- idx:
  *				- regExp:
- *				or 
+ *				or
  *				false
  */
 
 /*
 
 all legal RegExp
- 
+
 /a/
 (/a/)
 [/a/]
@@ -10156,7 +10202,7 @@ function requireParse () {
 								hasAncestors = false;
 							}
 						}
-						
+
 						if (!hasAncestors) {
 							currentScope.__ends = i + 1;
 							styleSheet.cssRules.push(currentScope);
@@ -10396,11 +10442,13 @@ requireCSSKeyframeRule().CSSKeyframeRule;
 var parse$1 = requireParse().parse;
 
 const tagName$d = 'style';
+const tagName$d = 'style';
 
 /**
  * @implements globalThis.HTMLStyleElement
  */
 class HTMLStyleElement extends TextElement {
+  constructor(ownerDocument, localName = tagName$d) {
   constructor(ownerDocument, localName = tagName$d) {
     super(ownerDocument, localName);
     this[SHEET] = null;
@@ -10437,6 +10485,7 @@ class HTMLStyleElement extends TextElement {
   }
 }
 
+registerHTMLClass(tagName$d, HTMLStyleElement);
 registerHTMLClass(tagName$d, HTMLStyleElement);
 
 /**
@@ -10539,11 +10588,13 @@ class HTMLDataListElement extends HTMLElement {
 }
 
 const tagName$c = 'input';
+const tagName$c = 'input';
 
 /**
  * @implements globalThis.HTMLInputElement
  */
 class HTMLInputElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName$c) {
   constructor(ownerDocument, localName = tagName$c) {
     super(ownerDocument, localName);
   }
@@ -10569,6 +10620,7 @@ class HTMLInputElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
+registerHTMLClass(tagName$c, HTMLInputElement);
 registerHTMLClass(tagName$c, HTMLInputElement);
 
 /**
@@ -10599,16 +10651,19 @@ class HTMLAudioElement extends HTMLElement {
 }
 
 const tagName$b = 'h1';
+const tagName$b = 'h1';
 
 /**
  * @implements globalThis.HTMLHeadingElement
  */
 class HTMLHeadingElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$b) {
+  constructor(ownerDocument, localName = tagName$b) {
     super(ownerDocument, localName);
   }
 }
 
+registerHTMLClass([tagName$b, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
 registerHTMLClass([tagName$b, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
 
 /**
@@ -10642,11 +10697,13 @@ class Canvas {
 const {createCanvas} = Canvas$1;
 
 const tagName$a = 'canvas';
+const tagName$a = 'canvas';
 
 /**
  * @implements globalThis.HTMLCanvasElement
  */
 class HTMLCanvasElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName$a) {
   constructor(ownerDocument, localName = tagName$a) {
     super(ownerDocument, localName);
     this[IMAGE] = createCanvas(300, 150);
@@ -10680,6 +10737,7 @@ class HTMLCanvasElement extends HTMLElement {
 }
 
 registerHTMLClass(tagName$a, HTMLCanvasElement);
+registerHTMLClass(tagName$a, HTMLCanvasElement);
 
 /**
  * @implements globalThis.HTMLLegendElement
@@ -10691,11 +10749,13 @@ class HTMLLegendElement extends HTMLElement {
 }
 
 const tagName$9 = 'option';
+const tagName$9 = 'option';
 
 /**
  * @implements globalThis.HTMLOptionElement
  */
 class HTMLOptionElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName$9) {
   constructor(ownerDocument, localName = tagName$9) {
     super(ownerDocument, localName);
   }
@@ -10714,6 +10774,7 @@ class HTMLOptionElement extends HTMLElement {
   }
 }
 
+registerHTMLClass(tagName$9, HTMLOptionElement);
 registerHTMLClass(tagName$9, HTMLOptionElement);
 
 /**
@@ -12016,7 +12077,7 @@ const parseJSON = value => {
 };
 
 /**
- * 
+ *
  * @param {Document|Element} node the Document or Element to serialize
  * @returns {jsdonValue[]} the linear jsdon serialized array
  */
