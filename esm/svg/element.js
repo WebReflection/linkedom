@@ -33,11 +33,6 @@ export class SVGElement extends Element {
   }
 
   set viewBox(value) {
-    if (!viewBoxes.has(this)) {
-      const { x, y, width, height } = this.viewBox.baseVal;
-      const obj = { baseVal: { x, y, width, height }, animVal: { x, y, width, height } }
-      viewBoxes.set(this, new Proxy(obj, handler))
-    }
     Object.assign(viewBoxes.get(this), value);
   }
 
