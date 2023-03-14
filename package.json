@@ -70,7 +70,7 @@
     "cssom": "^0.5.0",
     "html-escaper": "^3.0.3",
     "htmlparser2": "^8.0.1",
-    "uhyphen": "^0.1.0"
+    "uhyphen": "^0.2.0"
   },
   "repository": {
     "type": "git",
