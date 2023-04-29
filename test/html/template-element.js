@@ -10,6 +10,8 @@ assert(template.innerHTML, '<div>foo</div><div>bar</div>');
 assert(template.toString(), '<template><div>foo</div><div>bar</div></template>');
 assert(document.toString(), '<template><div>foo</div><div>bar</div></template>');
 
+assert(document.querySelector('template > *'), null);
+
 assert(template.content, template.content);
 
 template.replaceChildren();

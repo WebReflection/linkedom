@@ -6566,7 +6566,7 @@ class ParentNode extends Node$1 {
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE && matches(next))
         return next;
-      next = next[NEXT];
+      next = next.localName === 'template' ? next[END] : next[NEXT];
     }
     return null;
   }
@@ -6578,7 +6578,7 @@ class ParentNode extends Node$1 {
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE && matches(next))
         elements.push(next);
-      next = next[NEXT];
+      next = next.localName === 'template' ? next[END] : next[NEXT];
     }
     return elements;
   }
