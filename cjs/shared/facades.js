@@ -1,6 +1,7 @@
 'use strict';
 const {Attr: _Attr} = require('../interface/attr.js');
 const {CharacterData: _CharacterData} = require('../interface/character-data.js');
+const {CDATASection: _CDATASection} = require('../interface/cdata-section');
 const {Comment: _Comment} = require('../interface/comment.js');
 const {DocumentFragment: _DocumentFragment} = require('../interface/document-fragment.js');
 const {DocumentType: _DocumentType} = require('../interface/document-type.js');
@@ -22,6 +23,11 @@ function Attr() { illegalConstructor(); }
 exports.Attr = Attr
 setPrototypeOf(Attr, _Attr);
 Attr.prototype = _Attr.prototype;
+
+function CDATASection() { illegalConstructor(); }
+exports.CDATASection = CDATASection
+setPrototypeOf(CDATASection, _CDATASection);
+CDATASection.prototype = _CDATASection.prototype;
 
 function CharacterData() { illegalConstructor(); }
 exports.CharacterData = CharacterData
@@ -71,6 +77,7 @@ SVGElement.prototype = _SVGElement.prototype;
 
 const Facades = {
   Attr,
+  CDATASection,
   CharacterData,
   Comment,
   DocumentFragment,

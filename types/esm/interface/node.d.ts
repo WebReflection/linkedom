@@ -5,6 +5,7 @@ export class Node extends EventTarget implements globalThis.Node {
     static get ELEMENT_NODE(): number;
     static get ATTRIBUTE_NODE(): number;
     static get TEXT_NODE(): number;
+    static get CDATA_SECTION_NODE(): number;
     static get COMMENT_NODE(): number;
     static get DOCUMENT_NODE(): number;
     static get DOCUMENT_FRAGMENT_NODE(): number;
@@ -17,6 +18,7 @@ export class Node extends EventTarget implements globalThis.Node {
     get ELEMENT_NODE(): number;
     get ATTRIBUTE_NODE(): number;
     get TEXT_NODE(): number;
+    get CDATA_SECTION_NODE(): number;
     get COMMENT_NODE(): number;
     get DOCUMENT_NODE(): number;
     get DOCUMENT_FRAGMENT_NODE(): number;

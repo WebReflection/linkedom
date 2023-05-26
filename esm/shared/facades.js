@@ -1,5 +1,6 @@
 import {Attr as _Attr} from '../interface/attr.js';
 import {CharacterData as _CharacterData} from '../interface/character-data.js';
+import {CDATASection as _CDATASection} from '../interface/cdata-section';
 import {Comment as _Comment} from '../interface/comment.js';
 import {DocumentFragment as _DocumentFragment} from '../interface/document-fragment.js';
 import {DocumentType as _DocumentType} from '../interface/document-type.js';
@@ -19,6 +20,10 @@ export const illegalConstructor = () => {
 export function Attr() { illegalConstructor(); }
 setPrototypeOf(Attr, _Attr);
 Attr.prototype = _Attr.prototype;
+
+export function CDATASection() { illegalConstructor(); }
+setPrototypeOf(CDATASection, _CDATASection);
+CDATASection.prototype = _CDATASection.prototype;
 
 export function CharacterData() { illegalConstructor(); }
 setPrototypeOf(CharacterData, _CharacterData);
@@ -59,6 +64,7 @@ SVGElement.prototype = _SVGElement.prototype;
 
 export const Facades = {
   Attr,
+  CDATASection,
   CharacterData,
   Comment,
   DocumentFragment,

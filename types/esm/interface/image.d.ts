@@ -173,6 +173,7 @@ export function ImageClass(ownerDocument: any): {
         readonly ELEMENT_NODE: number;
         readonly ATTRIBUTE_NODE: number;
         readonly TEXT_NODE: number;
+        readonly CDATA_SECTION_NODE: number;
         readonly COMMENT_NODE: number;
         readonly DOCUMENT_NODE: number;
         readonly DOCUMENT_FRAGMENT_NODE: number;
@@ -194,6 +195,7 @@ export function ImageClass(ownerDocument: any): {
     readonly ELEMENT_NODE: number;
     readonly ATTRIBUTE_NODE: number;
     readonly TEXT_NODE: number;
+    readonly CDATA_SECTION_NODE: number;
     readonly COMMENT_NODE: number;
     readonly DOCUMENT_NODE: number;
     readonly DOCUMENT_FRAGMENT_NODE: number;

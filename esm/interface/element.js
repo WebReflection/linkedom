@@ -3,6 +3,7 @@
 import {
   ATTRIBUTE_NODE,
   BLOCK_ELEMENTS,
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   ELEMENT_NODE,
   NODE_END,
@@ -407,6 +408,7 @@ export class Element extends ParentNode {
         }
         case TEXT_NODE:
         case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
           addNext(next.cloneNode(deep));
           break;
       }
@@ -467,6 +469,7 @@ export class Element extends ParentNode {
           break;
         case TEXT_NODE:
         case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
           out.push((isOpened ? '>' : '') + next);
           isOpened = false;
           break;

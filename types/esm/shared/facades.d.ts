@@ -1,4 +1,5 @@
 export function Attr(): void;
+export function CDATASection(): void;
 export function CharacterData(): void;
 export function Comment(): void;
 export function DocumentFragment(): void;
@@ -11,6 +12,7 @@ export function SVGElement(): void;
 export function illegalConstructor(): never;
 export namespace Facades {
     export { Attr };
+    export { CDATASection };
     export { CharacterData };
     export { Comment };
     export { DocumentFragment };

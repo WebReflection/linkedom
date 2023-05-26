@@ -3,6 +3,7 @@ import {
   ELEMENT_NODE,
   ATTRIBUTE_NODE,
   TEXT_NODE,
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   DOCUMENT_NODE,
   DOCUMENT_TYPE_NODE,
@@ -15,6 +16,7 @@ import {htmlClasses} from './register-html-class.js';
 import {knownBoundaries, knownSiblings} from './utils.js';
 
 import {Attr} from '../interface/attr.js';
+import {CDATASection} from '../interface/cdata-section.js';
 import {Comment} from '../interface/comment.js';
 import {DocumentType} from '../interface/document-type.js';
 import {Text} from '../interface/text.js';
@@ -82,6 +84,9 @@ export const parseJSON = value => {
         break;
       case COMMENT_NODE:
         append(parentNode, new Comment(document, array[i++]), end);
+        break;
+      case CDATA_SECTION_NODE:
+        append(parentNode, new CDATASection(document, array[i++]), end);
         break;
       case DOCUMENT_TYPE_NODE: {
         const args = [document];

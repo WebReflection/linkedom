@@ -18,6 +18,7 @@ import {NonElementParentNode} from '../mixin/non-element-parent-node.js';
 import {SVGElement} from '../svg/element.js';
 
 import {Attr} from './attr.js';
+import {CDATASection} from './cdata-section.js'
 import {Comment} from './comment.js';
 import {CustomElementRegistry} from './custom-element-registry.js';
 import {CustomEvent} from './custom-event.js';
@@ -171,6 +172,7 @@ export class Document extends NonElementParentNode {
   }
 
   createAttribute(name) { return new Attr(this, name); }
+  createCDATASection(data) { return new CDATASection(this, data); }
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType(this, name, publicId, systemId); }

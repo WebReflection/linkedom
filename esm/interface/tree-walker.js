@@ -2,9 +2,11 @@ import {
   DOCUMENT_NODE,
   ELEMENT_NODE,
   TEXT_NODE,
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   SHOW_ALL,
   SHOW_ELEMENT,
+  SHOW_CDATA_SECTION,
   SHOW_COMMENT,
   SHOW_TEXT
 } from '../shared/constants.js';
@@ -19,6 +21,8 @@ const isOK = ({nodeType}, mask) => {
       return mask & SHOW_TEXT;
     case COMMENT_NODE:
       return mask & SHOW_COMMENT;
+    case CDATA_SECTION_NODE:
+      return mask & SHOW_CDATA_SECTION;
   }
   return 0;
 };

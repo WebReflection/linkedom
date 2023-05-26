@@ -3451,6 +3451,7 @@ const NODE_END = -1;
 const ELEMENT_NODE = 1;
 const ATTRIBUTE_NODE = 2;
 const TEXT_NODE = 3;
+const CDATA_SECTION_NODE = 4;
 const COMMENT_NODE = 8;
 const DOCUMENT_NODE = 9;
 const DOCUMENT_TYPE_NODE = 10;
@@ -3463,6 +3464,7 @@ const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'BR', 
 const SHOW_ALL = -1;
 const SHOW_ELEMENT = 1;
 const SHOW_TEXT = 4;
+const SHOW_CDATA_SECTION = 8;
 const SHOW_COMMENT = 128;
 
 // Document position
@@ -3740,6 +3742,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
 
   let node = document;
   let ownerSVGElement = null;
+  let parsingCData = false;
 
   const content = new Parser({
     // <!DOCTYPE ...>
@@ -3783,7 +3786,17 @@ const parseFromString = (document, isHTML, markupLanguage) => {
 
     // #text, #comment
     oncomment(data) { append$1(node, document.createComment(data), active); },
-    ontext(text) { append$1(node, document.createTextNode(text), active); },
+    ontext(text) {
+      if (parsingCData) {
+        append$1(node, document.createCDATASection(text), active);
+      } else {
+        append$1(node, document.createTextNode(text), active);
+      }
+    },
+
+    // #cdata
+    oncdatastart() { parsingCData = true; },
+    oncdataend() { parsingCData = false; },
 
     // </tagName>
     onclosetag() {
@@ -3822,6 +3835,7 @@ const loopSegment = ({[NEXT]: next, [END]: end}, json) => {
         break;
       case TEXT_NODE:
       case COMMENT_NODE:
+      case CDATA_SECTION_NODE:
         characterDataAsJSON(next, json);
         break;
       case ELEMENT_NODE:
@@ -4257,6 +4271,7 @@ let Node$1 = class Node extends DOMEventTarget {
   static get ELEMENT_NODE() { return ELEMENT_NODE; }
   static get ATTRIBUTE_NODE() { return ATTRIBUTE_NODE; }
   static get TEXT_NODE() { return TEXT_NODE; }
+  static get CDATA_SECTION_NODE() { return CDATA_SECTION_NODE; }
   static get COMMENT_NODE() { return COMMENT_NODE; }
   static get DOCUMENT_NODE() { return DOCUMENT_NODE; }
   static get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }
@@ -4275,6 +4290,7 @@ let Node$1 = class Node extends DOMEventTarget {
   get ELEMENT_NODE() { return ELEMENT_NODE; }
   get ATTRIBUTE_NODE() { return ATTRIBUTE_NODE; }
   get TEXT_NODE() { return TEXT_NODE; }
+  get CDATA_SECTION_NODE() { return CDATA_SECTION_NODE; }
   get COMMENT_NODE() { return COMMENT_NODE; }
   get DOCUMENT_NODE() { return DOCUMENT_NODE; }
   get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }
@@ -4482,6 +4498,7 @@ const previousSibling = ({[PREV]: prev}) => {
       return prev[START];
     case TEXT_NODE:
     case COMMENT_NODE:
+    case CDATA_SECTION_NODE:
       return prev;
   }
   return null;
@@ -4632,6 +4649,22 @@ let CharacterData$1 = class CharacterData extends Node$1 {
     characterDataAsJSON(this, json);
     return json;
   }
+};
+
+/**
+ * @implements globalThis.CDATASection
+ */
+let CDATASection$1 = class CDATASection extends CharacterData$1 {
+  constructor(ownerDocument, data = '') {
+    super(ownerDocument, '#cdatasection', CDATA_SECTION_NODE, data);
+  }
+
+  cloneNode() {
+    const {ownerDocument, [VALUE]: data} = this;
+    return new CDATASection(ownerDocument, data);
+  }
+
+  toString() { return `<![CDATA[${this[VALUE]}]]>`; }
 };
 
 /**
@@ -6422,7 +6455,7 @@ const insert = (parentNode, child, nodes) => {
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
-    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE,
+    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE | typeof CDATA_SECTION_NODE,
     ownerDocument: Document,
     parentNode: ParentNode,
 }} NodeStruct */
@@ -6629,6 +6662,7 @@ class ParentNode extends Node$1 {
       }
       case TEXT_NODE:
       case COMMENT_NODE:
+      case CDATA_SECTION_NODE:
         node.remove();
       /* eslint no-fallthrough:0 */
       // this covers DOCUMENT_TYPE_NODE too
@@ -7530,6 +7564,7 @@ let Element$1 = class Element extends ParentNode {
         }
         case TEXT_NODE:
         case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
           addNext(next.cloneNode(deep));
           break;
       }
@@ -7590,6 +7625,7 @@ let Element$1 = class Element extends ParentNode {
           break;
         case TEXT_NODE:
         case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
           out.push((isOpened ? '>' : '') + next);
           isOpened = false;
           break;
@@ -7681,6 +7717,10 @@ function Attr() { illegalConstructor(); }
 setPrototypeOf(Attr, Attr$1);
 Attr.prototype = Attr$1.prototype;
 
+function CDATASection() { illegalConstructor(); }
+setPrototypeOf(CDATASection, CDATASection$1);
+CDATASection.prototype = CDATASection$1.prototype;
+
 function CharacterData() { illegalConstructor(); }
 setPrototypeOf(CharacterData, CharacterData$1);
 CharacterData.prototype = CharacterData$1.prototype;
@@ -7720,6 +7760,7 @@ SVGElement.prototype = SVGElement$1.prototype;
 
 const Facades = {
   Attr,
+  CDATASection,
   CharacterData,
   Comment,
   DocumentFragment,
@@ -11404,6 +11445,8 @@ const isOK = ({nodeType}, mask) => {
       return mask & SHOW_TEXT;
     case COMMENT_NODE:
       return mask & SHOW_COMMENT;
+    case CDATA_SECTION_NODE:
+      return mask & SHOW_CDATA_SECTION;
   }
   return 0;
 };
@@ -11574,6 +11617,7 @@ let Document$1 = class Document extends NonElementParentNode {
   }
 
   createAttribute(name) { return new Attr$1(this, name); }
+  createCDATASection(data) { return new CDATASection$1(this, data); }
   createComment(textContent) { return new Comment$1(this, textContent); }
   createDocumentFragment() { return new DocumentFragment$1(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType$1(this, name, publicId, systemId); }
@@ -11895,6 +11939,9 @@ const parseJSON = value => {
       case COMMENT_NODE:
         append(parentNode, new Comment$1(document, array[i++]), end);
         break;
+      case CDATA_SECTION_NODE:
+        append(parentNode, new CDATASection$1(document, array[i++]), end);
+        break;
       case DOCUMENT_TYPE_NODE: {
         const args = [document];
         while (typeof array[i] === 'string')
@@ -11941,6 +11988,7 @@ class NodeFilter {
   static get SHOW_ALL() { return SHOW_ALL; }
   static get SHOW_ELEMENT() { return SHOW_ELEMENT; }
   static get SHOW_COMMENT() { return SHOW_COMMENT; }
+  static get SHOW_CDATA_SECTION() { return SHOW_CDATA_SECTION; }
   static get SHOW_TEXT() { return SHOW_TEXT; }
 }
 
@@ -11954,4 +12002,4 @@ function Document() {
 
 setPrototypeOf(Document, Document$1).prototype = Document$1.prototype;
 
-export { Attr, CharacterData, Comment, CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeFilter, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };
+export { Attr, CDATASection, CharacterData, Comment, CustomEvent, DOMParser, Document, DocumentFragment, DocumentType, Element, GlobalEvent as Event, DOMEventTarget as EventTarget, Facades, HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement, HTMLBRElement, HTMLBaseElement, HTMLBodyElement, HTMLButtonElement, HTMLCanvasElement, HTMLClasses, HTMLDListElement, HTMLDataElement, HTMLDataListElement, HTMLDetailsElement, HTMLDirectoryElement, HTMLDivElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHRElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLIElement, HTMLLabelElement, HTMLLegendElement, HTMLLinkElement, HTMLMapElement, HTMLMarqueeElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLOListElement, HTMLObjectElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPictureElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSlotElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableElement, HTMLTableRowElement, HTMLTemplateElement, HTMLTextAreaElement, HTMLTimeElement, HTMLTitleElement, HTMLTrackElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement, InputEvent, Node, NodeFilter, NodeList, SVGElement, ShadowRoot, Text, illegalConstructor, parseHTML, parseJSON, toJSON };

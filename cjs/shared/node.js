@@ -1,5 +1,6 @@
 'use strict';
 const {
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   DOCUMENT_NODE,
   DOCUMENT_FRAGMENT_NODE,
@@ -38,6 +39,7 @@ const previousSibling = ({[PREV]: prev}) => {
       return prev[START];
     case TEXT_NODE:
     case COMMENT_NODE:
+    case CDATA_SECTION_NODE:
       return prev;
   }
   return null;
