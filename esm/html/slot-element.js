@@ -12,14 +12,39 @@ class HTMLSlotElement extends HTMLElement {
   }
 
   /* c8 ignore start */
+  get name() { return this.getAttribute('name'); }
+  set name(value) { this.setAttribute('name', value); }
+
   assign() {}
 
-  assignedNodes() {
-    return [];
+  assignedNodes(options) {
+    const isNamedSlot = !!this.name;
+    const hostChildNodes = this.getRootNode().host?.childNodes ?? [];
+    let slottables = [];
+
+    if (isNamedSlot) {
+      slottables = [...hostChildNodes].filter(node => node.slot === this.name);
+    } else {
+      slottables = [...hostChildNodes].filter(node => !node.slot);
+    }
+
+    if (options?.flatten) {
+      let result = [];
+      for (let slottable of slottables) {
+        if (slottable.localName === 'slot') {
+          result.push(...slottable.assignedNodes({ flatten: true }));
+        } else {
+          result.push(slottable);
+        }
+      }
+      return result;
+    }
+
+    return slottables;
   }
 
-  assignedElements() {
-    return [];
+  assignedElements(options) {
+    return this.assignedNodes(options).filter(node => node.nodeType === 1);
   }
   /* c8 ignore stop */
 }
