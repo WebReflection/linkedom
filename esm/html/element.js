@@ -98,8 +98,6 @@ export class HTMLElement extends Element {
   set lang(value) { stringAttribute.set(this, 'lang', value); }
   get title() { return stringAttribute.get(this, 'title'); }
   set title(value) { stringAttribute.set(this, 'title', value); }
-  get slot() { return stringAttribute.get(this, 'slot'); }
-  set slot(value) { stringAttribute.set(this, 'slot', value); }
 
   // DOM Level 0
   get onabort() { return level0.get(this, 'onabort'); }
