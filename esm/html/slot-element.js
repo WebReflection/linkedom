@@ -20,7 +20,7 @@ class HTMLSlotElement extends HTMLElement {
   assignedNodes(options) {
     const isNamedSlot = !!this.name;
     const hostChildNodes = this.getRootNode().host?.childNodes ?? [];
-    let slottables = [];
+    let slottables;
 
     if (isNamedSlot) {
       slottables = [...hostChildNodes].filter(node => node.slot === this.name);
@@ -29,7 +29,9 @@ class HTMLSlotElement extends HTMLElement {
     }
 
     if (options?.flatten) {
-      let result = [];
+      const result = [];
+
+      // Element and Text nodes are slottables. A slot can be a slottable.
       for (let slottable of slottables) {
         if (slottable.localName === 'slot') {
           result.push(...slottable.assignedNodes({ flatten: true }));
@@ -37,10 +39,12 @@ class HTMLSlotElement extends HTMLElement {
           result.push(slottable);
         }
       }
-      return result;
+
+      slottables = result;
     }
 
-    return slottables;
+    // If no assigned elements are found, it returns the slot's fallback content.
+    return slottables.length ? slottables : [...this.childNodes];
   }
 
   assignedElements(options) {
