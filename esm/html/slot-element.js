@@ -43,12 +43,15 @@ class HTMLSlotElement extends HTMLElement {
       slottables = result;
     }
 
-    // If no assigned elements are found, it returns the slot's fallback content.
+    // If no assigned nodes are found, it returns the slot's fallback content.
     return slottables.length ? slottables : [...this.childNodes];
   }
 
   assignedElements(options) {
-    return this.assignedNodes(options).filter(node => node.nodeType === 1);
+    const slottables = this.assignedNodes(options).filter(n => n.nodeType === 1);
+
+    // If no assigned elements are found, it returns the slot's fallback content.
+    return slottables.length ? slottables : [...this.children];
   }
   /* c8 ignore stop */
 }
