@@ -212,8 +212,6 @@ class Element extends ParentNode {
       o;
     for (; c < p.length; c += 2) {
       o = html.indexOf(p[c], i);
-      // FIXME: add code coverage for this branch
-      if (o < 0) continue;
       out += html.substring(i, o) + p[c + 1];
       i = o;
     }
