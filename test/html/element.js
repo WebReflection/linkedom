@@ -173,4 +173,5 @@ closed.innerHTML = '<div>light<div>content</div></div>';
 const shadowRoot = closed.attachShadow({mode: 'closed'})
 shadowRoot.innerHTML = '<div>dark<div>content</div></div>';
 
-assert(closed.getInnerHTML({includeShadowRoots: true, closedRoots: [shadowRoot]}), '<template shadowrootmode="closed"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with shadow');
+assert(closed.getInnerHTML({includeShadowRoots: true, closedRoots: [shadowRoot]}), '<template shadowrootmode="closed"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with closed shadow roots');
+assert(closed.getInnerHTML({includeShadowRoots: true}), '<div>light<div>content</div></div>', 'getInnerHTML without closed shadow roots');
