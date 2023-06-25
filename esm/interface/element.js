@@ -305,8 +305,8 @@ export class Element extends ParentNode {
   // <ShadowDOM>
   get shadowRoot() {
     if (shadowRoots.has(this)) {
-      const {mode, shadowRoot} = shadowRoots.get(this);
-      if (mode === 'open')
+      const shadowRoot = shadowRoots.get(this);
+      if (shadowRoot.mode === 'open')
         return shadowRoot;
     }
     return null;
@@ -316,10 +316,7 @@ export class Element extends ParentNode {
     if (shadowRoots.has(this))
       throw new Error('operation not supported');
     const shadowRoot = new ShadowRoot(this, init);
-    shadowRoots.set(this, {
-      mode: init.mode,
-      shadowRoot
-    });
+    shadowRoots.set(this, shadowRoot);
     return shadowRoot;
   }
   // </ShadowDOM>

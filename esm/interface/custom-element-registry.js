@@ -36,7 +36,7 @@ export const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
     if (shadowRoots.has(element))
-      element = shadowRoots.get(element).shadowRoot;
+      element = shadowRoots.get(element);
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
@@ -51,7 +51,7 @@ export const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
     if (shadowRoots.has(element))
-      element = shadowRoots.get(element).shadowRoot;
+      element = shadowRoots.get(element);
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
