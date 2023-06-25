@@ -315,7 +315,7 @@ export class Element extends ParentNode {
   attachShadow(init) {
     if (shadowRoots.has(this))
       throw new Error('operation not supported');
-      // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
+    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
     //       but until DSD is out, I am not sure I should spend time on this.
     const shadowRoot = new ShadowRoot(this);
     shadowRoots.set(this, {
