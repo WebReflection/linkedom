@@ -23,6 +23,7 @@ export class Element extends ParentNode implements globalThis.Element {
     get innerText(): string;
     set innerHTML(arg: any);
     get innerHTML(): any;
+    getInnerHTML(opts: any): string;
     set outerHTML(arg: string);
     get outerHTML(): string;
     get attributes(): any;

@@ -113,6 +113,7 @@ export function ImageClass(ownerDocument: any): {
         readonly innerText: string;
         textContent: string;
         innerHTML: string;
+        getInnerHTML(opts: any): string;
         outerHTML: string;
         readonly attributes: any;
         focus(): void;

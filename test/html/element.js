@@ -161,3 +161,16 @@ assert(node.innerHTML, '<video src="" controls></video>');
 node.innerHTML = '<div>The <strong>quick</strong> brown fox</div><div>Jumped over<br>The lazy\ndog</div>';
 assert(node.innerText, 'The quick brown fox\nJumped over\nThe lazy dog', 'innerText newlines');
 assert(node.textContent, 'The quick brown foxJumped overThe lazy\ndog', 'textContent no newlines');
+
+node.innerHTML = '<div>light<div>content</div></div>';
+node.attachShadow({mode: 'open'}).innerHTML = '<div>dark<div>content</div></div>';
+
+assert(node.getInnerHTML({includeShadowRoots: false}), '<div>light<div>content</div></div>', 'getInnerHTML without shadow');
+assert(node.getInnerHTML({includeShadowRoots: true}), '<template shadowrootmode="open"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with shadow');
+
+const closed = document.createElement('div');
+closed.innerHTML = '<div>light<div>content</div></div>';
+const shadowRoot = closed.attachShadow({mode: 'closed'})
+shadowRoot.innerHTML = '<div>dark<div>content</div></div>';
+
+assert(closed.getInnerHTML({includeShadowRoots: true, closedRoots: [shadowRoot]}), '<template shadowrootmode="closed"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with shadow');

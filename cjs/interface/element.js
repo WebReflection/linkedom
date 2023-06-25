@@ -183,6 +183,43 @@ class Element extends ParentNode {
     setInnerHtml(this, html);
   }
 
+  // TODO: replace this [getInnerHTML polyfill](https://gist.github.com/developit/54f3e3d1ce9ed0e5a171044edcd0784f) with a more efficient solution
+  getInnerHTML(opts) {
+    const html = this.innerHTML;
+    if (!opts || !opts.includeShadowRoots) return html;
+    const m = new Map();
+    for (const c of opts.closedRoots || []) m.set(c.host, c);
+    const p = [];
+    
+    function walk(node) {
+      let c;
+      let shadow = node.shadowRoot || m.get(node);
+      if (shadow) {
+        p.push(node.innerHTML, `<template shadowrootmode="${shadow.mode}">${shadow.innerHTML}</template>`);
+      }
+
+      c = node.firstElementChild;
+      while (c) {
+        walk(c);
+        c = c.nextElementSibling;
+      }
+    }
+    
+    walk(this);
+    let out = "",
+      c = 0,
+      i = 0,
+      o;
+    for (; c < p.length; c += 2) {
+      o = html.indexOf(p[c], i);
+      // FIXME: add code coverage for this branch
+      if (o < 0) continue;
+      out += html.substring(i, o) + p[c + 1];
+      i = o;
+    }
+    return out + html.substring(i);
+  }
+
   get outerHTML() { return this.toString(); }
   set outerHTML(html) {
     const template = this.ownerDocument.createElement('');
