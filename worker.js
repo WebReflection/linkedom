@@ -3558,7 +3558,7 @@ const connectedCallback = element => {
   if (reactive) {
     triggerConnected(element);
     if (shadowRoots.has(element))
-      element = shadowRoots.get(element).shadowRoot;
+      element = shadowRoots.get(element);
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
@@ -3573,7 +3573,7 @@ const disconnectedCallback = element => {
   if (reactive) {
     triggerDisconnected(element);
     if (shadowRoots.has(element))
-      element = shadowRoots.get(element).shadowRoot;
+      element = shadowRoots.get(element);
     let {[NEXT]: next, [END]: end} = element;
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE)
@@ -6712,8 +6712,8 @@ class NonElementParentNode extends ParentNode {
  * @implements globalThis.DocumentFragment
  */
 let DocumentFragment$1 = class DocumentFragment extends NonElementParentNode {
-  constructor(ownerDocument) {
-    super(ownerDocument, '#document-fragment', DOCUMENT_FRAGMENT_NODE);
+  constructor(ownerDocument, tagName = '#document-fragment') {
+    super(ownerDocument, tagName, DOCUMENT_FRAGMENT_NODE);
   }
 };
 
@@ -7155,11 +7155,15 @@ class NamedNodeMap extends Array {
 
 /**
  * @implements globalThis.ShadowRoot
+ * https://dom.spec.whatwg.org/#shadowroot
  */
-let ShadowRoot$1 = class ShadowRoot extends NonElementParentNode {
-  constructor(host) {
+let ShadowRoot$1 = class ShadowRoot extends DocumentFragment$1 {
+  constructor(host, init) {
     super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
     this.host = host;
+    this.mode = init.mode;
+    this.delegatesFocus = init.delegatesFocus ?? false;
+    this.slotAssignment = init.slotAssignment ?? "named";
   }
 
   get innerHTML() {
@@ -7428,8 +7432,8 @@ let Element$1 = class Element extends ParentNode {
   // <ShadowDOM>
   get shadowRoot() {
     if (shadowRoots.has(this)) {
-      const {mode, shadowRoot} = shadowRoots.get(this);
-      if (mode === 'open')
+      const shadowRoot = shadowRoots.get(this);
+      if (shadowRoot.mode === 'open')
         return shadowRoot;
     }
     return null;
@@ -7438,14 +7442,8 @@ let Element$1 = class Element extends ParentNode {
   attachShadow(init) {
     if (shadowRoots.has(this))
       throw new Error('operation not supported');
-    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
-    //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot$1(this);
-    shadowRoot.append(...this.childNodes);
-    shadowRoots.set(this, {
-      mode: init.mode,
-      shadowRoot
-    });
+    const shadowRoot = new ShadowRoot$1(this, init);
+    shadowRoots.set(this, shadowRoot);
     return shadowRoot;
   }
   // </ShadowDOM>
