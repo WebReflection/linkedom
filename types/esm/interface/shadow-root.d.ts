@@ -1,10 +1,16 @@
 /**
  * @implements globalThis.ShadowRoot
+ * https://dom.spec.whatwg.org/#shadowroot
  */
-export class ShadowRoot extends NonElementParentNode implements globalThis.ShadowRoot {
-    constructor(host: any);
-    host: any;
+export class ShadowRoot extends DocumentFragment implements globalThis.ShadowRoot {
+    constructor(host: Element);
+    readonly host: Element;
     set innerHTML(arg: any);
     get innerHTML(): any;
+    readonly mode: ShadowRootMode;
+    readonly delegatesFocus: boolean;
+    readonly slotAssignment: SlotAssignmentMode;
+
+    // TODO: onslotchange: EventHandler;
 }
-import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
+import { DocumentFragment } from "./document-fragment.js";
