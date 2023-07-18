@@ -184,7 +184,7 @@ export function ImageClass(ownerDocument: any): {
         compareDocumentPosition(target: any): number;
         isEqualNode(node: any): boolean;
         _getParent(): any;
-        getRootNode(): any;
+        getRootNode(): ShadowRoot | HTMLDocument;
         [PREV]: any;
         addEventListener(type: any, listener: any, options: any): void;
         removeEventListener(type: any, listener: any): void;
