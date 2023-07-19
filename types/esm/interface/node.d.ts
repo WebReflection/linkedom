@@ -69,7 +69,12 @@ export class Node extends EventTarget implements globalThis.Node {
     isSameNode(node: any): boolean;
     compareDocumentPosition(target: any): number;
     isEqualNode(node: any): boolean;
-    getRootNode(): any;
+    /**
+     * Calling it on an element inside a standard web page will return an HTMLDocument object representing the entire page (or <iframe>).
+     * Calling it on an element inside a shadow DOM will return the associated ShadowRoot.
+     * @return {ShadowRoot | HTMLDocument}
+     */
+    getRootNode(): ShadowRoot | HTMLDocument;
     [NEXT]: any;
     [PREV]: any;
 }
