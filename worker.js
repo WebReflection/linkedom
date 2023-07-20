@@ -3947,8 +3947,8 @@ const moCallback = (element, parentNode) => {
       for (const [target, {subtree, childList, characterData}] of observer.nodes) {
         if (childList) {
           if (
-            (parentNode && (target === parentNode || (subtree && target.contains(parentNode)))) ||
-            (!parentNode && ((subtree && (target === ownerDocument || target.contains(element))) ||
+            (parentNode && (target === parentNode || /* c8 ignore next */(subtree && target.contains(parentNode)))) ||
+            (!parentNode && ((subtree && (target === ownerDocument || /* c8 ignore next */target.contains(element))) ||
                             (!subtree && target[characterData ? 'childNodes' : 'children'].includes(element))))
           ) {
             const {callback, records, scheduled} = observer;
@@ -4405,11 +4405,16 @@ let Node$1 = class Node extends DOMEventTarget {
     return this.parentNode;
   }
 
+  /**
+   * Calling it on an element inside a standard web page will return an HTMLDocument object representing the entire page (or <iframe>).
+   * Calling it on an element inside a shadow DOM will return the associated ShadowRoot.
+   * @return {ShadowRoot | HTMLDocument}
+   */
   getRootNode() {
     let root = this;
     while (root.parentNode)
       root = root.parentNode;
-    return root.nodeType === DOCUMENT_NODE ? root.documentElement : root;
+    return root;
   }
 };
 

@@ -20,7 +20,7 @@ assert(text.isConnected, false, '!isConnected');
 assert(text.parentElement, null, '!parentElement');
 assert(node.contains(text), false, '!contains');
 node.firstChild.appendChild(text);
-assert(text.getRootNode(), document.documentElement, 'getRootNode as html');
+assert(text.getRootNode(), document, 'getRootNode as document');
 assert(node.contains(text), true, 'contains');
 assert(text.isConnected, true, 'isConnected');
 assert(text.parentElement, node.firstChild, 'parentElement');
