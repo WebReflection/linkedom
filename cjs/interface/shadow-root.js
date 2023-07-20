@@ -1,7 +1,8 @@
 'use strict';
 const {DOCUMENT_FRAGMENT_NODE} = require('../shared/constants.js');
-const {getInnerHtml, setInnerHtml} = require('../mixin/inner-html.js');
+const {getInnerHTML, getInnerHtml, setInnerHtml} = require('../mixin/inner-html.js');
 const {DocumentFragment} = require('./document-fragment.js');
+
 
 /**
  * @implements globalThis.ShadowRoot
@@ -21,6 +22,10 @@ class ShadowRoot extends DocumentFragment {
   }
   set innerHTML(html) {
     setInnerHtml(this, html);
+  }
+
+  getInnerHTML(opts) {
+    return getInnerHTML(this, opts);
   }
 }
 exports.ShadowRoot = ShadowRoot

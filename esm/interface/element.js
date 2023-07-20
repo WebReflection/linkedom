@@ -35,7 +35,7 @@ import {isConnected, parentElement, previousSibling, nextSibling} from '../share
 import {previousElementSibling, nextElementSibling} from '../mixin/non-document-type-child-node.js';
 
 import {before, after, replaceWith, remove} from '../mixin/child-node.js';
-import {getInnerHtml, setInnerHtml} from '../mixin/inner-html.js';
+import {getInnerHtml, setInnerHtml, getInnerHTML} from '../mixin/inner-html.js';
 import {ParentNode} from '../mixin/parent-node.js';
 
 import {DOMStringMap} from '../dom/string-map.js';
@@ -185,39 +185,8 @@ export class Element extends ParentNode {
     setInnerHtml(this, html);
   }
 
-  // TODO: replace this [getInnerHTML polyfill](https://gist.github.com/developit/54f3e3d1ce9ed0e5a171044edcd0784f) with a more efficient solution
   getInnerHTML(opts) {
-    const html = this.innerHTML;
-    if (!opts || !opts.includeShadowRoots) return html;
-    const m = new Map();
-    for (const c of opts.closedRoots || []) m.set(c.host, c);
-    const p = [];
-    
-    function walk(node) {
-      let c;
-      let shadow = node.shadowRoot || m.get(node);
-      if (shadow) {
-        p.push(node.innerHTML, `<template shadowrootmode="${shadow.mode}">${shadow.innerHTML}</template>`);
-      }
-
-      c = node.firstElementChild;
-      while (c) {
-        walk(c);
-        c = c.nextElementSibling;
-      }
-    }
-    
-    walk(this);
-    let out = "",
-      c = 0,
-      i = 0,
-      o;
-    for (; c < p.length; c += 2) {
-      o = html.indexOf(p[c], i);
-      out += html.substring(i, o) + p[c + 1];
-      i = o;
-    }
-    return out + html.substring(i);
+    return getInnerHTML(this, opts);
   }
 
   get outerHTML() { return this.toString(); }

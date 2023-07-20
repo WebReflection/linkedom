@@ -1,6 +1,7 @@
 import {DOCUMENT_FRAGMENT_NODE} from '../shared/constants.js';
-import {getInnerHtml, setInnerHtml} from '../mixin/inner-html.js';
+import {getInnerHTML, getInnerHtml, setInnerHtml} from '../mixin/inner-html.js';
 import {DocumentFragment} from './document-fragment.js';
+
 
 /**
  * @implements globalThis.ShadowRoot
@@ -20,5 +21,9 @@ export class ShadowRoot extends DocumentFragment {
   }
   set innerHTML(html) {
     setInnerHtml(this, html);
+  }
+
+  getInnerHTML(opts) {
+    return getInnerHTML(this, opts);
   }
 }

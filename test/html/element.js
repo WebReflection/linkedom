@@ -168,10 +168,19 @@ node.attachShadow({mode: 'open'}).innerHTML = '<div>dark<div>content</div></div>
 assert(node.getInnerHTML({includeShadowRoots: false}), '<div>light<div>content</div></div>', 'getInnerHTML without shadow');
 assert(node.getInnerHTML({includeShadowRoots: true}), '<template shadowrootmode="open"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with shadow');
 
-const closed = document.createElement('div');
-closed.innerHTML = '<div>light<div>content</div></div>';
-const shadowRoot = closed.attachShadow({mode: 'closed'})
-shadowRoot.innerHTML = '<div>dark<div>content</div></div>';
+// NESTED shadow roots
+const nested = document.createElement('div');
+nested.innerHTML = 'nested light<div>content</div>';
+const nestedShadowRoot = nested.attachShadow({mode: 'open'})
+nestedShadowRoot.innerHTML = '<div>nested dark<div>content</div></div>';
+node.firstChild.appendChild(nested);
+assert(node.getInnerHTML({includeShadowRoots: false}), '<div>light<div>content</div><div>nested light<div>content</div></div></div>', 'nested getInnerHTML without shadow');
+assert(node.getInnerHTML({includeShadowRoots: true}), '<template shadowrootmode="open"><div>dark<div>content</div></div></template><div>light<div>content</div><div><template shadowrootmode="open"><div>nested dark<div>content</div></div></template>nested light<div>content</div></div></div>', 'nested getInnerHTML with shadow');
 
-assert(closed.getInnerHTML({includeShadowRoots: true, closedRoots: [shadowRoot]}), '<template shadowrootmode="closed"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with closed shadow roots');
-assert(closed.getInnerHTML({includeShadowRoots: true}), '<div>light<div>content</div></div>', 'getInnerHTML without closed shadow roots');
+node = document.createElement('div');
+node.innerHTML = '<div>light<div>content</div></div>';
+const shadowRoot = node.attachShadow({mode: 'closed'})
+shadowRoot.innerHTML = '<div>dark<div>content</div></div>'
+
+assert(node.getInnerHTML({includeShadowRoots: true, closedRoots: [shadowRoot]}), '<template shadowrootmode="closed"><div>dark<div>content</div></div></template><div>light<div>content</div></div>', 'getInnerHTML with closed shadow roots');
+assert(node.getInnerHTML({includeShadowRoots: true}), '<div>light<div>content</div></div>', 'getInnerHTML without closed shadow roots');

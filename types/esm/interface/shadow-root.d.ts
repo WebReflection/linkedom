@@ -10,5 +10,6 @@ export class ShadowRoot extends DocumentFragment implements globalThis.ShadowRoo
     slotAssignment: any;
     set innerHTML(arg: any);
     get innerHTML(): any;
+    getInnerHTML(opts: any): string;
 }
 import { DocumentFragment } from "./document-fragment.js";
