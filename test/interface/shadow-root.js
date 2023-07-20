@@ -14,6 +14,12 @@ assert(documentElement.shadowRoot, shadowRoot, 'yes shadowRoot');
 
 assert(documentElement.shadowRoot.host, documentElement, 'yes shadowRoot.host');
 
+assert(documentElement.shadowRoot.mode, "open", 'yes shadowRoot.mode');
+
+const dark = '<div>dark</div>'
+shadowRoot.innerHTML = dark;
+assert(documentElement.shadowRoot.getInnerHTML(), dark, 'yes shadowRoot.getInnerHTML');
+
 try {
   documentElement.attachShadow({mode: 'open'});
   assert(true, false, 'double shadowRoot should not be possible');
