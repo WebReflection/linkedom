@@ -4418,7 +4418,7 @@ let Node$1 = class Node extends DOMEventTarget {
   }
 };
 
-const QUOTE = /"/g;
+const QUOTE$1 = /"/g;
 
 /**
  * @implements globalThis.Attr
@@ -4451,7 +4451,7 @@ let Attr$1 = class Attr extends Node$1 {
   toString() {
     const {name, [VALUE]: value} = this;
     return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+            name : `${name}="${value.replace(QUOTE$1, '&quot;')}"`;
   }
 
   toJSON() {
@@ -11224,26 +11224,31 @@ const Mime = {
   'text/html': {
     docType: '<!DOCTYPE html>',
     ignoreCase: true,
+    isXML: false,
     voidElements: /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i
   },
   'image/svg+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    isXML: true,
     voidElements
   },
   'text/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    isXML: true,
     voidElements
   },
   'application/xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    isXML: true,
     voidElements
   },
   'application/xhtml+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
+    isXML: true,
     voidElements
   }
 };
@@ -11442,6 +11447,23 @@ class TreeWalker {
   }
 }
 
+const QUOTE = /"/g;
+
+/**
+ * @implements globalThis.Attr
+ */
+class XMLAttr extends Attr$1 {
+  constructor(ownerDocument, name, value = '') {
+    super(ownerDocument, name, value);
+  }
+
+  toString() {
+    const {name, [VALUE]: value} = this;
+    return emptyAttributes.has(name) && !value ?
+            name : `${name}="${escape(value).replace(QUOTE, "&quot;")}"`;
+  }
+}
+
 const query = (method, ownerDocument, selectors) => {
   let {[NEXT]: next, [END]: end} = ownerDocument;
   return method.call({ownerDocument, [NEXT]: next, [END]: end}, selectors);
@@ -11577,7 +11599,7 @@ let Document$1 = class Document extends NonElementParentNode {
     return this[EVENT_TARGET];
   }
 
-  createAttribute(name) { return new Attr$1(this, name); }
+  createAttribute(name) { return this[MIME].isXML ? new XMLAttr(this, name) : new Attr$1(this, name); }
   createComment(textContent) { return new Comment$1(this, textContent); }
   createDocumentFragment() { return new DocumentFragment$1(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType$1(this, name, publicId, systemId); }
