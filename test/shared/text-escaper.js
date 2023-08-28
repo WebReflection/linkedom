@@ -1,4 +1,4 @@
-const BODY = '<body>Foo&nbsp;&quot;&nbsp;&quot;&nbsp;Bar</body>';
+const BODY = '<body>Foo&#160;&quot;&#160;&quot;&#160;Bar</body>';
 const REBODY = BODY.replace(/&quot;/g, '"');
 const HTML = `<html id="html" class="live">${BODY}</html>`;
 const REHTML = `<html id="html" class="live">${REBODY}</html>`;

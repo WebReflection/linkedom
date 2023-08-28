@@ -4,7 +4,7 @@ const {replace} = '';
 const ca = /[<>&\xA0]/g;
 
 const esca = {
-  '\xA0': '&nbsp;',
+  '\xA0': '&#160;',
   '&': '&amp;',
   '<': '&lt;',
   '>': '&gt;'
