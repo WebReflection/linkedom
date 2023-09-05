@@ -35,3 +35,17 @@ assert(node.toString(), '<div style="background-color:purple"></div>', 'setPrope
 assert(node.style.getPropertyValue('background-color'), 'purple', 'getPropertyValue');
 node.style.removeProperty('background-color')
 assert(node.toString(), '<div></div>', 'removeProperty');
+
+/** @type {HTMLDivElement} */
+const divWithStyle = document.createElement('div');
+divWithStyle.setAttribute('style', ' display:  flex ;');
+assert(divWithStyle.hasAttribute('style'), true, 'hasAttribute');
+assert(divWithStyle.getAttribute('style'), ' display:  flex ;', 'getAttribute');
+assert([...divWithStyle.style].join(','), 'display', 'iterable');
+assert(Array.from(divWithStyle.style).join(','), 'display', 'Array.from');
+divWithStyle.style.setProperty('display', 'block');
+assert([...divWithStyle.style].join(','), 'display', 'iterable after change');
+assert(Array.from(divWithStyle.style).join(','), 'display', 'Array.from after change');
+divWithStyle.style.setProperty('color', 'green');
+assert([...divWithStyle.style].join(','), 'display,color', 'iterable after adding property');
+assert(Array.from(divWithStyle.style).join(','), 'display,color', 'Array.from after adding property');

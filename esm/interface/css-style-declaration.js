@@ -96,7 +96,9 @@ export class CSSStyleDeclaration extends Map {
   }
 
   [Symbol.iterator]() {
-    const keys = getKeys(this[PRIVATE]);
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const keys = getKeys(self);
     const {length} = keys;
     let i = 0;
     return {
