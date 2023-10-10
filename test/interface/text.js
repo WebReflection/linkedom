@@ -16,6 +16,18 @@ node.firstChild.textContent = '<test>';
 assert(node.toString(), '<div><p>&lt;test&gt;</p></div>', 'before after not affected');
 node.firstChild.textContent = '';
 assert(node.toString(), '<div><p></p></div>', 'before after not affected');
+node.firstChild.textContent = '0';
+assert(node.firstChild.firstChild.nodeValue, '0', 'zero as nodeValue')
+assert(node.toString(), '<div><p>0</p></div>', 'zero as text');
+node.firstChild.textContent = null;
+assert(node.firstChild.firstChild, null, 'textContent null clears all children and keeps childNodes empty')
+assert(node.toString(), '<div><p></p></div>', 'null clears all children but does not set node');
+node.firstChild.textContent = '';
+assert(node.firstChild.firstChild.nodeValue, '', 'textContent empty string clears all children and contains single child with empty text')
+assert(node.toString(), '<div><p></p></div>', 'empty text node as text');
+node.firstChild.textContent = undefined;
+assert(node.firstChild.firstChild, null, 'textContent undefined clears all children and keeps childNodes empty')
+assert(node.toString(), '<div><p></p></div>', 'undefined clears all children but does not set node');
 assert(text.isConnected, false, '!isConnected');
 assert(text.parentElement, null, '!parentElement');
 assert(node.contains(text), false, '!contains');
@@ -66,5 +78,9 @@ node.append('a', '');
 node.normalize();
 assert(node.childNodes.length, 1, 'normalize() empty text');
 assert(text.nodeValue, 'text');
+text.nodeValue = '';
+assert(text.nodeValue, '');
+text.nodeValue = '0'
+assert(text.nodeValue, '0');
 text.nodeValue = '';
 assert(text.nodeValue, '');
