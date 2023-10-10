@@ -1,5 +1,6 @@
 'use strict';
 const {Element} = require('../interface/element.js');
+const {String} = require('../shared/utils.js');
 
 const classNames = new WeakMap;
 
@@ -32,7 +33,7 @@ class SVGElement extends Element {
   set className(value) {
     const {classList} = this;
     classList.clear();
-    classList.add(...value.split(/\s+/));
+    classList.add(...(String(value).split(/\s+/)));
   }
   /* c8 ignore stop */
 

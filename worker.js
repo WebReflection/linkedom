@@ -7238,7 +7238,7 @@ let Element$1 = class Element extends ParentNode {
   set className(value) {
     const {classList} = this;
     classList.clear();
-    classList.add(...value.split(/\s+/));
+    classList.add(...($String(value).split(/\s+/)));
   }
 
   get nodeName() { return localCase(this); }
@@ -7653,7 +7653,7 @@ let SVGElement$1 = class SVGElement extends Element$1 {
   set className(value) {
     const {classList} = this;
     classList.clear();
-    classList.add(...value.split(/\s+/));
+    classList.add(...($String(value).split(/\s+/)));
   }
   /* c8 ignore stop */
 
