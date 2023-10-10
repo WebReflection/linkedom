@@ -7304,7 +7304,7 @@ let Element$1 = class Element extends ParentNode {
 
   set textContent(text) {
     this.replaceChildren();
-    if (text)
+    if (text != null)
       this.appendChild(new Text$1(this.ownerDocument, text));
   }
 
