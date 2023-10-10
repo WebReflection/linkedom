@@ -24,7 +24,8 @@ import {
 import {
   ignoreCase,
   knownAdjacent,
-  localCase
+  localCase,
+  String
 } from '../shared/utils.js';
 
 import {elementAsJSON} from '../shared/jsdon.js';
@@ -108,7 +109,7 @@ export class Element extends ParentNode {
   set className(value) {
     const {classList} = this;
     classList.clear();
-    classList.add(...value.split(/\s+/));
+    classList.add(...(String(value).split(/\s+/)));
   }
 
   get nodeName() { return localCase(this); }
