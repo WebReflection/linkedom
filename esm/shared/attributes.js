@@ -89,6 +89,23 @@ export const stringAttribute = {
   }
 };
 
+export const urlAttribute = {
+  get(element, name) {
+    const attr = element.getAttribute(name);
+    if (attr) {
+      try {
+        return new URL(attr, element.baseURI).href;
+      } catch (err) {
+        return attr;
+      }
+    }
+    return '';
+  },
+  set(element, name, value) {
+    element.setAttribute(name, value);
+  }
+};
+
 /* oddly enough, this apparently is not a thing
 export const nullableAttribute = {
   get(element, name) {
