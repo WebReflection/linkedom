@@ -34,6 +34,7 @@ import {NodeList} from './node-list.js';
 import {Range} from './range.js';
 import {Text} from './text.js';
 import {TreeWalker} from './tree-walker.js';
+import {XMLAttr} from './xml-attr.js';
 
 const query = (method, ownerDocument, selectors) => {
   let {[NEXT]: next, [END]: end} = ownerDocument;
@@ -170,7 +171,7 @@ export class Document extends NonElementParentNode {
     return this[EVENT_TARGET];
   }
 
-  createAttribute(name) { return new Attr(this, name); }
+  createAttribute(name) { return this[MIME].isXML ? new XMLAttr(this, name) : new Attr(this, name); }
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }
   createDocumentType(name, publicId, systemId) { return new DocumentType(this, name, publicId, systemId); }

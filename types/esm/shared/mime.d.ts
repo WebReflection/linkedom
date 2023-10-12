@@ -2,11 +2,13 @@ export const Mime: {
     'text/html': {
         docType: string;
         ignoreCase: boolean;
+        isXML: boolean;
         voidElements: RegExp;
     };
     'image/svg+xml': {
         docType: string;
         ignoreCase: boolean;
+        isXML: boolean;
         voidElements: {
             test: () => boolean;
         };
@@ -14,6 +16,7 @@ export const Mime: {
     'text/xml': {
         docType: string;
         ignoreCase: boolean;
+        isXML: boolean;
         voidElements: {
             test: () => boolean;
         };
@@ -21,6 +24,7 @@ export const Mime: {
     'application/xml': {
         docType: string;
         ignoreCase: boolean;
+        isXML: boolean;
         voidElements: {
             test: () => boolean;
         };
@@ -28,6 +32,7 @@ export const Mime: {
     'application/xhtml+xml': {
         docType: string;
         ignoreCase: boolean;
+        isXML: boolean;
         voidElements: {
             test: () => boolean;
         };
