@@ -119,6 +119,8 @@ node.firstElementChild.insertAdjacentText('afterend', '<OK>');
 assert(node.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
 
 node.setAttribute('a', '1');
+assert(node.attributes[0].name, 'a')
+assert(node.attributes[0].localName, 'a')
 node.setAttribute('b', '2');
 node.removeAttributeNode(node.attributes[1]);
 
