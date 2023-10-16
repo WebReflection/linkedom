@@ -35,6 +35,18 @@ node.replaceWith(amp);
 assert(amp.wholeText, 'before&after');
 assert(document.toString(), '<!DOCTYPE html><html lang="en" id="html" class="live">before&amp;after<input><p></p>ab</html>', '.before() and after()');
 
+let div = document.createElement('div');
+let rect = div.getBoundingClientRect();
+
+assert(rect.x, 0);
+assert(rect.y, 0);
+assert(rect.bottom, 0);
+assert(rect.height, 0);
+assert(rect.left, 0);
+assert(rect.right, 0);
+assert(rect.top, 0);
+assert(rect.width, 0);
+
 // unrelated
 assert(document.createElement('button', {is: 'special-case'}).getAttribute('is'), 'special-case', 'createElement with extra options');
 

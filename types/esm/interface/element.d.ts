@@ -15,6 +15,16 @@ export class Element extends ParentNode implements globalThis.Element {
     get tagName(): any;
     get classList(): any;
     get dataset(): any;
+    getBoundingClientRect(): {
+        x: number;
+        y: number;
+        bottom: number;
+        height: number;
+        left: number;
+        right: number;
+        top: number;
+        width: number;
+    };
     set nonce(arg: any);
     get nonce(): any;
     get style(): any;

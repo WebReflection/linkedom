@@ -29,6 +29,16 @@ export class Element extends ParentNode implements globalThis.Element {
     getAttribute(name: any): any;
     getAttributeNode(name: any): import("../mixin/parent-node.js").NodeStruct;
     getAttributeNames(): NodeList;
+    getBoundingClientRect(): {
+        x: number;
+        y: number;
+        bottom: number;
+        height: number;
+        left: number;
+        right: number;
+        top: number;
+        width: number;
+    };
     hasAttribute(name: any): boolean;
     hasAttributes(): boolean;
     removeAttribute(name: any): void;
