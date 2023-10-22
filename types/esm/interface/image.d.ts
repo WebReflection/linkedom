@@ -107,6 +107,16 @@ export function ImageClass(ownerDocument: any): {
         readonly tagName: any;
         readonly classList: any;
         readonly dataset: any;
+        getBoundingClientRect(): {
+            x: number;
+            y: number;
+            bottom: number;
+            height: number;
+            left: number;
+            right: number;
+            top: number;
+            width: number;
+        };
         nonce: any;
         readonly style: any;
         tabIndex: number;
