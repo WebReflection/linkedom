@@ -150,6 +150,9 @@ class Element extends ParentNode {
 
   get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
   set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
+
+  get slot() { return stringAttribute.get(this, 'slot'); }
+  set slot(value) { stringAttribute.set(this, 'slot', value); }
   // </specialGetters>
 
 

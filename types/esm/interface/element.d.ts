@@ -30,6 +30,8 @@ export class Element extends ParentNode implements globalThis.Element {
     get style(): any;
     set tabIndex(arg: number);
     get tabIndex(): number;
+    set slot(arg: any);
+    get slot(): any;
     get innerText(): string;
     set innerHTML(arg: any);
     get innerHTML(): any;
