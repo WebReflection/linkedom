@@ -16,7 +16,7 @@ const QUOTE = /"/g;
  */
 export class Attr extends Node {
   constructor(ownerDocument, name, value = '') {
-    super(ownerDocument, '#attribute', ATTRIBUTE_NODE);
+    super(ownerDocument, name, ATTRIBUTE_NODE);
     this.ownerElement = null;
     this.name = String(name);
     this[VALUE] = String(value);
