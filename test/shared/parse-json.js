@@ -10,6 +10,13 @@ assert(
   '<html contenteditable test="1">a<!--b--><br></html>'
 );
 
+// let xmlDocument = (new DOMParser).parseFromString('<html><body><![CDATA[test]]>text</body></html>', 'text/xml');
+
+assert(
+  parseJSON([1,"html",1,"body",4,"test"]).toString(),
+  '<html><body><![CDATA[test]]></body></html>'
+);
+
 assert(
   parseJSON([1,"img",-1]).toString(),
   '<img>'

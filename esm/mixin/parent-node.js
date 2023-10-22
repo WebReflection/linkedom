@@ -7,6 +7,7 @@ import {
   ELEMENT_NODE,
   TEXT_NODE,
   NODE_END,
+  CDATA_SECTION_NODE,
   COMMENT_NODE
 } from '../shared/constants.js';
 
@@ -40,7 +41,7 @@ const insert = (parentNode, child, nodes) => {
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
-    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE,
+    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE | typeof CDATA_SECTION_NODE,
     ownerDocument: Document,
     parentNode: ParentNode,
 }} NodeStruct */
@@ -247,6 +248,7 @@ export class ParentNode extends Node {
       }
       case TEXT_NODE:
       case COMMENT_NODE:
+      case CDATA_SECTION_NODE:
         node.remove();
       /* eslint no-fallthrough:0 */
       // this covers DOCUMENT_TYPE_NODE too

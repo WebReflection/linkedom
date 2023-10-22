@@ -16,6 +16,9 @@ assert(treeWalker.nextNode(), node.childNodes[2], 'fifth treeWalker');
 assert(treeWalker.nextNode(), node.childNodes[2].childNodes[0], 'sixth treeWalker');
 assert(treeWalker.nextNode(), null, 'end of treeWalker');
 
+treeWalker = document.createTreeWalker(node, 8);
+assert(treeWalker.nextNode(), null, 'no cdata sections for treeWalker');
+
 treeWalker = document.createTreeWalker(node, 128);
 assert(treeWalker.nextNode(), null, 'no comments for treeWalker');
 
@@ -29,6 +32,12 @@ node.appendChild(document.createComment('ok'));
 
 treeWalker = document.createTreeWalker(node, 128);
 assert(treeWalker.nextNode(), node.lastChild, 'yes comments for treeWalker');
+assert(treeWalker.nextNode(), null, 'end of treeWalker');
+
+node.appendChild(document.createCDATASection('ok'));
+
+treeWalker = document.createTreeWalker(node, 8);
+assert(treeWalker.nextNode(), node.lastChild, 'yes cdata sections for treeWalker');
 assert(treeWalker.nextNode(), null, 'end of treeWalker');
 
 treeWalker = document.createTreeWalker(document);

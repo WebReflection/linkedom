@@ -11,6 +11,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     get doctype(): DocumentType | import("../mixin/parent-node.js").NodeStruct;
     get documentElement(): import("../mixin/parent-node.js").NodeStruct;
     createAttribute(name: any): Attr;
+    createCDATASection(data: any): CDATASection;
     createComment(textContent: any): Comment;
     createDocumentFragment(): DocumentFragment;
     createDocumentType(name: any, publicId: any, systemId: any): DocumentType;
@@ -44,6 +45,7 @@ export class Document extends NonElementParentNode implements globalThis.Documen
 import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
 import { DocumentType } from "./document-type.js";
 import { Attr } from "./attr.js";
+import { CDATASection } from "./cdata-section.js";
 import { Comment } from "./comment.js";
 import { DocumentFragment } from "./document-fragment.js";
 import { Element } from "./element.js";

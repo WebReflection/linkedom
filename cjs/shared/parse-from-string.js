@@ -45,6 +45,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
 
   let node = document;
   let ownerSVGElement = null;
+  let parsingCData = false;
 
   notParsing = false;
 
@@ -90,7 +91,17 @@ const parseFromString = (document, isHTML, markupLanguage) => {
 
     // #text, #comment
     oncomment(data) { append(node, document.createComment(data), active); },
-    ontext(text) { append(node, document.createTextNode(text), active); },
+    ontext(text) {
+      if (parsingCData) {
+        append(node, document.createCDATASection(text), active);
+      } else {
+        append(node, document.createTextNode(text), active);
+      }
+    },
+
+    // #cdata
+    oncdatastart() { parsingCData = true; },
+    oncdataend() { parsingCData = false; },
 
     // </tagName>
     onclosetag() {

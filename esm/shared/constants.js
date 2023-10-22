@@ -5,6 +5,7 @@ export const NODE_END = -1;
 export const ELEMENT_NODE = 1;
 export const ATTRIBUTE_NODE = 2;
 export const TEXT_NODE = 3;
+export const CDATA_SECTION_NODE = 4;
 export const COMMENT_NODE = 8;
 export const DOCUMENT_NODE = 9;
 export const DOCUMENT_TYPE_NODE = 10;
@@ -17,6 +18,7 @@ export const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY',
 export const SHOW_ALL = -1;
 export const SHOW_ELEMENT = 1;
 export const SHOW_TEXT = 4;
+export const SHOW_CDATA_SECTION = 8;
 export const SHOW_COMMENT = 128;
 
 // Document position

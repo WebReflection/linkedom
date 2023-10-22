@@ -4,6 +4,7 @@ const {
   ELEMENT_NODE,
   ATTRIBUTE_NODE,
   TEXT_NODE,
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   DOCUMENT_NODE,
   DOCUMENT_TYPE_NODE,
@@ -16,6 +17,7 @@ const {htmlClasses} = require('./register-html-class.js');
 const {knownBoundaries, knownSiblings} = require('./utils.js');
 
 const {Attr} = require('../interface/attr.js');
+const {CDATASection} = require('../interface/cdata-section.js');
 const {Comment} = require('../interface/comment.js');
 const {DocumentType} = require('../interface/document-type.js');
 const {Text} = require('../interface/text.js');
@@ -83,6 +85,9 @@ const parseJSON = value => {
         break;
       case COMMENT_NODE:
         append(parentNode, new Comment(document, array[i++]), end);
+        break;
+      case CDATA_SECTION_NODE:
+        append(parentNode, new CDATASection(document, array[i++]), end);
         break;
       case DOCUMENT_TYPE_NODE: {
         const args = [document];

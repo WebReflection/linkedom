@@ -5,6 +5,7 @@ const {
   ELEMENT_NODE,
   ATTRIBUTE_NODE,
   TEXT_NODE,
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   DOCUMENT_NODE,
   DOCUMENT_FRAGMENT_NODE,
@@ -40,6 +41,7 @@ class Node extends EventTarget {
   static get ELEMENT_NODE() { return ELEMENT_NODE; }
   static get ATTRIBUTE_NODE() { return ATTRIBUTE_NODE; }
   static get TEXT_NODE() { return TEXT_NODE; }
+  static get CDATA_SECTION_NODE() { return CDATA_SECTION_NODE; }
   static get COMMENT_NODE() { return COMMENT_NODE; }
   static get DOCUMENT_NODE() { return DOCUMENT_NODE; }
   static get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }
@@ -58,6 +60,7 @@ class Node extends EventTarget {
   get ELEMENT_NODE() { return ELEMENT_NODE; }
   get ATTRIBUTE_NODE() { return ATTRIBUTE_NODE; }
   get TEXT_NODE() { return TEXT_NODE; }
+  get CDATA_SECTION_NODE() { return CDATA_SECTION_NODE; }
   get COMMENT_NODE() { return COMMENT_NODE; }
   get DOCUMENT_NODE() { return DOCUMENT_NODE; }
   get DOCUMENT_FRAGMENT_NODE() { return DOCUMENT_FRAGMENT_NODE; }

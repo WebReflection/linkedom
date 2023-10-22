@@ -1,6 +1,7 @@
 import {
   NODE_END,
   ATTRIBUTE_NODE,
+  CDATA_SECTION_NODE,
   COMMENT_NODE,
   DOCUMENT_TYPE_NODE,
   ELEMENT_NODE,
@@ -19,6 +20,7 @@ const loopSegment = ({[NEXT]: next, [END]: end}, json) => {
         break;
       case TEXT_NODE:
       case COMMENT_NODE:
+      case CDATA_SECTION_NODE:
         characterDataAsJSON(next, json);
         break;
       case ELEMENT_NODE:

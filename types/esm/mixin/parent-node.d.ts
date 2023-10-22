@@ -2,7 +2,7 @@
     [typeof NEXT]: NodeStruct,
     [typeof PREV]: NodeStruct,
     [typeof START]: NodeStruct,
-    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE,
+    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE | typeof CDATA_SECTION_NODE,
     ownerDocument: Document,
     parentNode: ParentNode,
 }} NodeStruct */
@@ -28,7 +28,7 @@ export type NodeStruct = import('../interface/element.js').Element & {
     [typeof NEXT]: NodeStruct;
     [typeof PREV]: NodeStruct;
     [typeof START]: NodeStruct;
-    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE;
+    nodeType: typeof ATTRIBUTE_NODE | typeof DOCUMENT_FRAGMENT_NODE | typeof ELEMENT_NODE | typeof TEXT_NODE | typeof NODE_END | typeof COMMENT_NODE | typeof CDATA_SECTION_NODE;
     ownerDocument: Document;
     parentNode: ParentNode;
 };
@@ -45,3 +45,4 @@ import { ELEMENT_NODE } from "../shared/constants.js";
 import { TEXT_NODE } from "../shared/constants.js";
 import { NODE_END } from "../shared/constants.js";
 import { COMMENT_NODE } from "../shared/constants.js";
+import { CDATA_SECTION_NODE } from "../shared/constants.js";
