@@ -39,7 +39,7 @@ export class Node extends EventTarget implements globalThis.Node {
     set textContent(arg: any);
     get textContent(): any;
     normalize(): void;
-    cloneNode(deep?: boolean): any;
+    cloneNode(): any;
     contains(): boolean;
     /**
      * Inserts a node before a reference node as a child of this parent node.

@@ -120,6 +120,7 @@ export function ImageClass(ownerDocument: any): {
         nonce: any;
         readonly style: any;
         tabIndex: number;
+        slot: any;
         readonly innerText: string;
         textContent: string;
         innerHTML: string;

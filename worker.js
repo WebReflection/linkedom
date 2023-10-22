@@ -7314,6 +7314,9 @@ let Element$1 = class Element extends ParentNode {
 
   get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
   set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
+
+  get slot() { return stringAttribute.get(this, 'slot'); }
+  set slot(value) { stringAttribute.set(this, 'slot', value); }
   // </specialGetters>
 
 
@@ -8099,14 +8102,14 @@ class HTMLElement extends Element$1 {
 
 }
 
-const tagName$g = 'template';
+const tagName$h = 'template';
 
 /**
  * @implements globalThis.HTMLTemplateElement
  */
 class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
-    super(ownerDocument, tagName$g);
+    super(ownerDocument, tagName$h);
     const content = this.ownerDocument.createDocumentFragment();
     (this[CONTENT] = content)[PRIVATE] = this;
   }
@@ -8120,7 +8123,7 @@ class HTMLTemplateElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$g, HTMLTemplateElement);
+registerHTMLClass(tagName$h, HTMLTemplateElement);
 
 /**
  * @implements globalThis.HTMLHtmlElement
@@ -8144,13 +8147,13 @@ class TextElement extends HTMLElement {
   }
 }
 
-const tagName$f = 'script';
+const tagName$g = 'script';
 
 /**
  * @implements globalThis.HTMLScriptElement
  */
 class HTMLScriptElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$f) {
+  constructor(ownerDocument, localName = tagName$g) {
     super(ownerDocument, localName);
   }
 
@@ -8215,7 +8218,7 @@ class HTMLScriptElement extends TextElement {
   set text(content) { this.textContent = content; }
 }
 
-registerHTMLClass(tagName$f, HTMLScriptElement);
+registerHTMLClass(tagName$g, HTMLScriptElement);
 
 /**
  * @implements globalThis.HTMLFrameElement
@@ -8226,13 +8229,13 @@ class HTMLFrameElement extends HTMLElement {
   }
 }
 
-const tagName$e = 'iframe';
+const tagName$f = 'iframe';
 
 /**
  * @implements globalThis.HTMLIFrameElement
  */
 class HTMLIFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$e) {
+  constructor(ownerDocument, localName = tagName$f) {
     super(ownerDocument, localName);
   }
 
@@ -8260,7 +8263,7 @@ class HTMLIFrameElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$e, HTMLIFrameElement);
+registerHTMLClass(tagName$f, HTMLIFrameElement);
 
 /**
  * @implements globalThis.HTMLObjectElement
@@ -10370,13 +10373,13 @@ requireCSSStyleSheet().CSSStyleSheet;
 requireCSSKeyframeRule().CSSKeyframeRule;
 var parse$1 = requireParse().parse;
 
-const tagName$d = 'style';
+const tagName$e = 'style';
 
 /**
  * @implements globalThis.HTMLStyleElement
  */
 class HTMLStyleElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$d) {
+  constructor(ownerDocument, localName = tagName$e) {
     super(ownerDocument, localName);
     this[SHEET] = null;
   }
@@ -10412,7 +10415,7 @@ class HTMLStyleElement extends TextElement {
   }
 }
 
-registerHTMLClass(tagName$d, HTMLStyleElement);
+registerHTMLClass(tagName$e, HTMLStyleElement);
 
 /**
  * @implements globalThis.HTMLTimeElement
@@ -10513,13 +10516,13 @@ class HTMLDataListElement extends HTMLElement {
   }
 }
 
-const tagName$c = 'input';
+const tagName$d = 'input';
 
 /**
  * @implements globalThis.HTMLInputElement
  */
 class HTMLInputElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$c) {
+  constructor(ownerDocument, localName = tagName$d) {
     super(ownerDocument, localName);
   }
 
@@ -10544,7 +10547,7 @@ class HTMLInputElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$c, HTMLInputElement);
+registerHTMLClass(tagName$d, HTMLInputElement);
 
 /**
  * @implements globalThis.HTMLParamElement
@@ -10573,18 +10576,18 @@ class HTMLAudioElement extends HTMLElement {
   }
 }
 
-const tagName$b = 'h1';
+const tagName$c = 'h1';
 
 /**
  * @implements globalThis.HTMLHeadingElement
  */
 class HTMLHeadingElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$b) {
+  constructor(ownerDocument, localName = tagName$c) {
     super(ownerDocument, localName);
   }
 }
 
-registerHTMLClass([tagName$b, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
+registerHTMLClass([tagName$c, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
 
 /**
  * @implements globalThis.HTMLDirectoryElement
@@ -10616,13 +10619,13 @@ class Canvas {
 
 const {createCanvas} = Canvas$1;
 
-const tagName$a = 'canvas';
+const tagName$b = 'canvas';
 
 /**
  * @implements globalThis.HTMLCanvasElement
  */
 class HTMLCanvasElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$a) {
+  constructor(ownerDocument, localName = tagName$b) {
     super(ownerDocument, localName);
     this[IMAGE] = createCanvas(300, 150);
   }
@@ -10654,7 +10657,7 @@ class HTMLCanvasElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$a, HTMLCanvasElement);
+registerHTMLClass(tagName$b, HTMLCanvasElement);
 
 /**
  * @implements globalThis.HTMLLegendElement
@@ -10665,13 +10668,13 @@ class HTMLLegendElement extends HTMLElement {
   }
 }
 
-const tagName$9 = 'option';
+const tagName$a = 'option';
 
 /**
  * @implements globalThis.HTMLOptionElement
  */
 class HTMLOptionElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$9) {
+  constructor(ownerDocument, localName = tagName$a) {
     super(ownerDocument, localName);
   }
 
@@ -10689,7 +10692,7 @@ class HTMLOptionElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$9, HTMLOptionElement);
+registerHTMLClass(tagName$a, HTMLOptionElement);
 
 /**
  * @implements globalThis.HTMLSpanElement
@@ -10727,18 +10730,18 @@ class HTMLTableCellElement extends HTMLElement {
   }
 }
 
-const tagName$8 = 'title';
+const tagName$9 = 'title';
 
 /**
  * @implements globalThis.HTMLTitleElement
  */
 class HTMLTitleElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$8) {
+  constructor(ownerDocument, localName = tagName$9) {
     super(ownerDocument, localName);
   }
 }
 
-registerHTMLClass(tagName$8, HTMLTitleElement);
+registerHTMLClass(tagName$9, HTMLTitleElement);
 
 /**
  * @implements globalThis.HTMLOutputElement
@@ -10776,13 +10779,13 @@ class HTMLMenuElement extends HTMLElement {
   }
 }
 
-const tagName$7 = 'select';
+const tagName$8 = 'select';
 
 /**
  * @implements globalThis.HTMLSelectElement
  */
 class HTMLSelectElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$7) {
+  constructor(ownerDocument, localName = tagName$8) {
     super(ownerDocument, localName);
   }
 
@@ -10810,7 +10813,7 @@ class HTMLSelectElement extends HTMLElement {
   get value() { return this.querySelector('option[selected]')?.value; }
 }
 
-registerHTMLClass(tagName$7, HTMLSelectElement);
+registerHTMLClass(tagName$8, HTMLSelectElement);
 
 /**
  * @implements globalThis.HTMLBRElement
@@ -10821,13 +10824,13 @@ class HTMLBRElement extends HTMLElement {
   }
 }
 
-const tagName$6 = 'button';
+const tagName$7 = 'button';
 
 /**
  * @implements globalThis.HTMLButtonElement
  */
 class HTMLButtonElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$6) {
+  constructor(ownerDocument, localName = tagName$7) {
     super(ownerDocument, localName);
   }
 
@@ -10843,7 +10846,7 @@ class HTMLButtonElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$6, HTMLButtonElement);
+registerHTMLClass(tagName$7, HTMLButtonElement);
 
 /**
  * @implements globalThis.HTMLMapElement
@@ -10872,13 +10875,13 @@ class HTMLDListElement extends HTMLElement {
   }
 }
 
-const tagName$5 = 'textarea';
+const tagName$6 = 'textarea';
 
 /**
  * @implements globalThis.HTMLTextAreaElement
  */
 class HTMLTextAreaElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$5) {
+  constructor(ownerDocument, localName = tagName$6) {
     super(ownerDocument, localName);
   }
 
@@ -10900,7 +10903,7 @@ class HTMLTextAreaElement extends TextElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$5, HTMLTextAreaElement);
+registerHTMLClass(tagName$6, HTMLTextAreaElement);
 
 /**
  * @implements globalThis.HTMLFontElement
@@ -10920,13 +10923,13 @@ class HTMLDivElement extends HTMLElement {
   }
 }
 
-const tagName$4 = 'link';
+const tagName$5 = 'link';
 
 /**
  * @implements globalThis.HTMLLinkElement
  */
 class HTMLLinkElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$4) {
+  constructor(ownerDocument, localName = tagName$5) {
     super(ownerDocument, localName);
   }
 
@@ -10952,16 +10955,64 @@ class HTMLLinkElement extends HTMLElement {
 
 }
 
-registerHTMLClass(tagName$4, HTMLLinkElement);
+registerHTMLClass(tagName$5, HTMLLinkElement);
+
+const tagName$4 = 'slot';
 
 /**
  * @implements globalThis.HTMLSlotElement
  */
 class HTMLSlotElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'slot') {
+  constructor(ownerDocument, localName = tagName$4) {
     super(ownerDocument, localName);
   }
+
+  /* c8 ignore start */
+  get name() { return this.getAttribute('name'); }
+  set name(value) { this.setAttribute('name', value); }
+
+  assign() {}
+
+  assignedNodes(options) {
+    const isNamedSlot = !!this.name;
+    const hostChildNodes = this.getRootNode().host?.childNodes ?? [];
+    let slottables;
+
+    if (isNamedSlot) {
+      slottables = [...hostChildNodes].filter(node => node.slot === this.name);
+    } else {
+      slottables = [...hostChildNodes].filter(node => !node.slot);
+    }
+
+    if (options?.flatten) {
+      const result = [];
+
+      // Element and Text nodes are slottables. A slot can be a slottable.
+      for (let slottable of slottables) {
+        if (slottable.localName === 'slot') {
+          result.push(...slottable.assignedNodes({ flatten: true }));
+        } else {
+          result.push(slottable);
+        }
+      }
+
+      slottables = result;
+    }
+
+    // If no assigned nodes are found, it returns the slot's fallback content.
+    return slottables.length ? slottables : [...this.childNodes];
+  }
+
+  assignedElements(options) {
+    const slottables = this.assignedNodes(options).filter(n => n.nodeType === 1);
+
+    // If no assigned elements are found, it returns the slot's fallback content.
+    return slottables.length ? slottables : [...this.children];
+  }
+  /* c8 ignore stop */
 }
+
+registerHTMLClass(tagName$4, HTMLSlotElement);
 
 /**
  * @implements globalThis.HTMLFormElement
