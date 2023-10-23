@@ -82,6 +82,7 @@ var xmlDecodeTree = new Uint16Array(
 var _a;
 const decodeMap = new Map([
     [0, 65533],
+    // C1 Unicode control character reference replacements
     [128, 8364],
     [130, 8218],
     [131, 402],
@@ -110,6 +111,9 @@ const decodeMap = new Map([
     [158, 382],
     [159, 376],
 ]);
+/**
+ * Polyfill for `String.fromCodePoint`. It is used to create a string from a Unicode code point.
+ */
 const fromCodePoint = 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, node/no-unsupported-features/es-builtins
 (_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : function (codePoint) {
@@ -122,6 +126,11 @@ const fromCodePoint =
     output += String.fromCharCode(codePoint);
     return output;
 };
+/**
+ * Replace the given code point with a replacement character if it is a
+ * surrogate or is outside the valid range. Otherwise return the code
+ * point unchanged.
+ */
 function replaceCodePoint(codePoint) {
     var _a;
     if ((codePoint >= 0xd800 && codePoint <= 0xdfff) || codePoint > 0x10ffff) {
@@ -134,20 +143,419 @@ var CharCodes$1;
 (function (CharCodes) {
     CharCodes[CharCodes["NUM"] = 35] = "NUM";
     CharCodes[CharCodes["SEMI"] = 59] = "SEMI";
+    CharCodes[CharCodes["EQUALS"] = 61] = "EQUALS";
     CharCodes[CharCodes["ZERO"] = 48] = "ZERO";
     CharCodes[CharCodes["NINE"] = 57] = "NINE";
     CharCodes[CharCodes["LOWER_A"] = 97] = "LOWER_A";
     CharCodes[CharCodes["LOWER_F"] = 102] = "LOWER_F";
     CharCodes[CharCodes["LOWER_X"] = 120] = "LOWER_X";
-    /** Bit that needs to be set to convert an upper case ASCII character to lower case */
-    CharCodes[CharCodes["To_LOWER_BIT"] = 32] = "To_LOWER_BIT";
+    CharCodes[CharCodes["LOWER_Z"] = 122] = "LOWER_Z";
+    CharCodes[CharCodes["UPPER_A"] = 65] = "UPPER_A";
+    CharCodes[CharCodes["UPPER_F"] = 70] = "UPPER_F";
+    CharCodes[CharCodes["UPPER_Z"] = 90] = "UPPER_Z";
 })(CharCodes$1 || (CharCodes$1 = {}));
+/** Bit that needs to be set to convert an upper case ASCII character to lower case */
+const TO_LOWER_BIT = 0b100000;
 var BinTrieFlags;
 (function (BinTrieFlags) {
     BinTrieFlags[BinTrieFlags["VALUE_LENGTH"] = 49152] = "VALUE_LENGTH";
     BinTrieFlags[BinTrieFlags["BRANCH_LENGTH"] = 16256] = "BRANCH_LENGTH";
     BinTrieFlags[BinTrieFlags["JUMP_TABLE"] = 127] = "JUMP_TABLE";
 })(BinTrieFlags || (BinTrieFlags = {}));
+function isNumber(code) {
+    return code >= CharCodes$1.ZERO && code <= CharCodes$1.NINE;
+}
+function isHexadecimalCharacter(code) {
+    return ((code >= CharCodes$1.UPPER_A && code <= CharCodes$1.UPPER_F) ||
+        (code >= CharCodes$1.LOWER_A && code <= CharCodes$1.LOWER_F));
+}
+function isAsciiAlphaNumeric(code) {
+    return ((code >= CharCodes$1.UPPER_A && code <= CharCodes$1.UPPER_Z) ||
+        (code >= CharCodes$1.LOWER_A && code <= CharCodes$1.LOWER_Z) ||
+        isNumber(code));
+}
+/**
+ * Checks if the given character is a valid end character for an entity in an attribute.
+ *
+ * Attribute values that aren't terminated properly aren't parsed, and shouldn't lead to a parser error.
+ * See the example in https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
+ */
+function isEntityInAttributeInvalidEnd(code) {
+    return code === CharCodes$1.EQUALS || isAsciiAlphaNumeric(code);
+}
+var EntityDecoderState;
+(function (EntityDecoderState) {
+    EntityDecoderState[EntityDecoderState["EntityStart"] = 0] = "EntityStart";
+    EntityDecoderState[EntityDecoderState["NumericStart"] = 1] = "NumericStart";
+    EntityDecoderState[EntityDecoderState["NumericDecimal"] = 2] = "NumericDecimal";
+    EntityDecoderState[EntityDecoderState["NumericHex"] = 3] = "NumericHex";
+    EntityDecoderState[EntityDecoderState["NamedEntity"] = 4] = "NamedEntity";
+})(EntityDecoderState || (EntityDecoderState = {}));
+var DecodingMode;
+(function (DecodingMode) {
+    /** Entities in text nodes that can end with any character. */
+    DecodingMode[DecodingMode["Legacy"] = 0] = "Legacy";
+    /** Only allow entities terminated with a semicolon. */
+    DecodingMode[DecodingMode["Strict"] = 1] = "Strict";
+    /** Entities in attributes have limitations on ending characters. */
+    DecodingMode[DecodingMode["Attribute"] = 2] = "Attribute";
+})(DecodingMode || (DecodingMode = {}));
+/**
+ * Token decoder with support of writing partial entities.
+ */
+class EntityDecoder {
+    constructor(
+    /** The tree used to decode entities. */
+    decodeTree, 
+    /**
+     * The function that is called when a codepoint is decoded.
+     *
+     * For multi-byte named entities, this will be called multiple times,
+     * with the second codepoint, and the same `consumed` value.
+     *
+     * @param codepoint The decoded codepoint.
+     * @param consumed The number of bytes consumed by the decoder.
+     */
+    emitCodePoint, 
+    /** An object that is used to produce errors. */
+    errors) {
+        this.decodeTree = decodeTree;
+        this.emitCodePoint = emitCodePoint;
+        this.errors = errors;
+        /** The current state of the decoder. */
+        this.state = EntityDecoderState.EntityStart;
+        /** Characters that were consumed while parsing an entity. */
+        this.consumed = 1;
+        /**
+         * The result of the entity.
+         *
+         * Either the result index of a numeric entity, or the codepoint of a
+         * numeric entity.
+         */
+        this.result = 0;
+        /** The current index in the decode tree. */
+        this.treeIndex = 0;
+        /** The number of characters that were consumed in excess. */
+        this.excess = 1;
+        /** The mode in which the decoder is operating. */
+        this.decodeMode = DecodingMode.Strict;
+    }
+    /** Resets the instance to make it reusable. */
+    startEntity(decodeMode) {
+        this.decodeMode = decodeMode;
+        this.state = EntityDecoderState.EntityStart;
+        this.result = 0;
+        this.treeIndex = 0;
+        this.excess = 1;
+        this.consumed = 1;
+    }
+    /**
+     * Write an entity to the decoder. This can be called multiple times with partial entities.
+     * If the entity is incomplete, the decoder will return -1.
+     *
+     * Mirrors the implementation of `getDecoder`, but with the ability to stop decoding if the
+     * entity is incomplete, and resume when the next string is written.
+     *
+     * @param string The string containing the entity (or a continuation of the entity).
+     * @param offset The offset at which the entity begins. Should be 0 if this is not the first call.
+     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+     */
+    write(str, offset) {
+        switch (this.state) {
+            case EntityDecoderState.EntityStart: {
+                if (str.charCodeAt(offset) === CharCodes$1.NUM) {
+                    this.state = EntityDecoderState.NumericStart;
+                    this.consumed += 1;
+                    return this.stateNumericStart(str, offset + 1);
+                }
+                this.state = EntityDecoderState.NamedEntity;
+                return this.stateNamedEntity(str, offset);
+            }
+            case EntityDecoderState.NumericStart: {
+                return this.stateNumericStart(str, offset);
+            }
+            case EntityDecoderState.NumericDecimal: {
+                return this.stateNumericDecimal(str, offset);
+            }
+            case EntityDecoderState.NumericHex: {
+                return this.stateNumericHex(str, offset);
+            }
+            case EntityDecoderState.NamedEntity: {
+                return this.stateNamedEntity(str, offset);
+            }
+        }
+    }
+    /**
+     * Switches between the numeric decimal and hexadecimal states.
+     *
+     * Equivalent to the `Numeric character reference state` in the HTML spec.
+     *
+     * @param str The string containing the entity (or a continuation of the entity).
+     * @param offset The current offset.
+     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+     */
+    stateNumericStart(str, offset) {
+        if (offset >= str.length) {
+            return -1;
+        }
+        if ((str.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes$1.LOWER_X) {
+            this.state = EntityDecoderState.NumericHex;
+            this.consumed += 1;
+            return this.stateNumericHex(str, offset + 1);
+        }
+        this.state = EntityDecoderState.NumericDecimal;
+        return this.stateNumericDecimal(str, offset);
+    }
+    addToNumericResult(str, start, end, base) {
+        if (start !== end) {
+            const digitCount = end - start;
+            this.result =
+                this.result * Math.pow(base, digitCount) +
+                    parseInt(str.substr(start, digitCount), base);
+            this.consumed += digitCount;
+        }
+    }
+    /**
+     * Parses a hexadecimal numeric entity.
+     *
+     * Equivalent to the `Hexademical character reference state` in the HTML spec.
+     *
+     * @param str The string containing the entity (or a continuation of the entity).
+     * @param offset The current offset.
+     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+     */
+    stateNumericHex(str, offset) {
+        const startIdx = offset;
+        while (offset < str.length) {
+            const char = str.charCodeAt(offset);
+            if (isNumber(char) || isHexadecimalCharacter(char)) {
+                offset += 1;
+            }
+            else {
+                this.addToNumericResult(str, startIdx, offset, 16);
+                return this.emitNumericEntity(char, 3);
+            }
+        }
+        this.addToNumericResult(str, startIdx, offset, 16);
+        return -1;
+    }
+    /**
+     * Parses a decimal numeric entity.
+     *
+     * Equivalent to the `Decimal character reference state` in the HTML spec.
+     *
+     * @param str The string containing the entity (or a continuation of the entity).
+     * @param offset The current offset.
+     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+     */
+    stateNumericDecimal(str, offset) {
+        const startIdx = offset;
+        while (offset < str.length) {
+            const char = str.charCodeAt(offset);
+            if (isNumber(char)) {
+                offset += 1;
+            }
+            else {
+                this.addToNumericResult(str, startIdx, offset, 10);
+                return this.emitNumericEntity(char, 2);
+            }
+        }
+        this.addToNumericResult(str, startIdx, offset, 10);
+        return -1;
+    }
+    /**
+     * Validate and emit a numeric entity.
+     *
+     * Implements the logic from the `Hexademical character reference start
+     * state` and `Numeric character reference end state` in the HTML spec.
+     *
+     * @param lastCp The last code point of the entity. Used to see if the
+     *               entity was terminated with a semicolon.
+     * @param expectedLength The minimum number of characters that should be
+     *                       consumed. Used to validate that at least one digit
+     *                       was consumed.
+     * @returns The number of characters that were consumed.
+     */
+    emitNumericEntity(lastCp, expectedLength) {
+        var _a;
+        // Ensure we consumed at least one digit.
+        if (this.consumed <= expectedLength) {
+            (_a = this.errors) === null || _a === void 0 ? void 0 : _a.absenceOfDigitsInNumericCharacterReference(this.consumed);
+            return 0;
+        }
+        // Figure out if this is a legit end of the entity
+        if (lastCp === CharCodes$1.SEMI) {
+            this.consumed += 1;
+        }
+        else if (this.decodeMode === DecodingMode.Strict) {
+            return 0;
+        }
+        this.emitCodePoint(replaceCodePoint(this.result), this.consumed);
+        if (this.errors) {
+            if (lastCp !== CharCodes$1.SEMI) {
+                this.errors.missingSemicolonAfterCharacterReference();
+            }
+            this.errors.validateNumericCharacterReference(this.result);
+        }
+        return this.consumed;
+    }
+    /**
+     * Parses a named entity.
+     *
+     * Equivalent to the `Named character reference state` in the HTML spec.
+     *
+     * @param str The string containing the entity (or a continuation of the entity).
+     * @param offset The current offset.
+     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+     */
+    stateNamedEntity(str, offset) {
+        const { decodeTree } = this;
+        let current = decodeTree[this.treeIndex];
+        // The mask is the number of bytes of the value, including the current byte.
+        let valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
+        for (; offset < str.length; offset++, this.excess++) {
+            const char = str.charCodeAt(offset);
+            this.treeIndex = determineBranch(decodeTree, current, this.treeIndex + Math.max(1, valueLength), char);
+            if (this.treeIndex < 0) {
+                return this.result === 0 ||
+                    // If we are parsing an attribute
+                    (this.decodeMode === DecodingMode.Attribute &&
+                        // We shouldn't have consumed any characters after the entity,
+                        (valueLength === 0 ||
+                            // And there should be no invalid characters.
+                            isEntityInAttributeInvalidEnd(char)))
+                    ? 0
+                    : this.emitNotTerminatedNamedEntity();
+            }
+            current = decodeTree[this.treeIndex];
+            valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
+            // If the branch is a value, store it and continue
+            if (valueLength !== 0) {
+                // If the entity is terminated by a semicolon, we are done.
+                if (char === CharCodes$1.SEMI) {
+                    return this.emitNamedEntityData(this.treeIndex, valueLength, this.consumed + this.excess);
+                }
+                // If we encounter a non-terminated (legacy) entity while parsing strictly, then ignore it.
+                if (this.decodeMode !== DecodingMode.Strict) {
+                    this.result = this.treeIndex;
+                    this.consumed += this.excess;
+                    this.excess = 0;
+                }
+            }
+        }
+        return -1;
+    }
+    /**
+     * Emit a named entity that was not terminated with a semicolon.
+     *
+     * @returns The number of characters consumed.
+     */
+    emitNotTerminatedNamedEntity() {
+        var _a;
+        const { result, decodeTree } = this;
+        const valueLength = (decodeTree[result] & BinTrieFlags.VALUE_LENGTH) >> 14;
+        this.emitNamedEntityData(result, valueLength, this.consumed);
+        (_a = this.errors) === null || _a === void 0 ? void 0 : _a.missingSemicolonAfterCharacterReference();
+        return this.consumed;
+    }
+    /**
+     * Emit a named entity.
+     *
+     * @param result The index of the entity in the decode tree.
+     * @param valueLength The number of bytes in the entity.
+     * @param consumed The number of characters consumed.
+     *
+     * @returns The number of characters consumed.
+     */
+    emitNamedEntityData(result, valueLength, consumed) {
+        const { decodeTree } = this;
+        this.emitCodePoint(valueLength === 1
+            ? decodeTree[result] & ~BinTrieFlags.VALUE_LENGTH
+            : decodeTree[result + 1], consumed);
+        if (valueLength === 3) {
+            // For multi-byte values, we need to emit the second byte.
+            this.emitCodePoint(decodeTree[result + 2], consumed);
+        }
+        return consumed;
+    }
+    /**
+     * Signal to the parser that the end of the input was reached.
+     *
+     * Remaining data will be emitted and relevant errors will be produced.
+     *
+     * @returns The number of characters consumed.
+     */
+    end() {
+        var _a;
+        switch (this.state) {
+            case EntityDecoderState.NamedEntity: {
+                // Emit a named entity if we have one.
+                return this.result !== 0 &&
+                    (this.decodeMode !== DecodingMode.Attribute ||
+                        this.result === this.treeIndex)
+                    ? this.emitNotTerminatedNamedEntity()
+                    : 0;
+            }
+            // Otherwise, emit a numeric entity if we have one.
+            case EntityDecoderState.NumericDecimal: {
+                return this.emitNumericEntity(0, 2);
+            }
+            case EntityDecoderState.NumericHex: {
+                return this.emitNumericEntity(0, 3);
+            }
+            case EntityDecoderState.NumericStart: {
+                (_a = this.errors) === null || _a === void 0 ? void 0 : _a.absenceOfDigitsInNumericCharacterReference(this.consumed);
+                return 0;
+            }
+            case EntityDecoderState.EntityStart: {
+                // Return 0 if we have no entity.
+                return 0;
+            }
+        }
+    }
+}
+/**
+ * Creates a function that decodes entities in a string.
+ *
+ * @param decodeTree The decode tree.
+ * @returns A function that decodes entities in a string.
+ */
+function getDecoder(decodeTree) {
+    let ret = "";
+    const decoder = new EntityDecoder(decodeTree, (str) => (ret += fromCodePoint(str)));
+    return function decodeWithTrie(str, decodeMode) {
+        let lastIndex = 0;
+        let offset = 0;
+        while ((offset = str.indexOf("&", offset)) >= 0) {
+            ret += str.slice(lastIndex, offset);
+            decoder.startEntity(decodeMode);
+            const len = decoder.write(str, 
+            // Skip the "&"
+            offset + 1);
+            if (len < 0) {
+                lastIndex = offset + decoder.end();
+                break;
+            }
+            lastIndex = offset + len;
+            // If `len` is 0, skip the current `&` and continue.
+            offset = len === 0 ? lastIndex + 1 : lastIndex;
+        }
+        const result = ret + str.slice(lastIndex);
+        // Make sure we don't keep a reference to the final string.
+        ret = "";
+        return result;
+    };
+}
+/**
+ * Determines the branch of the current node that is taken given the current
+ * character. This function is used to traverse the trie.
+ *
+ * @param decodeTree The trie.
+ * @param current The current node.
+ * @param nodeIdx The index right after the current node and its value.
+ * @param char The current character.
+ * @returns The index of the next node, or -1 if no branch is taken.
+ */
 function determineBranch(decodeTree, current, nodeIdx, char) {
     const branchCount = (current & BinTrieFlags.BRANCH_LENGTH) >> 7;
     const jumpOffset = current & BinTrieFlags.JUMP_TABLE;
@@ -181,6 +589,8 @@ function determineBranch(decodeTree, current, nodeIdx, char) {
     }
     return -1;
 }
+getDecoder(htmlDecodeTree);
+getDecoder(xmlDecodeTree);
 
 var CharCodes;
 (function (CharCodes) {
@@ -190,7 +600,7 @@ var CharCodes;
     CharCodes[CharCodes["CarriageReturn"] = 13] = "CarriageReturn";
     CharCodes[CharCodes["Space"] = 32] = "Space";
     CharCodes[CharCodes["ExclamationMark"] = 33] = "ExclamationMark";
-    CharCodes[CharCodes["Num"] = 35] = "Num";
+    CharCodes[CharCodes["Number"] = 35] = "Number";
     CharCodes[CharCodes["Amp"] = 38] = "Amp";
     CharCodes[CharCodes["SingleQuote"] = 39] = "SingleQuote";
     CharCodes[CharCodes["DoubleQuote"] = 34] = "DoubleQuote";
@@ -244,11 +654,7 @@ var State;
     State[State["BeforeSpecialS"] = 22] = "BeforeSpecialS";
     State[State["SpecialStartSequence"] = 23] = "SpecialStartSequence";
     State[State["InSpecialTag"] = 24] = "InSpecialTag";
-    State[State["BeforeEntity"] = 25] = "BeforeEntity";
-    State[State["BeforeNumericEntity"] = 26] = "BeforeNumericEntity";
-    State[State["InNamedEntity"] = 27] = "InNamedEntity";
-    State[State["InNumericEntity"] = 28] = "InNumericEntity";
-    State[State["InHexEntity"] = 29] = "InHexEntity";
+    State[State["InEntity"] = 25] = "InEntity";
 })(State || (State = {}));
 function isWhitespace$1(c) {
     return (c === CharCodes.Space ||
@@ -260,16 +666,9 @@ function isWhitespace$1(c) {
 function isEndOfTagSection(c) {
     return c === CharCodes.Slash || c === CharCodes.Gt || isWhitespace$1(c);
 }
-function isNumber(c) {
-    return c >= CharCodes.Zero && c <= CharCodes.Nine;
-}
 function isASCIIAlpha(c) {
     return ((c >= CharCodes.LowerA && c <= CharCodes.LowerZ) ||
         (c >= CharCodes.UpperA && c <= CharCodes.UpperZ));
-}
-function isHexDigit(c) {
-    return ((c >= CharCodes.UpperA && c <= CharCodes.UpperF) ||
-        (c >= CharCodes.LowerA && c <= CharCodes.LowerF));
 }
 var QuoteType;
 (function (QuoteType) {
@@ -303,6 +702,8 @@ class Tokenizer {
         this.sectionStart = 0;
         /** The index within the buffer that we are currently looking at. */
         this.index = 0;
+        /** The start of the last entity. */
+        this.entityStart = 0;
         /** Some behavior, eg. when decoding entities, is done while we are in another state. This keeps track of the other state type. */
         this.baseState = State.Text;
         /** For special parsing behavior inside of script and style tags. */
@@ -311,15 +712,11 @@ class Tokenizer {
         this.running = true;
         /** The offset of the current buffer. */
         this.offset = 0;
+        this.currentSequence = undefined;
         this.sequenceIndex = 0;
-        this.trieIndex = 0;
-        this.trieCurrent = 0;
-        /** For named entities, the index of the value. For numeric entities, the code point. */
-        this.entityResult = 0;
-        this.entityExcess = 0;
         this.xmlMode = xmlMode;
         this.decodeEntities = decodeEntities;
-        this.entityTrie = xmlMode ? xmlDecodeTree : htmlDecodeTree;
+        this.entityDecoder = new EntityDecoder(xmlMode ? xmlDecodeTree : htmlDecodeTree, (cp, consumed) => this.emitCodePoint(cp, consumed));
     }
     reset() {
         this.state = State.Text;
@@ -349,18 +746,6 @@ class Tokenizer {
             this.parse();
         }
     }
-    /**
-     * The current index within all of the written data.
-     */
-    getIndex() {
-        return this.index;
-    }
-    /**
-     * The start of the current section.
-     */
-    getSectionStart() {
-        return this.sectionStart;
-    }
     stateText(c) {
         if (c === CharCodes.Lt ||
             (!this.decodeEntities && this.fastForwardTo(CharCodes.Lt))) {
@@ -371,7 +756,7 @@ class Tokenizer {
             this.sectionStart = this.index;
         }
         else if (this.decodeEntities && c === CharCodes.Amp) {
-            this.state = State.BeforeEntity;
+            this.startEntity();
         }
     }
     stateSpecialStartSequence(c) {
@@ -418,7 +803,7 @@ class Tokenizer {
             if (this.currentSequence === Sequences.TitleEnd) {
                 // We have to parse entities in <title> tags.
                 if (this.decodeEntities && c === CharCodes.Amp) {
-                    this.state = State.BeforeEntity;
+                    this.startEntity();
                 }
             }
             else if (this.fastForwardTo(CharCodes.Lt)) {
@@ -590,7 +975,6 @@ class Tokenizer {
             else {
                 this.state = State.Text;
             }
-            this.baseState = this.state;
             this.sectionStart = this.index + 1;
         }
         else if (c === CharCodes.Slash) {
@@ -605,7 +989,6 @@ class Tokenizer {
         if (c === CharCodes.Gt) {
             this.cbs.onselfclosingtag(this.index);
             this.state = State.Text;
-            this.baseState = State.Text;
             this.sectionStart = this.index + 1;
             this.isSpecial = false; // Reset special state, in case of self-closing special tags
         }
@@ -663,8 +1046,7 @@ class Tokenizer {
             this.state = State.BeforeAttributeName;
         }
         else if (this.decodeEntities && c === CharCodes.Amp) {
-            this.baseState = this.state;
-            this.state = State.BeforeEntity;
+            this.startEntity();
         }
     }
     stateInAttributeValueDoubleQuotes(c) {
@@ -682,8 +1064,7 @@ class Tokenizer {
             this.stateBeforeAttributeName(c);
         }
         else if (this.decodeEntities && c === CharCodes.Amp) {
-            this.baseState = this.state;
-            this.state = State.BeforeEntity;
+            this.startEntity();
         }
     }
     stateBeforeDeclaration(c) {
@@ -744,145 +1125,30 @@ class Tokenizer {
             this.stateInTagName(c); // Consume the token again
         }
     }
-    stateBeforeEntity(c) {
-        // Start excess with 1 to include the '&'
-        this.entityExcess = 1;
-        this.entityResult = 0;
-        if (c === CharCodes.Num) {
-            this.state = State.BeforeNumericEntity;
-        }
-        else if (c === CharCodes.Amp) ;
-        else {
-            this.trieIndex = 0;
-            this.trieCurrent = this.entityTrie[0];
-            this.state = State.InNamedEntity;
-            this.stateInNamedEntity(c);
-        }
+    startEntity() {
+        this.baseState = this.state;
+        this.state = State.InEntity;
+        this.entityStart = this.index;
+        this.entityDecoder.startEntity(this.xmlMode
+            ? DecodingMode.Strict
+            : this.baseState === State.Text ||
+                this.baseState === State.InSpecialTag
+                ? DecodingMode.Legacy
+                : DecodingMode.Attribute);
     }
-    stateInNamedEntity(c) {
-        this.entityExcess += 1;
-        this.trieIndex = determineBranch(this.entityTrie, this.trieCurrent, this.trieIndex + 1, c);
-        if (this.trieIndex < 0) {
-            this.emitNamedEntity();
-            this.index--;
-            return;
-        }
-        this.trieCurrent = this.entityTrie[this.trieIndex];
-        const masked = this.trieCurrent & BinTrieFlags.VALUE_LENGTH;
-        // If the branch is a value, store it and continue
-        if (masked) {
-            // The mask is the number of bytes of the value, including the current byte.
-            const valueLength = (masked >> 14) - 1;
-            // If we have a legacy entity while parsing strictly, just skip the number of bytes
-            if (!this.allowLegacyEntity() && c !== CharCodes.Semi) {
-                this.trieIndex += valueLength;
+    stateInEntity() {
+        const length = this.entityDecoder.write(this.buffer, this.index - this.offset);
+        // If `length` is positive, we are done with the entity.
+        if (length >= 0) {
+            this.state = this.baseState;
+            if (length === 0) {
+                this.index = this.entityStart;
             }
-            else {
-                // Add 1 as we have already incremented the excess
-                const entityStart = this.index - this.entityExcess + 1;
-                if (entityStart > this.sectionStart) {
-                    this.emitPartial(this.sectionStart, entityStart);
-                }
-                // If this is a surrogate pair, consume the next two bytes
-                this.entityResult = this.trieIndex;
-                this.trieIndex += valueLength;
-                this.entityExcess = 0;
-                this.sectionStart = this.index + 1;
-                if (valueLength === 0) {
-                    this.emitNamedEntity();
-                }
-            }
-        }
-    }
-    emitNamedEntity() {
-        this.state = this.baseState;
-        if (this.entityResult === 0) {
-            return;
-        }
-        const valueLength = (this.entityTrie[this.entityResult] & BinTrieFlags.VALUE_LENGTH) >>
-            14;
-        switch (valueLength) {
-            case 1:
-                this.emitCodePoint(this.entityTrie[this.entityResult] &
-                    ~BinTrieFlags.VALUE_LENGTH);
-                break;
-            case 2:
-                this.emitCodePoint(this.entityTrie[this.entityResult + 1]);
-                break;
-            case 3: {
-                this.emitCodePoint(this.entityTrie[this.entityResult + 1]);
-                this.emitCodePoint(this.entityTrie[this.entityResult + 2]);
-            }
-        }
-    }
-    stateBeforeNumericEntity(c) {
-        if ((c | 0x20) === CharCodes.LowerX) {
-            this.entityExcess++;
-            this.state = State.InHexEntity;
         }
         else {
-            this.state = State.InNumericEntity;
-            this.stateInNumericEntity(c);
+            // Mark buffer as consumed.
+            this.index = this.offset + this.buffer.length - 1;
         }
-    }
-    emitNumericEntity(strict) {
-        const entityStart = this.index - this.entityExcess - 1;
-        const numberStart = entityStart + 2 + Number(this.state === State.InHexEntity);
-        if (numberStart !== this.index) {
-            // Emit leading data if any
-            if (entityStart > this.sectionStart) {
-                this.emitPartial(this.sectionStart, entityStart);
-            }
-            this.sectionStart = this.index + Number(strict);
-            this.emitCodePoint(replaceCodePoint(this.entityResult));
-        }
-        this.state = this.baseState;
-    }
-    stateInNumericEntity(c) {
-        if (c === CharCodes.Semi) {
-            this.emitNumericEntity(true);
-        }
-        else if (isNumber(c)) {
-            this.entityResult = this.entityResult * 10 + (c - CharCodes.Zero);
-            this.entityExcess++;
-        }
-        else {
-            if (this.allowLegacyEntity()) {
-                this.emitNumericEntity(false);
-            }
-            else {
-                this.state = this.baseState;
-            }
-            this.index--;
-        }
-    }
-    stateInHexEntity(c) {
-        if (c === CharCodes.Semi) {
-            this.emitNumericEntity(true);
-        }
-        else if (isNumber(c)) {
-            this.entityResult = this.entityResult * 16 + (c - CharCodes.Zero);
-            this.entityExcess++;
-        }
-        else if (isHexDigit(c)) {
-            this.entityResult =
-                this.entityResult * 16 + ((c | 0x20) - CharCodes.LowerA + 10);
-            this.entityExcess++;
-        }
-        else {
-            if (this.allowLegacyEntity()) {
-                this.emitNumericEntity(false);
-            }
-            else {
-                this.state = this.baseState;
-            }
-            this.index--;
-        }
-    }
-    allowLegacyEntity() {
-        return (!this.xmlMode &&
-            (this.baseState === State.Text ||
-                this.baseState === State.InSpecialTag));
     }
     /**
      * Remove data that has already been consumed from the buffer.
@@ -914,111 +1180,127 @@ class Tokenizer {
     parse() {
         while (this.shouldContinue()) {
             const c = this.buffer.charCodeAt(this.index - this.offset);
-            if (this.state === State.Text) {
-                this.stateText(c);
-            }
-            else if (this.state === State.SpecialStartSequence) {
-                this.stateSpecialStartSequence(c);
-            }
-            else if (this.state === State.InSpecialTag) {
-                this.stateInSpecialTag(c);
-            }
-            else if (this.state === State.CDATASequence) {
-                this.stateCDATASequence(c);
-            }
-            else if (this.state === State.InAttributeValueDq) {
-                this.stateInAttributeValueDoubleQuotes(c);
-            }
-            else if (this.state === State.InAttributeName) {
-                this.stateInAttributeName(c);
-            }
-            else if (this.state === State.InCommentLike) {
-                this.stateInCommentLike(c);
-            }
-            else if (this.state === State.InSpecialComment) {
-                this.stateInSpecialComment(c);
-            }
-            else if (this.state === State.BeforeAttributeName) {
-                this.stateBeforeAttributeName(c);
-            }
-            else if (this.state === State.InTagName) {
-                this.stateInTagName(c);
-            }
-            else if (this.state === State.InClosingTagName) {
-                this.stateInClosingTagName(c);
-            }
-            else if (this.state === State.BeforeTagName) {
-                this.stateBeforeTagName(c);
-            }
-            else if (this.state === State.AfterAttributeName) {
-                this.stateAfterAttributeName(c);
-            }
-            else if (this.state === State.InAttributeValueSq) {
-                this.stateInAttributeValueSingleQuotes(c);
-            }
-            else if (this.state === State.BeforeAttributeValue) {
-                this.stateBeforeAttributeValue(c);
-            }
-            else if (this.state === State.BeforeClosingTagName) {
-                this.stateBeforeClosingTagName(c);
-            }
-            else if (this.state === State.AfterClosingTagName) {
-                this.stateAfterClosingTagName(c);
-            }
-            else if (this.state === State.BeforeSpecialS) {
-                this.stateBeforeSpecialS(c);
-            }
-            else if (this.state === State.InAttributeValueNq) {
-                this.stateInAttributeValueNoQuotes(c);
-            }
-            else if (this.state === State.InSelfClosingTag) {
-                this.stateInSelfClosingTag(c);
-            }
-            else if (this.state === State.InDeclaration) {
-                this.stateInDeclaration(c);
-            }
-            else if (this.state === State.BeforeDeclaration) {
-                this.stateBeforeDeclaration(c);
-            }
-            else if (this.state === State.BeforeComment) {
-                this.stateBeforeComment(c);
-            }
-            else if (this.state === State.InProcessingInstruction) {
-                this.stateInProcessingInstruction(c);
-            }
-            else if (this.state === State.InNamedEntity) {
-                this.stateInNamedEntity(c);
-            }
-            else if (this.state === State.BeforeEntity) {
-                this.stateBeforeEntity(c);
-            }
-            else if (this.state === State.InHexEntity) {
-                this.stateInHexEntity(c);
-            }
-            else if (this.state === State.InNumericEntity) {
-                this.stateInNumericEntity(c);
-            }
-            else {
-                // `this._state === State.BeforeNumericEntity`
-                this.stateBeforeNumericEntity(c);
+            switch (this.state) {
+                case State.Text: {
+                    this.stateText(c);
+                    break;
+                }
+                case State.SpecialStartSequence: {
+                    this.stateSpecialStartSequence(c);
+                    break;
+                }
+                case State.InSpecialTag: {
+                    this.stateInSpecialTag(c);
+                    break;
+                }
+                case State.CDATASequence: {
+                    this.stateCDATASequence(c);
+                    break;
+                }
+                case State.InAttributeValueDq: {
+                    this.stateInAttributeValueDoubleQuotes(c);
+                    break;
+                }
+                case State.InAttributeName: {
+                    this.stateInAttributeName(c);
+                    break;
+                }
+                case State.InCommentLike: {
+                    this.stateInCommentLike(c);
+                    break;
+                }
+                case State.InSpecialComment: {
+                    this.stateInSpecialComment(c);
+                    break;
+                }
+                case State.BeforeAttributeName: {
+                    this.stateBeforeAttributeName(c);
+                    break;
+                }
+                case State.InTagName: {
+                    this.stateInTagName(c);
+                    break;
+                }
+                case State.InClosingTagName: {
+                    this.stateInClosingTagName(c);
+                    break;
+                }
+                case State.BeforeTagName: {
+                    this.stateBeforeTagName(c);
+                    break;
+                }
+                case State.AfterAttributeName: {
+                    this.stateAfterAttributeName(c);
+                    break;
+                }
+                case State.InAttributeValueSq: {
+                    this.stateInAttributeValueSingleQuotes(c);
+                    break;
+                }
+                case State.BeforeAttributeValue: {
+                    this.stateBeforeAttributeValue(c);
+                    break;
+                }
+                case State.BeforeClosingTagName: {
+                    this.stateBeforeClosingTagName(c);
+                    break;
+                }
+                case State.AfterClosingTagName: {
+                    this.stateAfterClosingTagName(c);
+                    break;
+                }
+                case State.BeforeSpecialS: {
+                    this.stateBeforeSpecialS(c);
+                    break;
+                }
+                case State.InAttributeValueNq: {
+                    this.stateInAttributeValueNoQuotes(c);
+                    break;
+                }
+                case State.InSelfClosingTag: {
+                    this.stateInSelfClosingTag(c);
+                    break;
+                }
+                case State.InDeclaration: {
+                    this.stateInDeclaration(c);
+                    break;
+                }
+                case State.BeforeDeclaration: {
+                    this.stateBeforeDeclaration(c);
+                    break;
+                }
+                case State.BeforeComment: {
+                    this.stateBeforeComment(c);
+                    break;
+                }
+                case State.InProcessingInstruction: {
+                    this.stateInProcessingInstruction(c);
+                    break;
+                }
+                case State.InEntity: {
+                    this.stateInEntity();
+                    break;
+                }
             }
             this.index++;
         }
         this.cleanup();
     }
     finish() {
-        if (this.state === State.InNamedEntity) {
-            this.emitNamedEntity();
+        if (this.state === State.InEntity) {
+            this.entityDecoder.end();
+            this.state = this.baseState;
         }
-        // If there is remaining data, emit it in a reasonable way
-        if (this.sectionStart < this.index) {
-            this.handleTrailingData();
-        }
+        this.handleTrailingData();
         this.cbs.onend();
     }
     /** Handle any trailing data. */
     handleTrailingData() {
         const endIndex = this.buffer.length + this.offset;
+        // If there is no remaining data, we are done.
+        if (this.sectionStart >= endIndex) {
+            return;
+        }
         if (this.state === State.InCommentLike) {
             if (this.currentSequence === Sequences.CdataEnd) {
                 this.cbs.oncdata(this.sectionStart, endIndex, 0);
@@ -1026,16 +1308,6 @@ class Tokenizer {
             else {
                 this.cbs.oncomment(this.sectionStart, endIndex, 0);
             }
-        }
-        else if (this.state === State.InNumericEntity &&
-            this.allowLegacyEntity()) {
-            this.emitNumericEntity(false);
-            // All trailing data will have been consumed
-        }
-        else if (this.state === State.InHexEntity &&
-            this.allowLegacyEntity()) {
-            this.emitNumericEntity(false);
-            // All trailing data will have been consumed
         }
         else if (this.state === State.InTagName ||
             this.state === State.BeforeAttributeName ||
@@ -1050,22 +1322,23 @@ class Tokenizer {
             this.cbs.ontext(this.sectionStart, endIndex);
         }
     }
-    emitPartial(start, endIndex) {
+    emitCodePoint(cp, consumed) {
         if (this.baseState !== State.Text &&
             this.baseState !== State.InSpecialTag) {
-            this.cbs.onattribdata(start, endIndex);
-        }
-        else {
-            this.cbs.ontext(start, endIndex);
-        }
-    }
-    emitCodePoint(cp) {
-        if (this.baseState !== State.Text &&
-            this.baseState !== State.InSpecialTag) {
+            if (this.sectionStart < this.entityStart) {
+                this.cbs.onattribdata(this.sectionStart, this.entityStart);
+            }
+            this.sectionStart = this.entityStart + consumed;
+            this.index = this.sectionStart - 1;
             this.cbs.onattribentity(cp);
         }
         else {
-            this.cbs.ontextentity(cp);
+            if (this.sectionStart < this.entityStart) {
+                this.cbs.ontext(this.sectionStart, this.entityStart);
+            }
+            this.sectionStart = this.entityStart + consumed;
+            this.index = this.sectionStart - 1;
+            this.cbs.ontextentity(cp, this.sectionStart);
         }
     }
 }
@@ -1184,7 +1457,6 @@ let Parser$1 = class Parser {
         this.attribvalue = "";
         this.attribs = null;
         this.stack = [];
-        this.foreignContext = [];
         this.buffers = [];
         this.bufferOffset = 0;
         /** The index of the last written buffer. Used when resuming after a `pause()`. */
@@ -1192,10 +1464,12 @@ let Parser$1 = class Parser {
         /** Indicates whether the parser has finished running / `.end` has been called. */
         this.ended = false;
         this.cbs = cbs !== null && cbs !== void 0 ? cbs : {};
-        this.lowerCaseTagNames = (_a = options.lowerCaseTags) !== null && _a !== void 0 ? _a : !options.xmlMode;
+        this.htmlMode = !this.options.xmlMode;
+        this.lowerCaseTagNames = (_a = options.lowerCaseTags) !== null && _a !== void 0 ? _a : this.htmlMode;
         this.lowerCaseAttributeNames =
-            (_b = options.lowerCaseAttributeNames) !== null && _b !== void 0 ? _b : !options.xmlMode;
+            (_b = options.lowerCaseAttributeNames) !== null && _b !== void 0 ? _b : this.htmlMode;
         this.tokenizer = new ((_c = options.Tokenizer) !== null && _c !== void 0 ? _c : Tokenizer)(this.options, this);
+        this.foreignContext = [!this.htmlMode];
         (_e = (_d = this.cbs).onparserinit) === null || _e === void 0 ? void 0 : _e.call(_d, this);
     }
     // Tokenizer event handlers
@@ -1208,19 +1482,18 @@ let Parser$1 = class Parser {
         this.startIndex = endIndex;
     }
     /** @internal */
-    ontextentity(cp) {
+    ontextentity(cp, endIndex) {
         var _a, _b;
-        /*
-         * Entities can be emitted on the character, or directly after.
-         * We use the section start here to get accurate indices.
-         */
-        const idx = this.tokenizer.getSectionStart();
-        this.endIndex = idx - 1;
+        this.endIndex = endIndex - 1;
         (_b = (_a = this.cbs).ontext) === null || _b === void 0 ? void 0 : _b.call(_a, fromCodePoint(cp));
-        this.startIndex = idx;
+        this.startIndex = endIndex;
     }
+    /**
+     * Checks if the current tag is a void element. Override this if you want
+     * to specify your own additional void elements.
+     */
     isVoidElement(name) {
-        return !this.options.xmlMode && voidElements$1.has(name);
+        return this.htmlMode && voidElements$1.has(name);
     }
     /** @internal */
     onopentagname(start, endIndex) {
@@ -1235,21 +1508,22 @@ let Parser$1 = class Parser {
         var _a, _b, _c, _d;
         this.openTagStart = this.startIndex;
         this.tagname = name;
-        const impliesClose = !this.options.xmlMode && openImpliesClose.get(name);
+        const impliesClose = this.htmlMode && openImpliesClose.get(name);
         if (impliesClose) {
-            while (this.stack.length > 0 &&
-                impliesClose.has(this.stack[this.stack.length - 1])) {
-                const el = this.stack.pop();
-                (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, el, true);
+            while (this.stack.length > 0 && impliesClose.has(this.stack[0])) {
+                const element = this.stack.shift();
+                (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, element, true);
             }
         }
         if (!this.isVoidElement(name)) {
-            this.stack.push(name);
-            if (foreignContextElements.has(name)) {
-                this.foreignContext.push(true);
-            }
-            else if (htmlIntegrationElements.has(name)) {
-                this.foreignContext.push(false);
+            this.stack.unshift(name);
+            if (this.htmlMode) {
+                if (foreignContextElements.has(name)) {
+                    this.foreignContext.unshift(true);
+                }
+                else if (htmlIntegrationElements.has(name)) {
+                    this.foreignContext.unshift(false);
+                }
             }
         }
         (_d = (_c = this.cbs).onopentagname) === null || _d === void 0 ? void 0 : _d.call(_c, name);
@@ -1277,40 +1551,37 @@ let Parser$1 = class Parser {
     }
     /** @internal */
     onclosetag(start, endIndex) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         this.endIndex = endIndex;
         let name = this.getSlice(start, endIndex);
         if (this.lowerCaseTagNames) {
             name = name.toLowerCase();
         }
-        if (foreignContextElements.has(name) ||
-            htmlIntegrationElements.has(name)) {
-            this.foreignContext.pop();
+        if (this.htmlMode &&
+            (foreignContextElements.has(name) ||
+                htmlIntegrationElements.has(name))) {
+            this.foreignContext.shift();
         }
         if (!this.isVoidElement(name)) {
-            const pos = this.stack.lastIndexOf(name);
+            const pos = this.stack.indexOf(name);
             if (pos !== -1) {
-                if (this.cbs.onclosetag) {
-                    let count = this.stack.length - pos;
-                    while (count--) {
-                        // We know the stack has sufficient elements.
-                        this.cbs.onclosetag(this.stack.pop(), count !== 0);
-                    }
+                for (let index = 0; index <= pos; index++) {
+                    const element = this.stack.shift();
+                    // We know the stack has sufficient elements.
+                    (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, element, index !== pos);
                 }
-                else
-                    this.stack.length = pos;
             }
-            else if (!this.options.xmlMode && name === "p") {
+            else if (this.htmlMode && name === "p") {
                 // Implicit open before close
                 this.emitOpenTag("p");
                 this.closeCurrentTag(true);
             }
         }
-        else if (!this.options.xmlMode && name === "br") {
+        else if (this.htmlMode && name === "br") {
             // We can't use `emitOpenTag` for implicit open, as `br` would be implicitly closed.
-            (_b = (_a = this.cbs).onopentagname) === null || _b === void 0 ? void 0 : _b.call(_a, "br");
-            (_d = (_c = this.cbs).onopentag) === null || _d === void 0 ? void 0 : _d.call(_c, "br", {}, true);
-            (_f = (_e = this.cbs).onclosetag) === null || _f === void 0 ? void 0 : _f.call(_e, "br", false);
+            (_d = (_c = this.cbs).onopentagname) === null || _d === void 0 ? void 0 : _d.call(_c, "br");
+            (_f = (_e = this.cbs).onopentag) === null || _f === void 0 ? void 0 : _f.call(_e, "br", {}, true);
+            (_h = (_g = this.cbs).onclosetag) === null || _h === void 0 ? void 0 : _h.call(_g, "br", false);
         }
         // Set `startIndex` for next node
         this.startIndex = endIndex + 1;
@@ -1318,9 +1589,7 @@ let Parser$1 = class Parser {
     /** @internal */
     onselfclosingtag(endIndex) {
         this.endIndex = endIndex;
-        if (this.options.xmlMode ||
-            this.options.recognizeSelfClosing ||
-            this.foreignContext[this.foreignContext.length - 1]) {
+        if (this.options.recognizeSelfClosing || this.foreignContext[0]) {
             this.closeCurrentTag(false);
             // Set `startIndex` for next node
             this.startIndex = endIndex + 1;
@@ -1335,10 +1604,10 @@ let Parser$1 = class Parser {
         const name = this.tagname;
         this.endOpenTag(isOpenImplied);
         // Self-closing tags will be on the top of the stack
-        if (this.stack[this.stack.length - 1] === name) {
+        if (this.stack[0] === name) {
             // If the opening tag isn't implied, the closing tag has to be implied.
             (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, name, !isOpenImplied);
-            this.stack.pop();
+            this.stack.shift();
         }
     }
     /** @internal */
@@ -1375,8 +1644,8 @@ let Parser$1 = class Parser {
         this.attribvalue = "";
     }
     getInstructionName(value) {
-        const idx = value.search(reNameEnd);
-        let name = idx < 0 ? value : value.substr(0, idx);
+        const index = value.search(reNameEnd);
+        let name = index < 0 ? value : value.substr(0, index);
         if (this.lowerCaseTagNames) {
             name = name.toLowerCase();
         }
@@ -1418,7 +1687,7 @@ let Parser$1 = class Parser {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         this.endIndex = endIndex;
         const value = this.getSlice(start, endIndex - offset);
-        if (this.options.xmlMode || this.options.recognizeCDATA) {
+        if (!this.htmlMode || this.options.recognizeCDATA) {
             (_b = (_a = this.cbs).oncdatastart) === null || _b === void 0 ? void 0 : _b.call(_a);
             (_d = (_c = this.cbs).ontext) === null || _d === void 0 ? void 0 : _d.call(_c, value);
             (_f = (_e = this.cbs).oncdataend) === null || _f === void 0 ? void 0 : _f.call(_e);
@@ -1436,8 +1705,9 @@ let Parser$1 = class Parser {
         if (this.cbs.onclosetag) {
             // Set the end index for all remaining tags
             this.endIndex = this.startIndex;
-            for (let i = this.stack.length; i > 0; this.cbs.onclosetag(this.stack[--i], true))
-                ;
+            for (let index = 0; index < this.stack.length; index++) {
+                this.cbs.onclosetag(this.stack[index], true);
+            }
         }
         (_b = (_a = this.cbs).onend) === null || _b === void 0 ? void 0 : _b.call(_a);
     }
@@ -1456,6 +1726,8 @@ let Parser$1 = class Parser {
         this.endIndex = 0;
         (_d = (_c = this.cbs).onparserinit) === null || _d === void 0 ? void 0 : _d.call(_c, this);
         this.buffers.length = 0;
+        this.foreignContext.length = 0;
+        this.foreignContext.unshift(!this.htmlMode);
         this.bufferOffset = 0;
         this.writeIndex = 0;
         this.ended = false;
@@ -1474,12 +1746,12 @@ let Parser$1 = class Parser {
         while (start - this.bufferOffset >= this.buffers[0].length) {
             this.shiftBuffer();
         }
-        let str = this.buffers[0].slice(start - this.bufferOffset, end - this.bufferOffset);
+        let slice = this.buffers[0].slice(start - this.bufferOffset, end - this.bufferOffset);
         while (end - this.bufferOffset > this.buffers[0].length) {
             this.shiftBuffer();
-            str += this.buffers[0].slice(0, end - this.bufferOffset);
+            slice += this.buffers[0].slice(0, end - this.bufferOffset);
         }
-        return str;
+        return slice;
     }
     shiftBuffer() {
         this.bufferOffset += this.buffers[0].length;
@@ -1511,7 +1783,7 @@ let Parser$1 = class Parser {
     end(chunk) {
         var _a, _b;
         if (this.ended) {
-            (_b = (_a = this.cbs).onerror) === null || _b === void 0 ? void 0 : _b.call(_a, Error(".end() after done!"));
+            (_b = (_a = this.cbs).onerror) === null || _b === void 0 ? void 0 : _b.call(_a, new Error(".end() after done!"));
             return;
         }
         if (chunk)
@@ -2152,6 +2424,16 @@ function encodeXML(str) {
     }
     return ret + str.substr(lastIdx);
 }
+/**
+ * Creates a function that escapes all characters matched by the given regular
+ * expression using the given map of characters to escape to their entities.
+ *
+ * @param regex Regular expression to match characters to escape.
+ * @param map Map of characters to escape to their entities.
+ *
+ * @returns Function that escapes all characters matched by the given regular
+ * expression using the given map of characters to escape to their entities.
+ */
 function getEscaper(regex, map) {
     return function escape(data) {
         let match;
@@ -2161,7 +2443,7 @@ function getEscaper(regex, map) {
             if (lastIdx !== match.index) {
                 result += data.substring(lastIdx, match.index);
             }
-            // We know that this chararcter will be in the map.
+            // We know that this character will be in the map.
             result += map.get(match[0].charCodeAt(0));
             // Every match will be of length 1
             lastIdx = match.index + 1;
@@ -2498,7 +2780,7 @@ function getInnerHTML(node, options) {
         : "";
 }
 /**
- * Get a node's inner text. Same as `textContent`, but inserts newlines for `<br>` tags.
+ * Get a node's inner text. Same as `textContent`, but inserts newlines for `<br>` tags. Ignores comments.
  *
  * @category Stringify
  * @deprecated Use `textContent` instead.
@@ -2517,7 +2799,7 @@ function getText$1(node) {
     return "";
 }
 /**
- * Get a node's text content.
+ * Get a node's text content. Ignores comments.
  *
  * @category Stringify
  * @param node Node to get the text content of.
@@ -2535,7 +2817,7 @@ function textContent(node) {
     return "";
 }
 /**
- * Get a node's inner text.
+ * Get a node's inner text, ignoring `<script>` and `<style>` tags. Ignores comments.
  *
  * @category Stringify
  * @param node Node to get the inner text of.
@@ -2568,7 +2850,7 @@ function getChildren$1(elem) {
  *
  * @category Traversal
  * @param elem Node to get the parent of.
- * @returns `elem`'s parent node.
+ * @returns `elem`'s parent node, or `null` if `elem` is a root node.
  */
 function getParent$1(elem) {
     return elem.parent || null;
@@ -2582,7 +2864,7 @@ function getParent$1(elem) {
  *
  * @category Traversal
  * @param elem Element to get the siblings of.
- * @returns `elem`'s siblings.
+ * @returns `elem`'s siblings, including `elem`.
  */
 function getSiblings$1(elem) {
     const parent = getParent$1(elem);
@@ -2640,7 +2922,8 @@ function getName$1(elem) {
  *
  * @category Traversal
  * @param elem The element to get the next sibling of.
- * @returns `elem`'s next sibling that is a tag.
+ * @returns `elem`'s next sibling that is a tag, or `null` if there is no next
+ * sibling.
  */
 function nextElementSibling$1(elem) {
     let { next } = elem;
@@ -2653,7 +2936,8 @@ function nextElementSibling$1(elem) {
  *
  * @category Traversal
  * @param elem The element to get the previous sibling of.
- * @returns `elem`'s previous sibling that is a tag.
+ * @returns `elem`'s previous sibling that is a tag, or `null` if there is no
+ * previous sibling.
  */
 function prevElementSibling(elem) {
     let { prev } = elem;
@@ -2675,8 +2959,14 @@ function removeElement(elem) {
         elem.next.prev = elem.prev;
     if (elem.parent) {
         const childs = elem.parent.children;
-        childs.splice(childs.lastIndexOf(elem), 1);
+        const childsIndex = childs.lastIndexOf(elem);
+        if (childsIndex >= 0) {
+            childs.splice(childsIndex, 1);
+        }
     }
+    elem.next = null;
+    elem.prev = null;
+    elem.parent = null;
 }
 /**
  * Replace an element in the dom
@@ -2705,15 +2995,15 @@ function replaceElement(elem, replacement) {
  * Append a child to an element.
  *
  * @category Manipulation
- * @param elem The element to append to.
+ * @param parent The element to append to.
  * @param child The element to be added as a child.
  */
-function appendChild(elem, child) {
+function appendChild(parent, child) {
     removeElement(child);
     child.next = null;
-    child.parent = elem;
-    if (elem.children.push(child) > 1) {
-        const sibling = elem.children[elem.children.length - 2];
+    child.parent = parent;
+    if (parent.children.push(child) > 1) {
+        const sibling = parent.children[parent.children.length - 2];
         sibling.next = child;
         child.prev = sibling;
     }
@@ -2751,15 +3041,15 @@ function append$2(elem, next) {
  * Prepend a child to an element.
  *
  * @category Manipulation
- * @param elem The element to prepend before.
+ * @param parent The element to prepend before.
  * @param child The element to be added as a child.
  */
-function prependChild(elem, child) {
+function prependChild(parent, child) {
     removeElement(child);
-    child.parent = elem;
+    child.parent = parent;
     child.prev = null;
-    if (elem.children.unshift(child) !== 1) {
-        const sibling = elem.children[1];
+    if (parent.children.unshift(child) !== 1) {
+        const sibling = parent.children[1];
         sibling.prev = child;
         child.next = sibling;
     }
@@ -2791,7 +3081,7 @@ function prepend(elem, prev) {
 }
 
 /**
- * Search a node and its children for nodes passing a test function.
+ * Search a node and its children for nodes passing a test function. If `node` is not an array, it will be wrapped in one.
  *
  * @category Querying
  * @param test Function to test nodes on.
@@ -2801,12 +3091,10 @@ function prepend(elem, prev) {
  * @returns All nodes passing `test`.
  */
 function filter(test, node, recurse = true, limit = Infinity) {
-    if (!Array.isArray(node))
-        node = [node];
-    return find(test, node, recurse, limit);
+    return find(test, Array.isArray(node) ? node : [node], recurse, limit);
 }
 /**
- * Search an array of node and its children for nodes passing a test function.
+ * Search an array of nodes and their children for nodes passing a test function.
  *
  * @category Querying
  * @param test Function to test nodes on.
@@ -2817,24 +3105,41 @@ function filter(test, node, recurse = true, limit = Infinity) {
  */
 function find(test, nodes, recurse, limit) {
     const result = [];
-    for (const elem of nodes) {
+    /** Stack of the arrays we are looking at. */
+    const nodeStack = [nodes];
+    /** Stack of the indices within the arrays. */
+    const indexStack = [0];
+    for (;;) {
+        // First, check if the current array has any more elements to look at.
+        if (indexStack[0] >= nodeStack[0].length) {
+            // If we have no more arrays to look at, we are done.
+            if (indexStack.length === 1) {
+                return result;
+            }
+            // Otherwise, remove the current array from the stack.
+            nodeStack.shift();
+            indexStack.shift();
+            // Loop back to the start to continue with the next array.
+            continue;
+        }
+        const elem = nodeStack[0][indexStack[0]++];
         if (test(elem)) {
             result.push(elem);
             if (--limit <= 0)
-                break;
+                return result;
         }
         if (recurse && hasChildren(elem) && elem.children.length > 0) {
-            const children = find(test, elem.children, recurse, limit);
-            result.push(...children);
-            limit -= children.length;
-            if (limit <= 0)
-                break;
+            /*
+             * Add the children to the stack. We are depth-first, so this is
+             * the next array we look at.
+             */
+            indexStack.unshift(0);
+            nodeStack.unshift(elem.children);
         }
     }
-    return result;
 }
 /**
- * Finds the first element inside of an array that matches a test function.
+ * Finds the first element inside of an array that matches a test function. This is an alias for `Array.prototype.find`.
  *
  * @category Querying
  * @param test Function to test nodes on.
@@ -2850,27 +3155,29 @@ function findOneChild(test, nodes) {
  *
  * @category Querying
  * @param test Function to test nodes on.
- * @param nodes Array of nodes to search.
+ * @param nodes Node or array of nodes to search.
  * @param recurse Also consider child nodes.
- * @returns The first child node that passes `test`.
+ * @returns The first node that passes `test`.
  */
 function findOne$1(test, nodes, recurse = true) {
     let elem = null;
     for (let i = 0; i < nodes.length && !elem; i++) {
-        const checked = nodes[i];
-        if (!isTag$1(checked)) {
+        const node = nodes[i];
+        if (!isTag$1(node)) {
             continue;
         }
-        else if (test(checked)) {
-            elem = checked;
+        else if (test(node)) {
+            elem = node;
         }
-        else if (recurse && checked.children.length > 0) {
-            elem = findOne$1(test, checked.children, true);
+        else if (recurse && node.children.length > 0) {
+            elem = findOne$1(test, node.children, true);
         }
     }
     return elem;
 }
 /**
+ * Checks if a tree of nodes contains at least one node passing a test.
+ *
  * @category Querying
  * @param test Function to test nodes on.
  * @param nodes Array of nodes to search.
@@ -2878,12 +3185,10 @@ function findOne$1(test, nodes, recurse = true) {
  */
 function existsOne$1(test, nodes) {
     return nodes.some((checked) => isTag$1(checked) &&
-        (test(checked) ||
-            (checked.children.length > 0 &&
-                existsOne$1(test, checked.children))));
+        (test(checked) || existsOne$1(test, checked.children)));
 }
 /**
- * Search and array of nodes and its children for elements passing a test function.
+ * Search an array of nodes and their children for elements passing a test function.
  *
  * Same as `find`, but limited to elements and with less options, leading to reduced complexity.
  *
@@ -2893,21 +3198,35 @@ function existsOne$1(test, nodes) {
  * @returns All nodes passing `test`.
  */
 function findAll$1(test, nodes) {
-    var _a;
     const result = [];
-    const stack = nodes.filter(isTag$1);
-    let elem;
-    while ((elem = stack.shift())) {
-        const children = (_a = elem.children) === null || _a === void 0 ? void 0 : _a.filter(isTag$1);
-        if (children && children.length > 0) {
-            stack.unshift(...children);
+    const nodeStack = [nodes];
+    const indexStack = [0];
+    for (;;) {
+        if (indexStack[0] >= nodeStack[0].length) {
+            if (nodeStack.length === 1) {
+                return result;
+            }
+            // Otherwise, remove the current array from the stack.
+            nodeStack.shift();
+            indexStack.shift();
+            // Loop back to the start to continue with the next array.
+            continue;
         }
+        const elem = nodeStack[0][indexStack[0]++];
+        if (!isTag$1(elem))
+            continue;
         if (test(elem))
             result.push(elem);
+        if (elem.children.length > 0) {
+            indexStack.unshift(0);
+            nodeStack.unshift(elem.children);
+        }
     }
-    return result;
 }
 
+/**
+ * A map of functions to check nodes against.
+ */
 const Checks = {
     tag_name(name) {
         if (typeof name === "function") {
@@ -2932,6 +3251,9 @@ const Checks = {
     },
 };
 /**
+ * Returns a function to check whether a node has an attribute with a particular
+ * value.
+ *
  * @param attrib Attribute to check.
  * @param value Attribute value to look for.
  * @returns A function to check whether the a node has an attribute with a
@@ -2944,6 +3266,9 @@ function getAttribCheck(attrib, value) {
     return (elem) => isTag$1(elem) && elem.attribs[attrib] === value;
 }
 /**
+ * Returns a function that returns `true` if either of the input functions
+ * returns `true` for a node.
+ *
  * @param a First function to combine.
  * @param b Second function to combine.
  * @returns A function taking a node and returning `true` if either of the input
@@ -2953,9 +3278,12 @@ function combineFuncs(a, b) {
     return (elem) => a(elem) || b(elem);
 }
 /**
+ * Returns a function that executes all checks in `options` and returns `true`
+ * if any of them match a node.
+ *
  * @param options An object describing nodes to look for.
- * @returns A function executing all checks in `options` and returning `true` if
- *   any of them match a node.
+ * @returns A function that executes all checks in `options` and returns `true`
+ *   if any of them match a node.
  */
 function compileTest(options) {
     const funcs = Object.keys(options).map((key) => {
@@ -2967,6 +3295,8 @@ function compileTest(options) {
     return funcs.length === 0 ? null : funcs.reduce(combineFuncs);
 }
 /**
+ * Checks whether a node matches the description in `options`.
+ *
  * @category Legacy Query Functions
  * @param options An object describing nodes to look for.
  * @param node The element to test.
@@ -2977,6 +3307,8 @@ function testElement(options, node) {
     return test ? test(node) : true;
 }
 /**
+ * Returns all nodes that match `options`.
+ *
  * @category Legacy Query Functions
  * @param options An object describing nodes to look for.
  * @param nodes Nodes to search through.
@@ -2989,6 +3321,8 @@ function getElements(options, nodes, recurse, limit = Infinity) {
     return test ? filter(test, nodes, recurse, limit) : [];
 }
 /**
+ * Returns the node with the supplied ID.
+ *
  * @category Legacy Query Functions
  * @param id The unique ID attribute value to look for.
  * @param nodes Nodes to search through.
@@ -3001,6 +3335,8 @@ function getElementById(id, nodes, recurse = true) {
     return findOne$1(getAttribCheck("id", id), nodes, recurse);
 }
 /**
+ * Returns all nodes with the supplied `tagName`.
+ *
  * @category Legacy Query Functions
  * @param tagName Tag name to search for.
  * @param nodes Nodes to search through.
@@ -3012,6 +3348,8 @@ function getElementsByTagName(tagName, nodes, recurse = true, limit = Infinity) 
     return filter(Checks["tag_name"](tagName), nodes, recurse, limit);
 }
 /**
+ * Returns all nodes with the supplied `type`.
+ *
  * @category Legacy Query Functions
  * @param type Element type to look for.
  * @param nodes Nodes to search through.
@@ -3024,11 +3362,12 @@ function getElementsByTagType(type, nodes, recurse = true, limit = Infinity) {
 }
 
 /**
- * Given an array of nodes, remove any member that is contained by another.
+ * Given an array of nodes, remove any member that is contained by another
+ * member.
  *
  * @category Helpers
  * @param nodes Nodes to filter.
- * @returns Remaining nodes that aren't subtrees of each other.
+ * @returns Remaining nodes that aren't contained by other nodes.
  */
 function removeSubsets$1(nodes) {
     let idx = nodes.length;
@@ -3069,8 +3408,8 @@ var DocumentPosition;
     DocumentPosition[DocumentPosition["CONTAINED_BY"] = 16] = "CONTAINED_BY";
 })(DocumentPosition || (DocumentPosition = {}));
 /**
- * Compare the position of one node against another node in any other document.
- * The return value is a bitmask with the values from {@link DocumentPosition}.
+ * Compare the position of one node against another node in any other document,
+ * returning a bitmask with the values from {@link DocumentPosition}.
  *
  * Document order:
  * > There is an ordering, document order, defined on all the nodes in the
@@ -3134,9 +3473,9 @@ function compareDocumentPosition(nodeA, nodeB) {
     return DocumentPosition.PRECEDING;
 }
 /**
- * Sort an array of nodes based on their relative position in the document and
- * remove any duplicate nodes. If the array contains nodes that do not belong to
- * the same document, sort order is unspecified.
+ * Sort an array of nodes based on their relative position in the document,
+ * removing any duplicate nodes. If the array contains nodes that do not belong
+ * to the same document, sort order is unspecified.
  *
  * @category Helpers
  * @param nodes Array of DOM nodes.
@@ -3237,7 +3576,7 @@ function getRssFeed(feedRoot) {
             addConditionally(entry, "title", "title", children);
             addConditionally(entry, "link", "link", children);
             addConditionally(entry, "description", "description", children);
-            const pubDate = fetch("pubDate", children);
+            const pubDate = fetch("pubDate", children) || fetch("dc:date", children);
             if (pubDate)
                 entry.pubDate = new Date(pubDate);
             return entry;
@@ -3388,7 +3727,7 @@ var DomUtils = /*#__PURE__*/Object.freeze({
  * Parses the data, returns the resulting document.
  *
  * @param data The data that should be parsed.
- * @param options Optional options for the parser and DOM builder.
+ * @param options Optional options for the parser and DOM handler.
  */
 function parseDocument(data, options) {
     const handler = new DomHandler(undefined, options);
@@ -3402,7 +3741,7 @@ function parseDocument(data, options) {
  * Use `parseDocument` to get the `Document` node instead.
  *
  * @param data The data that should be parsed.
- * @param options Optional options for the parser and DOM builder.
+ * @param options Optional options for the parser and DOM handler.
  * @deprecated Use `parseDocument` instead.
  */
 function parseDOM(data, options) {
@@ -3411,21 +3750,34 @@ function parseDOM(data, options) {
 /**
  * Creates a parser instance, with an attached DOM handler.
  *
- * @param cb A callback that will be called once parsing has been completed.
- * @param options Optional options for the parser and DOM builder.
- * @param elementCb An optional callback that will be called every time a tag has been completed inside of the DOM.
+ * @param callback A callback that will be called once parsing has been completed, with the resulting document.
+ * @param options Optional options for the parser and DOM handler.
+ * @param elementCallback An optional callback that will be called every time a tag has been completed inside of the DOM.
  */
-function createDomStream(cb, options, elementCb) {
-    const handler = new DomHandler(cb, options, elementCb);
+function createDocumentStream(callback, options, elementCallback) {
+    const handler = new DomHandler((error) => callback(error, handler.root), options, elementCallback);
     return new Parser$1(handler, options);
 }
+/**
+ * Creates a parser instance, with an attached DOM handler.
+ *
+ * @param callback A callback that will be called once parsing has been completed, with an array of root nodes.
+ * @param options Optional options for the parser and DOM handler.
+ * @param elementCallback An optional callback that will be called every time a tag has been completed inside of the DOM.
+ * @deprecated Use `createDocumentStream` instead.
+ */
+function createDomStream(callback, options, elementCallback) {
+    const handler = new DomHandler(callback, options, elementCallback);
+    return new Parser$1(handler, options);
+}
+const parseFeedDefaultOptions = { xmlMode: true };
 /**
  * Parse a feed.
  *
  * @param feed The feed that should be parsed, as a string.
  * @param options Optionally, options for parsing. When using this, you should set `xmlMode` to `true`.
  */
-function parseFeed(feed, options = { xmlMode: true }) {
+function parseFeed(feed, options = parseFeedDefaultOptions) {
     return getFeed(parseDOM(feed, options));
 }
 
@@ -3437,6 +3789,7 @@ var HTMLParser2 = /*#__PURE__*/Object.freeze({
     ElementType: index,
     Parser: Parser$1,
     Tokenizer: Tokenizer,
+    createDocumentStream: createDocumentStream,
     createDomStream: createDomStream,
     getFeed: getFeed,
     parseDOM: parseDOM,
@@ -4254,6 +4607,7 @@ class NodeList extends Array {
 
 // https://dom.spec.whatwg.org/#node
 
+
 const getParentNodeCount = ({parentNode}) => {
   let count = 0;
   while (parentNode) {
@@ -4515,6 +4869,8 @@ const nextSibling = node => {
 };
 
 // https://dom.spec.whatwg.org/#nondocumenttypechildnode
+// CharacterData, Element
+
 
 const nextElementSibling = node => {
   let next = nextSibling(node);
@@ -4531,6 +4887,8 @@ const previousElementSibling = node => {
 };
 
 // https://dom.spec.whatwg.org/#childnode
+// CharacterData, DocumentType, Element
+
 
 const asFragment = (ownerDocument, nodes) => {
   const fragment = ownerDocument.createDocumentFragment();
@@ -4583,6 +4941,7 @@ const remove = (prev, current, next) => {
 };
 
 // https://dom.spec.whatwg.org/#interface-characterdata
+
 
 /**
  * @implements globalThis.CharacterData
@@ -4688,6 +5047,10 @@ let Comment$1 = class Comment extends CharacterData$1 {
   toString() { return `<!--${this[VALUE]}-->`; }
 };
 
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
 var boolbase = {
 	trueFunc: function trueFunc(){
 		return true;
@@ -4696,6 +5059,8 @@ var boolbase = {
 		return false;
 	}
 };
+
+var boolbase$1 = /*@__PURE__*/getDefaultExportFromCjs(boolbase);
 
 var SelectorType;
 (function (SelectorType) {
@@ -5340,7 +5705,7 @@ const attributeRules = {
         const { adapter } = options;
         const { name, value } = data;
         if (/\s/.test(value)) {
-            return boolbase.falseFunc;
+            return boolbase$1.falseFunc;
         }
         const regex = new RegExp(`(?:^|\\s)${escapeRegex(value)}(?:$|\\s)`, shouldIgnoreCase(data, options) ? "i" : "");
         return function element(elem) {
@@ -5360,7 +5725,7 @@ const attributeRules = {
         let { value } = data;
         const len = value.length;
         if (len === 0) {
-            return boolbase.falseFunc;
+            return boolbase$1.falseFunc;
         }
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
@@ -5384,7 +5749,7 @@ const attributeRules = {
         let { value } = data;
         const len = -value.length;
         if (len === 0) {
-            return boolbase.falseFunc;
+            return boolbase$1.falseFunc;
         }
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
@@ -5404,7 +5769,7 @@ const attributeRules = {
         const { adapter } = options;
         const { name, value } = data;
         if (value === "") {
-            return boolbase.falseFunc;
+            return boolbase$1.falseFunc;
         }
         if (shouldIgnoreCase(data, options)) {
             const regex = new RegExp(escapeRegex(value), "i");
@@ -5548,7 +5913,7 @@ function compile$2(parsed) {
      * `b < 0` here as we subtracted 1 from `b` above.
      */
     if (b < 0 && a <= 0)
-        return boolbase.falseFunc;
+        return boolbase$1.falseFunc;
     // When `a` is in the range -1..1, it matches any element (so only `b` is checked).
     if (a === -1)
         return (index) => index <= b;
@@ -5556,7 +5921,7 @@ function compile$2(parsed) {
         return (index) => index === b;
     // When `b <= 0` and `a === 1`, they match any element.
     if (a === 1)
-        return b < 0 ? boolbase.trueFunc : (index) => index >= b;
+        return b < 0 ? boolbase$1.trueFunc : (index) => index >= b;
     /*
      * Otherwise, modulo can be used to check if there is a match.
      *
@@ -5619,9 +5984,9 @@ const filters = {
     // Location specific methods
     "nth-child"(next, rule, { adapter, equals }) {
         const func = nthCheck(rule);
-        if (func === boolbase.falseFunc)
-            return boolbase.falseFunc;
-        if (func === boolbase.trueFunc)
+        if (func === boolbase$1.falseFunc)
+            return boolbase$1.falseFunc;
+        if (func === boolbase$1.trueFunc)
             return getChildFunc(next, adapter);
         return function nthChild(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -5638,9 +6003,9 @@ const filters = {
     },
     "nth-last-child"(next, rule, { adapter, equals }) {
         const func = nthCheck(rule);
-        if (func === boolbase.falseFunc)
-            return boolbase.falseFunc;
-        if (func === boolbase.trueFunc)
+        if (func === boolbase$1.falseFunc)
+            return boolbase$1.falseFunc;
+        if (func === boolbase$1.trueFunc)
             return getChildFunc(next, adapter);
         return function nthLastChild(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -5657,9 +6022,9 @@ const filters = {
     },
     "nth-of-type"(next, rule, { adapter, equals }) {
         const func = nthCheck(rule);
-        if (func === boolbase.falseFunc)
-            return boolbase.falseFunc;
-        if (func === boolbase.trueFunc)
+        if (func === boolbase$1.falseFunc)
+            return boolbase$1.falseFunc;
+        if (func === boolbase$1.trueFunc)
             return getChildFunc(next, adapter);
         return function nthOfType(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -5678,9 +6043,9 @@ const filters = {
     },
     "nth-last-of-type"(next, rule, { adapter, equals }) {
         const func = nthCheck(rule);
-        if (func === boolbase.falseFunc)
-            return boolbase.falseFunc;
-        if (func === boolbase.trueFunc)
+        if (func === boolbase$1.falseFunc)
+            return boolbase$1.falseFunc;
+        if (func === boolbase$1.trueFunc)
             return getChildFunc(next, adapter);
         return function nthLastOfType(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -5730,7 +6095,7 @@ function dynamicStatePseudo(name) {
     return function dynamicPseudo(next, _rule, { adapter }) {
         const func = adapter[name];
         if (typeof func !== "function") {
-            return boolbase.falseFunc;
+            return boolbase$1.falseFunc;
         }
         return function active(elem) {
             return func(elem) && next(elem);
@@ -5855,8 +6220,8 @@ const aliases = {
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 const PLACEHOLDER_ELEMENT = {};
 function ensureIsTag(next, adapter) {
-    if (next === boolbase.falseFunc)
-        return boolbase.falseFunc;
+    if (next === boolbase$1.falseFunc)
+        return boolbase$1.falseFunc;
     return (elem) => adapter.isTag(elem) && next(elem);
 }
 function getNextSiblings(elem, adapter) {
@@ -5883,10 +6248,10 @@ function copyOptions(options) {
 }
 const is$1 = (next, token, options, context, compileToken) => {
     const func = compileToken(token, copyOptions(options), context);
-    return func === boolbase.trueFunc
+    return func === boolbase$1.trueFunc
         ? next
-        : func === boolbase.falseFunc
-            ? boolbase.falseFunc
+        : func === boolbase$1.falseFunc
+            ? boolbase$1.falseFunc
             : (elem) => func(elem) && next(elem);
 };
 /*
@@ -5903,10 +6268,10 @@ const subselects = {
     where: is$1,
     not(next, token, options, context, compileToken) {
         const func = compileToken(token, copyOptions(options), context);
-        return func === boolbase.falseFunc
+        return func === boolbase$1.falseFunc
             ? next
-            : func === boolbase.trueFunc
-                ? boolbase.falseFunc
+            : func === boolbase$1.trueFunc
+                ? boolbase$1.falseFunc
                 : (elem) => !func(elem) && next(elem);
     },
     has(next, subselect, options, _context, compileToken) {
@@ -5918,11 +6283,11 @@ const subselects = {
                 [PLACEHOLDER_ELEMENT]
             : undefined;
         const compiled = compileToken(subselect, opts, context);
-        if (compiled === boolbase.falseFunc)
-            return boolbase.falseFunc;
+        if (compiled === boolbase$1.falseFunc)
+            return boolbase$1.falseFunc;
         const hasElement = ensureIsTag(compiled, adapter);
         // If `compiled` is `trueFunc`, we can skip this.
-        if (context && compiled !== boolbase.trueFunc) {
+        if (context && compiled !== boolbase$1.trueFunc) {
             /*
              * `shouldTestNextSiblings` will only be true if the query starts with
              * a traversal (sibling or adjacent). That means we will always have a context.
@@ -6203,21 +6568,21 @@ function compileToken(token, options, context) {
         }
         return compileRules(rules, options, finalContext);
     })
-        .reduce(reduceRules, boolbase.falseFunc);
+        .reduce(reduceRules, boolbase$1.falseFunc);
     query.shouldTestNextSiblings = shouldTestNextSiblings;
     return query;
 }
 function compileRules(rules, options, context) {
     var _a;
-    return rules.reduce((previous, rule) => previous === boolbase.falseFunc
-        ? boolbase.falseFunc
-        : compileGeneralSelector(previous, rule, options, context, compileToken), (_a = options.rootFunc) !== null && _a !== void 0 ? _a : boolbase.trueFunc);
+    return rules.reduce((previous, rule) => previous === boolbase$1.falseFunc
+        ? boolbase$1.falseFunc
+        : compileGeneralSelector(previous, rule, options, context, compileToken), (_a = options.rootFunc) !== null && _a !== void 0 ? _a : boolbase$1.trueFunc);
 }
 function reduceRules(a, b) {
-    if (b === boolbase.falseFunc || a === boolbase.trueFunc) {
+    if (b === boolbase$1.falseFunc || a === boolbase$1.trueFunc) {
         return a;
     }
-    if (a === boolbase.falseFunc || b === boolbase.trueFunc) {
+    if (a === boolbase$1.falseFunc || b === boolbase$1.trueFunc) {
         return b;
     }
     return function combine(elem) {
@@ -6444,6 +6809,8 @@ let Text$1 = class Text extends CharacterData$1 {
 };
 
 // https://dom.spec.whatwg.org/#interface-parentnode
+// Document, DocumentFragment, Element
+
 
 const isNode = node => node instanceof Node$1;
 
@@ -6712,6 +7079,8 @@ class ParentNode extends Node$1 {
 }
 
 // https://dom.spec.whatwg.org/#interface-nonelementparentnode
+// Document, DocumentFragment
+
 
 class NonElementParentNode extends ParentNode {
   getElementById(id) {
@@ -7212,6 +7581,7 @@ let ShadowRoot$1 = class ShadowRoot extends NonElementParentNode {
 };
 
 // https://dom.spec.whatwg.org/#interface-element
+
 
 // <utils>
 const attributesHandler = {
@@ -11357,6 +11727,7 @@ const Mime = {
 
 // https://dom.spec.whatwg.org/#interface-customevent
 
+
 /**
  * @implements globalThis.CustomEvent
  */
@@ -11370,6 +11741,7 @@ class CustomEvent extends GlobalEvent {
 /* c8 ignore stop */
 
 // https://dom.spec.whatwg.org/#interface-customevent
+
 
 /**
  * @implements globalThis.InputEvent
@@ -11407,6 +11779,7 @@ class Image extends HTMLImageElement {
 };
 
 // https://dom.spec.whatwg.org/#concept-live-range
+
 
 const deleteContents = ({[START]: start, [END]: end}, fragment = null) => {
   setAdjacent(start[PREV], end[NEXT]);
