@@ -1,7 +1,7 @@
 'use strict';
 const {Attr: _Attr} = require('../interface/attr.js');
 const {CharacterData: _CharacterData} = require('../interface/character-data.js');
-const {CDATASection: _CDATASection} = require('../interface/cdata-section');
+const {CDATASection: _CDATASection} = require('../interface/cdata-section.js');
 const {Comment: _Comment} = require('../interface/comment.js');
 const {DocumentFragment: _DocumentFragment} = require('../interface/document-fragment.js');
 const {DocumentType: _DocumentType} = require('../interface/document-type.js');

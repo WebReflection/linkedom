@@ -1,6 +1,6 @@
 import {Attr as _Attr} from '../interface/attr.js';
 import {CharacterData as _CharacterData} from '../interface/character-data.js';
-import {CDATASection as _CDATASection} from '../interface/cdata-section';
+import {CDATASection as _CDATASection} from '../interface/cdata-section.js';
 import {Comment as _Comment} from '../interface/comment.js';
 import {DocumentFragment as _DocumentFragment} from '../interface/document-fragment.js';
 import {DocumentType as _DocumentType} from '../interface/document-type.js';
