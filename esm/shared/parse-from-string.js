@@ -6,6 +6,7 @@ import {keys} from './object.js';
 
 import {knownBoundaries, knownSiblings} from './utils.js';
 import {attributeChangedCallback, connectedCallback} from '../interface/custom-element-registry.js';
+import {moCallback} from '../interface/mutation-observer.js';
 
 const {Parser} = HTMLParser2;
 
@@ -21,6 +22,7 @@ const append = (self, node, active) => {
   const end = self[END];
   node.parentNode = self;
   knownBoundaries(end[PREV], node, end);
+  moCallback(node, null);
   if (active && node.nodeType === ELEMENT_NODE)
     connectedCallback(node);
   return node;
