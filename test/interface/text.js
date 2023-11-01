@@ -15,7 +15,7 @@ assert(node.toString(), '<div><p></p></div>', 'before after not affected');
 node.firstChild.textContent = '<test>';
 assert(node.toString(), '<div><p>&lt;test&gt;</p></div>', 'before after not affected');
 node.firstChild.textContent = '';
-assert(node.firstChild.childNodes.length, 0, 'there should be no leftovers are clearing content with textContent=""')
+assert(node.firstChild.childNodes.length, 0, 'there should be no leftovers when clearing content with textContent=""')
 assert(node.firstChild.firstChild, null, 'textContent empty string clears children')
 assert(node.firstChild.textContent, '', 'textContent was set empty string')
 assert(node.toString(), '<div><p></p></div>', 'before after not affected');
@@ -26,7 +26,7 @@ node.firstChild.textContent = null;
 assert(node.firstChild.firstChild, null, 'textContent null clears all children and keeps childNodes empty')
 assert(node.toString(), '<div><p></p></div>', 'null clears all children but does not set node');
 node.firstChild.textContent = '';
-assert(node.firstChild.childNodes.length, 0, 'there should be no leftovers are clearing content with textContent=""')
+assert(node.firstChild.childNodes.length, 0, 'there should be no leftovers when clearing content with textContent=""')
 assert(node.firstChild.firstChild, null, 'textContent empty string clears children')
 assert(node.firstChild.textContent, '', 'textContent was set empty string')
 assert(node.toString(), '<div><p></p></div>', 'empty text node as text');
