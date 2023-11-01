@@ -192,7 +192,7 @@ export class Element extends ParentNode {
 
   set textContent(text) {
     this.replaceChildren();
-    if (text != null)
+    if (text != null && text !== '')
       this.appendChild(new Text(this.ownerDocument, text));
   }
 
