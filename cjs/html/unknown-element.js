@@ -1,12 +1,17 @@
 'use strict';
 const {HTMLElement} = require('./element.js');
+const {registerHTMLClass} = require("../shared/register-html-class.js");
+
+const tagName = 'unknown';
 
 /**
  * @implements globalThis.HTMLUnknownElement
  */
 class HTMLUnknownElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'unknown') {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 }
 exports.HTMLUnknownElement = HTMLUnknownElement
+
+registerHTMLClass(tagName, HTMLUnknownElement);

@@ -1,10 +1,15 @@
 import {HTMLElement} from './element.js';
+import {registerHTMLClass} from "../shared/register-html-class.js";
+
+const tagName = 'font';
 
 /**
  * @implements globalThis.HTMLFontElement
  */
 export class HTMLFontElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'font') {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName, HTMLFontElement);

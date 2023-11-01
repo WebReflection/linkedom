@@ -2,7 +2,8 @@ const assert = require('../assert.js').for('HTMLElement');
 
 const {parseHTML} = global[Symbol.for('linkedom')];
 
-const {document} = parseHTML('<!DOCTYPE html><html id="html" class="live"><!--&lt;hello&gt;-->&lt;hello&gt;</html>');
+const dom = parseHTML('<!DOCTYPE html><html id="html" class="live"><!--&lt;hello&gt;-->&lt;hello&gt;</html>');
+const {document} = dom;
 
 assert(document.documentElement.lastChild.previousElementSibling, null, 'previousElementSibling');
 assert(document.documentElement.lastChild.wholeText, '<hello>', 'wholeText');
@@ -170,8 +171,10 @@ node.innerHTML = '<div data-amend>Foo</div>';
 assert(node.innerHTML, '<div data-amend="">Foo</div>');
 assert(Object.keys(node.firstElementChild.dataset).join(''), 'amend', 'dataset initialized');
 node.innerHTML = '<video src="" controls>';
+assert(node.firstChild instanceof dom.HTMLVideoElement, true, 'video element type')
 assert(node.innerHTML, '<video src="" controls></video>');
 
 node.innerHTML = '<div>The <strong>quick</strong> brown fox</div><div>Jumped over<br>The lazy\ndog</div>';
+assert(node instanceof dom.HTMLDivElement, true, 'div element type')
 assert(node.innerText, 'The quick brown fox\nJumped over\nThe lazy dog', 'innerText newlines');
 assert(node.textContent, 'The quick brown foxJumped overThe lazy\ndog', 'textContent no newlines');

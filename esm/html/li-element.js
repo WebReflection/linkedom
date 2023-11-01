@@ -1,10 +1,15 @@
 import {HTMLElement} from './element.js';
+import {registerHTMLClass} from "../shared/register-html-class.js";
+
+const tagName = 'li';
 
 /**
  * @implements globalThis.HTMLLIElement
  */
 export class HTMLLIElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'li') {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName, HTMLLIElement);

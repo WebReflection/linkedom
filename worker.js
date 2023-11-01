@@ -8472,14 +8472,14 @@ class HTMLElement extends Element$1 {
 
 }
 
-const tagName$h = 'template';
+const tagName$12 = 'template';
 
 /**
  * @implements globalThis.HTMLTemplateElement
  */
 class HTMLTemplateElement extends HTMLElement {
   constructor(ownerDocument) {
-    super(ownerDocument, tagName$h);
+    super(ownerDocument, tagName$12);
     const content = this.ownerDocument.createDocumentFragment();
     (this[CONTENT] = content)[PRIVATE] = this;
   }
@@ -8493,16 +8493,20 @@ class HTMLTemplateElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$h, HTMLTemplateElement);
+registerHTMLClass(tagName$12, HTMLTemplateElement);
+
+const tagName$11 = 'html';
 
 /**
  * @implements globalThis.HTMLHtmlElement
  */
 class HTMLHtmlElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'html') {
+  constructor(ownerDocument, localName = tagName$11) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$11, HTMLHtmlElement);
 
 const {toString} = HTMLElement.prototype;
 
@@ -8517,13 +8521,13 @@ class TextElement extends HTMLElement {
   }
 }
 
-const tagName$g = 'script';
+const tagName$10 = 'script';
 
 /**
  * @implements globalThis.HTMLScriptElement
  */
 class HTMLScriptElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$g) {
+  constructor(ownerDocument, localName = tagName$10) {
     super(ownerDocument, localName);
   }
 
@@ -8588,24 +8592,28 @@ class HTMLScriptElement extends TextElement {
   set text(content) { this.textContent = content; }
 }
 
-registerHTMLClass(tagName$g, HTMLScriptElement);
+registerHTMLClass(tagName$10, HTMLScriptElement);
+
+const tagName$$ = 'frame';
 
 /**
  * @implements globalThis.HTMLFrameElement
  */
 class HTMLFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'frame') {
+  constructor(ownerDocument, localName = tagName$$) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$f = 'iframe';
+registerHTMLClass(tagName$$, HTMLFrameElement);
+
+const tagName$_ = 'iframe';
 
 /**
  * @implements globalThis.HTMLIFrameElement
  */
 class HTMLIFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$f) {
+  constructor(ownerDocument, localName = tagName$_) {
     super(ownerDocument, localName);
   }
 
@@ -8633,34 +8641,46 @@ class HTMLIFrameElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$f, HTMLIFrameElement);
+registerHTMLClass(tagName$_, HTMLIFrameElement);
+
+const tagName$Z = 'object';
 
 /**
  * @implements globalThis.HTMLObjectElement
  */
 class HTMLObjectElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'object') {
+  constructor(ownerDocument, localName = tagName$Z) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$Z, HTMLObjectElement);
+
+const tagName$Y = 'head';
 
 /**
  * @implements globalThis.HTMLHeadElement
  */
 class HTMLHeadElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'head') {
+  constructor(ownerDocument, localName = tagName$Y) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$Y, HTMLHeadElement);
+
+const tagName$X = 'body';
 
 /**
  * @implements globalThis.HTMLBodyElement
  */
 class HTMLBodyElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'body') {
+  constructor(ownerDocument, localName = tagName$X) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$X, HTMLBodyElement);
 
 var CSSStyleDeclaration = {};
 
@@ -10743,13 +10763,13 @@ requireCSSStyleSheet().CSSStyleSheet;
 requireCSSKeyframeRule().CSSKeyframeRule;
 var parse$1 = requireParse().parse;
 
-const tagName$e = 'style';
+const tagName$W = 'style';
 
 /**
  * @implements globalThis.HTMLStyleElement
  */
 class HTMLStyleElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$e) {
+  constructor(ownerDocument, localName = tagName$W) {
     super(ownerDocument, localName);
     this[SHEET] = null;
   }
@@ -10785,114 +10805,158 @@ class HTMLStyleElement extends TextElement {
   }
 }
 
-registerHTMLClass(tagName$e, HTMLStyleElement);
+registerHTMLClass(tagName$W, HTMLStyleElement);
+
+const tagName$V = 'time';
 
 /**
  * @implements globalThis.HTMLTimeElement
  */
 class HTMLTimeElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'time') {
+  constructor(ownerDocument, localName = tagName$V) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$V, HTMLTimeElement);
+
+const tagName$U = 'fieldset';
 
 /**
  * @implements globalThis.HTMLFieldSetElement
  */
 class HTMLFieldSetElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'fieldset') {
+  constructor(ownerDocument, localName = tagName$U) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$U, HTMLFieldSetElement);
+
+const tagName$T = 'embed';
 
 /**
  * @implements globalThis.HTMLEmbedElement
  */
 class HTMLEmbedElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'embed') {
+  constructor(ownerDocument, localName = tagName$T) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$T, HTMLEmbedElement);
+
+const tagName$S = 'hr';
 
 /**
  * @implements globalThis.HTMLHRElement
  */
 class HTMLHRElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'hr') {
+  constructor(ownerDocument, localName = tagName$S) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$S, HTMLHRElement);
+
+const tagName$R = 'progress';
 
 /**
  * @implements globalThis.HTMLProgressElement
  */
 class HTMLProgressElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'progress') {
+  constructor(ownerDocument, localName = tagName$R) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$R, HTMLProgressElement);
+
+const tagName$Q = 'p';
 
 /**
  * @implements globalThis.HTMLParagraphElement
  */
 class HTMLParagraphElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'p') {
+  constructor(ownerDocument, localName = tagName$Q) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$Q, HTMLParagraphElement);
+
+const tagName$P = 'table';
 
 /**
  * @implements globalThis.HTMLTableElement
  */
 class HTMLTableElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'table') {
+  constructor(ownerDocument, localName = tagName$P) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$P, HTMLTableElement);
+
+const tagName$O = 'frameset';
 
 /**
  * @implements globalThis.HTMLFrameSetElement
  */
 class HTMLFrameSetElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'frameset') {
+  constructor(ownerDocument, localName = tagName$O) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$O, HTMLFrameSetElement);
+
+const tagName$N = 'li';
 
 /**
  * @implements globalThis.HTMLLIElement
  */
 class HTMLLIElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'li') {
+  constructor(ownerDocument, localName = tagName$N) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$N, HTMLLIElement);
+
+const tagName$M = 'base';
 
 /**
  * @implements globalThis.HTMLBaseElement
  */
 class HTMLBaseElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'base') {
+  constructor(ownerDocument, localName = tagName$M) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$M, HTMLBaseElement);
+
+const tagName$L = 'datalist';
 
 /**
  * @implements globalThis.HTMLDataListElement
  */
 class HTMLDataListElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'datalist') {
+  constructor(ownerDocument, localName = tagName$L) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$d = 'input';
+registerHTMLClass(tagName$L, HTMLDataListElement);
+
+const tagName$K = 'input';
 
 /**
  * @implements globalThis.HTMLInputElement
  */
 class HTMLInputElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$d) {
+  constructor(ownerDocument, localName = tagName$K) {
     super(ownerDocument, localName);
   }
 
@@ -10917,65 +10981,85 @@ class HTMLInputElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$d, HTMLInputElement);
+registerHTMLClass(tagName$K, HTMLInputElement);
+
+const tagName$J = 'param';
 
 /**
  * @implements globalThis.HTMLParamElement
  */
 class HTMLParamElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'param') {
+  constructor(ownerDocument, localName = tagName$J) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$J, HTMLParamElement);
+
+const tagName$I = 'media';
 
 /**
  * @implements globalThis.HTMLMediaElement
  */
 class HTMLMediaElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'media') {
+  constructor(ownerDocument, localName = tagName$I) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$I, HTMLMediaElement);
+
+const tagName$H = 'audio';
 
 /**
  * @implements globalThis.HTMLAudioElement
  */
 class HTMLAudioElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'audio') {
+  constructor(ownerDocument, localName = tagName$H) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$c = 'h1';
+registerHTMLClass(tagName$H, HTMLAudioElement);
+
+const tagName$G = 'h1';
 
 /**
  * @implements globalThis.HTMLHeadingElement
  */
 class HTMLHeadingElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$c) {
+  constructor(ownerDocument, localName = tagName$G) {
     super(ownerDocument, localName);
   }
 }
 
-registerHTMLClass([tagName$c, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
+registerHTMLClass([tagName$G, 'h2', 'h3', 'h4', 'h5', 'h6'], HTMLHeadingElement);
+
+const tagName$F = 'dir';
 
 /**
  * @implements globalThis.HTMLDirectoryElement
  */
 class HTMLDirectoryElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'dir') {
+  constructor(ownerDocument, localName = tagName$F) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$F, HTMLDirectoryElement);
+
+const tagName$E = 'quote';
 
 /**
  * @implements globalThis.HTMLQuoteElement
  */
 class HTMLQuoteElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'quote') {
+  constructor(ownerDocument, localName = tagName$E) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$E, HTMLQuoteElement);
 
 class Canvas {
               constructor(width, height) {
@@ -10989,13 +11073,13 @@ class Canvas {
 
 const {createCanvas} = Canvas$1;
 
-const tagName$b = 'canvas';
+const tagName$D = 'canvas';
 
 /**
  * @implements globalThis.HTMLCanvasElement
  */
 class HTMLCanvasElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$b) {
+  constructor(ownerDocument, localName = tagName$D) {
     super(ownerDocument, localName);
     this[IMAGE] = createCanvas(300, 150);
   }
@@ -11027,24 +11111,28 @@ class HTMLCanvasElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$b, HTMLCanvasElement);
+registerHTMLClass(tagName$D, HTMLCanvasElement);
+
+const tagName$C = 'legend';
 
 /**
  * @implements globalThis.HTMLLegendElement
  */
 class HTMLLegendElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'legend') {
+  constructor(ownerDocument, localName = tagName$C) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$a = 'option';
+registerHTMLClass(tagName$C, HTMLLegendElement);
+
+const tagName$B = 'option';
 
 /**
  * @implements globalThis.HTMLOptionElement
  */
 class HTMLOptionElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$a) {
+  constructor(ownerDocument, localName = tagName$B) {
     super(ownerDocument, localName);
   }
 
@@ -11062,100 +11150,132 @@ class HTMLOptionElement extends HTMLElement {
   }
 }
 
-registerHTMLClass(tagName$a, HTMLOptionElement);
+registerHTMLClass(tagName$B, HTMLOptionElement);
+
+const tagName$A = 'span';
 
 /**
  * @implements globalThis.HTMLSpanElement
  */
 class HTMLSpanElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'span') {
+  constructor(ownerDocument, localName = tagName$A) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$A, HTMLSpanElement);
+
+const tagName$z = 'meter';
 
 /**
  * @implements globalThis.HTMLMeterElement
  */
 class HTMLMeterElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'meter') {
+  constructor(ownerDocument, localName = tagName$z) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$z, HTMLMeterElement);
+
+const tagName$y = 'video';
 
 /**
  * @implements globalThis.HTMLVideoElement
  */
 class HTMLVideoElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'video') {
+  constructor(ownerDocument, localName = tagName$y) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$y, HTMLVideoElement);
+
+const tagName$x = 'td';
 
 /**
  * @implements globalThis.HTMLTableCellElement
  */
 class HTMLTableCellElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'td') {
+  constructor(ownerDocument, localName = tagName$x) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$9 = 'title';
+registerHTMLClass(tagName$x, HTMLTableCellElement);
+
+const tagName$w = 'title';
 
 /**
  * @implements globalThis.HTMLTitleElement
  */
 class HTMLTitleElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$9) {
+  constructor(ownerDocument, localName = tagName$w) {
     super(ownerDocument, localName);
   }
 }
 
-registerHTMLClass(tagName$9, HTMLTitleElement);
+registerHTMLClass(tagName$w, HTMLTitleElement);
+
+const tagName$v = 'output';
 
 /**
  * @implements globalThis.HTMLOutputElement
  */
 class HTMLOutputElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'output') {
+  constructor(ownerDocument, localName = tagName$v) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$v, HTMLOutputElement);
+
+const tagName$u = 'tr';
 
 /**
  * @implements globalThis.HTMLTableRowElement
  */
 class HTMLTableRowElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'tr') {
+  constructor(ownerDocument, localName = tagName$u) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$u, HTMLTableRowElement);
+
+const tagName$t = 'data';
 
 /**
  * @implements globalThis.HTMLDataElement
  */
 class HTMLDataElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'data') {
+  constructor(ownerDocument, localName = tagName$t) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$t, HTMLDataElement);
+
+const tagName$s = 'menu';
 
 /**
  * @implements globalThis.HTMLMenuElement
  */
 class HTMLMenuElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'menu') {
+  constructor(ownerDocument, localName = tagName$s) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$8 = 'select';
+registerHTMLClass(tagName$s, HTMLMenuElement);
+
+const tagName$r = 'select';
 
 /**
  * @implements globalThis.HTMLSelectElement
  */
 class HTMLSelectElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$8) {
+  constructor(ownerDocument, localName = tagName$r) {
     super(ownerDocument, localName);
   }
 
@@ -11183,24 +11303,28 @@ class HTMLSelectElement extends HTMLElement {
   get value() { return this.querySelector('option[selected]')?.value; }
 }
 
-registerHTMLClass(tagName$8, HTMLSelectElement);
+registerHTMLClass(tagName$r, HTMLSelectElement);
+
+const tagName$q = 'br';
 
 /**
  * @implements globalThis.HTMLBRElement
  */
 class HTMLBRElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'br') {
+  constructor(ownerDocument, localName = tagName$q) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$7 = 'button';
+registerHTMLClass(tagName$q, HTMLBRElement);
+
+const tagName$p = 'button';
 
 /**
  * @implements globalThis.HTMLButtonElement
  */
 class HTMLButtonElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$7) {
+  constructor(ownerDocument, localName = tagName$p) {
     super(ownerDocument, localName);
   }
 
@@ -11216,42 +11340,54 @@ class HTMLButtonElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$7, HTMLButtonElement);
+registerHTMLClass(tagName$p, HTMLButtonElement);
+
+const tagName$o = 'map';
 
 /**
  * @implements globalThis.HTMLMapElement
  */
 class HTMLMapElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'map') {
+  constructor(ownerDocument, localName = tagName$o) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$o, HTMLMapElement);
+
+const tagName$n = 'optgroup';
 
 /**
  * @implements globalThis.HTMLOptGroupElement
  */
 class HTMLOptGroupElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'optgroup') {
+  constructor(ownerDocument, localName = tagName$n) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$n, HTMLOptGroupElement);
+
+const tagName$m = 'dl';
 
 /**
  * @implements globalThis.HTMLDListElement
  */
 class HTMLDListElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'dl') {
+  constructor(ownerDocument, localName = tagName$m) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$6 = 'textarea';
+registerHTMLClass(tagName$m, HTMLDListElement);
+
+const tagName$l = 'textarea';
 
 /**
  * @implements globalThis.HTMLTextAreaElement
  */
 class HTMLTextAreaElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$6) {
+  constructor(ownerDocument, localName = tagName$l) {
     super(ownerDocument, localName);
   }
 
@@ -11273,33 +11409,41 @@ class HTMLTextAreaElement extends TextElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$6, HTMLTextAreaElement);
+registerHTMLClass(tagName$l, HTMLTextAreaElement);
+
+const tagName$k = 'font';
 
 /**
  * @implements globalThis.HTMLFontElement
  */
 class HTMLFontElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'font') {
+  constructor(ownerDocument, localName = tagName$k) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$k, HTMLFontElement);
+
+const tagName$j = 'div';
 
 /**
  * @implements globalThis.HTMLDivElement
  */
 class HTMLDivElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'div') {
+  constructor(ownerDocument, localName = tagName$j) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$5 = 'link';
+registerHTMLClass(tagName$j, HTMLDivElement);
+
+const tagName$i = 'link';
 
 /**
  * @implements globalThis.HTMLLinkElement
  */
 class HTMLLinkElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$5) {
+  constructor(ownerDocument, localName = tagName$i) {
     super(ownerDocument, localName);
   }
 
@@ -11325,15 +11469,15 @@ class HTMLLinkElement extends HTMLElement {
 
 }
 
-registerHTMLClass(tagName$5, HTMLLinkElement);
+registerHTMLClass(tagName$i, HTMLLinkElement);
 
-const tagName$4 = 'slot';
+const tagName$h = 'slot';
 
 /**
  * @implements globalThis.HTMLSlotElement
  */
 class HTMLSlotElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$4) {
+  constructor(ownerDocument, localName = tagName$h) {
     super(ownerDocument, localName);
   }
 
@@ -11382,24 +11526,28 @@ class HTMLSlotElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$4, HTMLSlotElement);
+registerHTMLClass(tagName$h, HTMLSlotElement);
+
+const tagName$g = 'form';
 
 /**
  * @implements globalThis.HTMLFormElement
  */
 class HTMLFormElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'form') {
+  constructor(ownerDocument, localName = tagName$g) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$3 = 'img';
+registerHTMLClass(tagName$g, HTMLFormElement);
+
+const tagName$f = 'img';
 
 /**
  * @implements globalThis.HTMLImageElement
  */
 class HTMLImageElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$3) {
+  constructor(ownerDocument, localName = tagName$f) {
     super(ownerDocument, localName);
   }
 
@@ -11427,32 +11575,40 @@ class HTMLImageElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName$3, HTMLImageElement);
+registerHTMLClass(tagName$f, HTMLImageElement);
+
+const tagName$e = 'pre';
 
 /**
  * @implements globalThis.HTMLPreElement
  */
 class HTMLPreElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'pre') {
+  constructor(ownerDocument, localName = tagName$e) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$e, HTMLPreElement);
+
+const tagName$d = 'ul';
 
 /**
  * @implements globalThis.HTMLUListElement
  */
 class HTMLUListElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'ul') {
+  constructor(ownerDocument, localName = tagName$d) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$2 = 'meta';
+registerHTMLClass(tagName$d, HTMLUListElement);
+
+const tagName$c = 'meta';
 /**
  * @implements globalThis.HTMLMetaElement
  */
 class HTMLMetaElement extends HTMLElement {
-  constructor(ownerDocument, localName =tagName$2) {
+  constructor(ownerDocument, localName =tagName$c) {
     super(ownerDocument, localName);
   }
 
@@ -11475,51 +11631,67 @@ class HTMLMetaElement extends HTMLElement {
 
 }
 
-registerHTMLClass(tagName$2, HTMLMetaElement);
+registerHTMLClass(tagName$c, HTMLMetaElement);
+
+const tagName$b = 'picture';
 
 /**
  * @implements globalThis.HTMLPictureElement
  */
 class HTMLPictureElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'picture') {
+  constructor(ownerDocument, localName = tagName$b) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$b, HTMLPictureElement);
+
+const tagName$a = 'area';
 
 /**
  * @implements globalThis.HTMLAreaElement
  */
 class HTMLAreaElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'area') {
+  constructor(ownerDocument, localName = tagName$a) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$a, HTMLAreaElement);
+
+const tagName$9 = 'ol';
 
 /**
  * @implements globalThis.HTMLOListElement
  */
 class HTMLOListElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'ol') {
+  constructor(ownerDocument, localName = tagName$9) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$9, HTMLOListElement);
+
+const tagName$8 = 'caption';
 
 /**
  * @implements globalThis.HTMLTableCaptionElement
  */
 class HTMLTableCaptionElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'caption') {
+  constructor(ownerDocument, localName = tagName$8) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName$1 = 'a';
+registerHTMLClass(tagName$8, HTMLTableCaptionElement);
+
+const tagName$7 = 'a';
 
 /**
  * @implements globalThis.HTMLAnchorElement
  */
 class HTMLAnchorElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$1) {
+  constructor(ownerDocument, localName = tagName$7) {
     super(ownerDocument, localName);
   }
 
@@ -11539,51 +11711,67 @@ class HTMLAnchorElement extends HTMLElement {
 
 }
 
-registerHTMLClass(tagName$1, HTMLAnchorElement);
+registerHTMLClass(tagName$7, HTMLAnchorElement);
+
+const tagName$6 = 'label';
 
 /**
  * @implements globalThis.HTMLLabelElement
  */
 class HTMLLabelElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'label') {
+  constructor(ownerDocument, localName = tagName$6) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$6, HTMLLabelElement);
+
+const tagName$5 = 'unknown';
 
 /**
  * @implements globalThis.HTMLUnknownElement
  */
 class HTMLUnknownElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'unknown') {
+  constructor(ownerDocument, localName = tagName$5) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$5, HTMLUnknownElement);
+
+const tagName$4 = 'mod';
 
 /**
  * @implements globalThis.HTMLModElement
  */
 class HTMLModElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'mod') {
+  constructor(ownerDocument, localName = tagName$4) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$4, HTMLModElement);
+
+const tagName$3 = 'details';
 
 /**
  * @implements globalThis.HTMLDetailsElement
  */
 class HTMLDetailsElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'details') {
+  constructor(ownerDocument, localName = tagName$3) {
     super(ownerDocument, localName);
   }
 }
 
-const tagName = 'source';
+registerHTMLClass(tagName$3, HTMLDetailsElement);
+
+const tagName$2 = 'source';
 
 /**
  * @implements globalThis.HTMLSourceElement
  */
 class HTMLSourceElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName) {
+  constructor(ownerDocument, localName = tagName$2) {
     super(ownerDocument, localName);
   }
 
@@ -11602,25 +11790,33 @@ class HTMLSourceElement extends HTMLElement {
   /* c8 ignore stop */
 }
 
-registerHTMLClass(tagName, HTMLSourceElement);
+registerHTMLClass(tagName$2, HTMLSourceElement);
+
+const tagName$1 = 'track';
 
 /**
  * @implements globalThis.HTMLTrackElement
  */
 class HTMLTrackElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'track') {
+  constructor(ownerDocument, localName = tagName$1) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName$1, HTMLTrackElement);
+
+const tagName = 'marquee';
 
 /**
  * @implements globalThis.HTMLMarqueeElement
  */
 class HTMLMarqueeElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'marquee') {
+  constructor(ownerDocument, localName = tagName) {
     super(ownerDocument, localName);
   }
 }
+
+registerHTMLClass(tagName, HTMLMarqueeElement);
 
 const HTMLClasses = {
   HTMLElement,
