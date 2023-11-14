@@ -113,8 +113,8 @@ class Range {
       for (const child of childNodes) {
         Object.setPrototypeOf(child, SVGElement.prototype);
         child.ownerSVGElement = document;
+        content.appendChild(child);
       }
-      content.append(...childNodes);
     }
     else
       this.selectNode(content);
