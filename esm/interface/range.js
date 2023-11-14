@@ -100,14 +100,20 @@ export class Range {
   createContextualFragment(html) {
     const { commonAncestorContainer: doc } = this;
     const isSVG = 'ownerSVGElement' in doc;
-    const template = (isSVG ? doc.ownerDocument : doc).createElement('template');
+    const document = isSVG ? doc.ownerDocument : doc;
+    const template = document.createElement('template');
     template.innerHTML = html;
-    const {content} = template;
+    let {content} = template;
     if (isSVG) {
-      for (let {childNodes} = content, i = 0; i < childNodes.length; i++) {
-        Object.setPrototypeOf(childNodes[i], SVGElement.prototype);
-        childNodes[i].ownerSVGElement = doc.ownerDocument;
+      const childNodes = [...content.childNodes];
+      content = document.createDocumentFragment();
+      Object.setPrototypeOf(content, SVGElement.prototype);
+      content.ownerSVGElement = document;
+      for (const child of childNodes) {
+        Object.setPrototypeOf(child, SVGElement.prototype);
+        child.ownerSVGElement = document;
       }
+      content.append(...childNodes);
     }
     else
       this.selectNode(content);
