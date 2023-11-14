@@ -11823,6 +11823,12 @@ class Range {
     this[END] = getEnd(node);
   }
 
+  // TODO: SVG elements should then create contextual fragments
+  //       that return SVG nodes
+  selectNodeContents(node) {
+    this.selectNode(node);
+  }
+
   surroundContents(parentNode) {
     parentNode.replaceChildren(this.extractContents());
   }

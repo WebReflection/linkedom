@@ -65,3 +65,5 @@ range = document.createRange();
 let contestual = range.createContextualFragment('<div>hi</div>');
 assert(contestual.toString(), '<#document-fragment><div>hi</div></#document-fragment>', 'createContextualFragment');
 
+range = document.createRange();
+range.selectNodeContents(document.createElement('p'));

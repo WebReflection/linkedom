@@ -5,6 +5,7 @@ export class Range implements globalThis.Range {
     commonAncestorContainer: any;
     insertNode(newNode: any): void;
     selectNode(node: any): void;
+    selectNodeContents(node: any): void;
     surroundContents(parentNode: any): void;
     setStartBefore(node: any): void;
     setStartAfter(node: any): void;
