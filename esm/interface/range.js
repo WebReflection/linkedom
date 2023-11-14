@@ -2,6 +2,8 @@
 
 import {END, NEXT, PREV, START} from '../shared/symbols.js';
 
+import {SVGElement} from '../svg/element.js';
+
 import {getEnd, setAdjacent} from '../shared/utils.js';
 
 const deleteContents = ({[START]: start, [END]: end}, fragment = null) => {
@@ -50,6 +52,7 @@ export class Range {
   //       that return SVG nodes
   selectNodeContents(node) {
     this.selectNode(node);
+    this.commonAncestorContainer = node;
   }
 
   surroundContents(parentNode) {
@@ -95,10 +98,20 @@ export class Range {
   }
 
   createContextualFragment(html) {
-    const template = this.commonAncestorContainer.createElement('template');
+    const { commonAncestorContainer: doc } = this;
+    const isSVG = 'ownerSVGElement' in doc;
+    const template = (isSVG ? doc.ownerDocument : doc).createElement('template');
     template.innerHTML = html;
-    this.selectNode(template.content);
-    return template.content;
+    const {content} = template;
+    if (isSVG) {
+      for (let {childNodes} = content, i = 0; i < childNodes.length; i++) {
+        Object.setPrototypeOf(childNodes[i], SVGElement.prototype);
+        childNodes[i].ownerSVGElement = doc.ownerDocument;
+      }
+    }
+    else
+      this.selectNode(content);
+    return content;
   }
 
   cloneRange() {

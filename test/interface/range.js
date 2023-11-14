@@ -66,4 +66,7 @@ let contestual = range.createContextualFragment('<div>hi</div>');
 assert(contestual.toString(), '<#document-fragment><div>hi</div></#document-fragment>', 'createContextualFragment');
 
 range = document.createRange();
-range.selectNodeContents(document.createElement('p'));
+const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+range.selectNodeContents(svg);
+const rect = range.createContextualFragment('<rect />').childNodes[0];
+assert('ownerSVGElement' in rect, true, 'createContextualFragment(SVG)');
