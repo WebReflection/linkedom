@@ -46,4 +46,9 @@ export class CustomElementRegistry implements globalThis.CustomElementRegistry {
      * @returns {Function?} the custom element **Class**, if any
      */
     get(localName: string): Function | null;
+    /**
+     * @param {Function} Class **Class** of custom element
+     * @returns {string?} found tag name or null
+     */
+    getName(Class: Function): string | null;
 }
