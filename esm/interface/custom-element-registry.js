@@ -195,7 +195,7 @@ export class CustomElementRegistry {
    * @param {Function} Class **Class** of custom element
    * @returns {string?} found tag name or null
    */
-    getName(Class){
+    getName(Class) {
       if (Classes.has(Class)) {
         const { localName } = Classes.get(Class);
         return localName;
