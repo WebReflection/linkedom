@@ -29,6 +29,12 @@ catch (ok) {}
 customElements.define('c-e', CE);
 assert(customElements.get('c-e'), CE, 'correctly defined');
 
+assert(customElements.getName(CE), 'c-e', 'correctly got Name');
+
+class CEn extends HTMLElement {}
+
+assert(customElements.getName(CEn), null, 'correctly report didn\'t find');
+
 try {
   customElements.define('c-e', class extends HTMLElement {});
   assert(false, 'if a name has been taken, it cannot be redefined');
