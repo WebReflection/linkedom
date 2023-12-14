@@ -3,4 +3,4 @@
  */
 export class HTMLFontElement extends HTMLElement implements globalThis.HTMLFontElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

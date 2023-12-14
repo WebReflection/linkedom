@@ -3,4 +3,4 @@
  */
 export class HTMLTrackElement extends HTMLElement implements globalThis.HTMLTrackElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

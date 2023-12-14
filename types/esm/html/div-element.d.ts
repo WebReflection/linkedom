@@ -3,4 +3,4 @@
  */
 export class HTMLDivElement extends HTMLElement implements globalThis.HTMLDivElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

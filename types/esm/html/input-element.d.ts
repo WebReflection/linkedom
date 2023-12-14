@@ -2,17 +2,17 @@
  * @implements globalThis.HTMLInputElement
  */
 export class HTMLInputElement extends HTMLElement implements globalThis.HTMLInputElement {
-    set autofocus(arg: any);
+    set autofocus(value: any);
     get autofocus(): any;
-    set disabled(arg: any);
+    set disabled(value: any);
     get disabled(): any;
-    set name(arg: any);
+    set name(value: any);
     get name(): any;
-    set placeholder(arg: any);
+    set placeholder(value: any);
     get placeholder(): any;
-    set type(arg: any);
+    set type(value: any);
     get type(): any;
-    set value(arg: any);
+    set value(value: any);
     get value(): any;
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

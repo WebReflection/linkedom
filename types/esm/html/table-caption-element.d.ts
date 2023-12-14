@@ -3,4 +3,4 @@
  */
 export class HTMLTableCaptionElement extends HTMLElement implements globalThis.HTMLTableCaptionElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

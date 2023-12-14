@@ -3,4 +3,4 @@
  */
 export class HTMLMarqueeElement extends HTMLElement implements globalThis.HTMLMarqueeElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

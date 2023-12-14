@@ -3,4 +3,4 @@
  */
 export class HTMLHRElement extends HTMLElement implements globalThis.HTMLHRElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

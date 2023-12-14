@@ -3,4 +3,4 @@
  */
 export class HTMLBaseElement extends HTMLElement implements globalThis.HTMLBaseElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

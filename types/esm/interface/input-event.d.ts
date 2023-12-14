@@ -8,4 +8,4 @@ export class InputEvent extends Event implements globalThis.InputEvent {
     isComposing: any;
     ranges: any;
 }
-import { Event } from "./event.js";
+import { Event } from './event.js';

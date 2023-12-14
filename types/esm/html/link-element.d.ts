@@ -2,17 +2,17 @@
  * @implements globalThis.HTMLLinkElement
  */
 export class HTMLLinkElement extends HTMLElement implements globalThis.HTMLLinkElement {
-    set disabled(arg: any);
+    set disabled(value: any);
     get disabled(): any;
-    set href(arg: any);
+    set href(value: any);
     get href(): any;
-    set hreflang(arg: any);
+    set hreflang(value: any);
     get hreflang(): any;
-    set media(arg: any);
+    set media(value: any);
     get media(): any;
-    set rel(arg: any);
+    set rel(value: any);
     get rel(): any;
-    set type(arg: any);
+    set type(value: any);
     get type(): any;
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

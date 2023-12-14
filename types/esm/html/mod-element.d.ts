@@ -3,4 +3,4 @@
  */
 export class HTMLModElement extends HTMLElement implements globalThis.HTMLModElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

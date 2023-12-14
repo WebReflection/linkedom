@@ -32,13 +32,13 @@
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-json": "^6.0.1",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "ascjs": "^6.0.3",
     "c8": "^8.0.1",
-    "eslint": "^8.52.0",
-    "rollup": "^4.1.4",
-    "typescript": "4.5"
+    "eslint": "^8.55.0",
+    "rollup": "^4.9.0",
+    "typescript": "^5.3.3"
   },
   "module": "./esm/index.js",
   "type": "module",

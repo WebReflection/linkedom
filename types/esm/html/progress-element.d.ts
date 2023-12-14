@@ -3,4 +3,4 @@
  */
 export class HTMLProgressElement extends HTMLElement implements globalThis.HTMLProgressElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

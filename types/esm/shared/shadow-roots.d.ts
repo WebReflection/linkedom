@@ -1,1 +1,1 @@
-export const shadowRoots: WeakMap<object, any>;
+export const shadowRoots: WeakMap<WeakKey, any>;

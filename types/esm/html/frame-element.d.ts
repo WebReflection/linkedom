@@ -3,4 +3,4 @@
  */
 export class HTMLFrameElement extends HTMLElement implements globalThis.HTMLFrameElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

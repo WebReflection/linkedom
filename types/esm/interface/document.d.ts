@@ -7,9 +7,13 @@ export class Document extends NonElementParentNode implements globalThis.Documen
      * @type {globalThis.Document['defaultView']}
      */
     get defaultView(): Window & typeof globalThis;
-    set doctype(arg: DocumentType | import("../mixin/parent-node.js").NodeStruct);
-    get doctype(): DocumentType | import("../mixin/parent-node.js").NodeStruct;
+    set doctype(value: import("../mixin/parent-node.js").NodeStruct | DocumentType);
+    get doctype(): import("../mixin/parent-node.js").NodeStruct | DocumentType;
     get documentElement(): import("../mixin/parent-node.js").NodeStruct;
+    /**
+     * @protected
+     */
+    protected _getParent(): EventTarget;
     createAttribute(name: any): Attr;
     createCDATASection(data: any): CDATASection;
     createComment(textContent: any): Comment;
@@ -21,10 +25,12 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     createTreeWalker(root: any, whatToShow?: number): TreeWalker;
     createNodeIterator(root: any, whatToShow?: number): TreeWalker;
     createEvent(name: any): any;
+    cloneNode(deep?: boolean): any;
     importNode(externalNode: any, ...args: any[]): any;
+    querySelectorAll(selectors: any): any;
     getElementsByTagNameNS(_: any, name: any): NodeList;
     createAttributeNS(_: any, name: any): Attr;
-    createElementNS(nsp: any, localName: any, options: any): Element | SVGElement;
+    createElementNS(nsp: any, localName: any, options: any): Element;
     [CUSTOM_ELEMENTS]: {
         active: boolean;
         registry: any;
@@ -42,25 +48,24 @@ export class Document extends NonElementParentNode implements globalThis.Documen
     [UPGRADE]: any;
     [EVENT_TARGET]: EventTarget;
 }
-import { NonElementParentNode } from "../mixin/non-element-parent-node.js";
-import { DocumentType } from "./document-type.js";
-import { Attr } from "./attr.js";
-import { CDATASection } from "./cdata-section.js";
-import { Comment } from "./comment.js";
-import { DocumentFragment } from "./document-fragment.js";
-import { Element } from "./element.js";
-import { Range } from "./range.js";
-import { Text } from "./text.js";
-import { TreeWalker } from "./tree-walker.js";
-import { NodeList } from "./node-list.js";
-import { SVGElement } from "../svg/element.js";
-import { CUSTOM_ELEMENTS } from "../shared/symbols.js";
-import { MUTATION_OBSERVER } from "../shared/symbols.js";
-import { MIME } from "../shared/symbols.js";
-import { DOCTYPE } from "../shared/symbols.js";
-import { DOM_PARSER } from "../shared/symbols.js";
-import { GLOBALS } from "../shared/symbols.js";
-import { IMAGE } from "../shared/symbols.js";
-import { UPGRADE } from "../shared/symbols.js";
-import { EVENT_TARGET } from "../shared/symbols.js";
-import { EventTarget } from "./event-target.js";
+import { NonElementParentNode } from '../mixin/non-element-parent-node.js';
+import { DocumentType } from './document-type.js';
+import { EventTarget } from './event-target.js';
+import { Attr } from './attr.js';
+import { CDATASection } from './cdata-section.js';
+import { Comment } from './comment.js';
+import { DocumentFragment } from './document-fragment.js';
+import { Element } from './element.js';
+import { Range } from './range.js';
+import { Text } from './text.js';
+import { TreeWalker } from './tree-walker.js';
+import { NodeList } from './node-list.js';
+import { CUSTOM_ELEMENTS } from '../shared/symbols.js';
+import { MUTATION_OBSERVER } from '../shared/symbols.js';
+import { MIME } from '../shared/symbols.js';
+import { DOCTYPE } from '../shared/symbols.js';
+import { DOM_PARSER } from '../shared/symbols.js';
+import { GLOBALS } from '../shared/symbols.js';
+import { IMAGE } from '../shared/symbols.js';
+import { UPGRADE } from '../shared/symbols.js';
+import { EVENT_TARGET } from '../shared/symbols.js';

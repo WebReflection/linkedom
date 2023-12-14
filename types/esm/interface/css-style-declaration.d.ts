@@ -3,11 +3,17 @@
  */
 export class CSSStyleDeclaration extends Map<any, any> implements globalThis.CSSStyleDeclaration {
     constructor(element: any);
-    set cssText(arg: string);
+    set cssText(value: string);
     get cssText(): string;
     getPropertyValue(name: any): any;
     setProperty(name: any, value: any): void;
     removeProperty(name: any): void;
-    get [PRIVATE](): CSSStyleDeclaration;
+    [Symbol.iterator](): {
+        next(): {
+            done: boolean;
+            value: any;
+        };
+    };
+    get [PRIVATE](): this;
 }
-import { PRIVATE } from "../shared/symbols.js";
+import { PRIVATE } from '../shared/symbols.js';

@@ -3,4 +3,4 @@
  */
 export class HTMLHeadingElement extends HTMLElement implements globalThis.HTMLHeadingElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

@@ -3,4 +3,4 @@
  */
 export class HTMLDataListElement extends HTMLElement implements globalThis.HTMLDataListElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

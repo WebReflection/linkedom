@@ -3,4 +3,4 @@
  */
 export class HTMLLabelElement extends HTMLElement implements globalThis.HTMLLabelElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

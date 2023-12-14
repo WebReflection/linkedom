@@ -12,4 +12,4 @@ export class TreeWalker implements globalThis.TreeWalker {
         nodes: any[];
     };
 }
-import { PRIVATE } from "../shared/symbols.js";
+import { PRIVATE } from '../shared/symbols.js';

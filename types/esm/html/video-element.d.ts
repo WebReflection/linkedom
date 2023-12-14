@@ -3,4 +3,4 @@
  */
 export class HTMLVideoElement extends HTMLElement implements globalThis.HTMLVideoElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

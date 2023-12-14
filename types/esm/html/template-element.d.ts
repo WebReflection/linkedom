@@ -6,5 +6,5 @@ export class HTMLTemplateElement extends HTMLElement implements globalThis.HTMLT
     get content(): any;
     [CONTENT]: any;
 }
-import { HTMLElement } from "./element.js";
-import { CONTENT } from "../shared/symbols.js";
+import { HTMLElement } from './element.js';
+import { CONTENT } from '../shared/symbols.js';

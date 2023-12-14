@@ -3,4 +3,4 @@
  */
 export class HTMLFieldSetElement extends HTMLElement implements globalThis.HTMLFieldSetElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

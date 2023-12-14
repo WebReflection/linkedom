@@ -3,4 +3,4 @@
  */
 export class HTMLFormElement extends HTMLElement implements globalThis.HTMLFormElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

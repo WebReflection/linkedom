@@ -128,18 +128,18 @@ export function ImageClass(ownerDocument: any): {
         readonly attributes: any;
         focus(): void;
         getAttribute(name: any): any;
-        getAttributeNode(name: any): import("../mixin/parent-node.js").NodeStruct;
+        getAttributeNode(name: any): any;
         getAttributeNames(): import("./node-list.js").NodeList;
         hasAttribute(name: any): boolean;
         hasAttributes(): boolean;
         removeAttribute(name: any): void;
         removeAttributeNode(attribute: any): void;
         setAttribute(name: any, value: any): void;
-        setAttributeNode(attribute: any): import("../mixin/parent-node.js").NodeStruct;
+        setAttributeNode(attribute: any): any;
         toggleAttribute(name: any, force: any, ...args: any[]): boolean;
         readonly shadowRoot: any;
         attachShadow(init: any): import("./shadow-root.js").ShadowRoot;
-        matches(selectors: any): any;
+        matches(selectors: any): boolean;
         closest(selectors: any): any;
         insertAdjacentElement(position: any, element: any): any;
         insertAdjacentHTML(position: any, html: any): void;
@@ -152,7 +152,7 @@ export function ImageClass(ownerDocument: any): {
         hasAttributeNS(_: any, name: any): boolean;
         removeAttributeNS(_: any, name: any): void;
         setAttributeNS(_: any, name: any, value: any): void;
-        setAttributeNodeNS(attr: any): import("../mixin/parent-node.js").NodeStruct;
+        setAttributeNodeNS(attr: any): any;
         [CLASS_LIST]: any;
         [DATASET]: any;
         [STYLE]: any;
@@ -168,7 +168,7 @@ export function ImageClass(ownerDocument: any): {
         replaceChildren(...nodes: any[]): void;
         getElementsByClassName(className: any): import("./node-list.js").NodeList;
         getElementsByTagName(tagName: any): import("./node-list.js").NodeList;
-        querySelector(selectors: any): import("../mixin/parent-node.js").NodeStruct;
+        querySelector(selectors: any): any;
         querySelectorAll(selectors: any): import("./node-list.js").NodeList;
         appendChild(node: any): any;
         contains(node: any): boolean;
@@ -177,7 +177,7 @@ export function ImageClass(ownerDocument: any): {
         removeChild(node: any): any;
         replaceChild(node: any, replaced: any): any;
         [PRIVATE]: any;
-        [NEXT]: import("../mixin/parent-node.js").NodeStruct;
+        [NEXT]: any;
         [END]: import("../mixin/parent-node.js").NodeStruct;
         nodeType: any;
         parentNode: any;

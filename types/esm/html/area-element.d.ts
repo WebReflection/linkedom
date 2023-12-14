@@ -3,4 +3,4 @@
  */
 export class HTMLAreaElement extends HTMLElement implements globalThis.HTMLAreaElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

@@ -19,5 +19,5 @@ export class Range implements globalThis.Range {
     [START]: any;
     [END]: any;
 }
-import { START } from "../shared/symbols.js";
-import { END } from "../shared/symbols.js";
+import { START } from '../shared/symbols.js';
+import { END } from '../shared/symbols.js';

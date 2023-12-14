@@ -2,13 +2,13 @@
  * @implements globalThis.HTMLAnchorElement
  */
 export class HTMLAnchorElement extends HTMLElement implements globalThis.HTMLAnchorElement {
-    set href(arg: string);
+    set href(value: string);
     get href(): string;
-    set download(arg: string);
+    set download(value: string);
     get download(): string;
-    set target(arg: any);
+    set target(value: any);
     get target(): any;
-    set type(arg: any);
+    set type(value: any);
     get type(): any;
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';

@@ -4,7 +4,7 @@ const {IMAGE} = require('../shared/symbols.js');
 const {registerHTMLClass} = require('../shared/register-html-class.js');
 const {numericAttribute} = require('../shared/attributes.js');
 
-const Canvas = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('../../commonjs/canvas.cjs'));
+const Canvas = (require('../../commonjs/canvas.cjs'));
 
 const {HTMLElement} = require('./element.js');
 

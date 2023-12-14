@@ -34,9 +34,9 @@ export class Node extends EventTarget implements globalThis.Node {
     get childNodes(): NodeList;
     get firstChild(): any;
     get lastChild(): any;
-    set nodeValue(arg: any);
+    set nodeValue(value: any);
     get nodeValue(): any;
-    set textContent(arg: any);
+    set textContent(value: any);
     get textContent(): any;
     normalize(): void;
     cloneNode(): any;
@@ -80,7 +80,7 @@ export class Node extends EventTarget implements globalThis.Node {
     [NEXT]: any;
     [PREV]: any;
 }
-import { EventTarget } from "./event-target.js";
-import { NodeList } from "./node-list.js";
-import { NEXT } from "../shared/symbols.js";
-import { PREV } from "../shared/symbols.js";
+import { EventTarget } from './event-target.js';
+import { NodeList } from './node-list.js';
+import { NEXT } from '../shared/symbols.js';
+import { PREV } from '../shared/symbols.js';

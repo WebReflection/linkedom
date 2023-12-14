@@ -3,4 +3,4 @@
  */
 export class HTMLPictureElement extends HTMLElement implements globalThis.HTMLPictureElement {
 }
-import { HTMLElement } from "./element.js";
+import { HTMLElement } from './element.js';
