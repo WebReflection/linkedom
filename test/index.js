@@ -36,6 +36,9 @@ test('xml')
     .then(() => test('svg'))
     .then(() => test('html'))
     .then(() => test('interface'))
-    .then(() => test('shared'));
+    .then(() => test('shared'))
+    .then(() => {
+      require('./issue-256.js');
+    });
   }, 500);
 });

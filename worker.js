@@ -4929,6 +4929,8 @@ const after = (node, nodes) => {
 const replaceWith = (node, nodes) => {
   const {ownerDocument, parentNode} = node;
   if (parentNode) {
+    if (nodes.includes(node))
+      replaceWith(node, [node = node.cloneNode()]);
     parentNode.insertBefore(
       asFragment(ownerDocument, nodes),
       node
