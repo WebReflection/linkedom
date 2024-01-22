@@ -7486,7 +7486,7 @@ const CAPTURING_PHASE = 1;
 const NONE = 0;
 
 function getCurrentTarget(ev) {
-    return ev.currentTarget;
+  return ev.currentTarget;
 }
 
 /**
@@ -8248,10 +8248,10 @@ class HTMLElement extends Element$1 {
 
   blur() { this.dispatchEvent(new GlobalEvent('blur')); }
   click() {
-      const clickEvent = new Event('click', {bubbles: true, cancelable: true});
-      clickEvent.button = 0;
+    const clickEvent = new GlobalEvent('click', {bubbles: true, cancelable: true});
+    clickEvent.button = 0;
 
-      this.dispatchEvent(clickEvent);
+    this.dispatchEvent(clickEvent);
   }
 
   // Boolean getters
