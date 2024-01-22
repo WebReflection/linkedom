@@ -70,7 +70,12 @@ export class HTMLElement extends Element {
   */
 
   blur() { this.dispatchEvent(new Event('blur')); }
-  click() { this.dispatchEvent(new Event('click')); }
+  click() {
+    const clickEvent = new Event('click', {bubbles: true, cancelable: true});
+    clickEvent.button = 0;
+
+    this.dispatchEvent(clickEvent);
+  }
 
   // Boolean getters
   get accessKeyLabel() {

@@ -199,3 +199,14 @@ cloned.addEventListener('click', () => {
 callCount = 0;
 cloned.click();
 assert(callCount, 1, 'button.click() should invoke the listener');
+
+let evBtn = null;
+buttonTarget.addEventListener('click', (ev) => {
+  callCount++;
+  evBtn = ev.button;
+}, { once: true });
+containerTarget.addEventListener('click', basicHandler, { once: true });
+callCount = 0;
+buttonTarget.click();
+assert(callCount, 4, '4 (2 are set before previous tests) and 2 here listeners should be called');
+assert(evBtn, 0, 'default click event button should be 0 (left click)')

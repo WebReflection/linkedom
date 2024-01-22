@@ -8243,7 +8243,12 @@ class HTMLElement extends Element$1 {
   */
 
   blur() { this.dispatchEvent(new GlobalEvent('blur')); }
-  click() { this.dispatchEvent(new GlobalEvent('click')); }
+  click() {
+      const clickEvent = new Event('click', {bubbles: true, cancelable: true});
+      clickEvent.button = 0;
+
+      this.dispatchEvent(clickEvent);
+  }
 
   // Boolean getters
   get accessKeyLabel() {
