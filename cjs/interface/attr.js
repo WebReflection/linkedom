@@ -1,7 +1,7 @@
 'use strict';
 const {ATTRIBUTE_NODE} = require('../shared/constants.js');
 const {CHANGED, VALUE} = require('../shared/symbols.js');
-const {String} = require('../shared/utils.js');
+const {String, ignoreCase} = require('../shared/utils.js');
 const {attrAsJSON} = require('../shared/jsdon.js');
 const {emptyAttributes} = require('../shared/attributes.js');
 
@@ -42,8 +42,8 @@ class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+    return emptyAttributes.has(name) && !value && ignoreCase(this) ?
+      name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
   }
 
   toJSON() {

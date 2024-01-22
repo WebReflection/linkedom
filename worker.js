@@ -4832,8 +4832,8 @@ let Attr$1 = class Attr extends Node$1 {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+    return emptyAttributes.has(name) && !value && ignoreCase(this) ?
+      name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
   }
 
   toJSON() {

@@ -1,6 +1,6 @@
 import {ATTRIBUTE_NODE} from '../shared/constants.js';
 import {CHANGED, VALUE} from '../shared/symbols.js';
-import {String} from '../shared/utils.js';
+import {String, ignoreCase} from '../shared/utils.js';
 import {attrAsJSON} from '../shared/jsdon.js';
 import {emptyAttributes} from '../shared/attributes.js';
 
@@ -41,8 +41,8 @@ export class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return emptyAttributes.has(name) && !value ?
-            name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+    return emptyAttributes.has(name) && !value && ignoreCase(this) ?
+      name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
   }
 
   toJSON() {
