@@ -9,6 +9,10 @@ const AT_TARGET = 2;
 const CAPTURING_PHASE = 1;
 const NONE = 0;
 
+function getCurrentTarget(ev) {
+  return ev.currentTarget;
+}
+
 /**
  * @implements globalThis.Event
  */
@@ -43,7 +47,7 @@ class GlobalEvent {
 
     // simplified implementation, should be https://dom.spec.whatwg.org/#dom-event-composedpath
     composedPath() {
-      return this._path;
+      return this._path.map(getCurrentTarget);
     }
 
     stopPropagation() {

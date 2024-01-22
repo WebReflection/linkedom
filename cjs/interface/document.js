@@ -194,6 +194,8 @@ class Document extends NonElementParentNode {
       cancelable = false,
       detail
     ) => {
+      event.bubbles = !!canBubble;
+
       defineProperties(event, {
         type: {value: type},
         canBubble: {value: canBubble},
