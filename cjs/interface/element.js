@@ -48,6 +48,7 @@ const {ShadowRoot} = require('./shadow-root.js');
 const {NodeList} = require('./node-list.js');
 const {Attr} = require('./attr.js');
 const {Text} = require('./text.js');
+const {escape} = require('../shared/text-escaper.js');
 
 // <utils>
 const attributesHandler = {
@@ -226,6 +227,9 @@ class Element extends ParentNode {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
+    if (this.ownerDocument[MIME].docType.startsWith('<?xml')) {
+      return attribute && escape(attribute.value);
+    }
     return attribute && attribute.value;
   }
 

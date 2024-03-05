@@ -1,5 +1,5 @@
 import {ATTRIBUTE_NODE} from '../shared/constants.js';
-import {CHANGED, VALUE} from '../shared/symbols.js';
+import {CHANGED, MIME, VALUE} from '../shared/symbols.js';
 import {String, ignoreCase} from '../shared/utils.js';
 import {attrAsJSON} from '../shared/jsdon.js';
 import {emptyAttributes} from '../shared/attributes.js';
@@ -8,6 +8,7 @@ import {attributeChangedCallback as moAttributes} from './mutation-observer.js';
 import {attributeChangedCallback as ceAttributes} from './custom-element-registry.js';
 
 import {Node} from './node.js';
+import {escape} from '../shared/text-escaper.js';
 
 const QUOTE = /"/g;
 
@@ -41,8 +42,12 @@ export class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return emptyAttributes.has(name) && !value && ignoreCase(this) ?
-      name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+    if (emptyAttributes.has(name) && !value && ignoreCase(this)) {
+      return name;
+    } else {
+      const escapedValue = this.ownerDocument[MIME].docType.startsWith('<?xml') ? escape(value) : value.replace(QUOTE, '&quot;');
+      return `${name}="${escapedValue}"`;
+    }
   }
 
   toJSON() {

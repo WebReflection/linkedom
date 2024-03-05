@@ -50,6 +50,7 @@ import {ShadowRoot} from './shadow-root.js';
 import {NodeList} from './node-list.js';
 import {Attr} from './attr.js';
 import {Text} from './text.js';
+import {escape} from '../shared/text-escaper.js';
 
 // <utils>
 const attributesHandler = {
@@ -228,6 +229,9 @@ export class Element extends ParentNode {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
+    if (this.ownerDocument[MIME].docType.startsWith('<?xml')) {
+      return attribute && escape(attribute.value);
+    }
     return attribute && attribute.value;
   }
 
