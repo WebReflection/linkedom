@@ -44,10 +44,9 @@ export class Attr extends Node {
     const {name, [VALUE]: value} = this;
     if (emptyAttributes.has(name) && !value && ignoreCase(this)) {
       return name;
-    } else {
-      const escapedValue = this.ownerDocument[MIME].docType.startsWith('<?xml') ? escape(value) : value.replace(QUOTE, '&quot;');
-      return `${name}="${escapedValue}"`;
     }
+    const escapedValue = this.ownerDocument[MIME].docType.startsWith('<?xml') ? escape(value) : value.replace(QUOTE, '&quot;');
+    return `${name}="${escapedValue}"`;
   }
 
   toJSON() {
