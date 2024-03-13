@@ -35,10 +35,10 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "ascjs": "^6.0.3",
-    "c8": "^8.0.1",
-    "eslint": "^8.56.0",
-    "rollup": "^4.9.2",
-    "typescript": "^5.3.3"
+    "c8": "^9.1.0",
+    "eslint": "^8.57.0",
+    "rollup": "^4.13.0",
+    "typescript": "^5.4.2"
   },
   "module": "./esm/index.js",
   "type": "module",
@@ -70,7 +70,7 @@
     "css-select": "^5.1.0",
     "cssom": "^0.5.0",
     "html-escaper": "^3.0.3",
-    "htmlparser2": "^9.0.0",
+    "htmlparser2": "^9.1.0",
     "uhyphen": "^0.2.0"
   },
   "repository": {

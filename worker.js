@@ -652,9 +652,10 @@ var State;
     State[State["InCommentLike"] = 21] = "InCommentLike";
     // Special tags
     State[State["BeforeSpecialS"] = 22] = "BeforeSpecialS";
-    State[State["SpecialStartSequence"] = 23] = "SpecialStartSequence";
-    State[State["InSpecialTag"] = 24] = "InSpecialTag";
-    State[State["InEntity"] = 25] = "InEntity";
+    State[State["BeforeSpecialT"] = 23] = "BeforeSpecialT";
+    State[State["SpecialStartSequence"] = 24] = "SpecialStartSequence";
+    State[State["InSpecialTag"] = 25] = "InSpecialTag";
+    State[State["InEntity"] = 26] = "InEntity";
 })(State || (State = {}));
 function isWhitespace$1(c) {
     return (c === CharCodes.Space ||
@@ -684,12 +685,15 @@ var QuoteType;
  * sequences with an increased offset.
  */
 const Sequences = {
-    Cdata: new Uint8Array([0x43, 0x44, 0x41, 0x54, 0x41, 0x5b]),
-    CdataEnd: new Uint8Array([0x5d, 0x5d, 0x3e]),
-    CommentEnd: new Uint8Array([0x2d, 0x2d, 0x3e]),
-    ScriptEnd: new Uint8Array([0x3c, 0x2f, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74]),
-    StyleEnd: new Uint8Array([0x3c, 0x2f, 0x73, 0x74, 0x79, 0x6c, 0x65]),
+    Cdata: new Uint8Array([0x43, 0x44, 0x41, 0x54, 0x41, 0x5b]), // CDATA[
+    CdataEnd: new Uint8Array([0x5d, 0x5d, 0x3e]), // ]]>
+    CommentEnd: new Uint8Array([0x2d, 0x2d, 0x3e]), // `-->`
+    ScriptEnd: new Uint8Array([0x3c, 0x2f, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74]), // `</script`
+    StyleEnd: new Uint8Array([0x3c, 0x2f, 0x73, 0x74, 0x79, 0x6c, 0x65]), // `</style`
     TitleEnd: new Uint8Array([0x3c, 0x2f, 0x74, 0x69, 0x74, 0x6c, 0x65]), // `</title`
+    TextareaEnd: new Uint8Array([
+        0x3c, 0x2f, 0x74, 0x65, 0x78, 0x74, 0x61, 0x72, 0x65, 0x61,
+    ]), // `</textarea`
 };
 class Tokenizer {
     constructor({ xmlMode = false, decodeEntities = true, }, cbs) {
@@ -912,14 +916,17 @@ class Tokenizer {
         else if (this.isTagStartChar(c)) {
             const lower = c | 0x20;
             this.sectionStart = this.index;
-            if (!this.xmlMode && lower === Sequences.TitleEnd[2]) {
-                this.startSpecial(Sequences.TitleEnd, 3);
+            if (this.xmlMode) {
+                this.state = State.InTagName;
+            }
+            else if (lower === Sequences.ScriptEnd[2]) {
+                this.state = State.BeforeSpecialS;
+            }
+            else if (lower === Sequences.TitleEnd[2]) {
+                this.state = State.BeforeSpecialT;
             }
             else {
-                this.state =
-                    !this.xmlMode && lower === Sequences.ScriptEnd[2]
-                        ? State.BeforeSpecialS
-                        : State.InTagName;
+                this.state = State.InTagName;
             }
         }
         else if (c === CharCodes.Slash) {
@@ -1000,7 +1007,7 @@ class Tokenizer {
     stateInAttributeName(c) {
         if (c === CharCodes.Eq || isEndOfTagSection(c)) {
             this.cbs.onattribname(this.sectionStart, this.index);
-            this.sectionStart = -1;
+            this.sectionStart = this.index;
             this.state = State.AfterAttributeName;
             this.stateAfterAttributeName(c);
         }
@@ -1010,12 +1017,13 @@ class Tokenizer {
             this.state = State.BeforeAttributeValue;
         }
         else if (c === CharCodes.Slash || c === CharCodes.Gt) {
-            this.cbs.onattribend(QuoteType.NoValue, this.index);
+            this.cbs.onattribend(QuoteType.NoValue, this.sectionStart);
+            this.sectionStart = -1;
             this.state = State.BeforeAttributeName;
             this.stateBeforeAttributeName(c);
         }
         else if (!isWhitespace$1(c)) {
-            this.cbs.onattribend(QuoteType.NoValue, this.index);
+            this.cbs.onattribend(QuoteType.NoValue, this.sectionStart);
             this.state = State.InAttributeName;
             this.sectionStart = this.index;
         }
@@ -1042,7 +1050,7 @@ class Tokenizer {
             this.sectionStart = -1;
             this.cbs.onattribend(quote === CharCodes.DoubleQuote
                 ? QuoteType.Double
-                : QuoteType.Single, this.index);
+                : QuoteType.Single, this.index + 1);
             this.state = State.BeforeAttributeName;
         }
         else if (this.decodeEntities && c === CharCodes.Amp) {
@@ -1119,6 +1127,19 @@ class Tokenizer {
         }
         else if (lower === Sequences.StyleEnd[3]) {
             this.startSpecial(Sequences.StyleEnd, 4);
+        }
+        else {
+            this.state = State.InTagName;
+            this.stateInTagName(c); // Consume the token again
+        }
+    }
+    stateBeforeSpecialT(c) {
+        const lower = c | 0x20;
+        if (lower === Sequences.TitleEnd[3]) {
+            this.startSpecial(Sequences.TitleEnd, 4);
+        }
+        else if (lower === Sequences.TextareaEnd[3]) {
+            this.startSpecial(Sequences.TextareaEnd, 4);
         }
         else {
             this.state = State.InTagName;
@@ -1251,6 +1272,10 @@ class Tokenizer {
                 }
                 case State.BeforeSpecialS: {
                     this.stateBeforeSpecialS(c);
+                    break;
+                }
+                case State.BeforeSpecialT: {
+                    this.stateBeforeSpecialT(c);
                     break;
                 }
                 case State.InAttributeValueNq: {
@@ -1441,7 +1466,7 @@ const htmlIntegrationElements = new Set([
 const reNameEnd = /\s|\//;
 let Parser$1 = class Parser {
     constructor(cbs, options = {}) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         this.options = options;
         /** The start index of the last event. */
         this.startIndex = 0;
@@ -1468,9 +1493,11 @@ let Parser$1 = class Parser {
         this.lowerCaseTagNames = (_a = options.lowerCaseTags) !== null && _a !== void 0 ? _a : this.htmlMode;
         this.lowerCaseAttributeNames =
             (_b = options.lowerCaseAttributeNames) !== null && _b !== void 0 ? _b : this.htmlMode;
-        this.tokenizer = new ((_c = options.Tokenizer) !== null && _c !== void 0 ? _c : Tokenizer)(this.options, this);
+        this.recognizeSelfClosing =
+            (_c = options.recognizeSelfClosing) !== null && _c !== void 0 ? _c : !this.htmlMode;
+        this.tokenizer = new ((_d = options.Tokenizer) !== null && _d !== void 0 ? _d : Tokenizer)(this.options, this);
         this.foreignContext = [!this.htmlMode];
-        (_e = (_d = this.cbs).onparserinit) === null || _e === void 0 ? void 0 : _e.call(_d, this);
+        (_f = (_e = this.cbs).onparserinit) === null || _f === void 0 ? void 0 : _f.call(_e, this);
     }
     // Tokenizer event handlers
     /** @internal */
@@ -1589,7 +1616,7 @@ let Parser$1 = class Parser {
     /** @internal */
     onselfclosingtag(endIndex) {
         this.endIndex = endIndex;
-        if (this.options.recognizeSelfClosing || this.foreignContext[0]) {
+        if (this.recognizeSelfClosing || this.foreignContext[0]) {
             this.closeCurrentTag(false);
             // Set `startIndex` for next node
             this.startIndex = endIndex + 1;
@@ -3788,6 +3815,7 @@ var HTMLParser2 = /*#__PURE__*/Object.freeze({
     DomUtils: DomUtils,
     ElementType: index,
     Parser: Parser$1,
+    get QuoteType () { return QuoteType; },
     Tokenizer: Tokenizer,
     createDocumentStream: createDocumentStream,
     createDomStream: createDomStream,
@@ -4800,6 +4828,29 @@ let Node$1 = class Node extends DOMEventTarget {
   }
 };
 
+const {replace} = '';
+
+// escape
+const ca = /[<>&\xA0]/g;
+
+const esca = {
+  '\xA0': '&#160;',
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
+const pe = m => esca[m];
+
+/**
+ * Safely escape HTML entities such as `&`, `<`, `>` only.
+ * @param {string} es the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escape = es => replace.call(es, ca, pe);
+
 const QUOTE = /"/g;
 
 /**
@@ -4832,8 +4883,11 @@ let Attr$1 = class Attr extends Node$1 {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return emptyAttributes.has(name) && !value && ignoreCase(this) ?
-      name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+    if (emptyAttributes.has(name) && !value) {
+      return ignoreCase(this) ? name : `${name}=""`;
+    }
+    const escapedValue = ignoreCase(this) ? value.replace(QUOTE, '&quot;') : escape(value);
+    return `${name}="${escapedValue}"`;
   }
 
   toJSON() {
@@ -6762,29 +6816,6 @@ const matches = (element, selectors) => is(
   }
 );
 
-const {replace} = '';
-
-// escape
-const ca = /[<>&\xA0]/g;
-
-const esca = {
-  '\xA0': '&#160;',
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;'
-};
-
-const pe = m => esca[m];
-
-/**
- * Safely escape HTML entities such as `&`, `<`, `>` only.
- * @param {string} es the input to safely escape
- * @returns {string} the escaped input, and it **throws** an error if
- *  the input type is unexpected, except for boolean and numbers,
- *  converted as string.
- */
-const escape = es => replace.call(es, ca, pe);
-
 /**
  * @implements globalThis.Text
  */
@@ -7778,7 +7809,7 @@ let Element$1 = class Element extends ParentNode {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
-    return attribute && attribute.value;
+    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
   }
 
   getAttributeNode(name) {
