@@ -227,10 +227,7 @@ class Element extends ParentNode {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
-    if (!ignoreCase(this)) {
-      return attribute && escape(attribute.value);
-    }
-    return attribute && attribute.value;
+    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
   }
 
   getAttributeNode(name) {

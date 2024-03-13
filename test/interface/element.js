@@ -20,8 +20,14 @@ assert(div.toString(), '<div><p>hello</p> world</div>');
 assert(div.namespaceURI, 'http://www.w3.org/1999/xhtml');
 
 const parser = new DOMParser();
-const doc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/xml').documentElement;
+const htmlDoc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/html').documentElement;
 
-assert(doc.firstChild.getAttribute('content-desc'), 'text3&amp;more');
-assert(doc.firstChild.outerHTML, '<android.view.View content-desc="text3&amp;more" />');
-assert(doc.innerHTML, '<android.view.View content-desc="text3&amp;more" />');
+assert(htmlDoc.firstChild.getAttribute('content-desc'), 'text3&more');
+assert(htmlDoc.firstChild.outerHTML, '<android.view.view content-desc="text3&more"></android.view.view>');
+assert(htmlDoc.innerHTML, '<android.view.view content-desc="text3&more"></android.view.view>');
+
+const xmlDoc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/xml').documentElement;
+
+assert(xmlDoc.firstChild.getAttribute('content-desc'), 'text3&amp;more');
+assert(xmlDoc.firstChild.outerHTML, '<android.view.View content-desc="text3&amp;more" />');
+assert(xmlDoc.innerHTML, '<android.view.View content-desc="text3&amp;more" />');
