@@ -9,6 +9,7 @@ const {attributeChangedCallback: moAttributes} = require('./mutation-observer.js
 const {attributeChangedCallback: ceAttributes} = require('./custom-element-registry.js');
 
 const {Node} = require('./node.js');
+const {escape} = require('../shared/text-escaper.js');
 
 const QUOTE = /"/g;
 
@@ -42,8 +43,11 @@ class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    return emptyAttributes.has(name) && !value && ignoreCase(this) ?
-      name : `${name}="${value.replace(QUOTE, '&quot;')}"`;
+    if (emptyAttributes.has(name) && !value) {
+      return ignoreCase(this) ? name : `${name}=""`;
+    }
+    const escapedValue = ignoreCase(this) ? value.replace(QUOTE, '&quot;') : escape(value);
+    return `${name}="${escapedValue}"`;
   }
 
   toJSON() {
