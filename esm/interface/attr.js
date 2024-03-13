@@ -42,8 +42,8 @@ export class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    if (!value) {
-      return emptyAttributes.has(name) && ignoreCase(this) ? name : `${name}=""`;
+    if (emptyAttributes.has(name) && !value) {
+      return ignoreCase(this) ? name : `${name}=""`;
     }
     const escapedValue = ignoreCase(this) ? value.replace(QUOTE, '&quot;') : escape(value);
     return `${name}="${escapedValue}"`;

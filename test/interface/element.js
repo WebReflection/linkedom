@@ -20,16 +20,22 @@ assert(div.toString(), '<div><p>hello</p> world</div>');
 assert(div.namespaceURI, 'http://www.w3.org/1999/xhtml');
 
 const parser = new DOMParser();
-const htmlDoc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/html').documentElement;
+const htmlDoc = parser.parseFromString(`<div><span content-desc="text3&amp;more"/></div>`, 'text/html').documentElement;
 
 assert(htmlDoc.firstChild.getAttribute('content-desc'), 'text3&more');
-assert(htmlDoc.firstChild.outerHTML, '<android.view.view content-desc="text3&more"></android.view.view>');
-assert(htmlDoc.innerHTML, '<android.view.view content-desc="text3&more"></android.view.view>');
+assert(htmlDoc.firstChild.outerHTML, '<span content-desc="text3&more"></span>');
+assert(htmlDoc.innerHTML, '<span content-desc="text3&more"></span>');
 
-htmlDoc.firstChild.setAttribute('content-desc', '');
+htmlDoc.firstChild.setAttribute('content-desc', ''); // attribute not in emptyAttributes set is empty
 assert(htmlDoc.firstChild.getAttribute('content-desc'), '');
-assert(htmlDoc.firstChild.outerHTML, '<android.view.view content-desc=""></android.view.view>');
-assert(htmlDoc.innerHTML, '<android.view.view content-desc=""></android.view.view>');
+assert(htmlDoc.firstChild.outerHTML, '<span content-desc=""></span>');
+assert(htmlDoc.innerHTML, '<span content-desc=""></span>');
+
+const htmlDocWithEmptyAttrFromSet = parser.parseFromString(`<div><span style=""/></div>`, 'text/html').documentElement; // attribute in emptyAttributes set is empty
+
+assert(htmlDocWithEmptyAttrFromSet.firstChild.getAttribute('style'), '');
+assert(htmlDocWithEmptyAttrFromSet.firstChild.outerHTML, '<span></span>');
+assert(htmlDocWithEmptyAttrFromSet.innerHTML, '<span></span>');
 
 const xmlDoc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/xml').documentElement;
 
