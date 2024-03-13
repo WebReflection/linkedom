@@ -26,8 +26,18 @@ assert(htmlDoc.firstChild.getAttribute('content-desc'), 'text3&more');
 assert(htmlDoc.firstChild.outerHTML, '<android.view.view content-desc="text3&more"></android.view.view>');
 assert(htmlDoc.innerHTML, '<android.view.view content-desc="text3&more"></android.view.view>');
 
+htmlDoc.firstChild.setAttribute('content-desc', '');
+assert(htmlDoc.firstChild.getAttribute('content-desc'), '');
+assert(htmlDoc.firstChild.outerHTML, '<android.view.view content-desc=""></android.view.view>');
+assert(htmlDoc.innerHTML, '<android.view.view content-desc=""></android.view.view>');
+
 const xmlDoc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/xml').documentElement;
 
 assert(xmlDoc.firstChild.getAttribute('content-desc'), 'text3&amp;more');
 assert(xmlDoc.firstChild.outerHTML, '<android.view.View content-desc="text3&amp;more" />');
 assert(xmlDoc.innerHTML, '<android.view.View content-desc="text3&amp;more" />');
+
+xmlDoc.firstChild.setAttribute('content-desc', '');
+assert(xmlDoc.firstChild.getAttribute('content-desc'), '');
+assert(xmlDoc.firstChild.outerHTML, '<android.view.view content-desc=""></android.view.view>');
+assert(xmlDoc.innerHTML, '<android.view.view content-desc=""></android.view.view>');
