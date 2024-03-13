@@ -39,5 +39,5 @@ assert(xmlDoc.innerHTML, '<android.view.View content-desc="text3&amp;more" />');
 
 xmlDoc.firstChild.setAttribute('content-desc', '');
 assert(xmlDoc.firstChild.getAttribute('content-desc'), '');
-assert(xmlDoc.firstChild.outerHTML, '<android.view.view content-desc=""></android.view.view>');
-assert(xmlDoc.innerHTML, '<android.view.view content-desc=""></android.view.view>');
+assert(xmlDoc.firstChild.outerHTML, '<android.view.View content-desc="" />');
+assert(xmlDoc.innerHTML, '<android.view.View content-desc="" />');
