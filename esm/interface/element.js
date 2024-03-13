@@ -229,7 +229,7 @@ export class Element extends ParentNode {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
-    if (this.ownerDocument[MIME].docType.startsWith('<?xml')) {
+    if (!ignoreCase(this)) {
       return attribute && escape(attribute.value);
     }
     return attribute && attribute.value;

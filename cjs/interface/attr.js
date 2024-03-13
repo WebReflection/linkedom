@@ -1,6 +1,6 @@
 'use strict';
 const {ATTRIBUTE_NODE} = require('../shared/constants.js');
-const {CHANGED, MIME, VALUE} = require('../shared/symbols.js');
+const {CHANGED, VALUE} = require('../shared/symbols.js');
 const {String, ignoreCase} = require('../shared/utils.js');
 const {attrAsJSON} = require('../shared/jsdon.js');
 const {emptyAttributes} = require('../shared/attributes.js');
@@ -43,10 +43,10 @@ class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    if (emptyAttributes.has(name) && !value && ignoreCase(this)) {
-      return name;
+    if (emptyAttributes.has(name) && !value) {
+      return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = this.ownerDocument[MIME].docType.startsWith('<?xml') ? escape(value) : value.replace(QUOTE, '&quot;');
+    const escapedValue = ignoreCase(this) ? value.replace(QUOTE, '&quot;') : escape(value);
     return `${name}="${escapedValue}"`;
   }
 

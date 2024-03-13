@@ -1,5 +1,5 @@
 import {ATTRIBUTE_NODE} from '../shared/constants.js';
-import {CHANGED, MIME, VALUE} from '../shared/symbols.js';
+import {CHANGED, VALUE} from '../shared/symbols.js';
 import {String, ignoreCase} from '../shared/utils.js';
 import {attrAsJSON} from '../shared/jsdon.js';
 import {emptyAttributes} from '../shared/attributes.js';
@@ -42,10 +42,10 @@ export class Attr extends Node {
 
   toString() {
     const {name, [VALUE]: value} = this;
-    if (emptyAttributes.has(name) && !value && ignoreCase(this)) {
-      return name;
+    if (emptyAttributes.has(name) && !value) {
+      return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = this.ownerDocument[MIME].docType.startsWith('<?xml') ? escape(value) : value.replace(QUOTE, '&quot;');
+    const escapedValue = ignoreCase(this) ? value.replace(QUOTE, '&quot;') : escape(value);
     return `${name}="${escapedValue}"`;
   }
 
