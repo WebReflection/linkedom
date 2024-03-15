@@ -185,7 +185,7 @@ export class ParentNode extends Node {
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE && matches(next))
         return next;
-      next = next.localName === 'template' ? next[END] : next[NEXT];
+      next = next.nodeType === ELEMENT_NODE && next.localName === 'template' ? next[END] : next[NEXT];
     }
     return null;
   }
@@ -197,7 +197,7 @@ export class ParentNode extends Node {
     while (next !== end) {
       if (next.nodeType === ELEMENT_NODE && matches(next))
         elements.push(next);
-      next = next.localName === 'template' ? next[END] : next[NEXT];
+      next = next.nodeType === ELEMENT_NODE && next.localName === 'template' ? next[END] : next[NEXT];
     }
     return elements;
   }
