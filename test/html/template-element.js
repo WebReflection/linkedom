@@ -42,3 +42,8 @@ let html = `<!DOCTYPE html>
 ({document} = parseHTML(html));
 
 assert(document.toString(), html);
+
+const docWithTemplateAttribute = parseHTML(`<div template="anything"><p>not inside a template</p></div>`).document.documentElement;
+
+assert(docWithTemplateAttribute.querySelector('*').tagName, 'P');
+assert(docWithTemplateAttribute.querySelectorAll('*').length, 1);
