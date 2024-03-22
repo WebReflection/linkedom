@@ -12322,13 +12322,13 @@ class HTMLDocument extends Document$1 {
    */
   get title() {
     const {head} = this;
-    let title = head.getElementsByTagName('title').shift();
+    let title = head.getElementsByTagName('title')[0];
     return title ? title.textContent : '';
   }
 
   set title(textContent) {
     const {head} = this;
-    let title = head.getElementsByTagName('title').shift();
+    let title = head.getElementsByTagName('title')[0];
     if (title)
       title.textContent = textContent;
     else {
