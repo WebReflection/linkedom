@@ -41,6 +41,9 @@ assert(document.title, '"hello"', 'title not escaped');
 assert(document.toString(), '<!DOCTYPE html><html><head><title>"hello"</title></head></html>');
 assert(document.body.tagName, 'BODY');
 
+document.title = 'I';
+assert(document.title + document.title + document.title, 'III', 'side-effects detected when inspecting the title');
+
 document.title = '&';
 assert(document.toString(), '<!DOCTYPE html><html><head><title>&</title></head><body></body></html>');
 

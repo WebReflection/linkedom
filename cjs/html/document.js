@@ -78,13 +78,12 @@ class HTMLDocument extends Document {
    */
   get title() {
     const {head} = this;
-    let title = head.getElementsByTagName('title').shift();
-    return title ? title.textContent : '';
+    return head.getElementsByTagName('title').at(0)?.textContent || '';
   }
 
   set title(textContent) {
     const {head} = this;
-    let title = head.getElementsByTagName('title').shift();
+    let title = head.getElementsByTagName('title').at(0);
     if (title)
       title.textContent = textContent;
     else {
