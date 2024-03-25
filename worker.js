@@ -12322,8 +12322,7 @@ class HTMLDocument extends Document$1 {
    */
   get title() {
     const {head} = this;
-    let title = head.getElementsByTagName('title')[0];
-    return title ? title.textContent : '';
+    return head.getElementsByTagName('title')[0]?.textContent || '';
   }
 
   set title(textContent) {
