@@ -1,6 +1,6 @@
 const assert = require('../assert.js').for('Attr');
 
-const {parseHTML} = global[Symbol.for('linkedom')];
+const {parseHTML, DOMParser} = global[Symbol.for('linkedom')];
 
 const {document} = parseHTML('<html test />');
 
@@ -20,3 +20,11 @@ assert(attributes.removeNamedItem('test'), void 0, 'removeNamedItem');
 assert(attributes.item(0), null, 'attributes.item()');
 assert(attributes.setNamedItem(attr), void 0, 'setNamedItem');
 
+/** @type {(str: string) => Document} */
+const parseXML = xmlStr => new DOMParser().parseFromString(xmlStr, 'text/xml');
+const xmlDoc = parseXML('<element attr="a&quot;b&quot;c"></element>');
+
+assert(xmlDoc.toString(), '<?xml version="1.0" encoding="utf-8"?><element attr="a&quot;b&quot;c" />');
+assert(xmlDoc.firstElementChild.toString(), '<element attr="a&quot;b&quot;c" />');
+assert(xmlDoc.firstElementChild.outerHTML, '<element attr="a&quot;b&quot;c" />');
+assert(xmlDoc.firstElementChild.attributes.attr.value, 'a"b"c');
