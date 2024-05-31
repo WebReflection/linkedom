@@ -54,7 +54,10 @@
       "default": "./cjs/cached.js"
     },
     "./package.json": "./package.json",
-    "./worker": "./worker.js"
+    "./worker": {
+      "types": "./types/esm/index.d.ts",
+      "import": "./worker.js"
+    }
   },
   "typesVersions": {
     "*": {
