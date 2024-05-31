@@ -4886,7 +4886,7 @@ let Attr$1 = class Attr extends Node$1 {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = ignoreCase(this) ? value.replace(QUOTE, '&quot;') : escape(value);
+    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
     return `${name}="${escapedValue}"`;
   }
 
