@@ -10,5 +10,7 @@ export class HTMLAnchorElement extends HTMLElement implements globalThis.HTMLAnc
     get target(): any;
     set type(value: any);
     get type(): any;
+    set rel(value: any);
+    get rel(): any;
 }
 import { HTMLElement } from './element.js';

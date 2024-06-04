@@ -26,6 +26,9 @@ class HTMLAnchorElement extends HTMLElement {
 
   get type() { return stringAttribute.get(this, 'type'); }
   set type(value) { stringAttribute.set(this, 'type', value); }
+
+  get rel() { return stringAttribute.get(this, 'rel'); }
+  set rel(value) { stringAttribute.set(this, 'rel', value); }
   /* c8 ignore stop */
 
 }
