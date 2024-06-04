@@ -19,3 +19,9 @@ document.documentElement.innerHTML = `
 
 assert(document.querySelectorAll('Element').length, 2, 'case sesntivive 2');
 assert(document.querySelectorAll('element').length, 0, 'case sesntivive 0');
+
+// &amp; bug
+const androidDocument = (new DOMParser).parseFromString('<hierarchy><android.view.View content-desc="text3&more"/></hierarchy>', 'text/xml');
+
+assert(androidDocument.firstElementChild.firstElementChild.getAttribute('content-desc', true), 'text3&more');
+assert(androidDocument.firstElementChild.firstElementChild.attributes['content-desc'].value, 'text3&more');

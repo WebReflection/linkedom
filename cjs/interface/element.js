@@ -223,11 +223,11 @@ class Element extends ParentNode {
 
   focus() { this.dispatchEvent(new Event('focus')); }
 
-  getAttribute(name) {
+  getAttribute(name, noEscape = false) {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
-    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
+    return attribute && (ignoreCase(this) || noEscape ? attribute.value : escape(attribute.value));
   }
 
   getAttributeNode(name) {

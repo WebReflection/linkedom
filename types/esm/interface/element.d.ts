@@ -44,7 +44,7 @@ export class Element extends ParentNode implements globalThis.Element {
     get outerHTML(): string;
     get attributes(): any;
     focus(): void;
-    getAttribute(name: any): any;
+    getAttribute(name: any, noEscape?: boolean): any;
     getAttributeNode(name: any): any;
     getAttributeNames(): NodeList;
     hasAttribute(name: any): boolean;
