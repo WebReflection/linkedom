@@ -1,5 +1,6 @@
-import {DOCUMENT_FRAGMENT_NODE} from '../shared/constants.js';
+import {DOCUMENT_FRAGMENT_NODE, TEXT_NODE} from '../shared/constants.js';
 import {NonElementParentNode} from '../mixin/non-element-parent-node.js';
+import {NEXT, END} from '../shared/symbols.js'
 
 /**
  * @implements globalThis.DocumentFragment
@@ -10,12 +11,13 @@ export class DocumentFragment extends NonElementParentNode {
   }
 
   get textContent() {
-    let r = ""
-    let curr = this.firstChild
-    while (curr) {
-      r += curr.textContent
-      curr = curr.nextSibling
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      if (next.nodeType === TEXT_NODE)
+        text.push(next.textContent);
+      next = next[NEXT];
     }
-    return r;
+    return text.join('');
   }
 }
