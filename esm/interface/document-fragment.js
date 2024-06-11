@@ -15,7 +15,7 @@ export class DocumentFragment extends NonElementParentNode {
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
       if (next.nodeType === TEXT_NODE)
-        text.push(next.textContent);
+        text.push(next.data);
       next = next[NEXT];
     }
     return text.join('');
