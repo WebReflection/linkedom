@@ -47,3 +47,11 @@ const docWithTemplateAttribute = parseHTML(`<div template="anything"><p>not insi
 
 assert(docWithTemplateAttribute.querySelector('*').tagName, 'P');
 assert(docWithTemplateAttribute.querySelectorAll('*').length, 1);
+
+
+let {document: document2} = parseHTML('<template><img id="el-14" class="has-svg" src="./favicon.svg" inline=""></template>');
+let template2 = document2.documentElement;
+assert(template2.innerHTML, '<img id="el-14" class="has-svg" src="./favicon.svg" inline="">');
+
+template2.content.childNodes[0].replaceWith(document.createElement('br'))
+assert(template2.innerHTML, '<br>', 'expected content');
