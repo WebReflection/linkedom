@@ -3839,7 +3839,9 @@ const DOCUMENT_TYPE_NODE = 10;
 const DOCUMENT_FRAGMENT_NODE = 11;
 
 // Elements
-const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'BR', 'BUTTON', 'CANVAS', 'CAPTION', 'COL', 'COLGROUP', 'DD', 'DIV', 'DL', 'DT', 'EMBED', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'UL', 'OL', 'P']);
+const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'BR', 'BUTTON', 'CANVAS', 'CAPTION', 'COL', 'COLGROUP', 'DD', 'DIV', 'DL', 'DT', 'EMBED', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'UL', 'OL', 'P', 'TR', 'PRE', 'HR', 'ADDRESS']);
+
+const TABLE_ELEMENTS = new Set(['TH', 'TD']);
 
 // TreeWalker
 const SHOW_ALL = -1;
@@ -7743,6 +7745,7 @@ let Element$1 = class Element extends ParentNode {
   get innerText() {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;
+    let prevElement;
     while (next !== end) {
       if (next.nodeType === TEXT_NODE) {
         text.push(next.textContent.replace(/\s+/g, ' '));
@@ -7752,6 +7755,17 @@ let Element$1 = class Element extends ParentNode {
       ) {
         text.push('\n');
       }
+
+      if (prevElement &&
+        TABLE_ELEMENTS.has(prevElement.tagName) &&
+        TABLE_ELEMENTS.has(next.tagName)) {
+          text.push('\t');
+      }
+
+      if (next.nodeType === ELEMENT_NODE) {
+        prevElement = next;
+      }
+
       next = next[NEXT];
     }
     return text.join('');

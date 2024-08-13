@@ -22,8 +22,11 @@ const DOCUMENT_FRAGMENT_NODE = 11;
 exports.DOCUMENT_FRAGMENT_NODE = DOCUMENT_FRAGMENT_NODE;
 
 // Elements
-const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'BR', 'BUTTON', 'CANVAS', 'CAPTION', 'COL', 'COLGROUP', 'DD', 'DIV', 'DL', 'DT', 'EMBED', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'UL', 'OL', 'P']);
+const BLOCK_ELEMENTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'BR', 'BUTTON', 'CANVAS', 'CAPTION', 'COL', 'COLGROUP', 'DD', 'DIV', 'DL', 'DT', 'EMBED', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'UL', 'OL', 'P', 'TR', 'PRE', 'HR', 'ADDRESS']);
 exports.BLOCK_ELEMENTS = BLOCK_ELEMENTS;
+
+const TABLE_ELEMENTS = new Set(['TH', 'TD']);
+exports.TABLE_ELEMENTS = TABLE_ELEMENTS;
 
 // TreeWalker
 const SHOW_ALL = -1;

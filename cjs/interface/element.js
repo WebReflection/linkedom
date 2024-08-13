@@ -4,6 +4,7 @@
 const {
   ATTRIBUTE_NODE,
   BLOCK_ELEMENTS,
+  TABLE_ELEMENTS,
   CDATA_SECTION_NODE,
   COMMENT_NODE,
   ELEMENT_NODE,
@@ -161,6 +162,7 @@ class Element extends ParentNode {
   get innerText() {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;
+    let prevElement;
     while (next !== end) {
       if (next.nodeType === TEXT_NODE) {
         text.push(next.textContent.replace(/\s+/g, ' '));
@@ -170,6 +172,17 @@ class Element extends ParentNode {
       ) {
         text.push('\n');
       }
+
+      if (prevElement &&
+        TABLE_ELEMENTS.has(prevElement.tagName) &&
+        TABLE_ELEMENTS.has(next.tagName)) {
+          text.push('\t');
+      }
+
+      if (next.nodeType === ELEMENT_NODE) {
+        prevElement = next;
+      }
+
       next = next[NEXT];
     }
     return text.join('');
