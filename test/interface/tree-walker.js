@@ -51,6 +51,9 @@ let p = node.appendChild(document.createElement('p'));
 p.setAttribute('ghost', '');
 p.textContent = 'ok';
 
+treeWalker = document.createTreeWalker(p.firstChild);
+assert(treeWalker.nextNode(), null, 'end of text treeWalker');
+
 treeWalker = document.createTreeWalker(node);
 assert(treeWalker.nextNode(), p, 'treewalker p');
 p.removeAttribute('ghost');

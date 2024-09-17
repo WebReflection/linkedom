@@ -114,7 +114,7 @@ const decodeMap = new Map([
 /**
  * Polyfill for `String.fromCodePoint`. It is used to create a string from a Unicode code point.
  */
-const fromCodePoint = 
+const fromCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, node/no-unsupported-features/es-builtins
 (_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : function (codePoint) {
     let output = "";
@@ -206,7 +206,7 @@ var DecodingMode;
 class EntityDecoder {
     constructor(
     /** The tree used to decode entities. */
-    decodeTree, 
+    decodeTree,
     /**
      * The function that is called when a codepoint is decoded.
      *
@@ -216,7 +216,7 @@ class EntityDecoder {
      * @param codepoint The decoded codepoint.
      * @param consumed The number of bytes consumed by the decoder.
      */
-    emitCodePoint, 
+    emitCodePoint,
     /** An object that is used to produce errors. */
     errors) {
         this.decodeTree = decodeTree;
@@ -529,7 +529,7 @@ function getDecoder(decodeTree) {
         while ((offset = str.indexOf("&", offset)) >= 0) {
             ret += str.slice(lastIndex, offset);
             decoder.startEntity(decodeMode);
-            const len = decoder.write(str, 
+            const len = decoder.write(str,
             // Skip the "&"
             offset + 1);
             if (len < 0) {
@@ -2413,7 +2413,7 @@ const xmlCodeMap = new Map([
     [62, "&gt;"],
 ]);
 // For compatibility with node < 4, we wrap `codePointAt`
-const getCodePoint = 
+const getCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 String.prototype.codePointAt != null
     ? (str, index) => str.codePointAt(index)
@@ -4604,7 +4604,7 @@ class DOMEventTarget {
 
   addEventListener(type, listener, options) {
     const map = wm.get(this);
-    if (!map.has(type)) 
+    if (!map.has(type))
       map.set(type, new Map);
     map.get(type).set(listener, options);
   }
@@ -6174,7 +6174,7 @@ function dynamicStatePseudo(name) {
 // While filters are precompiled, pseudos get called when they are needed
 const pseudos = {
     empty(elem, { adapter }) {
-        return !adapter.getChildren(elem).some((elem) => 
+        return !adapter.getChildren(elem).some((elem) =>
         // FIXME: `getText` call is potentially expensive.
         adapter.isTag(elem) || adapter.getText(elem) !== "");
     },
@@ -7146,7 +7146,7 @@ class NonElementParentNode extends ParentNode {
       for (const node of this.childNodes)
         nonEPN.insertBefore(node.cloneNode(deep), end);
     }
-    return nonEPN; 
+    return nonEPN;
   }
 
   toString() {
@@ -7560,7 +7560,7 @@ class GlobalEvent {
     stopPropagation() {
       this.cancelBubble = true;
     }
-    
+
     stopImmediatePropagation() {
       this.stopPropagation();
       this._stopImmediatePropagationFlag = true;
@@ -8678,10 +8678,10 @@ class HTMLIFrameElement extends HTMLElement {
 
   get allowFullscreen() { return booleanAttribute.get(this, "allowfullscreen"); }
   set allowFullscreen(value) { booleanAttribute.set(this, "allowfullscreen", value); }
-  
+
   get referrerPolicy() { return stringAttribute.get(this, "referrerpolicy"); }
   set referrerPolicy(value) { stringAttribute.set(this, "referrerpolicy", value); }
-  
+
   get loading() { return stringAttribute.get(this, "loading"); }
   set loading(value) { stringAttribute.set(this, "loading", value); }
   /* c8 ignore stop */
@@ -9872,7 +9872,7 @@ CSSOM$2.CSSValueExpression.prototype._parseJSComment = function(token, idx) {
  * @return {Object|false}
  *					- idx:
  *					- text:
- *					or 
+ *					or
  *					false
  *
  */
@@ -9899,14 +9899,14 @@ CSSOM$2.CSSValueExpression.prototype._parseJSString = function(token, idx, sep) 
  * @return {Object|false}
  *				- idx:
  *				- regExp:
- *				or 
+ *				or
  *				false
  */
 
 /*
 
 all legal RegExp
- 
+
 /a/
 (/a/)
 [/a/]
@@ -10558,7 +10558,7 @@ function requireParse () {
 								hasAncestors = false;
 							}
 						}
-						
+
 						if (!hasAncestors) {
 							currentScope.__ends = i + 1;
 							styleSheet.cssRules.push(currentScope);
@@ -11997,7 +11997,7 @@ class TreeWalker {
       end = documentElement[END];
     }
     const nodes = [];
-    while (next !== end) {
+    while (next && next !== end) {
       if (isOK(next, whatToShow))
         nodes.push(next);
       next = next[NEXT];
@@ -12510,7 +12510,7 @@ const parseJSON = value => {
 };
 
 /**
- * 
+ *
  * @param {Document|Element} node the Document or Element to serialize
  * @returns {jsdonValue[]} the linear jsdon serialized array
  */
