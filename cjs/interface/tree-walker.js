@@ -43,7 +43,7 @@ class TreeWalker {
       end = documentElement[END];
     }
     const nodes = [];
-    while (next !== end) {
+    while (next && next !== end) {
       if (isOK(next, whatToShow))
         nodes.push(next);
       next = next[NEXT];
