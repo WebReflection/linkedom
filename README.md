@@ -71,7 +71,7 @@ document.querySelectorAll('form, input[name], button');
 
 ```js
 // any node can be serialized
-const array = document.toJSON();
+const array = toJSON(document);
 
 // somewhere else ...
 import {parseJSON} from 'linkedom';
