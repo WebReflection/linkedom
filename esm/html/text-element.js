@@ -9,6 +9,6 @@ export class TextElement extends HTMLElement {
 
   toString() {
     const outerHTML = toString.call(this.cloneNode());
-    return outerHTML.split('><').join(`>${this.textContent}<`);
+    return outerHTML.replace(/></, () => `>${this.textContent}<`);
   }
 }
