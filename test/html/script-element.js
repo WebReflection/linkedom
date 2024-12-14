@@ -145,9 +145,9 @@ assert(head.firstChild.innerHTML, 'html`<p>ok</p>`;', '<script>.innerHTML');
   // https://github.com/WebReflection/linkedom/issues/292
   const { document } = parseHTML('<html></html>');
   const script = document.createElement('script')
-  script.innerHTML = 'const test = "$$"'
+  script.innerHTML = 'const test = "$$ $& $1"'
   document.head.append(script)
-  assert(document.toString(), '<html><head><script>const test = "$$"</script></head></html>')
+  assert(document.toString(), '<html><head><script>const test = "$$ $& $1"</script></head></html>')
 }
 
 {
