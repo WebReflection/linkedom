@@ -140,3 +140,17 @@ assert(head.firstChild.innerHTML, 'html`<p>ok</p>`;', '<script>.innerHTML');
   script.type = 'text/javascript';
   assert(script.type, 'text/javascript', '<script>.type');
 }
+
+{
+  // https://github.com/WebReflection/linkedom/issues/292
+  const { document } = parseHTML('<html></html>');
+  const script = document.createElement('script')
+  script.innerHTML = 'const test = "$$ $& $1"'
+  document.head.append(script)
+  assert(document.toString(), '<html><head><script>const test = "$$ $& $1"</script></head></html>')
+}
+
+{
+  const { document } = parseHTML('<html><script>const test = "$$ $& $1"</script></html>');
+  assert(document.toString(), '<html><script>const test = "$$ $& $1"</script></html>')
+}
