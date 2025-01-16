@@ -7764,7 +7764,8 @@ let Element$1 = class Element extends ParentNode {
     const text = [];
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
-      if (next.nodeType === TEXT_NODE)
+      const nodeType = next.nodeType;
+      if (nodeType === TEXT_NODE || nodeType === CDATA_SECTION_NODE)
         text.push(next.textContent);
       next = next[NEXT];
     }
