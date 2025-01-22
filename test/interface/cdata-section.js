@@ -8,8 +8,9 @@ let document = (new DOMParser).parseFromString('<html><body><![CDATA[test]]>text
 const [cdata, text] = document.documentElement.lastChild.childNodes;
 
 assert(JSON.stringify(cdata.cloneNode()), '[4,"test"]');
-
 assert(JSON.stringify(text.cloneNode()), '[3,"text"]');
+
+assert(document.documentElement.textContent, 'testtext');
 
 assert(text.data, 'text');
 assert(text.nodeValue, 'text');
