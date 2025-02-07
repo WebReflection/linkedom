@@ -1,7 +1,7 @@
 import {MUTATION_OBSERVER} from '../shared/symbols.js';
 
 const createRecord =
-  (type, target, addedNodes, removedNodes, attributeName, oldValue) =>
+  (type, target, element, addedNodes, removedNodes, attributeName, oldValue) =>
  ({
   type,
   target,
@@ -9,8 +9,8 @@ const createRecord =
   removedNodes,
   attributeName,
   oldValue,
-  previousSibling: target.previousSibling,
-  nextSibling: target.nextSibling,
+  previousSibling: element?.previousSibling || null,
+  nextSibling: element?.nextSibling || null,
 });
 
 const queueAttribute = (
@@ -19,7 +19,7 @@ const queueAttribute = (
   if ((!attributeFilter || attributeFilter.includes(attributeName))) {
     const {callback, records, scheduled} = observer;
     records.push(createRecord(
-      'attributes', target,
+      'attributes', target, null,
       [], [],
       attributeName, attributeOldValue ? oldValue : void 0
     ));
@@ -89,7 +89,7 @@ export const moCallback = (element, parentNode) => {
           ) {
             const {callback, records, scheduled} = observer;
             records.push(createRecord(
-              'childList', target,
+              'childList', target, element,
               parentNode ? [] : [element], parentNode ? [element] : []
             ));
             if (!scheduled) {
