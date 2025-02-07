@@ -2,7 +2,16 @@ import {MUTATION_OBSERVER} from '../shared/symbols.js';
 
 const createRecord =
   (type, target, addedNodes, removedNodes, attributeName, oldValue) =>
- ({type, target, addedNodes, removedNodes, attributeName, oldValue});
+ ({
+  type,
+  target,
+  addedNodes,
+  removedNodes,
+  attributeName,
+  oldValue,
+  previousSibling: target.previousSibling,
+  nextSibling: target.nextSibling,
+});
 
 const queueAttribute = (
   observer, target, attributeName, attributeFilter, attributeOldValue, oldValue
