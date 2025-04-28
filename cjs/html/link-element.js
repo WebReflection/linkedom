@@ -18,7 +18,7 @@ class HTMLLinkElement extends HTMLElement {
   get disabled() { return booleanAttribute.get(this, 'disabled'); }
   set disabled(value) { booleanAttribute.set(this, 'disabled', value); }
 
-  get href() { return stringAttribute.get(this, 'href'); }
+  get href() { return stringAttribute.get(this, 'href').trim(); }
   set href(value) { stringAttribute.set(this, 'href', value); }
 
   get hreflang() { return stringAttribute.get(this, 'hreflang'); }

@@ -11575,7 +11575,7 @@ class HTMLLinkElement extends HTMLElement {
   get disabled() { return booleanAttribute.get(this, 'disabled'); }
   set disabled(value) { booleanAttribute.set(this, 'disabled', value); }
 
-  get href() { return stringAttribute.get(this, 'href'); }
+  get href() { return stringAttribute.get(this, 'href').trim(); }
   set href(value) { stringAttribute.set(this, 'href', value); }
 
   get hreflang() { return stringAttribute.get(this, 'hreflang'); }
@@ -11792,7 +11792,7 @@ class HTMLAnchorElement extends HTMLElement {
   }
 
   /* c8 ignore start */ // copy paste from img.src, already covered
-  get href() { return encodeURI(decodeURI(stringAttribute.get(this, 'href'))); }
+  get href() { return encodeURI(decodeURI(stringAttribute.get(this, 'href'))).trim(); }
   set href(value) { stringAttribute.set(this, 'href', decodeURI(value)); }
 
   get download() { return encodeURI(decodeURI(stringAttribute.get(this, 'download'))); }
