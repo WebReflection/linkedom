@@ -12,8 +12,8 @@ document.documentElement.innerHTML = '<div></div><input><p />';
 assert(document.toString(), '<!DOCTYPE html><html id="html" class="live"><div></div><input><p></p></html>', 'innerHTML + sanitizer');
 
 document.documentElement.setAttribute('lang', 'en');
-assert(document.documentElement.cloneNode(true).outerHTML, '<html lang="en" id="html" class="live"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
-assert(document.documentElement.cloneNode().outerHTML, '<html lang="en" id="html" class="live"></html>', 'cloneNode().outerHTML');
+assert(document.documentElement.cloneNode(true).outerHTML, '<html id="html" class="live" lang="en"><div></div><input><p></p></html>', 'cloneNode(true).outerHTML');
+assert(document.documentElement.cloneNode().outerHTML, '<html id="html" class="live" lang="en"></html>', 'cloneNode().outerHTML');
 
 document.documentElement.append('a', 'b');
 assert(document.documentElement.lastChild.previousSibling.textContent, 'a', 'previousSibling text');
@@ -28,12 +28,12 @@ assert(node.previousElementSibling, null, 'previousElementSibling');
 
 node.before('before');
 node.after('after');
-assert(document.toString(), '<!DOCTYPE html><html lang="en" id="html" class="live">before<div></div>after<input><p></p>ab</html>', '.before() and after()');
+assert(document.toString(), '<!DOCTYPE html><html id="html" class="live" lang="en">before<div></div>after<input><p></p>ab</html>', '.before() and after()');
 
 let amp = document.createTextNode('&');
 node.replaceWith(amp);
 assert(amp.wholeText, 'before&after');
-assert(document.toString(), '<!DOCTYPE html><html lang="en" id="html" class="live">before&amp;after<input><p></p>ab</html>', '.before() and after()');
+assert(document.toString(), '<!DOCTYPE html><html id="html" class="live" lang="en">before&amp;after<input><p></p>ab</html>', '.before() and after()');
 
 let div = document.createElement('div');
 let rect = div.getBoundingClientRect();
@@ -141,7 +141,7 @@ assert(node.innerHTML, '"hello"');
 
 node.innerHTML = `<pre><code>echo &quot;&lt;table class='charts-css'&gt;&quot;</code></pre>`;
 assert(node.innerHTML, `<pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre>`);
-assert(node.outerHTML, `<div b="2"><pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre></div>`);
+assert(node.outerHTML, `<div a="1"><pre><code>echo "&lt;table class='charts-css'&gt;"</code></pre></div>`);
 
 assert(node.querySelector('pre[c]'), null);
 node.childNodes[0].setAttribute('c', '3');

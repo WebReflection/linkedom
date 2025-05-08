@@ -1,4 +1,6 @@
 'use strict';
+const {ATTRIBUTE_NODE} = require('./constants.js');
+
 const {CLASS_LIST, NEXT, PREV, VALUE} = require('./symbols.js');
 
 const {knownAdjacent, knownSiblings} = require('./utils.js');
@@ -42,9 +44,13 @@ const emptyAttributes = new Set([
 exports.emptyAttributes = emptyAttributes;
 
 const setAttribute = (element, attribute) => {
+  let next = element[NEXT];
+  while (next.nodeType === ATTRIBUTE_NODE) // TODO: avoid the loop
+    next = next[NEXT];
+  const prev = next[PREV];
   const {[VALUE]: value, name} = attribute;
   attribute.ownerElement = element;
-  knownSiblings(element, attribute, element[NEXT]);
+  knownSiblings(prev, attribute, next);
   if (name === 'class')
     element.className = value;
   moAttributes(element, name, null);

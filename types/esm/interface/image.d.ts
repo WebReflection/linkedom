@@ -1,7 +1,7 @@
 export function ImageClass(ownerDocument: any): {
     new (width: any, height: any, ...args: any[]): {
-        height: any;
         width: any;
+        height: any;
         alt: any;
         sizes: any;
         src: any;

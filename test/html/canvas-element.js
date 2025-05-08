@@ -4,11 +4,11 @@ const {parseHTML} = global[Symbol.for('linkedom')];
 
 const canvas = parseHTML('<canvas>').document.querySelector('canvas');
 
-assert(canvas.height, 150, 'canvas.height');
 assert(canvas.width, 300, 'canvas.width');
+assert(canvas.height, 150, 'canvas.height');
 
-canvas.height = 200;
 canvas.width = 320;
+canvas.height = 200;
 
 assert(canvas.toString(), '<canvas width="320" height="200"></canvas>');
 

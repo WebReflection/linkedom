@@ -4482,9 +4482,13 @@ const emptyAttributes = new Set([
 ]);
 
 const setAttribute = (element, attribute) => {
+  let next = element[NEXT];
+  while (next.nodeType === ATTRIBUTE_NODE) // TODO: avoid the loop
+    next = next[NEXT];
+  const prev = next[PREV];
   const {[VALUE]: value, name} = attribute;
   attribute.ownerElement = element;
-  knownSiblings(element, attribute, element[NEXT]);
+  knownSiblings(prev, attribute, next);
   if (name === 'class')
     element.className = value;
   attributeChangedCallback(element, name, null);
@@ -12038,12 +12042,12 @@ class Image extends HTMLImageElement {
     super(ownerDocument);
     switch (arguments.length) {
       case 1:
-        this.height = width;
         this.width = width;
+        this.height = width;
         break;
       case 2:
-        this.height = height;
         this.width = width;
+        this.height = height;
         break;
     }
   }

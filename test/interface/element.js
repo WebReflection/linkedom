@@ -17,6 +17,11 @@ div.innerHTML = '<span></span>'
 div.firstChild.outerHTML = '<p>hello</p> world';
 assert(div.toString(), '<div><p>hello</p> world</div>');
 
+div.innerHTML = '<span></span>'
+div.setAttribute("data-first-attribute", "first");
+div.setAttribute("data-second-attribute", "second");
+assert(div.toString(), '<div data-first-attribute="first" data-second-attribute="second"><span></span></div>');
+
 assert(div.namespaceURI, 'http://www.w3.org/1999/xhtml');
 
 const parser = new DOMParser();

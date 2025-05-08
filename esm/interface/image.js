@@ -9,12 +9,12 @@ class Image extends HTMLImageElement {
     super(ownerDocument);
     switch (arguments.length) {
       case 1:
-        this.height = width;
         this.width = width;
+        this.height = width;
         break;
       case 2:
-        this.height = height;
         this.width = width;
+        this.height = height;
         break;
     }
   }

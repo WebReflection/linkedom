@@ -39,7 +39,7 @@ assert(svg.className.what, 'ever', '<svg>.className');
 svg.setAttribute('test', 123);
 svg.setAttribute('style', 'width:100px');
 
-assert(svg.toString(), '<svg style="width:100px" test="123"><rect /></svg>');
+assert(svg.toString(), '<svg test="123" style="width:100px"><rect /></svg>');
 
 svg.className = 'a b c';
 assert(svg.getAttribute('class'), 'a b c');

@@ -30,7 +30,7 @@ assert(iframe.src, './test.html', 'Issue #82 - <iframe>.src');
   iframe.loading = "lazy";
   assert(
     document.body.innerHTML,
-    `<iframe loading="lazy" referrerpolicy="no-referrer" name="iframe-name" allow="geolocation"></iframe>`
+    `<iframe allow="geolocation" name="iframe-name" referrerpolicy="no-referrer" loading="lazy"></iframe>`
   );
 }
 
@@ -50,7 +50,7 @@ assert(iframe.src, './test.html', 'Issue #82 - <iframe>.src');
 {
   const { document } = parseHTML(
    `<html><body><iframe loading="lazy" referrerpolicy="no-referrer" name="iframe-name" allow="geolocation"></iframe></body></html>`
-  ); 
+  );
 
   const iframe = document.body.querySelector("iframe");
   assert(iframe.allowFullscreen, false);

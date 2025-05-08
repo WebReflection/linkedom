@@ -1,3 +1,5 @@
+import {ATTRIBUTE_NODE} from './constants.js';
+
 import {CLASS_LIST, NEXT, PREV, VALUE} from './symbols.js';
 
 import {knownAdjacent, knownSiblings} from './utils.js';
@@ -40,9 +42,13 @@ export const emptyAttributes = new Set([
 ]);
 
 export const setAttribute = (element, attribute) => {
+  let next = element[NEXT];
+  while (next.nodeType === ATTRIBUTE_NODE) // TODO: avoid the loop
+    next = next[NEXT];
+  const prev = next[PREV];
   const {[VALUE]: value, name} = attribute;
   attribute.ownerElement = element;
-  knownSiblings(element, attribute, element[NEXT]);
+  knownSiblings(prev, attribute, next);
   if (name === 'class')
     element.className = value;
   moAttributes(element, name, null);

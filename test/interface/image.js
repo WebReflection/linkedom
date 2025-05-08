@@ -14,4 +14,4 @@ img = new Image(2, 3);
 assert(img.toString(), '<img width="2" height="3">');
 
 img.alt = 'test';
-assert(img.toString(), '<img alt="test" width="2" height="3">');
+assert(img.toString(), '<img width="2" height="3" alt="test">');
