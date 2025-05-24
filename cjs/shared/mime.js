@@ -27,7 +27,7 @@ const Mime = {
   'application/xhtml+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
-    voidElements
+    voidElements: /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/
   }
 };
 exports.Mime = Mime;
