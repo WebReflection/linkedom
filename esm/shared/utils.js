@@ -38,3 +38,14 @@ export const setAdjacent = (prev, next) => {
   if (next)
     next[PREV] = prev;
 };
+
+export const htmlToFragment = (ownerDocument, html) => {
+  const fragment = ownerDocument.createDocumentFragment();
+
+  const elem = ownerDocument.createElement('');
+  elem.innerHTML = html;
+
+  for (const node of elem.childNodes) fragment.appendChild(node.cloneNode(true));
+
+  return fragment;
+};
