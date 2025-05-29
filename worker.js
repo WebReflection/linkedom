@@ -11405,10 +11405,13 @@ const tagName$9 = 'title';
 /**
  * @implements globalThis.HTMLTitleElement
  */
-class HTMLTitleElement extends TextElement {
+class HTMLTitleElement extends HTMLElement {
   constructor(ownerDocument, localName = tagName$9) {
     super(ownerDocument, localName);
   }
+
+  get innerHTML() { return super.innerHTML; }
+  set innerHTML(html) { super.innerHTML = escapeHtmlTextContent(html); }
 }
 
 registerHTMLClass(tagName$9, HTMLTitleElement);
