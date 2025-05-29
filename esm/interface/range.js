@@ -4,7 +4,7 @@ import {END, NEXT, PREV, START} from '../shared/symbols.js';
 
 import {SVGElement} from '../svg/element.js';
 
-import {getEnd, setAdjacent} from '../shared/utils.js';
+import {getEnd, htmlToFragment, setAdjacent} from '../shared/utils.js';
 
 const deleteContents = ({[START]: start, [END]: end}, fragment = null) => {
   setAdjacent(start[PREV], end[NEXT]);
@@ -101,9 +101,7 @@ export class Range {
     const { commonAncestorContainer: doc } = this;
     const isSVG = 'ownerSVGElement' in doc;
     const document = isSVG ? doc.ownerDocument : doc;
-    const template = document.createElement('template');
-    template.innerHTML = html;
-    let {content} = template;
+    let content = htmlToFragment(document, html);
     if (isSVG) {
       const childNodes = [...content.childNodes];
       content = document.createDocumentFragment();
