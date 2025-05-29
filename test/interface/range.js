@@ -1,6 +1,6 @@
 const assert = require('../assert.js').for('Range');
 
-const {parseHTML} = global[Symbol.for('linkedom')];
+const {parseHTML, DOMParser} = global[Symbol.for('linkedom')];
 
 const {document} = parseHTML('<html><div class="test">abc</div></html>');
 
@@ -70,3 +70,11 @@ const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 range.selectNodeContents(svg);
 const rect = range.createContextualFragment('<rect />').childNodes[0];
 assert('ownerSVGElement' in rect, true, 'createContextualFragment(SVG)');
+
+{
+  const svgDocument = (new DOMParser).parseFromString('<!doctype svg><svg></svg>', 'image/svg+xml');
+  
+  let range = svgDocument.createRange();
+  let contextual = range.createContextualFragment('<div>hi</div>');
+  assert(contextual.toString(), '<#document-fragment><div>hi</div></#document-fragment>', 'createContextualFragment');
+}
