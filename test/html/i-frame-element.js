@@ -16,7 +16,7 @@ assert(iframe.src, './test.html', 'Issue #82 - <iframe>.src');
   iframe.srcdoc = `<html><span style="color: red">Test</span></html>`;
   assert(
     document.body.innerHTML,
-    `<iframe srcdoc="<html><span style=&quot;color: red&quot;>Test</span></html>"></iframe>`
+    `<iframe srcdoc="&lt;html&gt;&lt;span style=&quot;color: red&quot;&gt;Test&lt;/span&gt;&lt;/html&gt;"></iframe>`
   );
 }
 
@@ -50,7 +50,7 @@ assert(iframe.src, './test.html', 'Issue #82 - <iframe>.src');
 {
   const { document } = parseHTML(
    `<html><body><iframe loading="lazy" referrerpolicy="no-referrer" name="iframe-name" allow="geolocation"></iframe></body></html>`
-  ); 
+  );
 
   const iframe = document.body.querySelector("iframe");
   assert(iframe.allowFullscreen, false);

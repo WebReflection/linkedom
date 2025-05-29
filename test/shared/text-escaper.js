@@ -1,5 +1,5 @@
 const BODY = '<body>Foo&#160;&quot;&#160;&quot;&#160;Bar</body>';
-const REBODY = BODY.replace(/&quot;/g, '"');
+const REBODY = '<body>Foo&nbsp;"&nbsp;"&nbsp;Bar</body>';
 const HTML = `<html id="html" class="live">${BODY}</html>`;
 const REHTML = `<html id="html" class="live">${REBODY}</html>`;
 
@@ -17,4 +17,3 @@ assert(document.documentElement.toString(), REHTML);
 
 document.documentElement.innerHTML = '<body>&amp;amp;</body>';
 assert(document.documentElement.toString(), `<html id="html" class="live"><body>&amp;amp;</body></html>`);
-

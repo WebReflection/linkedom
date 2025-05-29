@@ -4545,6 +4545,63 @@ export const nullableAttribute = {
 };
 */
 
+const {replace} = '';
+
+const htmlAttributeValueCharacters = /["&<>\xA0]/g;
+const xmlAttributeValueCharacters = /[\t\n\r"&<>]/g;
+
+const htmlTextContentCharacters = /[&<>\xA0]/g;
+const xmlTextContentCharacters = /[&<>]/g;
+
+const characterEntities = {
+  '\t': '&#x9;',
+  '\n': '&#xA;',
+  '\r': '&#xD;',
+  '"': '&quot;',
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '\xA0': '&nbsp;'
+};
+
+const replaceCharacterByEntity = character => characterEntities[character];
+
+/**
+ * Safely escape HTML entities such as `"`, `&`, `<`, `>` and U+00A0 NO-BREAK SPACE only.
+ * @param {string} value the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeHtmlAttributeValue = value => replace.call(value, htmlAttributeValueCharacters, replaceCharacterByEntity);
+
+/**
+ * Safely escape XML entities such as `\t`, `\n`, `\r`, `"`, `&`, `<` and `>` only.
+ * @param {string} value the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeXmlAttributeValue = value => replace.call(value, xmlAttributeValueCharacters, replaceCharacterByEntity);
+
+/**
+ * Safely escape HTML entities such as `&`, `<`, `>` and U+00A0 NO-BREAK SPACE only.
+ * @param {string} content the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeHtmlTextContent = content => replace.call(content, htmlTextContentCharacters, replaceCharacterByEntity);
+
+/**
+ * Safely escape XML entities such as `&`, `<` and `>` only.
+ * @param {string} content the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeXmlTextContent = content => replace.call(content, xmlTextContentCharacters, replaceCharacterByEntity);
+
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
 const wm = new WeakMap();
@@ -4824,31 +4881,6 @@ let Node$1 = class Node extends DOMEventTarget {
   }
 };
 
-const {replace} = '';
-
-// escape
-const ca = /[<>&\xA0]/g;
-
-const esca = {
-  '\xA0': '&#160;',
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;'
-};
-
-const pe = m => esca[m];
-
-/**
- * Safely escape HTML entities such as `&`, `<`, `>` only.
- * @param {string} es the input to safely escape
- * @returns {string} the escaped input, and it **throws** an error if
- *  the input type is unexpected, except for boolean and numbers,
- *  converted as string.
- */
-const escape = es => replace.call(es, ca, pe);
-
-const QUOTE = /"/g;
-
 /**
  * @implements globalThis.Attr
  */
@@ -4882,7 +4914,7 @@ let Attr$1 = class Attr extends Node$1 {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = ignoreCase(this) ? escapeHtmlAttributeValue(value) : escapeXmlAttributeValue(value);
     return `${name}="${escapedValue}"`;
   }
 
@@ -6855,7 +6887,7 @@ let Text$1 = class Text extends CharacterData$1 {
     return new Text(ownerDocument, data);
   }
 
-  toString() { return escape(this[VALUE]); }
+  toString() { return ignoreCase(this) ? escapeHtmlTextContent(this[VALUE]) : escapeXmlTextContent(this[VALUE]); }
 };
 
 // https://dom.spec.whatwg.org/#interface-parentnode
@@ -7815,7 +7847,7 @@ let Element$1 = class Element extends ParentNode {
     if (name === 'class')
       return this.className;
     const attribute = this.getAttributeNode(name);
-    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
+    return attribute && attribute.value;
   }
 
   getAttributeNode(name) {
