@@ -3893,6 +3893,17 @@ const setAdjacent = (prev, next) => {
     next[PREV] = prev;
 };
 
+const htmlToFragment = (ownerDocument, html) => {
+  const fragment = ownerDocument.createDocumentFragment();
+
+  const elem = ownerDocument.createElement('');
+  elem.innerHTML = html;
+
+  for (const node of elem.childNodes) fragment.appendChild(node.cloneNode(true));
+
+  return fragment;
+};
+
 const shadowRoots = new WeakMap;
 
 let reactive = false;
@@ -7969,9 +7980,7 @@ let Element$1 = class Element extends ParentNode {
   }
 
   insertAdjacentHTML(position, html) {
-    const template = this.ownerDocument.createElement('template');
-    template.innerHTML = html;
-    this.insertAdjacentElement(position, template.content);
+    this.insertAdjacentElement(position, htmlToFragment(this.ownerDocument, html));
   }
 
   insertAdjacentText(position, text) {
@@ -12147,9 +12156,7 @@ class Range {
     const { commonAncestorContainer: doc } = this;
     const isSVG = 'ownerSVGElement' in doc;
     const document = isSVG ? doc.ownerDocument : doc;
-    const template = document.createElement('template');
-    template.innerHTML = html;
-    let {content} = template;
+    let content = htmlToFragment(document, html);
     if (isSVG) {
       const childNodes = [...content.childNodes];
       content = document.createDocumentFragment();

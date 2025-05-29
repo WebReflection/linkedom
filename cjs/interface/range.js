@@ -5,7 +5,7 @@ const {END, NEXT, PREV, START} = require('../shared/symbols.js');
 
 const {SVGElement} = require('../svg/element.js');
 
-const {getEnd, setAdjacent} = require('../shared/utils.js');
+const {getEnd, htmlToFragment, setAdjacent} = require('../shared/utils.js');
 
 const deleteContents = ({[START]: start, [END]: end}, fragment = null) => {
   setAdjacent(start[PREV], end[NEXT]);
@@ -102,9 +102,7 @@ class Range {
     const { commonAncestorContainer: doc } = this;
     const isSVG = 'ownerSVGElement' in doc;
     const document = isSVG ? doc.ownerDocument : doc;
-    const template = document.createElement('template');
-    template.innerHTML = html;
-    let {content} = template;
+    let content = htmlToFragment(document, html);
     if (isSVG) {
       const childNodes = [...content.childNodes];
       content = document.createDocumentFragment();

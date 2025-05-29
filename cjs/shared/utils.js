@@ -47,3 +47,15 @@ const setAdjacent = (prev, next) => {
     next[PREV] = prev;
 };
 exports.setAdjacent = setAdjacent;
+
+const htmlToFragment = (ownerDocument, html) => {
+  const fragment = ownerDocument.createDocumentFragment();
+
+  const elem = ownerDocument.createElement('');
+  elem.innerHTML = html;
+
+  for (const node of elem.childNodes) fragment.appendChild(node.cloneNode(true));
+
+  return fragment;
+};
+exports.htmlToFragment = htmlToFragment;

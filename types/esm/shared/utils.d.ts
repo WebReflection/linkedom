@@ -12,4 +12,5 @@ export function localCase({ localName, ownerDocument }: {
     ownerDocument: any;
 }): any;
 export function setAdjacent(prev: any, next: any): void;
+export function htmlToFragment(ownerDocument: any, html: any): any;
 declare const $String: StringConstructor;
