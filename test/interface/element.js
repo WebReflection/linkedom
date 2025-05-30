@@ -46,8 +46,11 @@ assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p></div>',
 htmlNode.firstElementChild.insertAdjacentHTML('afterend', 'afterend');
 assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>afterend</div>', 'afterend works');
 
+htmlNode.firstElementChild.insertAdjacentHTML('beforeend', '<i>1</i><i>2</i>');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>afterend</div>', 'multiple html works');
+
 htmlNode.firstElementChild.insertAdjacentText('afterend', '<OK>');
-assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
 
 const htmlDocWithEmptyAttrFromSet = parser.parseFromString(`<div><span style=""/></div>`, 'text/html').documentElement; // attribute is in emptyAttributes set is empty
 
@@ -81,8 +84,11 @@ assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p></div>', 
 xmlNode.firstElementChild.insertAdjacentHTML('afterend', 'afterend');
 assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>afterend</div>', 'afterend works');
 
+xmlNode.firstElementChild.insertAdjacentHTML('beforeend', '<i>1</i><i>2</i>');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>afterend</div>', 'multiple html works');
+
 xmlNode.firstElementChild.insertAdjacentText('afterend', '<OK>');
-assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
 
 const xmlDocWithEmptyAttrFromSet = parser.parseFromString(`<hierarchy><android.view.View style=""/></hierarchy>`, 'text/xml').documentElement;// attribute is in emptyAttributes set is empty (even for XML)
 assert(xmlDocWithEmptyAttrFromSet.firstChild.getAttribute('style'), '');
