@@ -113,22 +113,6 @@ node.nonce = 'abc';
 assert(node.nonce, 'abc', 'yes nonce');
 
 node = document.createElement('div');
-node.innerHTML = '<p>!</p>';
-assert(node.innerHTML, '<p>!</p>', 'innerHTML');
-node.insertAdjacentHTML('beforebegin', 'beforebegin');
-node.insertAdjacentHTML('afterend', 'afterend');
-assert(node.toString(), '<div><p>!</p></div>', 'no element, no before/after');
-node.firstElementChild.insertAdjacentHTML('beforebegin', 'beforebegin');
-assert(node.toString(), '<div>beforebegin<p>!</p></div>', 'beforebegin works');
-node.firstElementChild.insertAdjacentHTML('afterbegin', 'afterbegin');
-assert(node.toString(), '<div>beforebegin<p>afterbegin!</p></div>', 'afterbegin works');
-node.firstElementChild.insertAdjacentHTML('beforeend', 'beforeend');
-assert(node.toString(), '<div>beforebegin<p>afterbegin!beforeend</p></div>', 'beforeend works');
-node.firstElementChild.insertAdjacentHTML('afterend', 'afterend');
-assert(node.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>afterend</div>', 'afterend works');
-
-node.firstElementChild.insertAdjacentText('afterend', '<OK>');
-assert(node.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
 
 node.setAttribute('a', '1');
 assert(node.attributes[0].name, 'a')

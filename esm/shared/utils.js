@@ -38,3 +38,27 @@ export const setAdjacent = (prev, next) => {
   if (next)
     next[PREV] = prev;
 };
+
+/**
+ * @param {import("../interface/document.js").Document} ownerDocument
+ * @param {string} html
+ * @return {import("../interface/document-fragment.js").DocumentFragment}
+ */
+export const htmlToFragment = (ownerDocument, html) => {
+  const fragment = ownerDocument.createDocumentFragment();
+
+  const elem = ownerDocument.createElement('');
+  elem.innerHTML = html;
+  const { firstChild, lastChild } = elem;
+
+  if (firstChild) {
+    knownSegment(fragment, firstChild, lastChild, fragment[END]);
+
+    let child = firstChild;
+    do {
+      child.parentNode = fragment;
+    } while (child !== lastChild && (child = getEnd(child)[NEXT]));
+  }
+
+  return fragment;
+};

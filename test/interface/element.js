@@ -31,6 +31,27 @@ assert(htmlDoc.firstChild.getAttribute('content-desc'), '');
 assert(htmlDoc.firstChild.outerHTML, '<span content-desc=""></span>');
 assert(htmlDoc.innerHTML, '<span content-desc=""></span>');
 
+const htmlNode = htmlDoc.ownerDocument.createElement('div');
+htmlNode.innerHTML = '<p>!</p>';
+assert(htmlNode.innerHTML, '<p>!</p>', 'innerHTML');
+htmlNode.insertAdjacentHTML('beforebegin', 'beforebegin');
+htmlNode.insertAdjacentHTML('afterend', 'afterend');
+assert(htmlNode.toString(), '<div><p>!</p></div>', 'no element, no before/after');
+htmlNode.firstElementChild.insertAdjacentHTML('beforebegin', 'beforebegin');
+assert(htmlNode.toString(), '<div>beforebegin<p>!</p></div>', 'beforebegin works');
+htmlNode.firstElementChild.insertAdjacentHTML('afterbegin', 'afterbegin');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!</p></div>', 'afterbegin works');
+htmlNode.firstElementChild.insertAdjacentHTML('beforeend', 'beforeend');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p></div>', 'beforeend works');
+htmlNode.firstElementChild.insertAdjacentHTML('afterend', 'afterend');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>afterend</div>', 'afterend works');
+
+htmlNode.firstElementChild.insertAdjacentHTML('beforeend', '<i>1</i><i>2</i>');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>afterend</div>', 'multiple html works');
+
+htmlNode.firstElementChild.insertAdjacentText('afterend', '<OK>');
+assert(htmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
+
 const htmlDocWithEmptyAttrFromSet = parser.parseFromString(`<div><span style=""/></div>`, 'text/html').documentElement; // attribute is in emptyAttributes set is empty
 
 assert(htmlDocWithEmptyAttrFromSet.firstChild.getAttribute('style'), '');
@@ -47,6 +68,27 @@ xmlDoc.firstChild.setAttribute('content-desc', '');// attribute is not in emptyA
 assert(xmlDoc.firstChild.getAttribute('content-desc'), '');
 assert(xmlDoc.firstChild.outerHTML, '<android.view.View content-desc="" />');
 assert(xmlDoc.innerHTML, '<android.view.View content-desc="" />');
+
+const xmlNode = xmlDoc.ownerDocument.createElement('div');
+xmlNode.innerHTML = '<p>!</p>';
+assert(xmlNode.innerHTML, '<p>!</p>', 'innerHTML');
+xmlNode.insertAdjacentHTML('beforebegin', 'beforebegin');
+xmlNode.insertAdjacentHTML('afterend', 'afterend');
+assert(xmlNode.toString(), '<div><p>!</p></div>', 'no element, no before/after');
+xmlNode.firstElementChild.insertAdjacentHTML('beforebegin', 'beforebegin');
+assert(xmlNode.toString(), '<div>beforebegin<p>!</p></div>', 'beforebegin works');
+xmlNode.firstElementChild.insertAdjacentHTML('afterbegin', 'afterbegin');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!</p></div>', 'afterbegin works');
+xmlNode.firstElementChild.insertAdjacentHTML('beforeend', 'beforeend');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p></div>', 'beforeend works');
+xmlNode.firstElementChild.insertAdjacentHTML('afterend', 'afterend');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend</p>afterend</div>', 'afterend works');
+
+xmlNode.firstElementChild.insertAdjacentHTML('beforeend', '<i>1</i><i>2</i>');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>afterend</div>', 'multiple html works');
+
+xmlNode.firstElementChild.insertAdjacentText('afterend', '<OK>');
+assert(xmlNode.toString(), '<div>beforebegin<p>afterbegin!beforeend<i>1</i><i>2</i></p>&lt;OK&gt;afterend</div>', 'insertAdjacentText works');
 
 const xmlDocWithEmptyAttrFromSet = parser.parseFromString(`<hierarchy><android.view.View style=""/></hierarchy>`, 'text/xml').documentElement;// attribute is in emptyAttributes set is empty (even for XML)
 assert(xmlDocWithEmptyAttrFromSet.firstChild.getAttribute('style'), '');

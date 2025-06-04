@@ -23,6 +23,7 @@ import {
 } from '../shared/symbols.js';
 
 import {
+  htmlToFragment,
   ignoreCase,
   knownAdjacent,
   localCase,
@@ -384,9 +385,7 @@ export class Element extends ParentNode {
   }
 
   insertAdjacentHTML(position, html) {
-    const template = this.ownerDocument.createElement('template');
-    template.innerHTML = html;
-    this.insertAdjacentElement(position, template.content);
+    this.insertAdjacentElement(position, htmlToFragment(this.ownerDocument, html));
   }
 
   insertAdjacentText(position, text) {
