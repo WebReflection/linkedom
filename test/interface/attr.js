@@ -20,11 +20,18 @@ assert(attributes.removeNamedItem('test'), void 0, 'removeNamedItem');
 assert(attributes.item(0), null, 'attributes.item()');
 assert(attributes.setNamedItem(attr), void 0, 'setNamedItem');
 
+const {document: htmlDoc} = parseHTML('<element attr="&lt;a&quot;b&quot;c&gt;\t\n\r&#160;"></element>');
+
+assert(htmlDoc.toString(), '<element attr="&lt;a&quot;b&quot;c&gt;\t\n\r&nbsp;"></element>');
+assert(htmlDoc.firstElementChild.toString(), '<element attr="&lt;a&quot;b&quot;c&gt;\t\n\r&nbsp;"></element>');
+assert(htmlDoc.firstElementChild.outerHTML, '<element attr="&lt;a&quot;b&quot;c&gt;\t\n\r&nbsp;"></element>');
+assert(htmlDoc.firstElementChild.attributes.attr.value, '<a"b"c>\t\n\r\xA0');
+
 /** @type {(str: string) => Document} */
 const parseXML = xmlStr => new DOMParser().parseFromString(xmlStr, 'text/xml');
-const xmlDoc = parseXML('<element attr="a&quot;b&quot;c"></element>');
+const xmlDoc = parseXML('<element attr="&lt;a&quot;b&quot;c&gt;\t\n\r&#160;"></element>');
 
-assert(xmlDoc.toString(), '<?xml version="1.0" encoding="utf-8"?><element attr="a&quot;b&quot;c" />');
-assert(xmlDoc.firstElementChild.toString(), '<element attr="a&quot;b&quot;c" />');
-assert(xmlDoc.firstElementChild.outerHTML, '<element attr="a&quot;b&quot;c" />');
-assert(xmlDoc.firstElementChild.attributes.attr.value, 'a"b"c');
+assert(xmlDoc.toString(), '<?xml version="1.0" encoding="utf-8"?><element attr="&lt;a&quot;b&quot;c&gt;&#x9;&#xA;&#xD;\xA0" />');
+assert(xmlDoc.firstElementChild.toString(), '<element attr="&lt;a&quot;b&quot;c&gt;&#x9;&#xA;&#xD;\xA0" />');
+assert(xmlDoc.firstElementChild.outerHTML, '<element attr="&lt;a&quot;b&quot;c&gt;&#x9;&#xA;&#xD;\xA0" />');
+assert(xmlDoc.firstElementChild.attributes.attr.value, '<a"b"c>\t\n\r\xA0');

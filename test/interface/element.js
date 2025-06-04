@@ -23,8 +23,8 @@ const parser = new DOMParser();
 const htmlDoc = parser.parseFromString(`<div><span content-desc="text3&amp;more"/></div>`, 'text/html').documentElement;
 
 assert(htmlDoc.firstChild.getAttribute('content-desc'), 'text3&more');
-assert(htmlDoc.firstChild.outerHTML, '<span content-desc="text3&more"></span>');
-assert(htmlDoc.innerHTML, '<span content-desc="text3&more"></span>');
+assert(htmlDoc.firstChild.outerHTML, '<span content-desc="text3&amp;more"></span>');
+assert(htmlDoc.innerHTML, '<span content-desc="text3&amp;more"></span>');
 
 htmlDoc.firstChild.setAttribute('content-desc', ''); // attribute is not in emptyAttributes set is empty
 assert(htmlDoc.firstChild.getAttribute('content-desc'), '');
@@ -60,7 +60,7 @@ assert(htmlDocWithEmptyAttrFromSet.innerHTML, '<span></span>');
 
 const xmlDoc = parser.parseFromString(`<hierarchy><android.view.View content-desc="text3&amp;more"/></hierarchy>`, 'text/xml').documentElement;
 
-assert(xmlDoc.firstChild.getAttribute('content-desc'), 'text3&amp;more');
+assert(xmlDoc.firstChild.getAttribute('content-desc'), 'text3&more');
 assert(xmlDoc.firstChild.outerHTML, '<android.view.View content-desc="text3&amp;more" />');
 assert(xmlDoc.innerHTML, '<android.view.View content-desc="text3&amp;more" />');
 

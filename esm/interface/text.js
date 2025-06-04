@@ -1,6 +1,7 @@
 import {TEXT_NODE} from '../shared/constants.js';
 import {VALUE} from '../shared/symbols.js';
-import {escape} from '../shared/text-escaper.js';
+import {escapeHtmlTextContent, escapeXmlTextContent} from '../shared/text-escaper.js';
+import {ignoreCase} from '../shared/utils.js';
 
 import {CharacterData} from './character-data.js';
 
@@ -38,5 +39,5 @@ export class Text extends CharacterData {
     return new Text(ownerDocument, data);
   }
 
-  toString() { return escape(this[VALUE]); }
+  toString() { return ignoreCase(this) ? escapeHtmlTextContent(this[VALUE]) : escapeXmlTextContent(this[VALUE]); }
 }

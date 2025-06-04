@@ -1,6 +1,6 @@
 /**
  * @implements globalThis.HTMLTitleElement
  */
-export class HTMLTitleElement extends TextElement implements globalThis.HTMLTitleElement {
+export class HTMLTitleElement extends HTMLElement implements globalThis.HTMLTitleElement {
 }
-import { TextElement } from './text-element.js';
+import { HTMLElement } from './element.js';

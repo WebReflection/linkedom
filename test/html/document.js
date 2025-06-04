@@ -45,7 +45,7 @@ document.title = 'I';
 assert(document.title + document.title + document.title, 'III', 'side-effects detected when inspecting the title');
 
 document.title = '&';
-assert(document.toString(), '<!DOCTYPE html><html><head><title>&</title></head><body></body></html>');
+assert(document.toString(), '<!DOCTYPE html><html><head><title>&amp;</title></head><body></body></html>');
 
 assert(document.all.length, 4);
 assert(document.all[0], document.querySelector('html'));
