@@ -76,6 +76,9 @@
     "htmlparser2": "^10.0.0",
     "uhyphen": "^0.2.0"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/WebReflection/linkedom.git"
