@@ -4229,8 +4229,6 @@ const registerHTMLClass = (names, Class) => {
   }
 };
 
-const performance = globalThis.performance;
-
 const loopSegment = ({[NEXT]: next, [END]: end}, json) => {
   while (next !== end) {
     switch (next.nodeType) {
@@ -12322,7 +12320,7 @@ let Document$1 = class Document extends NonElementParentNode {
                 this[CUSTOM_ELEMENTS] = new CustomElementRegistry(this);
               return this[CUSTOM_ELEMENTS];
             case 'performance':
-              return performance;
+              return globalThis.performance;
             case 'DOMParser':
               return this[DOM_PARSER];
             case 'Image':

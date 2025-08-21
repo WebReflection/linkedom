@@ -19,20 +19,12 @@ export default {
 function shims() {
   return {
     resolveId(specifier) {
-      if(specifier.endsWith('perf_hooks.cjs')) {
-        return 'shim:perf_hooks';
-      }
       if(specifier.endsWith('canvas.cjs')) {
         return 'shim:canvas';
       }
     },
     load(id) {
       switch(id) {
-        case 'shim:perf_hooks': {
-          return `
-            export const performance = globalThis.performance;
-          `;
-        }
         case 'shim:canvas': {
           return `
             class Canvas {
