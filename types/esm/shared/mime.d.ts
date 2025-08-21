@@ -28,8 +28,6 @@ export const Mime: {
     'application/xhtml+xml': {
         docType: string;
         ignoreCase: boolean;
-        voidElements: {
-            test: () => boolean;
-        };
+        voidElements: RegExp;
     };
 };

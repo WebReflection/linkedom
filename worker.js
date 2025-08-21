@@ -8066,7 +8066,7 @@ let Element$1 = class Element extends ParentNode {
           const start = next[START];
           if (isOpened) {
             if ('ownerSVGElement' in start)
-              out.push(' />');
+              out.push('/>');
             else if (isVoid(start))
               out.push(ignoreCase(start) ? '>' : ' />');
             else
@@ -12012,7 +12012,7 @@ const Mime = {
   'application/xhtml+xml': {
     docType: '<?xml version="1.0" encoding="utf-8"?>',
     ignoreCase: false,
-    voidElements
+    voidElements: /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/
   }
 };
 
@@ -12596,7 +12596,7 @@ class SVGDocument extends Document$1 {
  * @implements globalThis.XMLDocument
  */
 class XMLDocument extends Document$1 {
-  constructor() { super('text/xml'); }
+  constructor(mimeType = 'text/xml') { super(mimeType); }
   toString() {
     return this[MIME].docType + super.toString();
   }
@@ -12623,7 +12623,7 @@ class DOMParser {
     else if (mimeType === 'image/svg+xml')
       document = new SVGDocument;
     else
-      document = new XMLDocument;
+      document = new XMLDocument(mimeType);
     document[DOM_PARSER] = DOMParser;
     if (globals)
       document[GLOBALS] = globals;
