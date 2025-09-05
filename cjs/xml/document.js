@@ -6,7 +6,7 @@ const {Document} = require('../interface/document.js');
  * @implements globalThis.XMLDocument
  */
 class XMLDocument extends Document {
-  constructor() { super('text/xml'); }
+  constructor(mimeType = 'text/xml') { super(mimeType); }
   toString() {
     return this[MIME].docType + super.toString();
   }

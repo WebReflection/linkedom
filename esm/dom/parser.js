@@ -26,7 +26,7 @@ export class DOMParser {
     else if (mimeType === 'image/svg+xml')
       document = new SVGDocument;
     else
-      document = new XMLDocument;
+      document = new XMLDocument(mimeType);
     document[DOM_PARSER] = DOMParser;
     if (globals)
       document[GLOBALS] = globals;

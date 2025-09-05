@@ -460,7 +460,7 @@ export class Element extends ParentNode {
           const start = next[START];
           if (isOpened) {
             if ('ownerSVGElement' in start)
-              out.push(' />');
+              out.push('/>');
             else if (isVoid(start))
               out.push(ignoreCase(start) ? '>' : ' />');
             else

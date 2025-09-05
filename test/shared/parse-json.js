@@ -35,7 +35,7 @@ let div = parseJSON('[1,"div",1,"svg",1,"rect",-2,1,"c-e",-2]');
 
 assert(JSON.stringify(toJSON(div)), '[1,"div",1,"svg",1,"rect",-2,1,"c-e",-2]');
 
-assert(div.toString(), '<div><svg><rect /></svg><c-e></c-e></div>');
+assert(div.toString(), '<div><svg><rect/></svg><c-e></c-e></div>');
 
 assert(div.querySelector('c-e').constructed, void 0, 'not constructed');
 
