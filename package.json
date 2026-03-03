@@ -37,7 +37,7 @@
     "ascjs": "^5.0.1",
     "c8": "^7.13.0",
     "eslint": "^8.36.0",
-    "rollup": "^3.19.1",
+    "rollup": "^3.29.5",
     "typescript": "4.5"
   },
   "module": "./esm/index.js",
