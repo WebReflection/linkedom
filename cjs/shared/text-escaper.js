@@ -1,24 +1,61 @@
 'use strict';
 const {replace} = '';
 
-// escape
-const ca = /[<>&\xA0]/g;
+const htmlAttributeValueCharacters = /["&<>\xA0]/g;
+const xmlAttributeValueCharacters = /[\t\n\r"&<>]/g;
 
-const esca = {
-  '\xA0': '&#160;',
+const htmlTextContentCharacters = /[&<>\xA0]/g;
+const xmlTextContentCharacters = /[&<>]/g;
+
+const characterEntities = {
+  '\t': '&#x9;',
+  '\n': '&#xA;',
+  '\r': '&#xD;',
+  '"': '&quot;',
   '&': '&amp;',
   '<': '&lt;',
-  '>': '&gt;'
+  '>': '&gt;',
+  '\xA0': '&nbsp;'
 };
 
-const pe = m => esca[m];
+const replaceCharacterByEntity = character => characterEntities[character];
 
 /**
- * Safely escape HTML entities such as `&`, `<`, `>` only.
- * @param {string} es the input to safely escape
+ * Safely escape HTML entities such as `"`, `&`, `<`, `>` and U+00A0 NO-BREAK SPACE only.
+ * @param {string} value the input to safely escape
  * @returns {string} the escaped input, and it **throws** an error if
  *  the input type is unexpected, except for boolean and numbers,
  *  converted as string.
  */
-const escape = es => replace.call(es, ca, pe);
-exports.escape = escape;
+const escapeHtmlAttributeValue = value => replace.call(value, htmlAttributeValueCharacters, replaceCharacterByEntity);
+exports.escapeHtmlAttributeValue = escapeHtmlAttributeValue;
+
+/**
+ * Safely escape XML entities such as `\t`, `\n`, `\r`, `"`, `&`, `<` and `>` only.
+ * @param {string} value the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeXmlAttributeValue = value => replace.call(value, xmlAttributeValueCharacters, replaceCharacterByEntity);
+exports.escapeXmlAttributeValue = escapeXmlAttributeValue;
+
+/**
+ * Safely escape HTML entities such as `&`, `<`, `>` and U+00A0 NO-BREAK SPACE only.
+ * @param {string} content the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeHtmlTextContent = content => replace.call(content, htmlTextContentCharacters, replaceCharacterByEntity);
+exports.escapeHtmlTextContent = escapeHtmlTextContent;
+
+/**
+ * Safely escape XML entities such as `&`, `<` and `>` only.
+ * @param {string} content the input to safely escape
+ * @returns {string} the escaped input, and it **throws** an error if
+ *  the input type is unexpected, except for boolean and numbers,
+ *  converted as string.
+ */
+const escapeXmlTextContent = content => replace.call(content, xmlTextContentCharacters, replaceCharacterByEntity);
+exports.escapeXmlTextContent = escapeXmlTextContent;

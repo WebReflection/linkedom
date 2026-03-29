@@ -3,14 +3,12 @@ import {CHANGED, VALUE} from '../shared/symbols.js';
 import {String, ignoreCase} from '../shared/utils.js';
 import {attrAsJSON} from '../shared/jsdon.js';
 import {emptyAttributes} from '../shared/attributes.js';
+import {escapeHtmlAttributeValue, escapeXmlAttributeValue} from '../shared/text-escaper.js';
 
 import {attributeChangedCallback as moAttributes} from './mutation-observer.js';
 import {attributeChangedCallback as ceAttributes} from './custom-element-registry.js';
 
 import {Node} from './node.js';
-import {escape} from '../shared/text-escaper.js';
-
-const QUOTE = /"/g;
 
 /**
  * @implements globalThis.Attr
@@ -45,7 +43,7 @@ export class Attr extends Node {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = ignoreCase(this) ? escapeHtmlAttributeValue(value) : escapeXmlAttributeValue(value);
     return `${name}="${escapedValue}"`;
   }
 

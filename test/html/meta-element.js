@@ -24,7 +24,7 @@ assert(b.charset, 'utf-8');
 const {document: httpEquivRefresh} = parseHTML('<meta http-equiv="refresh" content="0; url=https://google.com/?q=1&page=2">');
 const {lastElementChild: c} = httpEquivRefresh;
 // assert toString
-assert(c.toString(), '<meta http-equiv="refresh" content="0; url=https://google.com/?q=1&page=2">');
+assert(c.toString(), '<meta http-equiv="refresh" content="0; url=https://google.com/?q=1&amp;page=2">');
 // assert httpEquiv & content attribute
 assert(c.httpEquiv, 'refresh');
 assert(c.content, '0; url=https://google.com/?q=1&page=2');
