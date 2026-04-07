@@ -4,6 +4,10 @@ import {registerHTMLClass} from '../shared/register-html-class.js';
 
 import {HTMLElement} from './element.js';
 
+import {getInnerHtml, setInnerHtml} from '../mixin/inner-html.js';
+
+const {toString} = HTMLElement.prototype;
+
 const tagName = 'template';
 
 /**
@@ -16,12 +20,21 @@ class HTMLTemplateElement extends HTMLElement {
     (this[CONTENT] = content)[PRIVATE] = this;
   }
 
+  get innerHTML() {
+    return getInnerHtml(this.content);
+  }
+
+  set innerHTML(html) {
+    setInnerHtml(this[CONTENT], html);
+  }
+
   get content() {
-    if (this.hasChildNodes() && !this[CONTENT].hasChildNodes()) {
-      for (const node of this.childNodes)
-        this[CONTENT].appendChild(node.cloneNode(true));
-    }
     return this[CONTENT];
+  }
+
+  toString() {
+    const outerHTML = toString.call(this.cloneNode());
+    return outerHTML.replace('></template>', () => `>${this.innerHTML}</template>`);
   }
 }
 
