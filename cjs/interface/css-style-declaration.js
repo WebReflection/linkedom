@@ -36,7 +36,10 @@ const handler = {
       return getKeys(style).length;
     if (/^\d+$/.test(name))
       return getKeys(style)[name];
-    return style.get(uhyphen(name));
+    // Per CSSOM, reading a property that is not set returns the empty string,
+    // not undefined (which also matches getPropertyValue, routed here).
+    const value = style.get(uhyphen(name));
+    return value === void 0 ? '' : value;
   },
 
   set(style, name, value) {
