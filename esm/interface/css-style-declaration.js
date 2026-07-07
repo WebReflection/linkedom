@@ -35,7 +35,7 @@ const handler = {
       return getKeys(style).length;
     if (/^\d+$/.test(name))
       return getKeys(style)[name];
-    return style.get(uhyphen(name));
+    return style.get(uhyphen(name)) ?? '';
   },
 
   set(style, name, value) {

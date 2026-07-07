@@ -6,6 +6,10 @@ const {document} = parseHTML('');
 
 let node = document.createElement('div');
 assert(node.style.cssText, '', 'empty style');
+// Per CSSOM, an unset property reads as the empty string, not undefined —
+// matching getPropertyValue, which is routed through the same getter.
+assert(node.style.color, '', 'unset property getter returns ""');
+assert(node.style.getPropertyValue('color'), '', 'unset getPropertyValue returns ""');
 node.style.cssText = 'background-color: blue; background-image: url("https://t.co/i.png");';
 assert(node.style.backgroundColor, 'blue', 'style getter');
 assert(node.style.backgroundImage, 'url("https://t.co/i.png")', 'style value with colon');
