@@ -84,6 +84,11 @@
       "optional": true
     }
   },
+  "overrides": {
+    "c8": {
+      "yargs": "^18.0.0"
+    }
+  },
   "engines": {
     "node": ">=16"
   },
