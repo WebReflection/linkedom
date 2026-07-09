@@ -15,7 +15,7 @@ assert(document.querySelector('template > *'), null);
 assert(template.content, template.content);
 
 template.replaceChildren();
-assert(template.innerHTML, '');
+assert(template.innerHTML, '<div>foo</div><div>bar</div>');
 
 template.innerHTML = '<p>ok</p>';
 assert(template.innerHTML, '<p>ok</p>');
@@ -47,3 +47,23 @@ const docWithTemplateAttribute = parseHTML(`<div template="anything"><p>not insi
 
 assert(docWithTemplateAttribute.querySelector('*').tagName, 'P');
 assert(docWithTemplateAttribute.querySelectorAll('*').length, 1);
+
+template = document.createElement('template');
+let fragment = document.createDocumentFragment();
+let div = document.createElement('div')
+div.innerHTML='<a>child element</a>';
+fragment.append(div);
+template.content.append(fragment);
+assert(template.innerHTML, '<div><a>child element</a></div>', 'template.innerHTML');
+assert(template.innerText, '', 'template.innerText');
+
+template = document.createElement('template');
+template.innerHTML='<div><a>child element  innerHTML</a></div>';
+fragment = document.createDocumentFragment();
+div = document.createElement('div');
+div.innerHTML='<a>new child element</a>';
+assert(Array.from(template.children).length, 0, 'template.appendChild zero');
+template.appendChild(div);
+assert(Array.from(template.children).length, 1, 'template.appendChild one');
+assert(template.innerText, 'new child element', 'template.innerText');
+assert(template.innerHTML, '<div><a>child element  innerHTML</a></div>', 'template.innerHTML The template maintains internal HTML even with additional children');
