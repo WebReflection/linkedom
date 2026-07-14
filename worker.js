@@ -2272,8 +2272,10 @@ const attribute = (element, end, attribute, value, active) => {
 const parseFromString = (document, isHTML, markupLanguage) => {
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
+  const foreignObjects = [];
+  const ownerSVGElements = [];
+
   let node = document;
-  let ownerSVGElement = null;
   let parsingCData = false;
 
   const content = new Parser({
@@ -2287,14 +2289,17 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     onopentag(name, attributes) {
       let create = true;
       if (isHTML) {
-        if (ownerSVGElement) {
+        const { length: slength } = ownerSVGElements;
+        const { length: flength } = foreignObjects;
+        if (slength && (!flength || (foreignObjects[flength - 1].ownerSVGElement !== ownerSVGElements[slength - 1]))) {
           node = append$2(node, document.createElementNS(SVG_NAMESPACE, name), active);
-          node.ownerSVGElement = ownerSVGElement;
+          node.ownerSVGElement = ownerSVGElements[slength - 1];
+          if (name === 'foreignobject' || name === 'FOREIGNOBJECT') foreignObjects.push(node);
           create = false;
         }
         else if (name === 'svg' || name === 'SVG') {
-          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-          node = append$2(node, ownerSVGElement, active);
+          node = append$2(node, document.createElementNS(SVG_NAMESPACE, name), active);
+          ownerSVGElements[slength] = node;
           create = false;
         }
         else if (active) {
@@ -2332,8 +2337,10 @@ const parseFromString = (document, isHTML, markupLanguage) => {
 
     // </tagName>
     onclosetag() {
-      if (isHTML && node === ownerSVGElement)
-        ownerSVGElement = null;
+      if (isHTML) {
+        pop(node, ownerSVGElements);
+        pop(node, foreignObjects);
+      }
       node = node.parentNode;
     }
   }, {
@@ -2346,6 +2353,12 @@ const parseFromString = (document, isHTML, markupLanguage) => {
   content.end();
 
   return document;
+};
+
+const pop = (node, list) => {
+  let { length } = list;
+  if (length && node === list[length - 1])
+    list.pop();
 };
 
 const htmlClasses = new Map;
