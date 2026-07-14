@@ -1,7 +1,8 @@
 'use strict';
 const {TEXT_NODE} = require('../shared/constants.js');
 const {VALUE} = require('../shared/symbols.js');
-const {escape} = require('../shared/text-escaper.js');
+const {escapeHtmlTextContent, escapeXmlTextContent} = require('../shared/text-escaper.js');
+const {ignoreCase} = require('../shared/utils.js');
 
 const {CharacterData} = require('./character-data.js');
 
@@ -39,6 +40,6 @@ class Text extends CharacterData {
     return new Text(ownerDocument, data);
   }
 
-  toString() { return escape(this[VALUE]); }
+  toString() { return ignoreCase(this) ? escapeHtmlTextContent(this[VALUE]) : escapeXmlTextContent(this[VALUE]); }
 }
 exports.Text = Text
