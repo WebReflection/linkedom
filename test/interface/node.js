@@ -41,3 +41,30 @@ assert(NodeFilter.SHOW_ELEMENT, 1, 'NodeFilter.SHOW_ELEMENT');
 assert(NodeFilter.SHOW_TEXT, 4, 'NodeFilter.SHOW_TEXT');
 assert(NodeFilter.SHOW_CDATA_SECTION, 8, 'NodeFilter.SHOW_CDATA_SECTION');
 assert(NodeFilter.SHOW_COMMENT, 128, 'NodeFilter.SHOW_COMMENT');
+
+const {document: parentDocument} = parseHTML(
+  '<main><section></section></main><aside><p></p></aside>'
+);
+const [main, section, aside] = parentDocument.querySelectorAll('main,section,aside');
+const throws = callback => {
+  try {
+    callback();
+    return false;
+  }
+  catch {
+    return true;
+  }
+};
+
+assert(throws(() => {
+  main.insertBefore(parentDocument.createElement('i'), aside.firstChild);
+}), true, 'insertBefore rejects a foreign reference node');
+assert(main.toString(), '<main><section></section></main>', 'insertBefore keeps the receiver intact');
+assert(aside.toString(), '<aside><p></p></aside>', 'insertBefore keeps the foreign parent intact');
+
+assert(throws(() => main.appendChild(main)), true, 'appendChild rejects itself');
+assert(throws(() => section.appendChild(main)), true, 'appendChild rejects an ancestor');
+assert(throws(() => {
+  main.replaceChild(parentDocument.createElement('i'), aside.firstChild);
+}), true, 'replaceChild rejects a foreign child');
+assert(aside.toString(), '<aside><p></p></aside>', 'replaceChild keeps the foreign parent intact');

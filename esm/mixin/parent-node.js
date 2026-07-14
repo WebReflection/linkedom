@@ -28,6 +28,13 @@ import {nextElementSibling} from './non-document-type-child-node.js';
 
 const isNode = node => node instanceof Node;
 
+const validate = (parentNode, node, before) => {
+  if (before && before !== parentNode[END] && before.parentNode !== parentNode)
+    throw new Error('node is not a child');
+  if (node === parentNode || node.contains(parentNode))
+    throw new Error('unable to append a node to itself');
+};
+
 const insert = (parentNode, child, nodes) => {
   const {ownerDocument} = parentNode;
   for (const node of nodes)
@@ -216,8 +223,7 @@ export class ParentNode extends Node {
   insertBefore(node, before = null) {
     if (node === before)
       return node;
-    if (node === this)
-      throw new Error('unable to append a node to itself');
+    validate(this, node, before);
     const next = before || this[END];
     switch (node.nodeType) {
       case ELEMENT_NODE:
@@ -285,6 +291,7 @@ export class ParentNode extends Node {
   }
 
   replaceChild(node, replaced) {
+    validate(this, node, replaced);
     const next = getEnd(replaced)[NEXT];
     replaced.remove();
     this.insertBefore(node, next);
