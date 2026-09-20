@@ -178,6 +178,10 @@ export class Element extends ParentNode {
     return text.join('');
   }
 
+  set innerText(text) {
+    this.textContent = text === null ? '' : String(text);
+  }
+
   /**
    * @returns {String}
    */

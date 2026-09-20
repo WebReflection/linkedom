@@ -15,6 +15,7 @@ export const getInnerHtml = node => node.childNodes.join('');
  * @param {String} html
  */
 export const setInnerHtml = (node, html) => {
+  html = html === null ? '' : String(html);
   const {ownerDocument} = node;
   const {constructor} = ownerDocument;
   const document = new constructor;

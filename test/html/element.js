@@ -159,3 +159,18 @@ assert(node.innerHTML, '<video src="" controls></video>');
 node.innerHTML = '<div>The <strong>quick</strong> brown fox</div><div>Jumped over<br>The lazy\ndog</div>';
 assert(node.innerText, 'The quick brown fox\nJumped over\nThe lazy dog', 'innerText newlines');
 assert(node.textContent, 'The quick brown foxJumped overThe lazy\ndog', 'textContent no newlines');
+
+// #308 — non-string innerHTML / innerText must coerce like browsers
+const {document: coerceDoc} = parseHTML('<!DOCTYPE html><html><head></head><body></body></html>');
+coerceDoc.body.innerHTML = 1;
+assert(coerceDoc.body.innerHTML, '1', 'innerHTML number coerce');
+coerceDoc.body.innerHTML = null;
+assert(coerceDoc.body.innerHTML, '', 'innerHTML null coerce');
+coerceDoc.body.innerHTML = undefined;
+assert(coerceDoc.body.innerHTML, 'undefined', 'innerHTML undefined coerce');
+coerceDoc.body.innerText = 1;
+assert(coerceDoc.body.innerText, '1', 'innerText number coerce');
+assert(coerceDoc.body.textContent, '1', 'innerText number as text content');
+coerceDoc.body.innerText = null;
+assert(coerceDoc.body.innerText, '', 'innerText null coerce');
+assert(coerceDoc.body.innerHTML, '', 'innerText null clears children');

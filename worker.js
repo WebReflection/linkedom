@@ -7134,6 +7134,7 @@ const getInnerHtml = node => node.childNodes.join('');
  * @param {String} html
  */
 const setInnerHtml = (node, html) => {
+  html = html === null ? '' : String(html);
   const {ownerDocument} = node;
   const {constructor} = ownerDocument;
   const document = new constructor;
@@ -7671,6 +7672,10 @@ let Element$1 = class Element extends ParentNode {
       next = next[NEXT];
     }
     return text.join('');
+  }
+
+  set innerText(text) {
+    this.textContent = text === null ? '' : $String(text);
   }
 
   /**
