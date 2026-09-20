@@ -66,13 +66,16 @@ export class DOMTokenList extends Set {
    * @param {boolean?} force
    */
   toggle(token, force) {
+    // Web IDL optional boolean: omitted or undefined → plain toggle
+    if (arguments.length < 2 || force === undefined)
+      force = !this.has(token);
     if (this.has(token)) {
       if (force)
         return true;
       this.delete(token);
       update(this);
     }
-    else if (force || arguments.length === 1) {
+    else if (force) {
       super.add(token);
       update(this);
       return true;

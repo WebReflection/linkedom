@@ -82,6 +82,17 @@ assert(node.classList.value, 'a c', 'correct .value again');
 assert(node.classList.replace('b', 'c'), false, 'replace did not happen');
 assert(node.classList.supports('whatever'), true, 'whatever');
 
+// #277: toggle(token, undefined) must match omitted force (plain toggle)
+const tokenList = document.createElement('div');
+assert(tokenList.classList.toggle('foo', undefined), true, 'undefined force adds missing token');
+assert(tokenList.className, 'foo', 'undefined force added class');
+assert(tokenList.classList.toggle('foo', undefined), false, 'undefined force removes present token');
+assert(tokenList.className, '', 'undefined force removed class');
+tokenList.classList.toggle('bar', true);
+assert(tokenList.classList.contains('bar'), true, 'force true adds');
+tokenList.classList.toggle('bar', false);
+assert(tokenList.classList.contains('bar'), false, 'force false removes');
+
 assert(node.onclick, null, 'Level 0 events');
 
 let args = null;
