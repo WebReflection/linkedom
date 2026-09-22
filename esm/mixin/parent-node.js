@@ -51,14 +51,17 @@ export class ParentNode extends Node {
     super(ownerDocument, localName, nodeType);
     this[PRIVATE] = null;
     /** @type {NodeStruct} */
-    this[NEXT] = this[END] = {
-      [NEXT]: null,
-      [PREV]: this,
-      [START]: this,
+    // the links are added after the literal: a literal with symbol keys allocates through a
+    // slower path, and this marker is created for every node
+    const end = {
       nodeType: NODE_END,
       ownerDocument: this.ownerDocument,
       parentNode: null
     };
+    end[NEXT] = null;
+    end[PREV] = this;
+    end[START] = this;
+    this[NEXT] = this[END] = end;
   }
 
   get childNodes() {
