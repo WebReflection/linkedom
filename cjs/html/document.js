@@ -10,9 +10,10 @@ const {customElements} = require('../interface/custom-element-registry.js');
 const {HTMLElement} = require('./element.js');
 
 const createHTMLElement = (ownerDocument, builtin, localName, options) => {
-  if (!builtin && htmlClasses.has(localName)) {
+  if (!builtin) {
     const Class = htmlClasses.get(localName);
-    return new Class(ownerDocument, localName);
+    if (Class)
+      return new Class(ownerDocument, localName);
   }
   const {[CUSTOM_ELEMENTS]: {active, registry}} = ownerDocument;
   if (active) {
