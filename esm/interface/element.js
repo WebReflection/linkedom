@@ -437,7 +437,8 @@ export class Element extends ParentNode {
 
   // <custom>
   toString() {
-    const out = [];
+    // the output grows by concatenation: one rope beats an array of thousands of pieces
+    let out = '';
     const {[END]: end} = this;
     let next = {[NEXT]: this};
     let isOpened = false;
@@ -445,14 +446,14 @@ export class Element extends ParentNode {
       next = next[NEXT];
       switch (next.nodeType) {
         case ATTRIBUTE_NODE: {
-          const attr = ' ' + next;
+          const attr = next.toString();
           switch (attr) {
-            case ' id':
-            case ' class':
-            case ' style':
+            case 'id':
+            case 'class':
+            case 'style':
               break;
             default:
-              out.push(attr);
+              out += ' ' + attr;
           }
           break;
         }
@@ -460,39 +461,42 @@ export class Element extends ParentNode {
           const start = next[START];
           if (isOpened) {
             if ('ownerSVGElement' in start)
-              out.push(' />');
+              out += ' />';
             else if (isVoid(start))
-              out.push(ignoreCase(start) ? '>' : ' />');
+              out += ignoreCase(start) ? '>' : ' />';
             else
-              out.push(`></${start.localName}>`);
+              out += `></${start.localName}>`;
             isOpened = false;
           }
           else
-            out.push(`</${start.localName}>`);
+            out += `</${start.localName}>`;
           break;
         }
         case ELEMENT_NODE:
           if (isOpened)
-            out.push('>');
+            out += '>';
           if (next.toString !== this.toString) {
-            out.push(next.toString());
+            out += next.toString();
             next = next[END];
             isOpened = false;
           }
           else {
-            out.push(`<${next.localName}`);
+            out += `<${next.localName}`;
             isOpened = true;
           }
           break;
         case TEXT_NODE:
         case COMMENT_NODE:
         case CDATA_SECTION_NODE:
-          out.push((isOpened ? '>' : '') + next);
-          isOpened = false;
+          if (isOpened) {
+            out += '>';
+            isOpened = false;
+          }
+          out += next;
           break;
       }
     } while (next !== end);
-    return out.join('');
+    return out;
   }
 
   toJSON() {
