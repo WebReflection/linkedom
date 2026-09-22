@@ -14,24 +14,24 @@ class Text extends CharacterData {
   }
 
   get wholeText() {
-    const text = [];
     let {previousSibling, nextSibling} = this;
+    let text = '';
     while (previousSibling) {
       if (previousSibling.nodeType === TEXT_NODE)
-        text.unshift(previousSibling[VALUE]);
+        text = previousSibling[VALUE] + text;
       else
         break;
       previousSibling = previousSibling.previousSibling;
     }
-    text.push(this[VALUE]);
+    text += this[VALUE];
     while (nextSibling) {
       if (nextSibling.nodeType === TEXT_NODE)
-        text.push(nextSibling[VALUE]);
+        text += nextSibling[VALUE];
       else
         break;
       nextSibling = nextSibling.nextSibling;
     }
-    return text.join('');
+    return text;
   }
 
   cloneNode() {

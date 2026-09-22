@@ -160,35 +160,35 @@ class Element extends ParentNode {
 
   // <contentRelated>
   get innerText() {
-    const text = [];
+    let text = '';
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
       if (next.nodeType === TEXT_NODE) {
-        text.push(next.textContent.replace(/\s+/g, ' '));
+        text += next.textContent.replace(/\s+/g, ' ');
       } else if(
         text.length && next[NEXT] != end &&
         BLOCK_ELEMENTS.has(next.tagName)
       ) {
-        text.push('\n');
+        text += '\n';
       }
       next = next[NEXT];
     }
-    return text.join('');
+    return text;
   }
 
   /**
    * @returns {String}
    */
   get textContent() {
-    const text = [];
+    let text = '';
     let {[NEXT]: next, [END]: end} = this;
     while (next !== end) {
       const nodeType = next.nodeType;
       if (nodeType === TEXT_NODE || nodeType === CDATA_SECTION_NODE)
-        text.push(next.textContent);
+        text += next.textContent;
       next = next[NEXT];
     }
-    return text.join('');
+    return text;
   }
 
   set textContent(text) {
