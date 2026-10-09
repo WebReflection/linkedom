@@ -85,6 +85,13 @@ assert((new DocumentFragment).baseURI, null);
 const {document: svg} = (new DOMParser).parseFromString('<svg class="foo-1"/>', 'text/html').defaultView.window;
 assert(svg.querySelector('[class*="foo-"]'), svg.firstElementChild);
 
+const {document: emptyClass} = parseHTML('<div><p id="a" class=""></p><p id="b"></p><svg><rect id="c" class=""/><rect id="d"/></svg></div>');
+assert(emptyClass.querySelectorAll('[class=""]').map(({id}) => id).join(','), 'a,c', '[class=""] only matches empty class attributes');
+emptyClass.getElementById('a').removeAttribute('class');
+emptyClass.getElementById('b').className = 'x';
+emptyClass.getElementById('b').classList.remove('x');
+assert(emptyClass.querySelectorAll('[class=""]').map(({id}) => id).join(','), 'b,c', '[class=""] follows class mutations');
+
 assert((new DOMParser).parseFromString('...', 'text/html').firstElementChild.localName, 'html');
 
 const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></head><body></body></html>`, 'text/html').defaultView.window.document;

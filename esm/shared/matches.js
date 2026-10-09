@@ -16,7 +16,7 @@ const existsOne = (test, elements) => elements.some(
 );
 
 const getAttributeValue = (element, name) => name === 'class' ?
-                            element.classList.value : element.getAttribute(name);
+  (element.getAttributeNode('class')?.value ?? null) : element.getAttribute(name);
 
 const getChildren = ({childNodes}) => childNodes;
 
