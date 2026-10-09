@@ -1,5 +1,5 @@
 'use strict';
-const {OWNER_ELEMENT} = require('../shared/symbols.js');
+const {OWNER_ELEMENT, VALUE} = require('../shared/symbols.js');
 const {setAttribute} = require('../shared/attributes.js');
 
 const {Attr} = require('../interface/attr.js');
@@ -10,6 +10,7 @@ const addTokens = (self, tokens) => {
     if (token)
       add.call(self, token);
   }
+  self[VALUE] = null;
 };
 
 const update = ({[OWNER_ELEMENT]: ownerElement, value}) => {
@@ -31,6 +32,8 @@ class DOMTokenList extends Set {
   constructor(ownerElement) {
     super();
     this[OWNER_ELEMENT] = ownerElement;
+    // the joined value is asked for by every class selector: keep it until a token changes
+    this[VALUE] = null;
     const attribute = ownerElement.getAttributeNode('class');
     if (attribute)
       addTokens(this, attribute.value.split(/\s+/));
@@ -38,7 +41,22 @@ class DOMTokenList extends Set {
 
   get length() { return this.size; }
 
-  get value() { return [...this].join(' '); }
+  get value() {
+    return this[VALUE] || (this[VALUE] = [...this].join(' '));
+  }
+
+  clear() {
+    this[VALUE] = null;
+    super.clear();
+  }
+
+  /**
+   * @param {string} token
+   */
+  delete(token) {
+    this[VALUE] = null;
+    return super.delete(token);
+  }
 
   /**
    * @param  {...string} tokens
@@ -74,6 +92,7 @@ class DOMTokenList extends Set {
       update(this);
     }
     else if (force || arguments.length === 1) {
+      this[VALUE] = null;
       super.add(token);
       update(this);
       return true;
@@ -89,6 +108,7 @@ class DOMTokenList extends Set {
     if (this.has(token)) {
       this.delete(token);
       super.add(newToken);
+      this[VALUE] = null;
       update(this);
       return true;
     }
