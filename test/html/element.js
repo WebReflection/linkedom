@@ -159,3 +159,18 @@ assert(node.innerHTML, '<video src="" controls></video>');
 node.innerHTML = '<div>The <strong>quick</strong> brown fox</div><div>Jumped over<br>The lazy\ndog</div>';
 assert(node.innerText, 'The quick brown fox\nJumped over\nThe lazy dog', 'innerText newlines');
 assert(node.textContent, 'The quick brown foxJumped overThe lazy\ndog', 'textContent no newlines');
+
+// a parsed class attribute keeps every character of its tokens, drops empty and duplicate tokens,
+// and is escaped only when it is serialized
+{
+  const source = '<!DOCTYPE html><html><body><div class="  a<b  &amp;c  a<b  d&quot;e "></div></body></html>';
+  const {document} = parseHTML(source);
+  const div = document.querySelector('div');
+  assert(div.getAttribute('class'), 'a<b &c d"e', 'class value with markup characters');
+  assert(div.className, 'a<b &c d"e', 'className with markup characters');
+  assert(div.classList.length, 3, 'empty and duplicate class tokens dropped');
+  assert([...div.classList].join('|'), 'a<b|&c|d"e', 'class tokens with markup characters');
+  assert(div.outerHTML, '<div class="a<b &c d&quot;e"></div>', 'only the quote is escaped in html');
+  const {document: reparsed} = parseHTML(`<!DOCTYPE html><html><body>${div.outerHTML}</body></html>`);
+  assert(reparsed.querySelector('div').getAttribute('class'), 'a<b &c d"e', 'class value round trip');
+}
