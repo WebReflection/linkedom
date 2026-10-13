@@ -26,12 +26,23 @@ const append = (self, node, active) => {
   return node;
 };
 
+/** Same tokens as a DOMTokenList would hold: no empty entries, no duplicates, single spaces. */
+const classTokens = value => {
+  const tokens = [];
+  for (const token of value.split(/\s+/)) {
+    if (token && !tokens.includes(token))
+      tokens.push(token);
+  }
+  return tokens.join(' ');
+};
+
 const attribute = (element, end, attribute, value, active) => {
   attribute[VALUE] = value;
   attribute.ownerElement = element;
   knownSiblings(end[PREV], attribute, end);
+  // the token list is built on demand: while it does not exist, only the value needs the tokens
   if (attribute.name === 'class')
-    element.className = value;
+    attribute[VALUE] = classTokens(value);
   if (active)
     attributeChangedCallback(element, attribute.name, null, value);
 };

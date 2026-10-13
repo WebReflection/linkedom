@@ -19,3 +19,10 @@ document.documentElement.innerHTML = `
 
 assert(document.querySelectorAll('Element').length, 2, 'case sesntivive 2');
 assert(document.querySelectorAll('element').length, 0, 'case sesntivive 0');
+
+// in xml every character of a class value is escaped on output, as for any other attribute
+{
+  const xml = (new DOMParser).parseFromString('<root class="a&lt;b  &amp;c  a&lt;b"/>', 'text/xml');
+  assert(xml.documentElement.getAttribute('class'), 'a<b &c', 'class value with markup characters');
+  assert(xml.documentElement.toString(), '<root class="a&lt;b &amp;c" />', 'class value escaped in xml');
+}
