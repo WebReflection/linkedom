@@ -10,10 +10,10 @@ class TextElement extends HTMLElement {
 
   toString() {
     const outerHTML = toString.call(this.cloneNode());
-    // the text goes before the end tag: attribute values can contain "><" too
-    const end = outerHTML.lastIndexOf('></') + 1;
     /* c8 ignore next */
-    if (!end) return outerHTML; // self-closed, as in XML documents
+    if (outerHTML.endsWith(' />')) return outerHTML; // self-closed, as in XML documents
+    // the text goes before the end tag, as attribute values can contain "></" too
+    const end = outerHTML.lastIndexOf('></') + 1;
     return outerHTML.slice(0, end) + this.textContent + outerHTML.slice(end);
   }
 }
