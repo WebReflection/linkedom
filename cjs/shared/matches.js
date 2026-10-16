@@ -108,14 +108,29 @@ const prepareMatch = (element, selectors) => CSSselect.compile(
 );
 exports.prepareMatch = prepareMatch;
 
-const matches = (element, selectors) => CSSselect.is(
-  element,
-  selectors,
-  {
-    strict: true,
-    context: selectors.includes(':scope') ? element : void 0,
-    xmlMode: !ignoreCase(element),
-    adapter
+// matches() is called once per element and selector pair, so the selector
+// is compiled once and kept, instead of parsed again on every call.
+// :scope depends on the element, so those are compiled each time.
+const compiled = new Map;
+const MAX_COMPILED = 1024;
+
+/** @returns {boolean} */
+const matches = (element, selectors) => {
+  const xmlMode = !ignoreCase(element);
+  if (selectors.includes(':scope'))
+    return CSSselect.is(
+      element,
+      selectors,
+      {strict: true, context: element, xmlMode, adapter}
+    );
+  const key = (xmlMode ? 'x' : 'h') + selectors;
+  let test = compiled.get(key);
+  if (!test) {
+    if (compiled.size === MAX_COMPILED)
+      compiled.delete(compiled.keys().next().value);
+    test = CSSselect.compile(selectors, {strict: true, xmlMode, adapter});
+    compiled.set(key, test);
   }
-);
+  return test(element);
+};
 exports.matches = matches;
