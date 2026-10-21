@@ -72,6 +72,12 @@ assert(typeof window.performance.now(), 'number');
 
 assert(parseHTML('<html><body><div>asdf</div></body></html>').document.body.outerHTML, '<body><div>asdf</div></body>');
 
+// issue #283: <body> without <html> still backs document.body
+const bodyOnly = parseHTML('<body><div class="whatever"></div></body>').document;
+assert(bodyOnly.body, bodyOnly.querySelector('body'));
+assert(bodyOnly.documentElement.outerHTML, '<html><head></head><body><div class="whatever"></div></body></html>');
+assert(parseHTML('<head><title>t</title></head><body><p></p></body>').document.documentElement.outerHTML, '<html><head><title>t</title></head><body><p></p></body></html>');
+
 const location = {href: 'http://ok'};
 const withLocation = parseHTML('<html></html>', {location});
 assert(withLocation.document.defaultView.location, location);

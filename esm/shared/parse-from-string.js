@@ -38,7 +38,7 @@ const attribute = (element, end, attribute, value, active) => {
 
 export const isNotParsing = () => notParsing;
 
-export const parseFromString = (document, isHTML, markupLanguage) => {
+export const parseFromString = (document, isHTML, markupLanguage, isDocument = false) => {
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
   let node = document;
@@ -58,6 +58,12 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
     onopentag(name, attributes) {
       let create = true;
       if (isHTML) {
+        // a top level <head> or <body> without <html> gets an implicit <html>,
+        // so document.head and document.body find the parsed elements
+        if (isDocument && node === document && (name === 'head' || name === 'body')) {
+          node = document.firstElementChild ||
+                  append(document, document.createElement('html'), false);
+        }
         if (ownerSVGElement) {
           node = append(node, document.createElementNS(SVG_NAMESPACE, name), active);
           node.ownerSVGElement = ownerSVGElement;
