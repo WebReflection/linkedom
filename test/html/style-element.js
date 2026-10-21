@@ -28,3 +28,13 @@ assert(style.sheet.cssRules.length === 1, true, 'style.sheet.cssRules.length');
 assert(style.sheet.cssRules[0].selectorText, '.test');
 assert(style.sheet.cssRules[0].style.color, 'white');
 assert(style.sheet.cssRules[0].style['font-size'], '12px');
+
+document = parseHTML('<style>.parent { color: blue; .child { color: red; }}</style>').document;
+
+({firstElementChild: style} = document);
+assert(style.sheet.cssRules.length, 1);
+assert(style.sheet.cssRules[0].selectorText, '.parent');
+assert(style.sheet.cssRules[0].style.color, 'blue');
+assert(style.sheet.cssRules[0].cssRules.length, 1);
+assert(style.sheet.cssRules[0].cssRules[0].selectorText, '& .child');
+assert(style.sheet.cssRules[0].cssRules[0].style.color, 'red');

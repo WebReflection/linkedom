@@ -1,5 +1,5 @@
 'use strict';
-const {parse} = require('cssom');
+const {parse} = require('@acemir/cssom');
 
 const {registerHTMLClass} = require('../shared/register-html-class.js');
 const {SHEET} = require('../shared/symbols.js');
