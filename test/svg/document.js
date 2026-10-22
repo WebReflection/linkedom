@@ -12,3 +12,10 @@ try {
   assert(false, true, 'facades should not be instantiable');
 }
 catch (OK) {}
+
+
+const {parseHTML} = global[Symbol.for('linkedom')];
+
+const html = '<svg><foreignObject><div></div><span>x</span></foreignObject></svg>';
+
+assert(parseHTML(html).document.toString().includes('<div></div>'), true, 'foreignObject');
