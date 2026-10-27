@@ -1,5 +1,5 @@
 'use strict';
-const uhyphen = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('uhyphen'));
+const uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6').toLowerCase();
 const {setPrototypeOf} = require('../shared/object.js');
 
 const refs = new WeakMap;
