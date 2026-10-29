@@ -1508,7 +1508,7 @@ const openImpliesClose = new Map([
     ["tbody", tableSectionTags],
     ["tfoot", tableSectionTags],
 ]);
-const voidElements$1 = new Set([
+const voidElements$2 = new Set([
     "area",
     "base",
     "basefont",
@@ -1598,7 +1598,7 @@ let Parser$2 = class Parser {
      * to specify your own additional void elements.
      */
     isVoidElement(name) {
-        return this.htmlMode && voidElements$1.has(name);
+        return this.htmlMode && voidElements$2.has(name);
     }
     /** @internal */
     onopentagname(start, endIndex) {
@@ -3842,7 +3842,7 @@ const Tag = ElementType.Tag;
 const CDATA = ElementType.CDATA;
 /** Type for <!doctype ...> */
 // eslint-disable-next-line prefer-destructuring
-const Doctype = ElementType.Doctype;
+ElementType.Doctype;
 
 /**
  * Checks if `node` is an element node.
@@ -4163,49 +4163,83 @@ function getElementsByTagType(type, nodes, recurse = true, limit = Number.POSITI
     return filter(Checks["tag_type"](type), nodes, recurse, limit);
 }
 
-const xmlCodeMap = new Map([
-    [34, "&quot;"],
-    [38, "&amp;"],
-    [39, "&apos;"],
-    [60, "&lt;"],
-    [62, "&gt;"],
-]);
-// For compatibility with node < 4, we wrap `codePointAt`
 /**
- * Read a code point at a given index.
- * @param input Input string to encode or decode.
- * @param index Current read position in the input string.
+ * Get the named reference for an XML special character or U+00A0.
+ * @param char Code unit matched by one of the escape regexes.
  */
-const getCodePoint = typeof String.prototype.codePointAt === "function"
-    ? (input, index) => input.codePointAt(index)
-    : // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-        (c, index) => (c.charCodeAt(index) & 0xfc_00) === 0xd8_00
-            ? (c.charCodeAt(index) - 0xd8_00) * 0x4_00 +
-                c.charCodeAt(index + 1) -
-                0xdc_00 +
-                0x1_00_00
-            : c.charCodeAt(index);
+function getEscape(char) {
+    return char === 34
+        ? "&quot;"
+        : char === 38
+            ? "&amp;"
+            : char === 39
+                ? "&apos;"
+                : char === 60
+                    ? "&lt;"
+                    : char === 62
+                        ? "&gt;"
+                        : "&nbsp;";
+}
 /**
  * Bitset for ASCII characters that need to be escaped in XML.
  */
 const XML_BITSET_VALUE = 0x50_00_00_c4; // 32..63 -> 34 ("),38 (&),39 ('),60 (<),62 (>)
 /**
+ * Matches exactly the characters `encodeXML` escapes: the five XML special
+ * characters plus every non-ASCII code unit (lone surrogates included — no
+ * `u` flag). Kept in sync with `XML_BITSET_VALUE`.
+ *
+ * Shared with `encodeNonAsciiHTML` in `encode.ts`. Because the regex is
+ * stateful (`g` flag), every call site must set `lastIndex` before use.
+ */
+// eslint-disable-next-line unicorn/prefer-unicode-code-point-escapes -- the `\u{...}` form requires the `u` flag, which we deliberately omit so lone surrogates match by code unit
+const xmlEncodeRegex = /["&'<>\u0080-\uFFFF]/g;
+/**
+ * Whether `code` (a UTF-16 code unit) is escaped by {@link encodeXML}: a
+ * non-ASCII unit, or one of the five XML specials flagged in
+ * `XML_BITSET_VALUE` (which is only meaningful for code units 32-63).
+ * @param code Code unit to test.
+ */
+function isXmlEscapable(code) {
+    return (code >= 0x80 ||
+        (code >= 32 && code < 64 && ((XML_BITSET_VALUE >>> code) & 1) === 1));
+}
+/**
  * Encodes all non-ASCII characters, as well as characters not valid in XML
- * documents using XML entities. Uses a fast bitset scan instead of RegExp.
+ * documents using XML entities.
  *
  * If a character has no equivalent entity, a numeric hexadecimal reference
  * (eg. `&#xfc;`) will be used.
- * @param input Input string to encode or decode.
+ * @param input Input string to encode.
  */
 function encodeXML(input) {
+    const { length } = input;
     let out;
     let last = 0;
-    const { length } = input;
-    for (let index = 0; index < length; index++) {
+    let index = 0;
+    while (index < length) {
         const char = input.charCodeAt(index);
-        // Check for ASCII chars that don't need escaping
-        if (char < 0x80 &&
-            (((XML_BITSET_VALUE >>> char) & 1) === 0 || char >= 64 || char < 32)) {
+        /*
+         * Find the next character to escape: scan a short window inline
+         * (escapable characters cluster in markup-heavy input), then fall
+         * back to the regex, which skips clean spans in native code.
+         */
+        if (!isXmlEscapable(char)) {
+            const bound = Math.min(index + 32, length);
+            let next = index + 1;
+            while (next < bound && !isXmlEscapable(input.charCodeAt(next))) {
+                next++;
+            }
+            if (next < bound) {
+                index = next;
+                continue;
+            }
+            if (next >= length)
+                break;
+            xmlEncodeRegex.lastIndex = next;
+            if (!xmlEncodeRegex.test(input))
+                break;
+            index = xmlEncodeRegex.lastIndex - 1;
             continue;
         }
         if (out === undefined)
@@ -4214,16 +4248,16 @@ function encodeXML(input) {
             out += input.substring(last, index);
         if (char < 64) {
             // Known replacement
-            out += xmlCodeMap.get(char);
-            last = index + 1;
+            out += getEscape(char);
+            last = index += 1;
             continue;
         }
         // Non-ASCII: encode as numeric entity (handle surrogate pair)
-        const cp = getCodePoint(input, index);
+        const cp = input.codePointAt(index);
         out += `&#x${cp.toString(16)};`;
         if (cp !== char)
             index++; // Skip trailing surrogate
-        last = index + 1;
+        last = index += 1;
     }
     if (out === undefined)
         return input;
@@ -4232,345 +4266,229 @@ function encodeXML(input) {
     return out;
 }
 /**
- * Creates a function that escapes all characters matched by the given regular
- * expression using the given map of characters to escape to their entities.
- * @param regex Regular expression to match characters to escape.
- * @param map Map of characters to escape to their entities.
- * @returns Function that escapes all characters matched by the given regular
- * expression using the given map of characters to escape to their entities.
+ * Escape `data` using `re`, mapping each matched character to its entity.
+ * Every match is one UTF-16 code unit, so its index is `lastIndex - 1`.
+ * @param re Global regex matching exactly the characters to escape
+ *   (`"`, `&`, `'`, `<`, `>`, `\u00A0` at most).
+ * @param data String to escape.
  */
-function getEscaper(regex, map) {
-    return function escape(data) {
-        let match;
-        let lastIndex = 0;
-        let result = "";
-        while ((match = regex.exec(data))) {
-            if (lastIndex !== match.index) {
-                result += data.substring(lastIndex, match.index);
-            }
-            // We know that this character will be in the map.
-            result += map.get(match[0].charCodeAt(0));
-            // Every match will be of length 1
-            lastIndex = match.index + 1;
-        }
-        return result + data.substring(lastIndex);
-    };
+function escapeWithRegex(re, data) {
+    re.lastIndex = 0;
+    if (!re.test(data))
+        return data;
+    let out = "";
+    let last = 0;
+    do {
+        const index = re.lastIndex - 1;
+        if (last !== index)
+            out += data.substring(last, index);
+        const char = data.charCodeAt(index);
+        out += getEscape(char);
+        last = index + 1;
+    } while (re.test(data));
+    return out + data.substring(last);
 }
+const attributeEscapeRegex = /["&\u{A0}]/gu;
 /**
  * Encodes all characters that have to be escaped in HTML attributes,
  * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
  * @param data String to escape.
  */
-const escapeAttribute = 
-/* #__PURE__ */ getEscaper(/["&\u00A0]/g, new Map([
-    [34, "&quot;"],
-    [38, "&amp;"],
-    [160, "&nbsp;"],
-]));
+function escapeAttribute(data) {
+    return escapeWithRegex(attributeEscapeRegex, data);
+}
+const textEscapeRegex = /[&<>\u{A0}]/gu;
 /**
  * Encodes all characters that have to be escaped in HTML text,
  * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
  * @param data String to escape.
  */
-const escapeText = /* #__PURE__ */ getEscaper(/[&<>\u00A0]/g, new Map([
-    [38, "&amp;"],
-    [60, "&lt;"],
-    [62, "&gt;"],
-    [160, "&nbsp;"],
-]));
+function escapeText(data) {
+    return escapeWithRegex(textEscapeRegex, data);
+}
 
 /**
  * Mixed-case SVG and MathML element names recognized in foreign content.
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
  */
-const elementNames = new Map([
-    "altGlyph",
-    "altGlyphDef",
-    "altGlyphItem",
-    "animateColor",
-    "animateMotion",
-    "animateTransform",
-    "clipPath",
-    "feBlend",
-    "feColorMatrix",
-    "feComponentTransfer",
-    "feComposite",
-    "feConvolveMatrix",
-    "feDiffuseLighting",
-    "feDisplacementMap",
-    "feDistantLight",
-    "feDropShadow",
-    "feFlood",
-    "feFuncA",
-    "feFuncB",
-    "feFuncG",
-    "feFuncR",
-    "feGaussianBlur",
-    "feImage",
-    "feMerge",
-    "feMergeNode",
-    "feMorphology",
-    "feOffset",
-    "fePointLight",
-    "feSpecularLighting",
-    "feSpotLight",
-    "feTile",
-    "feTurbulence",
-    "foreignObject",
-    "glyphRef",
-    "linearGradient",
-    "radialGradient",
-    "textPath",
-].map((value) => [value.toLowerCase(), value]));
+const elementNames = new Map("altGlyph altGlyphDef altGlyphItem animateColor animateMotion animateTransform clipPath feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA feFuncB feFuncG feFuncR feGaussianBlur feImage feMerge feMergeNode feMorphology feOffset fePointLight feSpecularLighting feSpotLight feTile feTurbulence foreignObject glyphRef linearGradient radialGradient textPath"
+    .split(" ")
+    .map((name) => [name.toLowerCase(), name]));
 /**
  * Mixed-case SVG and MathML attribute names recognized in foreign content.
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
  */
-const attributeNames = new Map([
-    "definitionURL",
-    "attributeName",
-    "attributeType",
-    "baseFrequency",
-    "baseProfile",
-    "calcMode",
-    "clipPathUnits",
-    "diffuseConstant",
-    "edgeMode",
-    "filterUnits",
-    "glyphRef",
-    "gradientTransform",
-    "gradientUnits",
-    "kernelMatrix",
-    "kernelUnitLength",
-    "keyPoints",
-    "keySplines",
-    "keyTimes",
-    "lengthAdjust",
-    "limitingConeAngle",
-    "markerHeight",
-    "markerUnits",
-    "markerWidth",
-    "maskContentUnits",
-    "maskUnits",
-    "numOctaves",
-    "pathLength",
-    "patternContentUnits",
-    "patternTransform",
-    "patternUnits",
-    "pointsAtX",
-    "pointsAtY",
-    "pointsAtZ",
-    "preserveAlpha",
-    "preserveAspectRatio",
-    "primitiveUnits",
-    "refX",
-    "refY",
-    "repeatCount",
-    "repeatDur",
-    "requiredExtensions",
-    "requiredFeatures",
-    "specularConstant",
-    "specularExponent",
-    "spreadMethod",
-    "startOffset",
-    "stdDeviation",
-    "stitchTiles",
-    "surfaceScale",
-    "systemLanguage",
-    "tableValues",
-    "targetX",
-    "targetY",
-    "textLength",
-    "viewBox",
-    "viewTarget",
-    "xChannelSelector",
-    "yChannelSelector",
-    "zoomAndPan",
-].map((value) => [value.toLowerCase(), value]));
+const attributeNames = new Map("definitionURL attributeName attributeType baseFrequency baseProfile calcMode clipPathUnits diffuseConstant edgeMode filterUnits glyphRef gradientTransform gradientUnits kernelMatrix kernelUnitLength keyPoints keySplines keyTimes lengthAdjust limitingConeAngle markerHeight markerUnits markerWidth maskContentUnits maskUnits numOctaves pathLength patternContentUnits patternTransform patternUnits pointsAtX pointsAtY pointsAtZ preserveAlpha preserveAspectRatio primitiveUnits refX refY repeatCount repeatDur requiredExtensions requiredFeatures specularConstant specularExponent spreadMethod startOffset stdDeviation stitchTiles surfaceScale systemLanguage tableValues targetX targetY textLength viewBox viewTarget xChannelSelector yChannelSelector zoomAndPan"
+    .split(" ")
+    .map((name) => [name.toLowerCase(), name]));
 
-/*
- * Module dependencies
- */
-const unencodedElements = new Set([
-    "style",
-    "script",
-    "xmp",
-    "iframe",
-    "noembed",
-    "noframes",
-    "plaintext",
-    "noscript",
-]);
-function replaceQuotes(value) {
-    return value.replace(/"/g, "&quot;");
-}
+// ── Constants ────────────────────────────────────────────────────────
+/** Elements whose text content is never entity-encoded. */
+const unencodedElements = new Set("style script xmp iframe noembed noframes plaintext noscript".split(" "));
+/** HTML void elements — they cannot have children. */
+const voidElements$1 = new Set("area base basefont br col command embed frame hr img input isindex keygen link meta param source track wbr".split(" "));
+/** Elements that switch the parser into foreign (XML-like) mode. */
+const foreignElements = new Set(["svg", "math"]);
 /**
- * Format attributes
- * @param attributes Attribute map to serialize.
- * @param options Options that control this operation.
+ * Foreign-mode integration points: children of these elements are parsed
+ * as HTML again, not as foreign content.
  */
-function formatAttributes(attributes, options) {
-    if (!attributes)
-        return;
-    const encode = (options.encodeEntities ?? options.decodeEntities) === false
-        ? replaceQuotes
-        : !!options.xmlMode || options.encodeEntities !== "utf8"
-            ? encodeXML
-            : escapeAttribute;
-    return Object.keys(attributes)
-        .map((key) => {
-        const value = attributes[key];
-        const normalizedValue = value == null ? "" : String(value);
-        if (options.xmlMode === "foreign") {
-            /* Fix up mixed-case attribute names */
-            key = attributeNames.get(key) ?? key;
-        }
-        if (!(options.emptyAttrs || options.xmlMode) && normalizedValue === "") {
-            return key;
-        }
-        return `${key}="${encode(normalizedValue)}"`;
-    })
-        .join(" ");
-}
-/**
- * Self-enclosing tags
- */
-const singleTag = new Set([
-    "area",
-    "base",
-    "basefont",
-    "br",
-    "col",
-    "command",
-    "embed",
-    "frame",
-    "hr",
-    "img",
-    "input",
-    "isindex",
-    "keygen",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr",
-]);
+const foreignModeIntegrationPoints = new Set("mi mo mn ms mtext annotation-xml foreignObject desc title".split(" "));
+// ── Public API ───────────────────────────────────────────────────────
 /**
  * Renders a DOM node or an array of DOM nodes to a string.
  *
- * Can be thought of as the equivalent of the `outerHTML` of the passed node(s).
+ * Can be thought of as the equivalent of the `outerHTML` of the passed
+ * node(s).
  * @param node Node to be rendered.
  * @param options Changes serialization behavior
  */
 function render(node, options = {}) {
     const nodes = "length" in node ? node : [node];
+    /*
+     * `xmlMode` is threaded as a separate argument through the internal
+     * functions so that foreign-mode transitions (svg/mathml ↔ html) can
+     * adjust it without copying the options object on every element.
+     */
+    const xmlMode = options.xmlMode ?? false;
     let output = "";
-    let index = 0;
-    while (index < nodes.length) {
-        output += renderNode(nodes[index], options);
-        index++;
+    // eslint-disable-next-line unicorn/no-for-loop
+    for (let index = 0; index < nodes.length; index++) {
+        output += renderNode(nodes[index], options, xmlMode);
     }
     return output;
 }
-function renderNode(node, options) {
+// ── Internal rendering ───────────────────────────────────────────────
+/**
+ * Render an array of child nodes (skips the single-node wrapping in `render`).
+ * @param children The child nodes to render.
+ * @param options The serialization options.
+ * @param xmlMode The XML mode to use.
+ */
+function renderChildren(children, options, xmlMode) {
+    let output = "";
+    // eslint-disable-next-line unicorn/no-for-loop
+    for (let index = 0; index < children.length; index++) {
+        output += renderNode(children[index], options, xmlMode);
+    }
+    return output;
+}
+function renderNode(node, options, xmlMode) {
     switch (node.type) {
         case Root: {
-            return render(node.children, options);
+            return renderChildren(node.children, options, xmlMode);
         }
-        // @ts-expect-error We don't use `Doctype` yet
-        case Doctype:
         case Directive: {
-            return renderDirective(node);
+            return `<${node.data}>`;
         }
         case Comment$1: {
-            return renderComment(node);
+            return `<!--${node.data}-->`;
         }
         case CDATA: {
-            return renderCdata(node);
+            return `<![CDATA[${node.children[0].data}]]>`;
         }
         case Script:
         case Style:
         case Tag: {
-            return renderTag(node, options);
+            return renderTag(node, options, xmlMode);
         }
         case Text$2: {
-            return renderText(node, options);
+            const element = node;
+            const data = element.data || "";
+            /*
+             * Skip encoding when entities weren't decoded on input, or when
+             * inside a raw-text element (script, style, etc.) in HTML mode.
+             */
+            if ((options.encodeEntities ?? options.decodeEntities) !== false &&
+                !(!xmlMode &&
+                    element.parent &&
+                    unencodedElements.has(element.parent.name))) {
+                // `xmlMode: "foreign"` is truthy
+                return xmlMode || options.encodeEntities !== "utf8"
+                    ? encodeXML(data)
+                    : escapeText(data);
+            }
+            return data;
         }
     }
 }
-const foreignModeIntegrationPoints = new Set([
-    "mi",
-    "mo",
-    "mn",
-    "ms",
-    "mtext",
-    "annotation-xml",
-    "foreignObject",
-    "desc",
-    "title",
-]);
-const foreignElements = new Set(["svg", "math"]);
-function renderTag(element, options) {
-    // Handle SVG / MathML in HTML
-    if (options.xmlMode === "foreign") {
-        /* Fix up mixed-case element names */
+function renderTag(element, options, xmlMode) {
+    if (xmlMode === "foreign") {
+        // Correct lowercase element names back to their canonical mixed-case form
         element.name = elementNames.get(element.name) ?? element.name;
-        /* Exit foreign mode at integration points */
+        // Integration points exit foreign mode: their children are HTML
         if (element.parent &&
             foreignModeIntegrationPoints.has(element.parent.name)) {
-            options = { ...options, xmlMode: false };
+            xmlMode = false;
         }
     }
-    if (!options.xmlMode && foreignElements.has(element.name)) {
-        options = { ...options, xmlMode: "foreign" };
+    if (!xmlMode && foreignElements.has(element.name)) {
+        xmlMode = "foreign";
     }
-    let tag = `<${element.name}`;
-    const attribs = formatAttributes(element.attribs, options);
-    if (attribs) {
-        tag += ` ${attribs}`;
-    }
-    if (element.children.length === 0 &&
-        (options.xmlMode
-            ? // In XML mode or foreign mode, and user hasn't explicitly turned off self-closing tags
-                options.selfClosingTags !== false
-            : // User explicitly asked for self-closing tags, even in HTML mode
-                options.selfClosingTags && singleTag.has(element.name))) {
-        if (!options.xmlMode)
-            tag += " ";
-        tag += "/>";
+    const { name, children } = element;
+    // Cache the void-element check — used for both self-closing and closing-tag logic
+    const isVoid = !xmlMode && voidElements$1.has(name);
+    let tag = `<${name}${formatAttributes(element.attribs, options, xmlMode)}`;
+    if (children.length === 0 &&
+        (xmlMode
+            ? options.selfClosingTags !== false
+            : options.selfClosingTags && isVoid)) {
+        // XML: `<br/>`, HTML: `<br />`
+        tag += xmlMode ? "/>" : " />";
     }
     else {
         tag += ">";
-        if (element.children.length > 0) {
-            tag += render(element.children, options);
+        if (children.length > 0) {
+            tag += renderChildren(children, options, xmlMode);
         }
-        if (!!options.xmlMode || !singleTag.has(element.name)) {
-            tag += `</${element.name}>`;
+        if (!isVoid) {
+            tag += `</${name}>`;
         }
     }
     return tag;
 }
-function renderDirective(element) {
-    return `<${element.data}>`;
+// ── Attribute formatting ─────────────────────────────────────────────
+function replaceQuotes(value) {
+    return value.replaceAll('"', "&quot;");
 }
-function renderText(element, options) {
-    let data = element.data || "";
-    // If entities weren't decoded, no need to encode them back
-    if ((options.encodeEntities ?? options.decodeEntities) !== false &&
-        !(!options.xmlMode &&
-            element.parent &&
-            unencodedElements.has(element.parent.name))) {
-        data =
-            !!options.xmlMode || options.encodeEntities !== "utf8"
-                ? encodeXML(data)
-                : escapeText(data);
+/**
+ * Serialize an element's attribute map to a string.
+ *
+ * Returns a string with a leading space before each attribute, or an
+ * empty string if there are no attributes. This convention lets the
+ * caller unconditionally concatenate the result onto the tag name.
+ * @param attributes
+ * @param options
+ * @param xmlMode
+ */
+function formatAttributes(attributes, options, xmlMode) {
+    if (!attributes)
+        return "";
+    /*
+     * Pick the right encoder:
+     *  - Encoding disabled → only escape double-quotes (for valid attributes)
+     *  - XML / non-utf8    → full numeric entity encoding (encodeXML)
+     *  - HTML + utf8       → minimal escaping (escapeAttribute)
+     */
+    const encode = (options.encodeEntities ?? options.decodeEntities) === false
+        ? replaceQuotes
+        : xmlMode || options.encodeEntities !== "utf8"
+            ? encodeXML
+            : escapeAttribute;
+    const isForeign = xmlMode === "foreign";
+    const showEmpty = !!(options.emptyAttrs ?? xmlMode);
+    let result = "";
+    for (const key in attributes) {
+        if (!Object.hasOwn(attributes, key))
+            continue;
+        const value = attributes[key];
+        const k = isForeign ? (attributeNames.get(key) ?? key) : key;
+        result +=
+            !showEmpty && (value == null || value === "")
+                ? ` ${k}`
+                : ` ${k}="${encode(value == null ? "" : String(value))}"`;
     }
-    return data;
-}
-function renderCdata(element) {
-    return `<![CDATA[${element.children[0].data}]]>`;
-}
-function renderComment(element) {
-    return `<!--${element.data}-->`;
+    return result;
 }
 
 /**
