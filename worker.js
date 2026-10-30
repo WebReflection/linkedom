@@ -7154,7 +7154,8 @@ function setOwnerDocument(node) {
   return node;
 }
 
-const uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6').toLowerCase();
+var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6')
+                             .toLowerCase();
 
 const refs$1 = new WeakMap;
 
@@ -7294,6 +7295,1340 @@ class DOMTokenList extends Set {
    * @param {string} token
    */
   supports() { return true; }
+}
+
+const refs = new WeakMap;
+
+const getKeys = style => [...style.keys()].filter(key => key !== PRIVATE);
+
+const updateKeys = style => {
+  const attr = refs.get(style).getAttributeNode('style');
+  if (!attr || attr[CHANGED] || style.get(PRIVATE) !== attr) {
+    style.clear();
+    if (attr) {
+      style.set(PRIVATE, attr);
+      for (const rule of attr[VALUE].split(/\s*;\s*/)) {
+        let [key, ...rest] = rule.split(':');
+        if (rest.length > 0) {
+          key = key.trim();
+          const value = rest.join(':').trim();
+          if (key && value)
+            style.set(key, value);
+        }
+      }
+    }
+  }
+  return attr;
+};
+
+const handler$1 = {
+  get(style, name) {
+    if (name in prototype)
+      return style[name];
+    updateKeys(style);
+    if (name === 'length')
+      return getKeys(style).length;
+    if (/^\d+$/.test(name))
+      return getKeys(style)[name];
+    return style.get(uhyphen(name)) ?? '';
+  },
+
+  set(style, name, value) {
+    if (name === 'cssText')
+      style[name] = value;
+    else {
+      let attr = updateKeys(style);
+      if (value == null)
+        style.delete(uhyphen(name));
+      else
+        style.set(uhyphen(name), value);
+      if (!attr) {
+        const element = refs.get(style);
+        attr = element.ownerDocument.createAttribute('style');
+        element.setAttributeNode(attr);
+        style.set(PRIVATE, attr);
+      }
+      attr[CHANGED] = false;
+      attr[VALUE] = style.toString();
+    }
+    return true;
+  }
+};
+
+/**
+ * @implements globalThis.CSSStyleDeclaration
+ */
+let CSSStyleDeclaration$1 = class CSSStyleDeclaration extends Map {
+  constructor(element) {
+    super();
+    refs.set(this, element);
+    /* c8 ignore start */
+    return new Proxy(this, handler$1);
+    /* c8 ignore stop */
+  }
+
+  get cssText() {
+    return this.toString();
+  }
+
+  set cssText(value) {
+    refs.get(this).setAttribute('style', value);
+  }
+
+  getPropertyValue(name) {
+    const self = this[PRIVATE];
+    return handler$1.get(self, name);
+  }
+
+  setProperty(name, value) {
+    const self = this[PRIVATE];
+    handler$1.set(self, name, value);
+  }
+
+  removeProperty(name) {
+    const self = this[PRIVATE];
+    handler$1.set(self, name, null);
+  }
+
+  [Symbol.iterator]() {
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const keys = getKeys(self);
+    const {length} = keys;
+    let i = 0;
+    return {
+      next() {
+        const done = i === length;
+        return {done, value: done ? null : keys[i++]};
+      }
+    };
+  }
+
+  get[PRIVATE]() { return this; }
+
+  toString() {
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const cssText = [];
+    self.forEach(push, cssText);
+    return cssText.join(';');
+  }
+};
+
+const {prototype} = CSSStyleDeclaration$1;
+
+function push(value, key) {
+  if (key !== PRIVATE)
+    this.push(`${key}:${value}`);
+}
+
+// https://dom.spec.whatwg.org/#interface-event
+
+/* c8 ignore start */
+
+// Node 15 has Event but 14 and 12 don't
+const BUBBLING_PHASE = 3;
+const AT_TARGET = 2;
+const CAPTURING_PHASE = 1;
+const NONE = 0;
+
+function getCurrentTarget(ev) {
+  return ev.currentTarget;
+}
+
+/**
+ * @implements globalThis.Event
+ */
+class GlobalEvent {
+    static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    static get AT_TARGET() { return AT_TARGET; }
+    static get CAPTURING_PHASE() { return CAPTURING_PHASE; }
+    static get NONE() { return NONE; }
+
+    constructor(type, eventInitDict = {}) {
+      this.type = type;
+      this.bubbles = !!eventInitDict.bubbles;
+      this.cancelBubble = false;
+      this._stopImmediatePropagationFlag = false;
+      this.cancelable = !!eventInitDict.cancelable;
+      this.eventPhase = this.NONE;
+      this.timeStamp = Date.now();
+      this.defaultPrevented = false;
+      this.originalTarget = null;
+      this.returnValue = null;
+      this.srcElement = null;
+      this.target = null;
+      this._path = [];
+    }
+
+    get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    get AT_TARGET() { return AT_TARGET; }
+    get CAPTURING_PHASE() { return CAPTURING_PHASE; }
+    get NONE() { return NONE; }
+
+    preventDefault() { this.defaultPrevented = true; }
+
+    // simplified implementation, should be https://dom.spec.whatwg.org/#dom-event-composedpath
+    composedPath() {
+      return this._path.map(getCurrentTarget);
+    }
+
+    stopPropagation() {
+      this.cancelBubble = true;
+    }
+    
+    stopImmediatePropagation() {
+      this.stopPropagation();
+      this._stopImmediatePropagationFlag = true;
+    }
+  }
+
+/* c8 ignore stop */
+
+/**
+ * @implements globalThis.NamedNodeMap
+ */
+class NamedNodeMap extends Array {
+  constructor(ownerElement) {
+    super();
+    this.ownerElement = ownerElement;
+  }
+
+  getNamedItem(name) {
+    return this.ownerElement.getAttributeNode(name);
+  }
+
+  setNamedItem(attr) {
+    this.ownerElement.setAttributeNode(attr);
+    this.unshift(attr);
+  }
+
+  removeNamedItem(name) {
+    const item = this.getNamedItem(name);
+    this.ownerElement.removeAttribute(name);
+    this.splice(this.indexOf(item), 1);
+  }
+
+  item(index) {
+    return index < this.length ? this[index] : null;
+  }
+
+  /* c8 ignore start */
+  getNamedItemNS(_, name) {
+    return this.getNamedItem(name);
+  }
+
+  setNamedItemNS(_, attr) {
+    return this.setNamedItem(attr);
+  }
+
+  removeNamedItemNS(_, name) {
+    return this.removeNamedItem(name);
+  }
+  /* c8 ignore stop */
+}
+
+/**
+ * @implements globalThis.ShadowRoot
+ */
+let ShadowRoot$1 = class ShadowRoot extends NonElementParentNode {
+  constructor(host) {
+    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+    this.host = host;
+  }
+
+  get innerHTML() {
+    return getInnerHtml(this);
+  }
+  set innerHTML(html) {
+    setInnerHtml(this, html);
+  }
+};
+
+// https://dom.spec.whatwg.org/#interface-element
+
+
+// <utils>
+const attributesHandler = {
+  get(target, key) {
+    return key in target ? target[key] : target.find(({name}) => name === key);
+  }
+};
+
+const create = (ownerDocument, element, localName)  => {
+  if ('ownerSVGElement' in element) {
+    const svg = ownerDocument.createElementNS(SVG_NAMESPACE, localName);
+    svg.ownerSVGElement = element.ownerSVGElement;
+    return svg;
+  }
+  return ownerDocument.createElement(localName);
+};
+
+const isVoid = ({localName, ownerDocument}) => {
+  return ownerDocument[MIME].voidElements.test(localName);
+};
+
+// </utils>
+
+/**
+ * @implements globalThis.Element
+ */
+let Element$1 = class Element extends ParentNode {
+  constructor(ownerDocument, localName) {
+    super(ownerDocument, localName, ELEMENT_NODE);
+    this[CLASS_LIST] = null;
+    this[DATASET] = null;
+    this[STYLE] = null;
+  }
+
+  // <Mixins>
+  get isConnected() { return isConnected(this); }
+  get parentElement() { return parentElement(this); }
+  get previousSibling() { return previousSibling(this); }
+  get nextSibling() { return nextSibling(this); }
+  get namespaceURI() {
+    return 'http://www.w3.org/1999/xhtml';
+  }
+
+  get previousElementSibling() { return previousElementSibling(this); }
+  get nextElementSibling() { return nextElementSibling$1(this); }
+
+  before(...nodes) { before(this, nodes); }
+  after(...nodes) { after(this, nodes); }
+  replaceWith(...nodes) { replaceWith(this, nodes); }
+  remove() { remove(this[PREV], this, this[END][NEXT]); }
+  // </Mixins>
+
+  // <specialGetters>
+  get id() { return stringAttribute.get(this, 'id'); }
+  set id(value) { stringAttribute.set(this, 'id', value); }
+
+  get className() { return this.classList.value; }
+  set className(value) {
+    const {classList} = this;
+    classList.clear();
+    classList.add(...($String(value).split(/\s+/)));
+  }
+
+  get nodeName() { return localCase(this); }
+  get tagName() { return localCase(this); }
+
+  get classList() {
+    return this[CLASS_LIST] || (
+      this[CLASS_LIST] = new DOMTokenList(this)
+    );
+  }
+
+  get dataset() {
+    return this[DATASET] || (
+      this[DATASET] = new DOMStringMap(this)
+    );
+  }
+
+  getBoundingClientRect() {
+    return {
+      x: 0,
+      y: 0,
+      bottom: 0,
+      height: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      width: 0
+    };
+  }
+
+  get nonce() { return stringAttribute.get(this, 'nonce'); }
+  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
+
+  get style() {
+    return this[STYLE] || (
+      this[STYLE] = new CSSStyleDeclaration$1(this)
+    );
+  }
+
+  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
+  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
+
+  get slot() { return stringAttribute.get(this, 'slot'); }
+  set slot(value) { stringAttribute.set(this, 'slot', value); }
+  // </specialGetters>
+
+
+  // <contentRelated>
+  get innerText() {
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      if (next.nodeType === TEXT_NODE) {
+        text.push(next.textContent.replace(/\s+/g, ' '));
+      } else if(
+        text.length && next[NEXT] != end &&
+        BLOCK_ELEMENTS.has(next.tagName)
+      ) {
+        text.push('\n');
+      }
+      next = next[NEXT];
+    }
+    return text.join('');
+  }
+
+  /**
+   * @returns {String}
+   */
+  get textContent() {
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      const nodeType = next.nodeType;
+      if (nodeType === TEXT_NODE || nodeType === CDATA_SECTION_NODE)
+        text.push(next.textContent);
+      next = next[NEXT];
+    }
+    return text.join('');
+  }
+
+  set textContent(text) {
+    this.replaceChildren();
+    if (text != null && text !== '')
+      this.appendChild(new Text$1(this.ownerDocument, text));
+  }
+
+  get innerHTML() {
+    return getInnerHtml(this);
+  }
+  set innerHTML(html) {
+    setInnerHtml(this, html);
+  }
+
+  get outerHTML() { return this.toString(); }
+  set outerHTML(html) {
+    const template = this.ownerDocument.createElement('');
+    template.innerHTML = html;
+    this.replaceWith(...template.childNodes);
+  }
+  // </contentRelated>
+
+  // <attributes>
+  get attributes() {
+    const attributes = new NamedNodeMap(this);
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      attributes.push(next);
+      next = next[NEXT];
+    }
+    return new Proxy(attributes, attributesHandler);
+  }
+
+  focus() { this.dispatchEvent(new GlobalEvent('focus')); }
+
+  getAttribute(name) {
+    if (name === 'class')
+      return this.className;
+    const attribute = this.getAttributeNode(name);
+    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
+  }
+
+  getAttributeNode(name) {
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      if (next.name === name)
+        return next;
+      next = next[NEXT];
+    }
+    return null;
+  }
+
+  getAttributeNames() {
+    const attributes = new NodeList;
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      attributes.push(next.name);
+      next = next[NEXT];
+    }
+    return attributes;
+  }
+
+  hasAttribute(name) { return !!this.getAttributeNode(name); }
+  hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
+
+  removeAttribute(name) {
+    if (name === 'class' && this[CLASS_LIST])
+        this[CLASS_LIST].clear();
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      if (next.name === name) {
+        removeAttribute(this, next);
+        return;
+      }
+      next = next[NEXT];
+    }
+  }
+
+  removeAttributeNode(attribute) {
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      if (next === attribute) {
+        removeAttribute(this, next);
+        return;
+      }
+      next = next[NEXT];
+    }
+  }
+
+  setAttribute(name, value) {
+    if (name === 'class')
+      this.className = value;
+    else {
+      const attribute = this.getAttributeNode(name);
+      if (attribute)
+        attribute.value = value;
+      else
+        setAttribute(this, new Attr$1(this.ownerDocument, name, value));
+    }
+  }
+
+  setAttributeNode(attribute) {
+    const {name} = attribute;
+    const previously = this.getAttributeNode(name);
+    if (previously !== attribute) {
+      if (previously)
+        this.removeAttributeNode(previously);
+      const {ownerElement} = attribute;
+      if (ownerElement)
+        ownerElement.removeAttributeNode(attribute);
+      setAttribute(this, attribute);
+    }
+    return previously;
+  }
+
+  toggleAttribute(name, force) {
+    if (this.hasAttribute(name)) {
+      if (!force) {
+        this.removeAttribute(name);
+        return false;
+      }
+      return true;
+    }
+    else if (force || arguments.length === 1) {
+      this.setAttribute(name, '');
+      return true;
+    }
+    return false;
+  }
+  // </attributes>
+
+  // <ShadowDOM>
+  get shadowRoot() {
+    if (shadowRoots.has(this)) {
+      const {mode, shadowRoot} = shadowRoots.get(this);
+      if (mode === 'open')
+        return shadowRoot;
+    }
+    return null;
+  }
+
+  attachShadow(init) {
+    if (shadowRoots.has(this))
+      throw new Error('operation not supported');
+    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
+    //       but until DSD is out, I am not sure I should spend time on this.
+    const shadowRoot = new ShadowRoot$1(this);
+    shadowRoots.set(this, {
+      mode: init.mode,
+      shadowRoot
+    });
+    return shadowRoot;
+  }
+  // </ShadowDOM>
+
+  // <selectors>
+  matches(selectors) { return matches(this, selectors); }
+  closest(selectors) {
+    let parentElement = this;
+    const matches = prepareMatch(parentElement, selectors);
+    while (parentElement && !matches(parentElement))
+      parentElement = parentElement.parentElement;
+    return parentElement;
+  }
+  // </selectors>
+
+  // <insertAdjacent>
+  insertAdjacentElement(position, element) {
+    const {parentElement} = this;
+    switch (position) {
+      case 'beforebegin':
+        if (parentElement) {
+          parentElement.insertBefore(element, this);
+          break;
+        }
+        return null;
+      case 'afterbegin':
+        this.insertBefore(element, this.firstChild);
+        break;
+      case 'beforeend':
+        this.insertBefore(element, null);
+        break;
+      case 'afterend':
+        if (parentElement) {
+          parentElement.insertBefore(element, this.nextSibling);
+          break;
+        }
+        return null;
+    }
+    return element;
+  }
+
+  insertAdjacentHTML(position, html) {
+    this.insertAdjacentElement(position, htmlToFragment(this.ownerDocument, html));
+  }
+
+  insertAdjacentText(position, text) {
+    const node = this.ownerDocument.createTextNode(text);
+    this.insertAdjacentElement(position, node);
+  }
+  // </insertAdjacent>
+
+  cloneNode(deep = false) {
+    const {ownerDocument, localName} = this;
+    const addNext = next => {
+      next.parentNode = parentNode;
+      knownAdjacent($next, next);
+      $next = next;
+    };
+    const clone = create(ownerDocument, this, localName);
+    let parentNode = clone, $next = clone;
+    let {[NEXT]: next, [END]: prev} = this;
+    while (next !== prev && (deep || next.nodeType === ATTRIBUTE_NODE)) {
+      switch (next.nodeType) {
+        case NODE_END:
+          knownAdjacent($next, parentNode[END]);
+          $next = parentNode[END];
+          parentNode = parentNode.parentNode;
+          break;
+        case ELEMENT_NODE: {
+          const node = create(ownerDocument, next, next.localName);
+          addNext(node);
+          parentNode = node;
+          break;
+        }
+        case ATTRIBUTE_NODE: {
+          const attr = next.cloneNode(deep);
+          attr.ownerElement = parentNode;
+          addNext(attr);
+          break;
+        }
+        case TEXT_NODE:
+        case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
+          addNext(next.cloneNode(deep));
+          break;
+      }
+      next = next[NEXT];
+    }
+    knownAdjacent($next, clone[END]);
+    return clone;
+  }
+
+  // <custom>
+  toString() {
+    const out = [];
+    const {[END]: end} = this;
+    let next = {[NEXT]: this};
+    let isOpened = false;
+    do {
+      next = next[NEXT];
+      switch (next.nodeType) {
+        case ATTRIBUTE_NODE: {
+          const attr = ' ' + next;
+          switch (attr) {
+            case ' id':
+            case ' class':
+            case ' style':
+              break;
+            default:
+              out.push(attr);
+          }
+          break;
+        }
+        case NODE_END: {
+          const start = next[START];
+          if (isOpened) {
+            if ('ownerSVGElement' in start)
+              out.push(' />');
+            else if (isVoid(start))
+              out.push(ignoreCase(start) ? '>' : ' />');
+            else
+              out.push(`></${start.localName}>`);
+            isOpened = false;
+          }
+          else
+            out.push(`</${start.localName}>`);
+          break;
+        }
+        case ELEMENT_NODE:
+          if (isOpened)
+            out.push('>');
+          if (next.toString !== this.toString) {
+            out.push(next.toString());
+            next = next[END];
+            isOpened = false;
+          }
+          else {
+            out.push(`<${next.localName}`);
+            isOpened = true;
+          }
+          break;
+        case TEXT_NODE:
+        case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
+          out.push((isOpened ? '>' : '') + next);
+          isOpened = false;
+          break;
+      }
+    } while (next !== end);
+    return out.join('');
+  }
+
+  toJSON() {
+    const json = [];
+    elementAsJSON(this, json);
+    return json;
+  }
+  // </custom>
+
+
+  /* c8 ignore start */
+  getAttributeNS(_, name) { return this.getAttribute(name); }
+  getElementsByTagNameNS(_, name) { return this.getElementsByTagName(name); }
+  hasAttributeNS(_, name) { return this.hasAttribute(name); }
+  removeAttributeNS(_, name) { this.removeAttribute(name); }
+  setAttributeNS(_, name, value) { this.setAttribute(name, value); }
+  setAttributeNodeNS(attr) { return this.setAttributeNode(attr); }
+  /* c8 ignore stop */
+};
+
+const classNames = new WeakMap;
+
+const handler = {
+  get(target, name) {
+    return target[name];
+  },
+  set(target, name, value) {
+    target[name] = value;
+    return true;
+  }
+};
+
+/**
+ * @implements globalThis.SVGElement
+ */
+let SVGElement$1 = class SVGElement extends Element$1 {
+  constructor(ownerDocument, localName, ownerSVGElement = null) {
+    super(ownerDocument, localName);
+    this.ownerSVGElement = ownerSVGElement;
+  }
+
+  get className() {
+    if (!classNames.has(this))
+      classNames.set(this, new Proxy({baseVal: '', animVal: ''}, handler));
+    return classNames.get(this);
+  }
+
+  /* c8 ignore start */
+  set className(value) {
+    const {classList} = this;
+    classList.clear();
+    classList.add(...($String(value).split(/\s+/)));
+  }
+  /* c8 ignore stop */
+
+  get namespaceURI() {
+    return 'http://www.w3.org/2000/svg';
+  }
+
+  getAttribute(name) {
+    return name === 'class' ?
+      [...this.classList].join(' ') :
+      super.getAttribute(name);
+  }
+
+  setAttribute(name, value) {
+    if (name === 'class')
+      this.className = value;
+    else if (name === 'style') {
+      const {className} = this;
+      className.baseVal = className.animVal = value;
+    }
+    super.setAttribute(name, value);
+  }
+};
+
+/* c8 ignore start */
+const illegalConstructor = () => {
+  throw new TypeError('Illegal constructor');
+};
+
+function Attr() { illegalConstructor(); }
+setPrototypeOf(Attr, Attr$1);
+Attr.prototype = Attr$1.prototype;
+
+function CDATASection() { illegalConstructor(); }
+setPrototypeOf(CDATASection, CDATASection$1);
+CDATASection.prototype = CDATASection$1.prototype;
+
+function CharacterData() { illegalConstructor(); }
+setPrototypeOf(CharacterData, CharacterData$1);
+CharacterData.prototype = CharacterData$1.prototype;
+
+function Comment() { illegalConstructor(); }
+setPrototypeOf(Comment, Comment$2);
+Comment.prototype = Comment$2.prototype;
+
+function DocumentFragment() { illegalConstructor(); }
+setPrototypeOf(DocumentFragment, DocumentFragment$1);
+DocumentFragment.prototype = DocumentFragment$1.prototype;
+
+function DocumentType() { illegalConstructor(); }
+setPrototypeOf(DocumentType, DocumentType$1);
+DocumentType.prototype = DocumentType$1.prototype;
+
+function Element() { illegalConstructor(); }
+setPrototypeOf(Element, Element$1);
+Element.prototype = Element$1.prototype;
+
+function Node() { illegalConstructor(); }
+setPrototypeOf(Node, Node$1);
+Node.prototype = Node$1.prototype;
+
+function ShadowRoot() { illegalConstructor(); }
+setPrototypeOf(ShadowRoot, ShadowRoot$1);
+ShadowRoot.prototype = ShadowRoot$1.prototype;
+
+function Text() { illegalConstructor(); }
+setPrototypeOf(Text, Text$1);
+Text.prototype = Text$1.prototype;
+
+function SVGElement() { illegalConstructor(); }
+setPrototypeOf(SVGElement, SVGElement$1);
+SVGElement.prototype = SVGElement$1.prototype;
+/* c8 ignore stop */
+
+const Facades = {
+  Attr,
+  CDATASection,
+  CharacterData,
+  Comment,
+  DocumentFragment,
+  DocumentType,
+  Element,
+  Node,
+  ShadowRoot,
+  Text,
+  SVGElement
+};
+
+const Level0 = new WeakMap;
+const level0 = {
+  get(element, name) {
+    return Level0.has(element) && Level0.get(element)[name] || null;
+  },
+  set(element, name, value) {
+    if (!Level0.has(element))
+      Level0.set(element, {});
+    const handlers = Level0.get(element);
+    const type = name.slice(2);
+    if (handlers[name])
+      element.removeEventListener(type, handlers[name], false);
+    if ((handlers[name] = value))
+      element.addEventListener(type, value, false);
+  }
+};
+
+/**
+ * @implements globalThis.HTMLElement
+ */
+class HTMLElement extends Element$1 {
+
+  static get observedAttributes() { return []; }
+
+  constructor(ownerDocument = null, localName = '') {
+    super(ownerDocument, localName);
+
+    const ownerLess = !ownerDocument;
+    let options;
+
+    if (ownerLess) {
+      const {constructor: Class} = this;
+      if (!Classes.has(Class))
+        throw new Error('unable to initialize this Custom Element');
+      ({ownerDocument, localName, options} = Classes.get(Class));
+    }
+
+    if (ownerDocument[UPGRADE]) {
+      const {element, values} = ownerDocument[UPGRADE];
+      ownerDocument[UPGRADE] = null;
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
+
+    if (ownerLess) {
+      this.ownerDocument = this[END].ownerDocument = ownerDocument;
+      this.localName = localName;
+      customElements.set(this, {connected: false});
+      if (options.is)
+        this.setAttribute('is', options.is);
+    }
+  }
+
+  /* c8 ignore start */
+
+  /* TODO: what about these?
+  offsetHeight
+  offsetLeft
+  offsetParent
+  offsetTop
+  offsetWidth
+  */
+
+  blur() { this.dispatchEvent(new GlobalEvent('blur')); }
+  click() {
+    const clickEvent = new GlobalEvent('click', {bubbles: true, cancelable: true});
+    clickEvent.button = 0;
+
+    this.dispatchEvent(clickEvent);
+  }
+
+  // Boolean getters
+  get accessKeyLabel() {
+    const {accessKey} = this;
+    return accessKey && `Alt+Shift+${accessKey}`;
+  }
+  get isContentEditable() { return this.hasAttribute('contenteditable'); }
+
+  // Boolean Accessors
+  get contentEditable() { return booleanAttribute.get(this, 'contenteditable'); }
+  set contentEditable(value) { booleanAttribute.set(this, 'contenteditable', value); }
+  get draggable() { return booleanAttribute.get(this, 'draggable'); }
+  set draggable(value) { booleanAttribute.set(this, 'draggable', value); }
+  get hidden() { return booleanAttribute.get(this, 'hidden'); }
+  set hidden(value) { booleanAttribute.set(this, 'hidden', value); }
+  get spellcheck() { return booleanAttribute.get(this, 'spellcheck'); }
+  set spellcheck(value) { booleanAttribute.set(this, 'spellcheck', value); }
+
+  // String Accessors
+  get accessKey() { return stringAttribute.get(this, 'accesskey'); }
+  set accessKey(value) { stringAttribute.set(this, 'accesskey', value); }
+  get dir() { return stringAttribute.get(this, 'dir'); }
+  set dir(value) { stringAttribute.set(this, 'dir', value); }
+  get lang() { return stringAttribute.get(this, 'lang'); }
+  set lang(value) { stringAttribute.set(this, 'lang', value); }
+  get title() { return stringAttribute.get(this, 'title'); }
+  set title(value) { stringAttribute.set(this, 'title', value); }
+
+  // DOM Level 0
+  get onabort() { return level0.get(this, 'onabort'); }
+  set onabort(value) { level0.set(this, 'onabort', value); }
+
+  get onblur() { return level0.get(this, 'onblur'); }
+  set onblur(value) { level0.set(this, 'onblur', value); }
+
+  get oncancel() { return level0.get(this, 'oncancel'); }
+  set oncancel(value) { level0.set(this, 'oncancel', value); }
+
+  get oncanplay() { return level0.get(this, 'oncanplay'); }
+  set oncanplay(value) { level0.set(this, 'oncanplay', value); }
+
+  get oncanplaythrough() { return level0.get(this, 'oncanplaythrough'); }
+  set oncanplaythrough(value) { level0.set(this, 'oncanplaythrough', value); }
+
+  get onchange() { return level0.get(this, 'onchange'); }
+  set onchange(value) { level0.set(this, 'onchange', value); }
+
+  get onclick() { return level0.get(this, 'onclick'); }
+  set onclick(value) { level0.set(this, 'onclick', value); }
+
+  get onclose() { return level0.get(this, 'onclose'); }
+  set onclose(value) { level0.set(this, 'onclose', value); }
+
+  get oncontextmenu() { return level0.get(this, 'oncontextmenu'); }
+  set oncontextmenu(value) { level0.set(this, 'oncontextmenu', value); }
+
+  get oncuechange() { return level0.get(this, 'oncuechange'); }
+  set oncuechange(value) { level0.set(this, 'oncuechange', value); }
+
+  get ondblclick() { return level0.get(this, 'ondblclick'); }
+  set ondblclick(value) { level0.set(this, 'ondblclick', value); }
+
+  get ondrag() { return level0.get(this, 'ondrag'); }
+  set ondrag(value) { level0.set(this, 'ondrag', value); }
+
+  get ondragend() { return level0.get(this, 'ondragend'); }
+  set ondragend(value) { level0.set(this, 'ondragend', value); }
+
+  get ondragenter() { return level0.get(this, 'ondragenter'); }
+  set ondragenter(value) { level0.set(this, 'ondragenter', value); }
+
+  get ondragleave() { return level0.get(this, 'ondragleave'); }
+  set ondragleave(value) { level0.set(this, 'ondragleave', value); }
+
+  get ondragover() { return level0.get(this, 'ondragover'); }
+  set ondragover(value) { level0.set(this, 'ondragover', value); }
+
+  get ondragstart() { return level0.get(this, 'ondragstart'); }
+  set ondragstart(value) { level0.set(this, 'ondragstart', value); }
+
+  get ondrop() { return level0.get(this, 'ondrop'); }
+  set ondrop(value) { level0.set(this, 'ondrop', value); }
+
+  get ondurationchange() { return level0.get(this, 'ondurationchange'); }
+  set ondurationchange(value) { level0.set(this, 'ondurationchange', value); }
+
+  get onemptied() { return level0.get(this, 'onemptied'); }
+  set onemptied(value) { level0.set(this, 'onemptied', value); }
+
+  get onended() { return level0.get(this, 'onended'); }
+  set onended(value) { level0.set(this, 'onended', value); }
+
+  get onerror() { return level0.get(this, 'onerror'); }
+  set onerror(value) { level0.set(this, 'onerror', value); }
+
+  get onfocus() { return level0.get(this, 'onfocus'); }
+  set onfocus(value) { level0.set(this, 'onfocus', value); }
+
+  get oninput() { return level0.get(this, 'oninput'); }
+  set oninput(value) { level0.set(this, 'oninput', value); }
+
+  get oninvalid() { return level0.get(this, 'oninvalid'); }
+  set oninvalid(value) { level0.set(this, 'oninvalid', value); }
+
+  get onkeydown() { return level0.get(this, 'onkeydown'); }
+  set onkeydown(value) { level0.set(this, 'onkeydown', value); }
+
+  get onkeypress() { return level0.get(this, 'onkeypress'); }
+  set onkeypress(value) { level0.set(this, 'onkeypress', value); }
+
+  get onkeyup() { return level0.get(this, 'onkeyup'); }
+  set onkeyup(value) { level0.set(this, 'onkeyup', value); }
+
+  get onload() { return level0.get(this, 'onload'); }
+  set onload(value) { level0.set(this, 'onload', value); }
+
+  get onloadeddata() { return level0.get(this, 'onloadeddata'); }
+  set onloadeddata(value) { level0.set(this, 'onloadeddata', value); }
+
+  get onloadedmetadata() { return level0.get(this, 'onloadedmetadata'); }
+  set onloadedmetadata(value) { level0.set(this, 'onloadedmetadata', value); }
+
+  get onloadstart() { return level0.get(this, 'onloadstart'); }
+  set onloadstart(value) { level0.set(this, 'onloadstart', value); }
+
+  get onmousedown() { return level0.get(this, 'onmousedown'); }
+  set onmousedown(value) { level0.set(this, 'onmousedown', value); }
+
+  get onmouseenter() { return level0.get(this, 'onmouseenter'); }
+  set onmouseenter(value) { level0.set(this, 'onmouseenter', value); }
+
+  get onmouseleave() { return level0.get(this, 'onmouseleave'); }
+  set onmouseleave(value) { level0.set(this, 'onmouseleave', value); }
+
+  get onmousemove() { return level0.get(this, 'onmousemove'); }
+  set onmousemove(value) { level0.set(this, 'onmousemove', value); }
+
+  get onmouseout() { return level0.get(this, 'onmouseout'); }
+  set onmouseout(value) { level0.set(this, 'onmouseout', value); }
+
+  get onmouseover() { return level0.get(this, 'onmouseover'); }
+  set onmouseover(value) { level0.set(this, 'onmouseover', value); }
+
+  get onmouseup() { return level0.get(this, 'onmouseup'); }
+  set onmouseup(value) { level0.set(this, 'onmouseup', value); }
+
+  get onmousewheel() { return level0.get(this, 'onmousewheel'); }
+  set onmousewheel(value) { level0.set(this, 'onmousewheel', value); }
+
+  get onpause() { return level0.get(this, 'onpause'); }
+  set onpause(value) { level0.set(this, 'onpause', value); }
+
+  get onplay() { return level0.get(this, 'onplay'); }
+  set onplay(value) { level0.set(this, 'onplay', value); }
+
+  get onplaying() { return level0.get(this, 'onplaying'); }
+  set onplaying(value) { level0.set(this, 'onplaying', value); }
+
+  get onprogress() { return level0.get(this, 'onprogress'); }
+  set onprogress(value) { level0.set(this, 'onprogress', value); }
+
+  get onratechange() { return level0.get(this, 'onratechange'); }
+  set onratechange(value) { level0.set(this, 'onratechange', value); }
+
+  get onreset() { return level0.get(this, 'onreset'); }
+  set onreset(value) { level0.set(this, 'onreset', value); }
+
+  get onresize() { return level0.get(this, 'onresize'); }
+  set onresize(value) { level0.set(this, 'onresize', value); }
+
+  get onscroll() { return level0.get(this, 'onscroll'); }
+  set onscroll(value) { level0.set(this, 'onscroll', value); }
+
+  get onseeked() { return level0.get(this, 'onseeked'); }
+  set onseeked(value) { level0.set(this, 'onseeked', value); }
+
+  get onseeking() { return level0.get(this, 'onseeking'); }
+  set onseeking(value) { level0.set(this, 'onseeking', value); }
+
+  get onselect() { return level0.get(this, 'onselect'); }
+  set onselect(value) { level0.set(this, 'onselect', value); }
+
+  get onshow() { return level0.get(this, 'onshow'); }
+  set onshow(value) { level0.set(this, 'onshow', value); }
+
+  get onstalled() { return level0.get(this, 'onstalled'); }
+  set onstalled(value) { level0.set(this, 'onstalled', value); }
+
+  get onsubmit() { return level0.get(this, 'onsubmit'); }
+  set onsubmit(value) { level0.set(this, 'onsubmit', value); }
+
+  get onsuspend() { return level0.get(this, 'onsuspend'); }
+  set onsuspend(value) { level0.set(this, 'onsuspend', value); }
+
+  get ontimeupdate() { return level0.get(this, 'ontimeupdate'); }
+  set ontimeupdate(value) { level0.set(this, 'ontimeupdate', value); }
+
+  get ontoggle() { return level0.get(this, 'ontoggle'); }
+  set ontoggle(value) { level0.set(this, 'ontoggle', value); }
+
+  get onvolumechange() { return level0.get(this, 'onvolumechange'); }
+  set onvolumechange(value) { level0.set(this, 'onvolumechange', value); }
+
+  get onwaiting() { return level0.get(this, 'onwaiting'); }
+  set onwaiting(value) { level0.set(this, 'onwaiting', value); }
+
+  get onauxclick() { return level0.get(this, 'onauxclick'); }
+  set onauxclick(value) { level0.set(this, 'onauxclick', value); }
+
+  get ongotpointercapture() { return level0.get(this, 'ongotpointercapture'); }
+  set ongotpointercapture(value) { level0.set(this, 'ongotpointercapture', value); }
+
+  get onlostpointercapture() { return level0.get(this, 'onlostpointercapture'); }
+  set onlostpointercapture(value) { level0.set(this, 'onlostpointercapture', value); }
+
+  get onpointercancel() { return level0.get(this, 'onpointercancel'); }
+  set onpointercancel(value) { level0.set(this, 'onpointercancel', value); }
+
+  get onpointerdown() { return level0.get(this, 'onpointerdown'); }
+  set onpointerdown(value) { level0.set(this, 'onpointerdown', value); }
+
+  get onpointerenter() { return level0.get(this, 'onpointerenter'); }
+  set onpointerenter(value) { level0.set(this, 'onpointerenter', value); }
+
+  get onpointerleave() { return level0.get(this, 'onpointerleave'); }
+  set onpointerleave(value) { level0.set(this, 'onpointerleave', value); }
+
+  get onpointermove() { return level0.get(this, 'onpointermove'); }
+  set onpointermove(value) { level0.set(this, 'onpointermove', value); }
+
+  get onpointerout() { return level0.get(this, 'onpointerout'); }
+  set onpointerout(value) { level0.set(this, 'onpointerout', value); }
+
+  get onpointerover() { return level0.get(this, 'onpointerover'); }
+  set onpointerover(value) { level0.set(this, 'onpointerover', value); }
+
+  get onpointerup() { return level0.get(this, 'onpointerup'); }
+  set onpointerup(value) { level0.set(this, 'onpointerup', value); }
+  /* c8 ignore stop */
+
+}
+
+const tagName$h = 'template';
+
+/**
+ * @implements globalThis.HTMLTemplateElement
+ */
+class HTMLTemplateElement extends HTMLElement {
+  constructor(ownerDocument) {
+    super(ownerDocument, tagName$h);
+    const content = this.ownerDocument.createDocumentFragment();
+    (this[CONTENT] = content)[PRIVATE] = this;
+  }
+
+  get content() {
+    if (this.hasChildNodes() && !this[CONTENT].hasChildNodes()) {
+      for (const node of this.childNodes)
+        this[CONTENT].appendChild(node.cloneNode(true));
+    }
+    return this[CONTENT];
+  }
+}
+
+registerHTMLClass(tagName$h, HTMLTemplateElement);
+
+/**
+ * @implements globalThis.HTMLHtmlElement
+ */
+class HTMLHtmlElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'html') {
+    super(ownerDocument, localName);
+  }
+}
+
+const {toString} = HTMLElement.prototype;
+
+class TextElement extends HTMLElement {
+
+  get innerHTML() { return this.textContent; }
+  set innerHTML(html) { this.textContent = html; }
+
+  toString() {
+    const outerHTML = toString.call(this.cloneNode());
+    return outerHTML.replace('><', () => `>${this.textContent}<`);
+  }
+}
+
+const tagName$g = 'script';
+
+/**
+ * @implements globalThis.HTMLScriptElement
+ */
+class HTMLScriptElement extends TextElement {
+  constructor(ownerDocument, localName = tagName$g) {
+    super(ownerDocument, localName);
+  }
+
+  get type() {
+    return stringAttribute.get(this, 'type');
+  }
+  set type(value) {
+    stringAttribute.set(this, 'type', value);
+  }
+
+  get src() {
+    return stringAttribute.get(this, 'src');
+  }
+  set src(value) {
+    stringAttribute.set(this, 'src', value);
+  }
+
+  get defer() {
+    return booleanAttribute.get(this, 'defer');
+  }
+
+  set defer(value) {
+    booleanAttribute.set(this, 'defer', value);
+  }
+
+  get crossOrigin() {
+    return stringAttribute.get(this, 'crossorigin');
+  }
+  set crossOrigin(value) {
+    stringAttribute.set(this, 'crossorigin', value);
+  }
+
+  get nomodule() {
+    return booleanAttribute.get(this, 'nomodule');
+  }
+  set nomodule(value) {
+    booleanAttribute.set(this, 'nomodule', value);
+  }
+
+  get referrerPolicy() {
+    return stringAttribute.get(this, 'referrerpolicy');
+  }
+  set referrerPolicy(value) {
+    stringAttribute.set(this, 'referrerpolicy', value);
+  }
+
+  get nonce() {
+    return stringAttribute.get(this, 'nonce');
+  }
+  set nonce(value) {
+    stringAttribute.set(this, 'nonce', value);
+  }
+
+  get async() {
+    return booleanAttribute.get(this, 'async');
+  }
+  set async(value) {
+    booleanAttribute.set(this, 'async', value);
+  }
+
+  get text() { return this.textContent; }
+  set text(content) { this.textContent = content; }
+}
+
+registerHTMLClass(tagName$g, HTMLScriptElement);
+
+/**
+ * @implements globalThis.HTMLFrameElement
+ */
+class HTMLFrameElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'frame') {
+    super(ownerDocument, localName);
+  }
+}
+
+const tagName$f = 'iframe';
+
+/**
+ * @implements globalThis.HTMLIFrameElement
+ */
+class HTMLIFrameElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName$f) {
+    super(ownerDocument, localName);
+  }
+
+  /* c8 ignore start */
+  get src() { return stringAttribute.get(this, 'src'); }
+  set src(value) { stringAttribute.set(this, 'src', value); }
+
+  get srcdoc() { return stringAttribute.get(this, "srcdoc"); }
+  set srcdoc(value) { stringAttribute.set(this, "srcdoc", value); }
+
+  get name() { return stringAttribute.get(this, "name"); }
+  set name(value) { stringAttribute.set(this, "name", value); }
+
+  get allow() { return stringAttribute.get(this, "allow"); }
+  set allow(value) { stringAttribute.set(this, "allow", value); }
+
+  get allowFullscreen() { return booleanAttribute.get(this, "allowfullscreen"); }
+  set allowFullscreen(value) { booleanAttribute.set(this, "allowfullscreen", value); }
+  
+  get referrerPolicy() { return stringAttribute.get(this, "referrerpolicy"); }
+  set referrerPolicy(value) { stringAttribute.set(this, "referrerpolicy", value); }
+  
+  get loading() { return stringAttribute.get(this, "loading"); }
+  set loading(value) { stringAttribute.set(this, "loading", value); }
+  /* c8 ignore stop */
+}
+
+registerHTMLClass(tagName$f, HTMLIFrameElement);
+
+/**
+ * @implements globalThis.HTMLObjectElement
+ */
+class HTMLObjectElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'object') {
+    super(ownerDocument, localName);
+  }
+}
+
+/**
+ * @implements globalThis.HTMLHeadElement
+ */
+class HTMLHeadElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'head') {
+    super(ownerDocument, localName);
+  }
+}
+
+/**
+ * @implements globalThis.HTMLBodyElement
+ */
+class HTMLBodyElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'body') {
+    super(ownerDocument, localName);
+  }
 }
 
 // @ts-nocheck
@@ -13597,7 +14932,7 @@ var CSSStyleRule = class CSSStyleRule extends CSSGroupingRule {
 		super(rules, parseRuleInBlock);
 		this._selectorText = selectorText;
 		this._selectorAST = selectorAST;
-		this._style = new CSSStyleDeclaration$1(styleDeclarations);
+		this._style = new CSSStyleDeclaration(styleDeclarations);
 		this._style._parentRule = this;
 		hideInternalFields(this);
 	}
@@ -14159,7 +15494,7 @@ var CSSNestedDeclarations = class extends CSSRule {
 	}
 	constructor(styleDeclarations) {
 		super();
-		this._style = new CSSStyleDeclaration$1(styleDeclarations);
+		this._style = new CSSStyleDeclaration(styleDeclarations);
 		this._style._parentRule = this;
 		hideInternalFields(this);
 	}
@@ -15018,7 +16353,7 @@ var Parser = class Parser {
 		return rule;
 	}
 	parseStyleAttribute() {
-		return new CSSStyleDeclaration$1(this.consumeDeclarationsFromBlockContents(this.parseComponentValues()));
+		return new CSSStyleDeclaration(this.consumeDeclarationsFromBlockContents(this.parseComponentValues()));
 	}
 	parseStyleSheetContents() {
 		return this.consumeListOfRules(true);
@@ -16153,7 +17488,7 @@ function createStyleProxy(target) {
 		}
 	});
 }
-var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties {
+var CSSStyleDeclaration = class extends CSSStyleProperties {
 	/** @internal */ _declarations;
 	/** @internal */ _declMap;
 	/** @internal */ _readonly = false;
@@ -16647,14 +17982,14 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 		for (let i = 0; i < this.length; i++) yield this.item(i);
 	}
 };
-applyWebIDLInterface(CSSStyleDeclaration$1);
-Object.defineProperty(CSSStyleDeclaration$1.prototype, Symbol.toStringTag, {
+applyWebIDLInterface(CSSStyleDeclaration);
+Object.defineProperty(CSSStyleDeclaration.prototype, Symbol.toStringTag, {
 	value: "CSSStyleDeclaration",
 	configurable: true,
 	writable: false,
 	enumerable: false
 });
-var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration$1 {
+var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration {
 	/** @internal */
 	get _filterDeclarationsInConstructor() {
 		return true;
@@ -16664,7 +17999,7 @@ var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration$1 {
 		return property !== "animation-name" && super._isPropertySupported(property);
 	}
 };
-var CSSFontFaceDescriptors = class extends CSSStyleDeclaration$1 {
+var CSSFontFaceDescriptors = class extends CSSStyleDeclaration {
 	get [Symbol.toStringTag]() {
 		return "CSSFontFaceDescriptors";
 	}
@@ -16674,7 +18009,7 @@ var CSSFontFaceDescriptors = class extends CSSStyleDeclaration$1 {
 	}
 };
 const PAGE_DESCRIPTORS_INTERNAL = Symbol("CSSPageDescriptors.internal");
-var CSSPageDescriptors = class extends CSSStyleDeclaration$1 {
+var CSSPageDescriptors = class extends CSSStyleDeclaration {
 	/** @internal */
 	get _filterDeclarationsInConstructor() {
 		return true;
@@ -16704,1313 +18039,10 @@ for (const prop of PAGE_DESCRIPTOR_PROPERTIES) {
 		configurable: true
 	});
 }
-var CSSMarginDescriptors = class extends CSSStyleDeclaration$1 {};
+var CSSMarginDescriptors = class extends CSSStyleDeclaration {};
 applyWebIDLInterface(CSSFontFaceDescriptors);
 applyWebIDLInterface(CSSPageDescriptors);
 applyWebIDLInterface(CSSMarginDescriptors);
-
-const refs = new WeakMap;
-
-const sync = decl => {
-  const data = refs.get(decl);
-  if (!data) return;
-  const {element} = data;
-  const attr = element.getAttributeNode('style');
-  if (attr !== data.attr || (attr && attr[CHANGED])) {
-    data.attr = attr;
-    const {onChange} = decl;
-    decl.onChange = null;
-    decl.cssText = attr ? attr[VALUE] : '';
-    decl.onChange = onChange;
-    if (attr) attr[CHANGED] = false;
-  }
-};
-
-const handler$1 = {
-  get(target, prop, receiver) {
-    sync(target);
-    return Reflect.get(target, prop, receiver);
-  },
-
-  set(target, prop, value, receiver) {
-    sync(target);
-    return Reflect.set(target, prop, value, receiver);
-  },
-
-  has(target, prop) {
-    sync(target);
-    return Reflect.has(target, prop);
-  },
-
-  ownKeys(target) {
-    sync(target);
-    return Reflect.ownKeys(target);
-  },
-
-  getOwnPropertyDescriptor(target, prop) {
-    sync(target);
-    return Reflect.getOwnPropertyDescriptor(target, prop);
-  }
-};
-
-/**
- * @implements globalThis.CSSStyleDeclaration
- */
-class CSSStyleDeclaration extends CSSStyleDeclaration$1 {
-  /**
-   * @param {Element} [element]
-   */
-  constructor(element) {
-    const decl = super();
-    if (!element) return decl;
-
-    const attr = element.getAttributeNode('style');
-    if (attr && attr[VALUE]) {
-      decl.cssText = attr[VALUE];
-    }
-
-    const data = {element, attr};
-    refs.set(decl, data);
-
-    decl.onChange = () => {
-      let attr = element.getAttributeNode('style');
-      const cssText = decl.cssText;
-      if (!attr) {
-        if (cssText) {
-          attr = element.ownerDocument.createAttribute('style');
-          attr[VALUE] = cssText;
-          element.setAttributeNode(attr);
-          data.attr = attr;
-          attr[CHANGED] = false;
-        }
-      } else {
-        data.attr = attr;
-        if (attr[VALUE] !== cssText) {
-          attr.value = cssText;
-          attr[CHANGED] = false;
-        }
-      }
-    };
-
-    const proxy = new Proxy(decl, handler$1);
-    refs.set(proxy, data);
-    return proxy;
-  }
-
-  toString() {
-    sync(this);
-    return this.cssText;
-  }
-}
-
-// https://dom.spec.whatwg.org/#interface-event
-
-/* c8 ignore start */
-
-// Node 15 has Event but 14 and 12 don't
-const BUBBLING_PHASE = 3;
-const AT_TARGET = 2;
-const CAPTURING_PHASE = 1;
-const NONE = 0;
-
-function getCurrentTarget(ev) {
-  return ev.currentTarget;
-}
-
-/**
- * @implements globalThis.Event
- */
-class GlobalEvent {
-    static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
-    static get AT_TARGET() { return AT_TARGET; }
-    static get CAPTURING_PHASE() { return CAPTURING_PHASE; }
-    static get NONE() { return NONE; }
-
-    constructor(type, eventInitDict = {}) {
-      this.type = type;
-      this.bubbles = !!eventInitDict.bubbles;
-      this.cancelBubble = false;
-      this._stopImmediatePropagationFlag = false;
-      this.cancelable = !!eventInitDict.cancelable;
-      this.eventPhase = this.NONE;
-      this.timeStamp = Date.now();
-      this.defaultPrevented = false;
-      this.originalTarget = null;
-      this.returnValue = null;
-      this.srcElement = null;
-      this.target = null;
-      this._path = [];
-    }
-
-    get BUBBLING_PHASE() { return BUBBLING_PHASE; }
-    get AT_TARGET() { return AT_TARGET; }
-    get CAPTURING_PHASE() { return CAPTURING_PHASE; }
-    get NONE() { return NONE; }
-
-    preventDefault() { this.defaultPrevented = true; }
-
-    // simplified implementation, should be https://dom.spec.whatwg.org/#dom-event-composedpath
-    composedPath() {
-      return this._path.map(getCurrentTarget);
-    }
-
-    stopPropagation() {
-      this.cancelBubble = true;
-    }
-    
-    stopImmediatePropagation() {
-      this.stopPropagation();
-      this._stopImmediatePropagationFlag = true;
-    }
-  }
-
-/* c8 ignore stop */
-
-/**
- * @implements globalThis.NamedNodeMap
- */
-class NamedNodeMap extends Array {
-  constructor(ownerElement) {
-    super();
-    this.ownerElement = ownerElement;
-  }
-
-  getNamedItem(name) {
-    return this.ownerElement.getAttributeNode(name);
-  }
-
-  setNamedItem(attr) {
-    this.ownerElement.setAttributeNode(attr);
-    this.unshift(attr);
-  }
-
-  removeNamedItem(name) {
-    const item = this.getNamedItem(name);
-    this.ownerElement.removeAttribute(name);
-    this.splice(this.indexOf(item), 1);
-  }
-
-  item(index) {
-    return index < this.length ? this[index] : null;
-  }
-
-  /* c8 ignore start */
-  getNamedItemNS(_, name) {
-    return this.getNamedItem(name);
-  }
-
-  setNamedItemNS(_, attr) {
-    return this.setNamedItem(attr);
-  }
-
-  removeNamedItemNS(_, name) {
-    return this.removeNamedItem(name);
-  }
-  /* c8 ignore stop */
-}
-
-/**
- * @implements globalThis.ShadowRoot
- */
-let ShadowRoot$1 = class ShadowRoot extends NonElementParentNode {
-  constructor(host) {
-    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
-    this.host = host;
-  }
-
-  get innerHTML() {
-    return getInnerHtml(this);
-  }
-  set innerHTML(html) {
-    setInnerHtml(this, html);
-  }
-};
-
-// https://dom.spec.whatwg.org/#interface-element
-
-
-// <utils>
-const attributesHandler = {
-  get(target, key) {
-    return key in target ? target[key] : target.find(({name}) => name === key);
-  }
-};
-
-const create = (ownerDocument, element, localName)  => {
-  if ('ownerSVGElement' in element) {
-    const svg = ownerDocument.createElementNS(SVG_NAMESPACE, localName);
-    svg.ownerSVGElement = element.ownerSVGElement;
-    return svg;
-  }
-  return ownerDocument.createElement(localName);
-};
-
-const isVoid = ({localName, ownerDocument}) => {
-  return ownerDocument[MIME].voidElements.test(localName);
-};
-
-// </utils>
-
-/**
- * @implements globalThis.Element
- */
-let Element$1 = class Element extends ParentNode {
-  constructor(ownerDocument, localName) {
-    super(ownerDocument, localName, ELEMENT_NODE);
-    this[CLASS_LIST] = null;
-    this[DATASET] = null;
-    this[STYLE] = null;
-  }
-
-  // <Mixins>
-  get isConnected() { return isConnected(this); }
-  get parentElement() { return parentElement(this); }
-  get previousSibling() { return previousSibling(this); }
-  get nextSibling() { return nextSibling(this); }
-  get namespaceURI() {
-    return 'http://www.w3.org/1999/xhtml';
-  }
-
-  get previousElementSibling() { return previousElementSibling(this); }
-  get nextElementSibling() { return nextElementSibling$1(this); }
-
-  before(...nodes) { before(this, nodes); }
-  after(...nodes) { after(this, nodes); }
-  replaceWith(...nodes) { replaceWith(this, nodes); }
-  remove() { remove(this[PREV], this, this[END][NEXT]); }
-  // </Mixins>
-
-  // <specialGetters>
-  get id() { return stringAttribute.get(this, 'id'); }
-  set id(value) { stringAttribute.set(this, 'id', value); }
-
-  get className() { return this.classList.value; }
-  set className(value) {
-    const {classList} = this;
-    classList.clear();
-    classList.add(...($String(value).split(/\s+/)));
-  }
-
-  get nodeName() { return localCase(this); }
-  get tagName() { return localCase(this); }
-
-  get classList() {
-    return this[CLASS_LIST] || (
-      this[CLASS_LIST] = new DOMTokenList(this)
-    );
-  }
-
-  get dataset() {
-    return this[DATASET] || (
-      this[DATASET] = new DOMStringMap(this)
-    );
-  }
-
-  getBoundingClientRect() {
-    return {
-      x: 0,
-      y: 0,
-      bottom: 0,
-      height: 0,
-      left: 0,
-      right: 0,
-      top: 0,
-      width: 0
-    };
-  }
-
-  get nonce() { return stringAttribute.get(this, 'nonce'); }
-  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
-
-  get style() {
-    return this[STYLE] || (
-      this[STYLE] = new CSSStyleDeclaration(this)
-    );
-  }
-
-  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
-  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
-
-  get slot() { return stringAttribute.get(this, 'slot'); }
-  set slot(value) { stringAttribute.set(this, 'slot', value); }
-  // </specialGetters>
-
-
-  // <contentRelated>
-  get innerText() {
-    const text = [];
-    let {[NEXT]: next, [END]: end} = this;
-    while (next !== end) {
-      if (next.nodeType === TEXT_NODE) {
-        text.push(next.textContent.replace(/\s+/g, ' '));
-      } else if(
-        text.length && next[NEXT] != end &&
-        BLOCK_ELEMENTS.has(next.tagName)
-      ) {
-        text.push('\n');
-      }
-      next = next[NEXT];
-    }
-    return text.join('');
-  }
-
-  /**
-   * @returns {String}
-   */
-  get textContent() {
-    const text = [];
-    let {[NEXT]: next, [END]: end} = this;
-    while (next !== end) {
-      const nodeType = next.nodeType;
-      if (nodeType === TEXT_NODE || nodeType === CDATA_SECTION_NODE)
-        text.push(next.textContent);
-      next = next[NEXT];
-    }
-    return text.join('');
-  }
-
-  set textContent(text) {
-    this.replaceChildren();
-    if (text != null && text !== '')
-      this.appendChild(new Text$1(this.ownerDocument, text));
-  }
-
-  get innerHTML() {
-    return getInnerHtml(this);
-  }
-  set innerHTML(html) {
-    setInnerHtml(this, html);
-  }
-
-  get outerHTML() { return this.toString(); }
-  set outerHTML(html) {
-    const template = this.ownerDocument.createElement('');
-    template.innerHTML = html;
-    this.replaceWith(...template.childNodes);
-  }
-  // </contentRelated>
-
-  // <attributes>
-  get attributes() {
-    const attributes = new NamedNodeMap(this);
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      attributes.push(next);
-      next = next[NEXT];
-    }
-    return new Proxy(attributes, attributesHandler);
-  }
-
-  focus() { this.dispatchEvent(new GlobalEvent('focus')); }
-
-  getAttribute(name) {
-    if (name === 'class')
-      return this.className;
-    const attribute = this.getAttributeNode(name);
-    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
-  }
-
-  getAttributeNode(name) {
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name)
-        return next;
-      next = next[NEXT];
-    }
-    return null;
-  }
-
-  getAttributeNames() {
-    const attributes = new NodeList;
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      attributes.push(next.name);
-      next = next[NEXT];
-    }
-    return attributes;
-  }
-
-  hasAttribute(name) { return !!this.getAttributeNode(name); }
-  hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
-
-  removeAttribute(name) {
-    if (name === 'class' && this[CLASS_LIST])
-        this[CLASS_LIST].clear();
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name) {
-        removeAttribute(this, next);
-        return;
-      }
-      next = next[NEXT];
-    }
-  }
-
-  removeAttributeNode(attribute) {
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next === attribute) {
-        removeAttribute(this, next);
-        return;
-      }
-      next = next[NEXT];
-    }
-  }
-
-  setAttribute(name, value) {
-    if (name === 'class')
-      this.className = value;
-    else {
-      const attribute = this.getAttributeNode(name);
-      if (attribute)
-        attribute.value = value;
-      else
-        setAttribute(this, new Attr$1(this.ownerDocument, name, value));
-    }
-  }
-
-  setAttributeNode(attribute) {
-    const {name} = attribute;
-    const previously = this.getAttributeNode(name);
-    if (previously !== attribute) {
-      if (previously)
-        this.removeAttributeNode(previously);
-      const {ownerElement} = attribute;
-      if (ownerElement)
-        ownerElement.removeAttributeNode(attribute);
-      setAttribute(this, attribute);
-    }
-    return previously;
-  }
-
-  toggleAttribute(name, force) {
-    if (this.hasAttribute(name)) {
-      if (!force) {
-        this.removeAttribute(name);
-        return false;
-      }
-      return true;
-    }
-    else if (force || arguments.length === 1) {
-      this.setAttribute(name, '');
-      return true;
-    }
-    return false;
-  }
-  // </attributes>
-
-  // <ShadowDOM>
-  get shadowRoot() {
-    if (shadowRoots.has(this)) {
-      const {mode, shadowRoot} = shadowRoots.get(this);
-      if (mode === 'open')
-        return shadowRoot;
-    }
-    return null;
-  }
-
-  attachShadow(init) {
-    if (shadowRoots.has(this))
-      throw new Error('operation not supported');
-    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
-    //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot$1(this);
-    shadowRoots.set(this, {
-      mode: init.mode,
-      shadowRoot
-    });
-    return shadowRoot;
-  }
-  // </ShadowDOM>
-
-  // <selectors>
-  matches(selectors) { return matches(this, selectors); }
-  closest(selectors) {
-    let parentElement = this;
-    const matches = prepareMatch(parentElement, selectors);
-    while (parentElement && !matches(parentElement))
-      parentElement = parentElement.parentElement;
-    return parentElement;
-  }
-  // </selectors>
-
-  // <insertAdjacent>
-  insertAdjacentElement(position, element) {
-    const {parentElement} = this;
-    switch (position) {
-      case 'beforebegin':
-        if (parentElement) {
-          parentElement.insertBefore(element, this);
-          break;
-        }
-        return null;
-      case 'afterbegin':
-        this.insertBefore(element, this.firstChild);
-        break;
-      case 'beforeend':
-        this.insertBefore(element, null);
-        break;
-      case 'afterend':
-        if (parentElement) {
-          parentElement.insertBefore(element, this.nextSibling);
-          break;
-        }
-        return null;
-    }
-    return element;
-  }
-
-  insertAdjacentHTML(position, html) {
-    this.insertAdjacentElement(position, htmlToFragment(this.ownerDocument, html));
-  }
-
-  insertAdjacentText(position, text) {
-    const node = this.ownerDocument.createTextNode(text);
-    this.insertAdjacentElement(position, node);
-  }
-  // </insertAdjacent>
-
-  cloneNode(deep = false) {
-    const {ownerDocument, localName} = this;
-    const addNext = next => {
-      next.parentNode = parentNode;
-      knownAdjacent($next, next);
-      $next = next;
-    };
-    const clone = create(ownerDocument, this, localName);
-    let parentNode = clone, $next = clone;
-    let {[NEXT]: next, [END]: prev} = this;
-    while (next !== prev && (deep || next.nodeType === ATTRIBUTE_NODE)) {
-      switch (next.nodeType) {
-        case NODE_END:
-          knownAdjacent($next, parentNode[END]);
-          $next = parentNode[END];
-          parentNode = parentNode.parentNode;
-          break;
-        case ELEMENT_NODE: {
-          const node = create(ownerDocument, next, next.localName);
-          addNext(node);
-          parentNode = node;
-          break;
-        }
-        case ATTRIBUTE_NODE: {
-          const attr = next.cloneNode(deep);
-          attr.ownerElement = parentNode;
-          addNext(attr);
-          break;
-        }
-        case TEXT_NODE:
-        case COMMENT_NODE:
-        case CDATA_SECTION_NODE:
-          addNext(next.cloneNode(deep));
-          break;
-      }
-      next = next[NEXT];
-    }
-    knownAdjacent($next, clone[END]);
-    return clone;
-  }
-
-  // <custom>
-  toString() {
-    const out = [];
-    const {[END]: end} = this;
-    let next = {[NEXT]: this};
-    let isOpened = false;
-    do {
-      next = next[NEXT];
-      switch (next.nodeType) {
-        case ATTRIBUTE_NODE: {
-          const attr = ' ' + next;
-          switch (attr) {
-            case ' id':
-            case ' class':
-            case ' style':
-              break;
-            default:
-              out.push(attr);
-          }
-          break;
-        }
-        case NODE_END: {
-          const start = next[START];
-          if (isOpened) {
-            if ('ownerSVGElement' in start)
-              out.push(' />');
-            else if (isVoid(start))
-              out.push(ignoreCase(start) ? '>' : ' />');
-            else
-              out.push(`></${start.localName}>`);
-            isOpened = false;
-          }
-          else
-            out.push(`</${start.localName}>`);
-          break;
-        }
-        case ELEMENT_NODE:
-          if (isOpened)
-            out.push('>');
-          if (next.toString !== this.toString) {
-            out.push(next.toString());
-            next = next[END];
-            isOpened = false;
-          }
-          else {
-            out.push(`<${next.localName}`);
-            isOpened = true;
-          }
-          break;
-        case TEXT_NODE:
-        case COMMENT_NODE:
-        case CDATA_SECTION_NODE:
-          out.push((isOpened ? '>' : '') + next);
-          isOpened = false;
-          break;
-      }
-    } while (next !== end);
-    return out.join('');
-  }
-
-  toJSON() {
-    const json = [];
-    elementAsJSON(this, json);
-    return json;
-  }
-  // </custom>
-
-
-  /* c8 ignore start */
-  getAttributeNS(_, name) { return this.getAttribute(name); }
-  getElementsByTagNameNS(_, name) { return this.getElementsByTagName(name); }
-  hasAttributeNS(_, name) { return this.hasAttribute(name); }
-  removeAttributeNS(_, name) { this.removeAttribute(name); }
-  setAttributeNS(_, name, value) { this.setAttribute(name, value); }
-  setAttributeNodeNS(attr) { return this.setAttributeNode(attr); }
-  /* c8 ignore stop */
-};
-
-const classNames = new WeakMap;
-
-const handler = {
-  get(target, name) {
-    return target[name];
-  },
-  set(target, name, value) {
-    target[name] = value;
-    return true;
-  }
-};
-
-/**
- * @implements globalThis.SVGElement
- */
-let SVGElement$1 = class SVGElement extends Element$1 {
-  constructor(ownerDocument, localName, ownerSVGElement = null) {
-    super(ownerDocument, localName);
-    this.ownerSVGElement = ownerSVGElement;
-  }
-
-  get className() {
-    if (!classNames.has(this))
-      classNames.set(this, new Proxy({baseVal: '', animVal: ''}, handler));
-    return classNames.get(this);
-  }
-
-  /* c8 ignore start */
-  set className(value) {
-    const {classList} = this;
-    classList.clear();
-    classList.add(...($String(value).split(/\s+/)));
-  }
-  /* c8 ignore stop */
-
-  get namespaceURI() {
-    return 'http://www.w3.org/2000/svg';
-  }
-
-  getAttribute(name) {
-    return name === 'class' ?
-      [...this.classList].join(' ') :
-      super.getAttribute(name);
-  }
-
-  setAttribute(name, value) {
-    if (name === 'class')
-      this.className = value;
-    else if (name === 'style') {
-      const {className} = this;
-      className.baseVal = className.animVal = value;
-    }
-    super.setAttribute(name, value);
-  }
-};
-
-/* c8 ignore start */
-const illegalConstructor = () => {
-  throw new TypeError('Illegal constructor');
-};
-
-function Attr() { illegalConstructor(); }
-setPrototypeOf(Attr, Attr$1);
-Attr.prototype = Attr$1.prototype;
-
-function CDATASection() { illegalConstructor(); }
-setPrototypeOf(CDATASection, CDATASection$1);
-CDATASection.prototype = CDATASection$1.prototype;
-
-function CharacterData() { illegalConstructor(); }
-setPrototypeOf(CharacterData, CharacterData$1);
-CharacterData.prototype = CharacterData$1.prototype;
-
-function Comment() { illegalConstructor(); }
-setPrototypeOf(Comment, Comment$2);
-Comment.prototype = Comment$2.prototype;
-
-function DocumentFragment() { illegalConstructor(); }
-setPrototypeOf(DocumentFragment, DocumentFragment$1);
-DocumentFragment.prototype = DocumentFragment$1.prototype;
-
-function DocumentType() { illegalConstructor(); }
-setPrototypeOf(DocumentType, DocumentType$1);
-DocumentType.prototype = DocumentType$1.prototype;
-
-function Element() { illegalConstructor(); }
-setPrototypeOf(Element, Element$1);
-Element.prototype = Element$1.prototype;
-
-function Node() { illegalConstructor(); }
-setPrototypeOf(Node, Node$1);
-Node.prototype = Node$1.prototype;
-
-function ShadowRoot() { illegalConstructor(); }
-setPrototypeOf(ShadowRoot, ShadowRoot$1);
-ShadowRoot.prototype = ShadowRoot$1.prototype;
-
-function Text() { illegalConstructor(); }
-setPrototypeOf(Text, Text$1);
-Text.prototype = Text$1.prototype;
-
-function SVGElement() { illegalConstructor(); }
-setPrototypeOf(SVGElement, SVGElement$1);
-SVGElement.prototype = SVGElement$1.prototype;
-/* c8 ignore stop */
-
-const Facades = {
-  Attr,
-  CDATASection,
-  CharacterData,
-  Comment,
-  DocumentFragment,
-  DocumentType,
-  Element,
-  Node,
-  ShadowRoot,
-  Text,
-  SVGElement
-};
-
-const Level0 = new WeakMap;
-const level0 = {
-  get(element, name) {
-    return Level0.has(element) && Level0.get(element)[name] || null;
-  },
-  set(element, name, value) {
-    if (!Level0.has(element))
-      Level0.set(element, {});
-    const handlers = Level0.get(element);
-    const type = name.slice(2);
-    if (handlers[name])
-      element.removeEventListener(type, handlers[name], false);
-    if ((handlers[name] = value))
-      element.addEventListener(type, value, false);
-  }
-};
-
-/**
- * @implements globalThis.HTMLElement
- */
-class HTMLElement extends Element$1 {
-
-  static get observedAttributes() { return []; }
-
-  constructor(ownerDocument = null, localName = '') {
-    super(ownerDocument, localName);
-
-    const ownerLess = !ownerDocument;
-    let options;
-
-    if (ownerLess) {
-      const {constructor: Class} = this;
-      if (!Classes.has(Class))
-        throw new Error('unable to initialize this Custom Element');
-      ({ownerDocument, localName, options} = Classes.get(Class));
-    }
-
-    if (ownerDocument[UPGRADE]) {
-      const {element, values} = ownerDocument[UPGRADE];
-      ownerDocument[UPGRADE] = null;
-      for (const [key, value] of values)
-        element[key] = value;
-      return element;
-    }
-
-    if (ownerLess) {
-      this.ownerDocument = this[END].ownerDocument = ownerDocument;
-      this.localName = localName;
-      customElements.set(this, {connected: false});
-      if (options.is)
-        this.setAttribute('is', options.is);
-    }
-  }
-
-  /* c8 ignore start */
-
-  /* TODO: what about these?
-  offsetHeight
-  offsetLeft
-  offsetParent
-  offsetTop
-  offsetWidth
-  */
-
-  blur() { this.dispatchEvent(new GlobalEvent('blur')); }
-  click() {
-    const clickEvent = new GlobalEvent('click', {bubbles: true, cancelable: true});
-    clickEvent.button = 0;
-
-    this.dispatchEvent(clickEvent);
-  }
-
-  // Boolean getters
-  get accessKeyLabel() {
-    const {accessKey} = this;
-    return accessKey && `Alt+Shift+${accessKey}`;
-  }
-  get isContentEditable() { return this.hasAttribute('contenteditable'); }
-
-  // Boolean Accessors
-  get contentEditable() { return booleanAttribute.get(this, 'contenteditable'); }
-  set contentEditable(value) { booleanAttribute.set(this, 'contenteditable', value); }
-  get draggable() { return booleanAttribute.get(this, 'draggable'); }
-  set draggable(value) { booleanAttribute.set(this, 'draggable', value); }
-  get hidden() { return booleanAttribute.get(this, 'hidden'); }
-  set hidden(value) { booleanAttribute.set(this, 'hidden', value); }
-  get spellcheck() { return booleanAttribute.get(this, 'spellcheck'); }
-  set spellcheck(value) { booleanAttribute.set(this, 'spellcheck', value); }
-
-  // String Accessors
-  get accessKey() { return stringAttribute.get(this, 'accesskey'); }
-  set accessKey(value) { stringAttribute.set(this, 'accesskey', value); }
-  get dir() { return stringAttribute.get(this, 'dir'); }
-  set dir(value) { stringAttribute.set(this, 'dir', value); }
-  get lang() { return stringAttribute.get(this, 'lang'); }
-  set lang(value) { stringAttribute.set(this, 'lang', value); }
-  get title() { return stringAttribute.get(this, 'title'); }
-  set title(value) { stringAttribute.set(this, 'title', value); }
-
-  // DOM Level 0
-  get onabort() { return level0.get(this, 'onabort'); }
-  set onabort(value) { level0.set(this, 'onabort', value); }
-
-  get onblur() { return level0.get(this, 'onblur'); }
-  set onblur(value) { level0.set(this, 'onblur', value); }
-
-  get oncancel() { return level0.get(this, 'oncancel'); }
-  set oncancel(value) { level0.set(this, 'oncancel', value); }
-
-  get oncanplay() { return level0.get(this, 'oncanplay'); }
-  set oncanplay(value) { level0.set(this, 'oncanplay', value); }
-
-  get oncanplaythrough() { return level0.get(this, 'oncanplaythrough'); }
-  set oncanplaythrough(value) { level0.set(this, 'oncanplaythrough', value); }
-
-  get onchange() { return level0.get(this, 'onchange'); }
-  set onchange(value) { level0.set(this, 'onchange', value); }
-
-  get onclick() { return level0.get(this, 'onclick'); }
-  set onclick(value) { level0.set(this, 'onclick', value); }
-
-  get onclose() { return level0.get(this, 'onclose'); }
-  set onclose(value) { level0.set(this, 'onclose', value); }
-
-  get oncontextmenu() { return level0.get(this, 'oncontextmenu'); }
-  set oncontextmenu(value) { level0.set(this, 'oncontextmenu', value); }
-
-  get oncuechange() { return level0.get(this, 'oncuechange'); }
-  set oncuechange(value) { level0.set(this, 'oncuechange', value); }
-
-  get ondblclick() { return level0.get(this, 'ondblclick'); }
-  set ondblclick(value) { level0.set(this, 'ondblclick', value); }
-
-  get ondrag() { return level0.get(this, 'ondrag'); }
-  set ondrag(value) { level0.set(this, 'ondrag', value); }
-
-  get ondragend() { return level0.get(this, 'ondragend'); }
-  set ondragend(value) { level0.set(this, 'ondragend', value); }
-
-  get ondragenter() { return level0.get(this, 'ondragenter'); }
-  set ondragenter(value) { level0.set(this, 'ondragenter', value); }
-
-  get ondragleave() { return level0.get(this, 'ondragleave'); }
-  set ondragleave(value) { level0.set(this, 'ondragleave', value); }
-
-  get ondragover() { return level0.get(this, 'ondragover'); }
-  set ondragover(value) { level0.set(this, 'ondragover', value); }
-
-  get ondragstart() { return level0.get(this, 'ondragstart'); }
-  set ondragstart(value) { level0.set(this, 'ondragstart', value); }
-
-  get ondrop() { return level0.get(this, 'ondrop'); }
-  set ondrop(value) { level0.set(this, 'ondrop', value); }
-
-  get ondurationchange() { return level0.get(this, 'ondurationchange'); }
-  set ondurationchange(value) { level0.set(this, 'ondurationchange', value); }
-
-  get onemptied() { return level0.get(this, 'onemptied'); }
-  set onemptied(value) { level0.set(this, 'onemptied', value); }
-
-  get onended() { return level0.get(this, 'onended'); }
-  set onended(value) { level0.set(this, 'onended', value); }
-
-  get onerror() { return level0.get(this, 'onerror'); }
-  set onerror(value) { level0.set(this, 'onerror', value); }
-
-  get onfocus() { return level0.get(this, 'onfocus'); }
-  set onfocus(value) { level0.set(this, 'onfocus', value); }
-
-  get oninput() { return level0.get(this, 'oninput'); }
-  set oninput(value) { level0.set(this, 'oninput', value); }
-
-  get oninvalid() { return level0.get(this, 'oninvalid'); }
-  set oninvalid(value) { level0.set(this, 'oninvalid', value); }
-
-  get onkeydown() { return level0.get(this, 'onkeydown'); }
-  set onkeydown(value) { level0.set(this, 'onkeydown', value); }
-
-  get onkeypress() { return level0.get(this, 'onkeypress'); }
-  set onkeypress(value) { level0.set(this, 'onkeypress', value); }
-
-  get onkeyup() { return level0.get(this, 'onkeyup'); }
-  set onkeyup(value) { level0.set(this, 'onkeyup', value); }
-
-  get onload() { return level0.get(this, 'onload'); }
-  set onload(value) { level0.set(this, 'onload', value); }
-
-  get onloadeddata() { return level0.get(this, 'onloadeddata'); }
-  set onloadeddata(value) { level0.set(this, 'onloadeddata', value); }
-
-  get onloadedmetadata() { return level0.get(this, 'onloadedmetadata'); }
-  set onloadedmetadata(value) { level0.set(this, 'onloadedmetadata', value); }
-
-  get onloadstart() { return level0.get(this, 'onloadstart'); }
-  set onloadstart(value) { level0.set(this, 'onloadstart', value); }
-
-  get onmousedown() { return level0.get(this, 'onmousedown'); }
-  set onmousedown(value) { level0.set(this, 'onmousedown', value); }
-
-  get onmouseenter() { return level0.get(this, 'onmouseenter'); }
-  set onmouseenter(value) { level0.set(this, 'onmouseenter', value); }
-
-  get onmouseleave() { return level0.get(this, 'onmouseleave'); }
-  set onmouseleave(value) { level0.set(this, 'onmouseleave', value); }
-
-  get onmousemove() { return level0.get(this, 'onmousemove'); }
-  set onmousemove(value) { level0.set(this, 'onmousemove', value); }
-
-  get onmouseout() { return level0.get(this, 'onmouseout'); }
-  set onmouseout(value) { level0.set(this, 'onmouseout', value); }
-
-  get onmouseover() { return level0.get(this, 'onmouseover'); }
-  set onmouseover(value) { level0.set(this, 'onmouseover', value); }
-
-  get onmouseup() { return level0.get(this, 'onmouseup'); }
-  set onmouseup(value) { level0.set(this, 'onmouseup', value); }
-
-  get onmousewheel() { return level0.get(this, 'onmousewheel'); }
-  set onmousewheel(value) { level0.set(this, 'onmousewheel', value); }
-
-  get onpause() { return level0.get(this, 'onpause'); }
-  set onpause(value) { level0.set(this, 'onpause', value); }
-
-  get onplay() { return level0.get(this, 'onplay'); }
-  set onplay(value) { level0.set(this, 'onplay', value); }
-
-  get onplaying() { return level0.get(this, 'onplaying'); }
-  set onplaying(value) { level0.set(this, 'onplaying', value); }
-
-  get onprogress() { return level0.get(this, 'onprogress'); }
-  set onprogress(value) { level0.set(this, 'onprogress', value); }
-
-  get onratechange() { return level0.get(this, 'onratechange'); }
-  set onratechange(value) { level0.set(this, 'onratechange', value); }
-
-  get onreset() { return level0.get(this, 'onreset'); }
-  set onreset(value) { level0.set(this, 'onreset', value); }
-
-  get onresize() { return level0.get(this, 'onresize'); }
-  set onresize(value) { level0.set(this, 'onresize', value); }
-
-  get onscroll() { return level0.get(this, 'onscroll'); }
-  set onscroll(value) { level0.set(this, 'onscroll', value); }
-
-  get onseeked() { return level0.get(this, 'onseeked'); }
-  set onseeked(value) { level0.set(this, 'onseeked', value); }
-
-  get onseeking() { return level0.get(this, 'onseeking'); }
-  set onseeking(value) { level0.set(this, 'onseeking', value); }
-
-  get onselect() { return level0.get(this, 'onselect'); }
-  set onselect(value) { level0.set(this, 'onselect', value); }
-
-  get onshow() { return level0.get(this, 'onshow'); }
-  set onshow(value) { level0.set(this, 'onshow', value); }
-
-  get onstalled() { return level0.get(this, 'onstalled'); }
-  set onstalled(value) { level0.set(this, 'onstalled', value); }
-
-  get onsubmit() { return level0.get(this, 'onsubmit'); }
-  set onsubmit(value) { level0.set(this, 'onsubmit', value); }
-
-  get onsuspend() { return level0.get(this, 'onsuspend'); }
-  set onsuspend(value) { level0.set(this, 'onsuspend', value); }
-
-  get ontimeupdate() { return level0.get(this, 'ontimeupdate'); }
-  set ontimeupdate(value) { level0.set(this, 'ontimeupdate', value); }
-
-  get ontoggle() { return level0.get(this, 'ontoggle'); }
-  set ontoggle(value) { level0.set(this, 'ontoggle', value); }
-
-  get onvolumechange() { return level0.get(this, 'onvolumechange'); }
-  set onvolumechange(value) { level0.set(this, 'onvolumechange', value); }
-
-  get onwaiting() { return level0.get(this, 'onwaiting'); }
-  set onwaiting(value) { level0.set(this, 'onwaiting', value); }
-
-  get onauxclick() { return level0.get(this, 'onauxclick'); }
-  set onauxclick(value) { level0.set(this, 'onauxclick', value); }
-
-  get ongotpointercapture() { return level0.get(this, 'ongotpointercapture'); }
-  set ongotpointercapture(value) { level0.set(this, 'ongotpointercapture', value); }
-
-  get onlostpointercapture() { return level0.get(this, 'onlostpointercapture'); }
-  set onlostpointercapture(value) { level0.set(this, 'onlostpointercapture', value); }
-
-  get onpointercancel() { return level0.get(this, 'onpointercancel'); }
-  set onpointercancel(value) { level0.set(this, 'onpointercancel', value); }
-
-  get onpointerdown() { return level0.get(this, 'onpointerdown'); }
-  set onpointerdown(value) { level0.set(this, 'onpointerdown', value); }
-
-  get onpointerenter() { return level0.get(this, 'onpointerenter'); }
-  set onpointerenter(value) { level0.set(this, 'onpointerenter', value); }
-
-  get onpointerleave() { return level0.get(this, 'onpointerleave'); }
-  set onpointerleave(value) { level0.set(this, 'onpointerleave', value); }
-
-  get onpointermove() { return level0.get(this, 'onpointermove'); }
-  set onpointermove(value) { level0.set(this, 'onpointermove', value); }
-
-  get onpointerout() { return level0.get(this, 'onpointerout'); }
-  set onpointerout(value) { level0.set(this, 'onpointerout', value); }
-
-  get onpointerover() { return level0.get(this, 'onpointerover'); }
-  set onpointerover(value) { level0.set(this, 'onpointerover', value); }
-
-  get onpointerup() { return level0.get(this, 'onpointerup'); }
-  set onpointerup(value) { level0.set(this, 'onpointerup', value); }
-  /* c8 ignore stop */
-
-}
-
-const tagName$h = 'template';
-
-/**
- * @implements globalThis.HTMLTemplateElement
- */
-class HTMLTemplateElement extends HTMLElement {
-  constructor(ownerDocument) {
-    super(ownerDocument, tagName$h);
-    const content = this.ownerDocument.createDocumentFragment();
-    (this[CONTENT] = content)[PRIVATE] = this;
-  }
-
-  get content() {
-    if (this.hasChildNodes() && !this[CONTENT].hasChildNodes()) {
-      for (const node of this.childNodes)
-        this[CONTENT].appendChild(node.cloneNode(true));
-    }
-    return this[CONTENT];
-  }
-}
-
-registerHTMLClass(tagName$h, HTMLTemplateElement);
-
-/**
- * @implements globalThis.HTMLHtmlElement
- */
-class HTMLHtmlElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'html') {
-    super(ownerDocument, localName);
-  }
-}
-
-const {toString} = HTMLElement.prototype;
-
-class TextElement extends HTMLElement {
-
-  get innerHTML() { return this.textContent; }
-  set innerHTML(html) { this.textContent = html; }
-
-  toString() {
-    const outerHTML = toString.call(this.cloneNode());
-    return outerHTML.replace('><', () => `>${this.textContent}<`);
-  }
-}
-
-const tagName$g = 'script';
-
-/**
- * @implements globalThis.HTMLScriptElement
- */
-class HTMLScriptElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$g) {
-    super(ownerDocument, localName);
-  }
-
-  get type() {
-    return stringAttribute.get(this, 'type');
-  }
-  set type(value) {
-    stringAttribute.set(this, 'type', value);
-  }
-
-  get src() {
-    return stringAttribute.get(this, 'src');
-  }
-  set src(value) {
-    stringAttribute.set(this, 'src', value);
-  }
-
-  get defer() {
-    return booleanAttribute.get(this, 'defer');
-  }
-
-  set defer(value) {
-    booleanAttribute.set(this, 'defer', value);
-  }
-
-  get crossOrigin() {
-    return stringAttribute.get(this, 'crossorigin');
-  }
-  set crossOrigin(value) {
-    stringAttribute.set(this, 'crossorigin', value);
-  }
-
-  get nomodule() {
-    return booleanAttribute.get(this, 'nomodule');
-  }
-  set nomodule(value) {
-    booleanAttribute.set(this, 'nomodule', value);
-  }
-
-  get referrerPolicy() {
-    return stringAttribute.get(this, 'referrerpolicy');
-  }
-  set referrerPolicy(value) {
-    stringAttribute.set(this, 'referrerpolicy', value);
-  }
-
-  get nonce() {
-    return stringAttribute.get(this, 'nonce');
-  }
-  set nonce(value) {
-    stringAttribute.set(this, 'nonce', value);
-  }
-
-  get async() {
-    return booleanAttribute.get(this, 'async');
-  }
-  set async(value) {
-    booleanAttribute.set(this, 'async', value);
-  }
-
-  get text() { return this.textContent; }
-  set text(content) { this.textContent = content; }
-}
-
-registerHTMLClass(tagName$g, HTMLScriptElement);
-
-/**
- * @implements globalThis.HTMLFrameElement
- */
-class HTMLFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'frame') {
-    super(ownerDocument, localName);
-  }
-}
-
-const tagName$f = 'iframe';
-
-/**
- * @implements globalThis.HTMLIFrameElement
- */
-class HTMLIFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$f) {
-    super(ownerDocument, localName);
-  }
-
-  /* c8 ignore start */
-  get src() { return stringAttribute.get(this, 'src'); }
-  set src(value) { stringAttribute.set(this, 'src', value); }
-
-  get srcdoc() { return stringAttribute.get(this, "srcdoc"); }
-  set srcdoc(value) { stringAttribute.set(this, "srcdoc", value); }
-
-  get name() { return stringAttribute.get(this, "name"); }
-  set name(value) { stringAttribute.set(this, "name", value); }
-
-  get allow() { return stringAttribute.get(this, "allow"); }
-  set allow(value) { stringAttribute.set(this, "allow", value); }
-
-  get allowFullscreen() { return booleanAttribute.get(this, "allowfullscreen"); }
-  set allowFullscreen(value) { booleanAttribute.set(this, "allowfullscreen", value); }
-  
-  get referrerPolicy() { return stringAttribute.get(this, "referrerpolicy"); }
-  set referrerPolicy(value) { stringAttribute.set(this, "referrerpolicy", value); }
-  
-  get loading() { return stringAttribute.get(this, "loading"); }
-  set loading(value) { stringAttribute.set(this, "loading", value); }
-  /* c8 ignore stop */
-}
-
-registerHTMLClass(tagName$f, HTMLIFrameElement);
-
-/**
- * @implements globalThis.HTMLObjectElement
- */
-class HTMLObjectElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'object') {
-    super(ownerDocument, localName);
-  }
-}
-
-/**
- * @implements globalThis.HTMLHeadElement
- */
-class HTMLHeadElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'head') {
-    super(ownerDocument, localName);
-  }
-}
-
-/**
- * @implements globalThis.HTMLBodyElement
- */
-class HTMLBodyElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'body') {
-    super(ownerDocument, localName);
-  }
-}
 
 const tagName$e = 'style';
 
