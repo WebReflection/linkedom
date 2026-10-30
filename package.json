@@ -70,7 +70,7 @@
     }
   },
   "dependencies": {
-    "@acemir/cssom": "^0.9.32",
+    "@acemir/cssom": "^0.10.0",
     "css-select": "^7.0.0",
     "html-escaper": "^3.0.3",
     "htmlparser2": "^10.1.0",
