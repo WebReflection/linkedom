@@ -8635,200 +8635,9 @@ var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof win
 
 var lib = {};
 
-var CSSOM_1;
-var hasRequiredCSSOM;
+var styleDeclarationProvider = {};
 
-function requireCSSOM () {
-	if (hasRequiredCSSOM) return CSSOM_1;
-	hasRequiredCSSOM = 1;
-	var CSSOM = {
-	  /**
-	   * Creates and configures a new CSSOM instance with the specified options.
-	   * 
-	   * @param {Object} opts - Configuration options for the CSSOM instance
-	   * @param {Object} [opts.globalObject] - Optional global object to be assigned to CSSOM objects prototype
-	   * @returns {Object} A new CSSOM instance with the applied configuration
-	   * @description
-	   * This method creates a new instance of CSSOM and optionally
-	   * configures CSSStyleSheet with a global object reference. When a globalObject is provided
-	   * and CSSStyleSheet exists on the instance, it creates a new CSSStyleSheet constructor
-	   * using a factory function and assigns the globalObject to its prototype's __globalObject property.
-	   */
-	  setup: function (opts) {
-	    var instance = Object.create(this);
-	    if (opts.globalObject) {
-	      if (instance.CSSStyleSheet) {
-	        var factoryCSSStyleSheet = createFunctionFactory(instance.CSSStyleSheet);
-	        var CSSStyleSheet = factoryCSSStyleSheet();
-	        CSSStyleSheet.prototype.__globalObject = opts.globalObject;
-
-	        instance.CSSStyleSheet = CSSStyleSheet;
-	      }
-	    }
-	    return instance;
-	  }
-	};
-
-	function createFunctionFactory(fn) {
-	  return function() {
-	    // Create a new function that delegates to the original
-	    var newFn = function() {
-	      return fn.apply(this, arguments);
-	    };
-
-	    // Copy prototype chain
-	    Object.setPrototypeOf(newFn, Object.getPrototypeOf(fn));
-
-	    // Copy own properties
-	    for (var key in fn) {
-	      if (Object.prototype.hasOwnProperty.call(fn, key)) {
-	        newFn[key] = fn[key];
-	      }
-	    }
-
-	    // Clone the .prototype object for constructor-like behavior
-	    if (fn.prototype) {
-	      newFn.prototype = Object.create(fn.prototype);
-	    }
-
-	    return newFn;
-	  };
-	}
-
-	//.CommonJS
-	CSSOM_1 = CSSOM;
-	///CommonJS
-	return CSSOM_1;
-}
-
-var errorUtils = {};
-
-var hasRequiredErrorUtils;
-
-function requireErrorUtils () {
-	if (hasRequiredErrorUtils) return errorUtils;
-	hasRequiredErrorUtils = 1;
-	// Utility functions for CSSOM error handling
-
-	/**
-	 * Gets the appropriate error constructor from the global object context.
-	 * Tries to find the error constructor from parentStyleSheet.__globalObject,
-	 * then from __globalObject, then falls back to the native constructor.
-	 * 
-	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
-	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
-	 * @return {Function} The error constructor
-	 */
-	function getErrorConstructor(context, errorType) {
-		// Try parentStyleSheet.__globalObject first
-		if (context.parentStyleSheet && context.parentStyleSheet.__globalObject && context.parentStyleSheet.__globalObject[errorType]) {
-			return context.parentStyleSheet.__globalObject[errorType];
-		}
-		
-		// Try __parentStyleSheet (alternative naming)
-		if (context.__parentStyleSheet && context.__parentStyleSheet.__globalObject && context.__parentStyleSheet.__globalObject[errorType]) {
-			return context.__parentStyleSheet.__globalObject[errorType];
-		}
-		
-		// Try __globalObject on the context itself
-		if (context.__globalObject && context.__globalObject[errorType]) {
-			return context.__globalObject[errorType];
-		}
-		
-		// Fall back to native constructor
-		return (typeof commonjsGlobal !== 'undefined' && commonjsGlobal[errorType]) || 
-		       (typeof window !== 'undefined' && window[errorType]) || 
-		       eval(errorType);
-	}
-
-	/**
-	 * Creates an appropriate error with context-aware constructor.
-	 * 
-	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
-	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
-	 * @param {string} message - The error message
-	 * @param {string} [name] - Optional name for DOMException
-	 */
-	function createError(context, errorType, message, name) {
-		var ErrorConstructor = getErrorConstructor(context, errorType);
-		return new ErrorConstructor(message, name);
-	}
-
-	/**
-	 * Creates and throws an appropriate error with context-aware constructor.
-	 * 
-	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
-	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
-	 * @param {string} message - The error message
-	 * @param {string} [name] - Optional name for DOMException
-	 */
-	function throwError(context, errorType, message, name) {
-		throw createError(context, errorType, message, name);
-	}
-
-	/**
-	 * Throws a TypeError for missing required arguments.
-	 * 
-	 * @param {Object} context - The CSSOM object
-	 * @param {string} methodName - The method name (e.g., 'appendRule')
-	 * @param {string} objectName - The object name (e.g., 'CSSKeyframesRule')
-	 * @param {number} [required=1] - Number of required arguments
-	 * @param {number} [provided=0] - Number of provided arguments
-	 */
-	function throwMissingArguments(context, methodName, objectName, required, provided) {
-		required = required || 1;
-		provided = provided || 0;
-		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " + 
-		              required + " argument" + (required > 1 ? "s" : "") + " required, but only " + 
-		              provided + " present.";
-		throwError(context, 'TypeError', message);
-	}
-
-	/**
-	 * Throws a DOMException for parse errors.
-	 * 
-	 * @param {Object} context - The CSSOM object
-	 * @param {string} methodName - The method name
-	 * @param {string} objectName - The object name
-	 * @param {string} rule - The rule that failed to parse
-	 * @param {string} [name='SyntaxError'] - The DOMException name
-	 */
-	function throwParseError(context, methodName, objectName, rule, name) {
-		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " +
-		              "Failed to parse the rule '" + rule + "'.";
-		throwError(context, 'DOMException', message, name || 'SyntaxError');
-	}
-
-	/**
-	 * Throws a DOMException for index errors.
-	 * 
-	 * @param {Object} context - The CSSOM object
-	 * @param {string} methodName - The method name
-	 * @param {string} objectName - The object name
-	 * @param {number} index - The invalid index
-	 * @param {number} maxIndex - The maximum valid index
-	 * @param {string} [name='IndexSizeError'] - The DOMException name
-	 */
-	function throwIndexError(context, methodName, objectName, index, maxIndex, name) {
-		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " +
-		              "The index provided (" + index + ") is larger than the maximum index (" + maxIndex + ").";
-		throwError(context, 'DOMException', message, name || 'IndexSizeError');
-	}
-
-	var errorUtils$1 = {
-		createError: createError,
-		getErrorConstructor: getErrorConstructor,
-		throwError: throwError,
-		throwMissingArguments: throwMissingArguments,
-		throwParseError: throwParseError,
-		throwIndexError: throwIndexError
-	};
-
-	//.CommonJS
-	errorUtils.errorUtils = errorUtils$1;
-	///CommonJS
-	return errorUtils;
-}
+var CSSStyleDeclaration = {};
 
 var regexPatterns = {};
 
@@ -9033,8 +8842,6 @@ function requireRegexPatterns () {
 	///CommonJS
 	return regexPatterns;
 }
-
-var CSSStyleDeclaration = {};
 
 var parse$1 = {};
 
@@ -9342,6 +9149,135 @@ function requireCSSRule () {
 
 var CSSGroupingRule = {};
 
+var errorUtils = {};
+
+var hasRequiredErrorUtils;
+
+function requireErrorUtils () {
+	if (hasRequiredErrorUtils) return errorUtils;
+	hasRequiredErrorUtils = 1;
+	// Utility functions for CSSOM error handling
+
+	/**
+	 * Gets the appropriate error constructor from the global object context.
+	 * Tries to find the error constructor from parentStyleSheet.__globalObject,
+	 * then from __globalObject, then falls back to the native constructor.
+	 * 
+	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
+	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
+	 * @return {Function} The error constructor
+	 */
+	function getErrorConstructor(context, errorType) {
+		// Try parentStyleSheet.__globalObject first
+		if (context.parentStyleSheet && context.parentStyleSheet.__globalObject && context.parentStyleSheet.__globalObject[errorType]) {
+			return context.parentStyleSheet.__globalObject[errorType];
+		}
+		
+		// Try __parentStyleSheet (alternative naming)
+		if (context.__parentStyleSheet && context.__parentStyleSheet.__globalObject && context.__parentStyleSheet.__globalObject[errorType]) {
+			return context.__parentStyleSheet.__globalObject[errorType];
+		}
+		
+		// Try __globalObject on the context itself
+		if (context.__globalObject && context.__globalObject[errorType]) {
+			return context.__globalObject[errorType];
+		}
+		
+		// Fall back to native constructor
+		return (typeof commonjsGlobal !== 'undefined' && commonjsGlobal[errorType]) || 
+		       (typeof window !== 'undefined' && window[errorType]) || 
+		       eval(errorType);
+	}
+
+	/**
+	 * Creates an appropriate error with context-aware constructor.
+	 * 
+	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
+	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
+	 * @param {string} message - The error message
+	 * @param {string} [name] - Optional name for DOMException
+	 */
+	function createError(context, errorType, message, name) {
+		var ErrorConstructor = getErrorConstructor(context, errorType);
+		return new ErrorConstructor(message, name);
+	}
+
+	/**
+	 * Creates and throws an appropriate error with context-aware constructor.
+	 * 
+	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
+	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
+	 * @param {string} message - The error message
+	 * @param {string} [name] - Optional name for DOMException
+	 */
+	function throwError(context, errorType, message, name) {
+		throw createError(context, errorType, message, name);
+	}
+
+	/**
+	 * Throws a TypeError for missing required arguments.
+	 * 
+	 * @param {Object} context - The CSSOM object
+	 * @param {string} methodName - The method name (e.g., 'appendRule')
+	 * @param {string} objectName - The object name (e.g., 'CSSKeyframesRule')
+	 * @param {number} [required=1] - Number of required arguments
+	 * @param {number} [provided=0] - Number of provided arguments
+	 */
+	function throwMissingArguments(context, methodName, objectName, required, provided) {
+		required = required || 1;
+		provided = provided || 0;
+		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " + 
+		              required + " argument" + (required > 1 ? "s" : "") + " required, but only " + 
+		              provided + " present.";
+		throwError(context, 'TypeError', message);
+	}
+
+	/**
+	 * Throws a DOMException for parse errors.
+	 * 
+	 * @param {Object} context - The CSSOM object
+	 * @param {string} methodName - The method name
+	 * @param {string} objectName - The object name
+	 * @param {string} rule - The rule that failed to parse
+	 * @param {string} [name='SyntaxError'] - The DOMException name
+	 */
+	function throwParseError(context, methodName, objectName, rule, name) {
+		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " +
+		              "Failed to parse the rule '" + rule + "'.";
+		throwError(context, 'DOMException', message, name || 'SyntaxError');
+	}
+
+	/**
+	 * Throws a DOMException for index errors.
+	 * 
+	 * @param {Object} context - The CSSOM object
+	 * @param {string} methodName - The method name
+	 * @param {string} objectName - The object name
+	 * @param {number} index - The invalid index
+	 * @param {number} maxIndex - The maximum valid index
+	 * @param {string} [name='IndexSizeError'] - The DOMException name
+	 */
+	function throwIndexError(context, methodName, objectName, index, maxIndex, name) {
+		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " +
+		              "The index provided (" + index + ") is larger than the maximum index (" + maxIndex + ").";
+		throwError(context, 'DOMException', message, name || 'IndexSizeError');
+	}
+
+	var errorUtils$1 = {
+		createError: createError,
+		getErrorConstructor: getErrorConstructor,
+		throwError: throwError,
+		throwMissingArguments: throwMissingArguments,
+		throwParseError: throwParseError,
+		throwIndexError: throwIndexError
+	};
+
+	//.CommonJS
+	errorUtils.errorUtils = errorUtils$1;
+	///CommonJS
+	return errorUtils;
+}
+
 var hasRequiredCSSGroupingRule;
 
 function requireCSSGroupingRule () {
@@ -9522,18 +9458,17 @@ function requireCSSStyleRule () {
 	hasRequiredCSSStyleRule = 1;
 	//.CommonJS
 	var CSSOM = {
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
 		CSSRule: requireCSSRule().CSSRule,
 		CSSRuleList: requireCSSRuleList().CSSRuleList,
 		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
 	};
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
 	var regexPatterns = requireRegexPatterns().regexPatterns;
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
+	Object.defineProperty(CSSOM, "CSSStyleDeclaration", {
+		enumerable: true,
+		configurable: true,
+		get: styleDeclarationProvider.getCSSStyleDeclaration
+	});
 	///CommonJS
 
 
@@ -10007,15 +9942,14 @@ function requireCSSNestedDeclarations () {
 	hasRequiredCSSNestedDeclarations = 1;
 	//.CommonJS
 	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	  CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration
+	  CSSRule: requireCSSRule().CSSRule
 	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
+	Object.defineProperty(CSSOM, "CSSStyleDeclaration", {
+	  enumerable: true,
+	  configurable: true,
+	  get: styleDeclarationProvider.getCSSStyleDeclaration
+	});
 	///CommonJS
 
 
@@ -10926,15 +10860,14 @@ function requireCSSFontFaceRule () {
 	hasRequiredCSSFontFaceRule = 1;
 	//.CommonJS
 	var CSSOM = {
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
 		CSSRule: requireCSSRule().CSSRule
 	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
+	Object.defineProperty(CSSOM, "CSSStyleDeclaration", {
+		enumerable: true,
+		configurable: true,
+		get: styleDeclarationProvider.getCSSStyleDeclaration
+	});
 	///CommonJS
 
 
@@ -11124,15 +11057,14 @@ function requireCSSKeyframeRule () {
 	hasRequiredCSSKeyframeRule = 1;
 	//.CommonJS
 	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration
+		CSSRule: requireCSSRule().CSSRule
 	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
+	Object.defineProperty(CSSOM, "CSSStyleDeclaration", {
+		enumerable: true,
+		configurable: true,
+		get: styleDeclarationProvider.getCSSStyleDeclaration
+	});
 	///CommonJS
 
 
@@ -12169,18 +12101,17 @@ function requireCSSPageRule () {
 	hasRequiredCSSPageRule = 1;
 	//.CommonJS
 	var CSSOM = {
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
 		CSSRule: requireCSSRule().CSSRule,
 		CSSRuleList: requireCSSRuleList().CSSRuleList,
 		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
 	};
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
 	var regexPatterns = requireRegexPatterns().regexPatterns;
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
+	Object.defineProperty(CSSOM, "CSSStyleDeclaration", {
+		enumerable: true,
+		configurable: true,
+		get: styleDeclarationProvider.getCSSStyleDeclaration
+	});
 	///CommonJS
 
 
@@ -12302,11 +12233,15 @@ var hasRequiredCssstyleTryCatchBlock;
 function requireCssstyleTryCatchBlock () {
 	if (hasRequiredCssstyleTryCatchBlock) return cssstyleTryCatchBlock;
 	hasRequiredCssstyleTryCatchBlock = 1;
+	//.CommonJS
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
+
 	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
+		styleDeclarationProvider.setCSSStyleDeclaration(require("cssstyle").CSSStyleDeclaration);
 	} catch (e) {
 		// ignore
 	}
+	///CommonJS
 	return cssstyleTryCatchBlock;
 }
 
@@ -15892,6 +15827,115 @@ function requireCSSStyleDeclaration () {
 	return CSSStyleDeclaration;
 }
 
+var hasRequiredStyleDeclarationProvider;
+
+function requireStyleDeclarationProvider () {
+	if (hasRequiredStyleDeclarationProvider) return styleDeclarationProvider;
+	hasRequiredStyleDeclarationProvider = 1;
+	//.CommonJS
+	var currentCSSStyleDeclaration;
+	///CommonJS
+
+	function getDefaultCSSStyleDeclaration() {
+		return requireCSSStyleDeclaration().CSSStyleDeclaration;
+	}
+
+	function getCSSStyleDeclaration() {
+		return currentCSSStyleDeclaration || getDefaultCSSStyleDeclaration();
+	}
+
+	function setCSSStyleDeclaration(CSSStyleDeclaration) {
+		if (typeof CSSStyleDeclaration !== "function") {
+			throw new TypeError("CSSStyleDeclaration must be a constructor function");
+		}
+		currentCSSStyleDeclaration = CSSStyleDeclaration;
+	}
+
+	function resetCSSStyleDeclaration() {
+		currentCSSStyleDeclaration = undefined;
+	}
+
+	//.CommonJS
+	styleDeclarationProvider.getCSSStyleDeclaration = getCSSStyleDeclaration;
+	styleDeclarationProvider.setCSSStyleDeclaration = setCSSStyleDeclaration;
+	styleDeclarationProvider.resetCSSStyleDeclaration = resetCSSStyleDeclaration;
+	///CommonJS
+	return styleDeclarationProvider;
+}
+
+var CSSOM_1;
+var hasRequiredCSSOM;
+
+function requireCSSOM () {
+	if (hasRequiredCSSOM) return CSSOM_1;
+	hasRequiredCSSOM = 1;
+	var CSSOM = {
+	  /**
+	   * Creates and configures a new CSSOM instance with the specified options.
+	   * 
+	   * @param {Object} opts - Configuration options for the CSSOM instance
+	   * @param {Object} [opts.globalObject] - Optional global object to be assigned to CSSOM objects prototype
+	   * @param {Function} [opts.CSSStyleDeclaration] - Optional constructor used for declaration blocks in parsed rules
+	   * @returns {Object} A new CSSOM instance with the applied configuration
+	   * @description
+	   * This method creates a new instance of CSSOM and optionally
+	   * configures CSSStyleSheet with a global object reference. When a globalObject is provided
+	   * and CSSStyleSheet exists on the instance, it creates a new CSSStyleSheet constructor
+	   * using a factory function and assigns the globalObject to its prototype's __globalObject property.
+	   */
+	  setup: function (opts) {
+	    opts = opts || {};
+	    var instance = Object.create(this);
+	    if (opts.CSSStyleDeclaration) {
+	      var styleDeclarationProvider = requireStyleDeclarationProvider();
+	      styleDeclarationProvider.setCSSStyleDeclaration(opts.CSSStyleDeclaration);
+	      instance.CSSStyleDeclaration = opts.CSSStyleDeclaration;
+	    }
+	    if (opts.globalObject) {
+	      if (instance.CSSStyleSheet) {
+	        var factoryCSSStyleSheet = createFunctionFactory(instance.CSSStyleSheet);
+	        var CSSStyleSheet = factoryCSSStyleSheet();
+	        CSSStyleSheet.prototype.__globalObject = opts.globalObject;
+
+	        instance.CSSStyleSheet = CSSStyleSheet;
+	      }
+	    }
+	    return instance;
+	  }
+	};
+
+	function createFunctionFactory(fn) {
+	  return function() {
+	    // Create a new function that delegates to the original
+	    var newFn = function() {
+	      return fn.apply(this, arguments);
+	    };
+
+	    // Copy prototype chain
+	    Object.setPrototypeOf(newFn, Object.getPrototypeOf(fn));
+
+	    // Copy own properties
+	    for (var key in fn) {
+	      if (Object.prototype.hasOwnProperty.call(fn, key)) {
+	        newFn[key] = fn[key];
+	      }
+	    }
+
+	    // Clone the .prototype object for constructor-like behavior
+	    if (fn.prototype) {
+	      newFn.prototype = Object.create(fn.prototype);
+	    }
+
+	    return newFn;
+	  };
+	}
+
+	//.CommonJS
+	CSSOM_1 = CSSOM;
+	///CommonJS
+	return CSSOM_1;
+}
+
 var clone = {};
 
 var hasRequiredClone;
@@ -15910,19 +15954,18 @@ function requireClone () {
 		CSSMediaRule: requireCSSMediaRule().CSSMediaRule,
 		CSSContainerRule: requireCSSContainerRule().CSSContainerRule,
 		CSSSupportsRule: requireCSSSupportsRule().CSSSupportsRule,
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
 		CSSKeyframeRule: requireCSSKeyframeRule().CSSKeyframeRule,
 		CSSKeyframesRule: requireCSSKeyframesRule().CSSKeyframesRule,
 		CSSScopeRule: requireCSSScopeRule().CSSScopeRule,
 		CSSLayerBlockRule: requireCSSLayerBlockRule().CSSLayerBlockRule,
 		CSSLayerStatementRule: requireCSSLayerStatementRule().CSSLayerStatementRule
 	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
+	var styleDeclarationProvider = requireStyleDeclarationProvider();
+	Object.defineProperty(CSSOM, "CSSStyleDeclaration", {
+		enumerable: true,
+		configurable: true,
+		get: styleDeclarationProvider.getCSSStyleDeclaration
+	});
 	///CommonJS
 
 
@@ -16019,6 +16062,15 @@ function requireLib () {
 	requireRegexPatterns();
 
 	lib.CSSStyleDeclaration = requireCSSStyleDeclaration().CSSStyleDeclaration;
+	lib.getCSSStyleDeclaration = function() {
+		return requireStyleDeclarationProvider().getCSSStyleDeclaration();
+	};
+	lib.setCSSStyleDeclaration = function(CSSStyleDeclaration) {
+		return requireStyleDeclarationProvider().setCSSStyleDeclaration(CSSStyleDeclaration);
+	};
+	lib.resetCSSStyleDeclaration = function() {
+		return requireStyleDeclarationProvider().resetCSSStyleDeclaration();
+	};
 
 	requireCssstyleTryCatchBlock();
 
