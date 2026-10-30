@@ -28,6 +28,7 @@ assert(style.sheet.cssRules.length === 1, true, 'style.sheet.cssRules.length');
 assert(style.sheet.cssRules[0].selectorText, '.test');
 assert(style.sheet.cssRules[0].style.color, 'white');
 assert(style.sheet.cssRules[0].style['font-size'], '12px');
+assert(style.sheet.cssRules[0].style.fontSize, '12px', 'rule.style.fontSize camelCase (linkedom#201)');
 
 document = parseHTML('<style>.parent { color: blue; .child { color: red; }}</style>').document;
 
