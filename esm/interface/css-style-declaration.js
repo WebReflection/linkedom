@@ -1,96 +1,128 @@
-import {CSSStyleDeclaration as BaseCSSStyleDeclaration} from 'cssomnom/parse';
-import {CHANGED, VALUE} from '../shared/symbols.js';
+import uhyphen from 'uhyphen';
+
+import {CHANGED, PRIVATE, VALUE} from '../shared/symbols.js';
 
 const refs = new WeakMap;
 
-const sync = decl => {
-  const data = refs.get(decl);
-  if (!data) return;
-  const {element} = data;
-  const attr = element.getAttributeNode('style');
-  if (attr !== data.attr || (attr && attr[CHANGED])) {
-    data.attr = attr;
-    const {onChange} = decl;
-    decl.onChange = null;
-    decl.cssText = attr ? attr[VALUE] : '';
-    decl.onChange = onChange;
-    if (attr) attr[CHANGED] = false;
+const getKeys = style => [...style.keys()].filter(key => key !== PRIVATE);
+
+const updateKeys = style => {
+  const attr = refs.get(style).getAttributeNode('style');
+  if (!attr || attr[CHANGED] || style.get(PRIVATE) !== attr) {
+    style.clear();
+    if (attr) {
+      style.set(PRIVATE, attr);
+      for (const rule of attr[VALUE].split(/\s*;\s*/)) {
+        let [key, ...rest] = rule.split(':');
+        if (rest.length > 0) {
+          key = key.trim();
+          const value = rest.join(':').trim();
+          if (key && value)
+            style.set(key, value);
+        }
+      }
+    }
   }
+  return attr;
 };
 
 const handler = {
-  get(target, prop, receiver) {
-    sync(target);
-    return Reflect.get(target, prop, receiver);
+  get(style, name) {
+    if (name in prototype)
+      return style[name];
+    updateKeys(style);
+    if (name === 'length')
+      return getKeys(style).length;
+    if (/^\d+$/.test(name))
+      return getKeys(style)[name];
+    return style.get(uhyphen(name)) ?? '';
   },
 
-  set(target, prop, value, receiver) {
-    sync(target);
-    return Reflect.set(target, prop, value, receiver);
-  },
-
-  has(target, prop) {
-    sync(target);
-    return Reflect.has(target, prop);
-  },
-
-  ownKeys(target) {
-    sync(target);
-    return Reflect.ownKeys(target);
-  },
-
-  getOwnPropertyDescriptor(target, prop) {
-    sync(target);
-    return Reflect.getOwnPropertyDescriptor(target, prop);
+  set(style, name, value) {
+    if (name === 'cssText')
+      style[name] = value;
+    else {
+      let attr = updateKeys(style);
+      if (value == null)
+        style.delete(uhyphen(name));
+      else
+        style.set(uhyphen(name), value);
+      if (!attr) {
+        const element = refs.get(style);
+        attr = element.ownerDocument.createAttribute('style');
+        element.setAttributeNode(attr);
+        style.set(PRIVATE, attr);
+      }
+      attr[CHANGED] = false;
+      attr[VALUE] = style.toString();
+    }
+    return true;
   }
 };
 
 /**
  * @implements globalThis.CSSStyleDeclaration
  */
-export class CSSStyleDeclaration extends BaseCSSStyleDeclaration {
-  /**
-   * @param {Element} [element]
-   */
+export class CSSStyleDeclaration extends Map {
   constructor(element) {
-    const decl = super();
-    if (!element) return decl;
+    super();
+    refs.set(this, element);
+    /* c8 ignore start */
+    return new Proxy(this, handler);
+    /* c8 ignore stop */
+  }
 
-    const attr = element.getAttributeNode('style');
-    if (attr && attr[VALUE]) {
-      decl.cssText = attr[VALUE];
-    }
+  get cssText() {
+    return this.toString();
+  }
 
-    const data = {element, attr};
-    refs.set(decl, data);
+  set cssText(value) {
+    refs.get(this).setAttribute('style', value);
+  }
 
-    decl.onChange = () => {
-      let attr = element.getAttributeNode('style');
-      const cssText = decl.cssText;
-      if (!attr) {
-        if (cssText) {
-          attr = element.ownerDocument.createAttribute('style');
-          attr[VALUE] = cssText;
-          element.setAttributeNode(attr);
-          data.attr = attr;
-          attr[CHANGED] = false;
-        }
-      } else {
-        data.attr = attr;
-        if (attr[VALUE] !== cssText) {
-          attr.value = cssText;
-          attr[CHANGED] = false;
-        }
+  getPropertyValue(name) {
+    const self = this[PRIVATE];
+    return handler.get(self, name);
+  }
+
+  setProperty(name, value) {
+    const self = this[PRIVATE];
+    handler.set(self, name, value);
+  }
+
+  removeProperty(name) {
+    const self = this[PRIVATE];
+    handler.set(self, name, null);
+  }
+
+  [Symbol.iterator]() {
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const keys = getKeys(self);
+    const {length} = keys;
+    let i = 0;
+    return {
+      next() {
+        const done = i === length;
+        return {done, value: done ? null : keys[i++]};
       }
     };
-
-    const proxy = new Proxy(decl, handler);
-    refs.set(proxy, data);
-    return proxy;
   }
+
+  get[PRIVATE]() { return this; }
 
   toString() {
-    sync(this);
-    return this.cssText;
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const cssText = [];
+    self.forEach(push, cssText);
+    return cssText.join(';');
   }
+}
+
+const {prototype} = CSSStyleDeclaration;
+
+function push(value, key) {
+  if (key !== PRIVATE)
+    this.push(`${key}:${value}`);
 }

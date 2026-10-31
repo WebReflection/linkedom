@@ -7154,7 +7154,8 @@ function setOwnerDocument(node) {
   return node;
 }
 
-const uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6').toLowerCase();
+var uhyphen = camel => camel.replace(/(([A-Z0-9])([A-Z0-9][a-z]))|(([a-z0-9]+)([A-Z]))/g, '$2$5-$3$6')
+                             .toLowerCase();
 
 const refs$1 = new WeakMap;
 
@@ -7296,6 +7297,1340 @@ class DOMTokenList extends Set {
   supports() { return true; }
 }
 
+const refs = new WeakMap;
+
+const getKeys = style => [...style.keys()].filter(key => key !== PRIVATE);
+
+const updateKeys = style => {
+  const attr = refs.get(style).getAttributeNode('style');
+  if (!attr || attr[CHANGED] || style.get(PRIVATE) !== attr) {
+    style.clear();
+    if (attr) {
+      style.set(PRIVATE, attr);
+      for (const rule of attr[VALUE].split(/\s*;\s*/)) {
+        let [key, ...rest] = rule.split(':');
+        if (rest.length > 0) {
+          key = key.trim();
+          const value = rest.join(':').trim();
+          if (key && value)
+            style.set(key, value);
+        }
+      }
+    }
+  }
+  return attr;
+};
+
+const handler$1 = {
+  get(style, name) {
+    if (name in prototype)
+      return style[name];
+    updateKeys(style);
+    if (name === 'length')
+      return getKeys(style).length;
+    if (/^\d+$/.test(name))
+      return getKeys(style)[name];
+    return style.get(uhyphen(name)) ?? '';
+  },
+
+  set(style, name, value) {
+    if (name === 'cssText')
+      style[name] = value;
+    else {
+      let attr = updateKeys(style);
+      if (value == null)
+        style.delete(uhyphen(name));
+      else
+        style.set(uhyphen(name), value);
+      if (!attr) {
+        const element = refs.get(style);
+        attr = element.ownerDocument.createAttribute('style');
+        element.setAttributeNode(attr);
+        style.set(PRIVATE, attr);
+      }
+      attr[CHANGED] = false;
+      attr[VALUE] = style.toString();
+    }
+    return true;
+  }
+};
+
+/**
+ * @implements globalThis.CSSStyleDeclaration
+ */
+let CSSStyleDeclaration$1 = class CSSStyleDeclaration extends Map {
+  constructor(element) {
+    super();
+    refs.set(this, element);
+    /* c8 ignore start */
+    return new Proxy(this, handler$1);
+    /* c8 ignore stop */
+  }
+
+  get cssText() {
+    return this.toString();
+  }
+
+  set cssText(value) {
+    refs.get(this).setAttribute('style', value);
+  }
+
+  getPropertyValue(name) {
+    const self = this[PRIVATE];
+    return handler$1.get(self, name);
+  }
+
+  setProperty(name, value) {
+    const self = this[PRIVATE];
+    handler$1.set(self, name, value);
+  }
+
+  removeProperty(name) {
+    const self = this[PRIVATE];
+    handler$1.set(self, name, null);
+  }
+
+  [Symbol.iterator]() {
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const keys = getKeys(self);
+    const {length} = keys;
+    let i = 0;
+    return {
+      next() {
+        const done = i === length;
+        return {done, value: done ? null : keys[i++]};
+      }
+    };
+  }
+
+  get[PRIVATE]() { return this; }
+
+  toString() {
+    const self = this[PRIVATE];
+    updateKeys(self);
+    const cssText = [];
+    self.forEach(push, cssText);
+    return cssText.join(';');
+  }
+};
+
+const {prototype} = CSSStyleDeclaration$1;
+
+function push(value, key) {
+  if (key !== PRIVATE)
+    this.push(`${key}:${value}`);
+}
+
+// https://dom.spec.whatwg.org/#interface-event
+
+/* c8 ignore start */
+
+// Node 15 has Event but 14 and 12 don't
+const BUBBLING_PHASE = 3;
+const AT_TARGET = 2;
+const CAPTURING_PHASE = 1;
+const NONE = 0;
+
+function getCurrentTarget(ev) {
+  return ev.currentTarget;
+}
+
+/**
+ * @implements globalThis.Event
+ */
+class GlobalEvent {
+    static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    static get AT_TARGET() { return AT_TARGET; }
+    static get CAPTURING_PHASE() { return CAPTURING_PHASE; }
+    static get NONE() { return NONE; }
+
+    constructor(type, eventInitDict = {}) {
+      this.type = type;
+      this.bubbles = !!eventInitDict.bubbles;
+      this.cancelBubble = false;
+      this._stopImmediatePropagationFlag = false;
+      this.cancelable = !!eventInitDict.cancelable;
+      this.eventPhase = this.NONE;
+      this.timeStamp = Date.now();
+      this.defaultPrevented = false;
+      this.originalTarget = null;
+      this.returnValue = null;
+      this.srcElement = null;
+      this.target = null;
+      this._path = [];
+    }
+
+    get BUBBLING_PHASE() { return BUBBLING_PHASE; }
+    get AT_TARGET() { return AT_TARGET; }
+    get CAPTURING_PHASE() { return CAPTURING_PHASE; }
+    get NONE() { return NONE; }
+
+    preventDefault() { this.defaultPrevented = true; }
+
+    // simplified implementation, should be https://dom.spec.whatwg.org/#dom-event-composedpath
+    composedPath() {
+      return this._path.map(getCurrentTarget);
+    }
+
+    stopPropagation() {
+      this.cancelBubble = true;
+    }
+    
+    stopImmediatePropagation() {
+      this.stopPropagation();
+      this._stopImmediatePropagationFlag = true;
+    }
+  }
+
+/* c8 ignore stop */
+
+/**
+ * @implements globalThis.NamedNodeMap
+ */
+class NamedNodeMap extends Array {
+  constructor(ownerElement) {
+    super();
+    this.ownerElement = ownerElement;
+  }
+
+  getNamedItem(name) {
+    return this.ownerElement.getAttributeNode(name);
+  }
+
+  setNamedItem(attr) {
+    this.ownerElement.setAttributeNode(attr);
+    this.unshift(attr);
+  }
+
+  removeNamedItem(name) {
+    const item = this.getNamedItem(name);
+    this.ownerElement.removeAttribute(name);
+    this.splice(this.indexOf(item), 1);
+  }
+
+  item(index) {
+    return index < this.length ? this[index] : null;
+  }
+
+  /* c8 ignore start */
+  getNamedItemNS(_, name) {
+    return this.getNamedItem(name);
+  }
+
+  setNamedItemNS(_, attr) {
+    return this.setNamedItem(attr);
+  }
+
+  removeNamedItemNS(_, name) {
+    return this.removeNamedItem(name);
+  }
+  /* c8 ignore stop */
+}
+
+/**
+ * @implements globalThis.ShadowRoot
+ */
+let ShadowRoot$1 = class ShadowRoot extends NonElementParentNode {
+  constructor(host) {
+    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
+    this.host = host;
+  }
+
+  get innerHTML() {
+    return getInnerHtml(this);
+  }
+  set innerHTML(html) {
+    setInnerHtml(this, html);
+  }
+};
+
+// https://dom.spec.whatwg.org/#interface-element
+
+
+// <utils>
+const attributesHandler = {
+  get(target, key) {
+    return key in target ? target[key] : target.find(({name}) => name === key);
+  }
+};
+
+const create = (ownerDocument, element, localName)  => {
+  if ('ownerSVGElement' in element) {
+    const svg = ownerDocument.createElementNS(SVG_NAMESPACE, localName);
+    svg.ownerSVGElement = element.ownerSVGElement;
+    return svg;
+  }
+  return ownerDocument.createElement(localName);
+};
+
+const isVoid = ({localName, ownerDocument}) => {
+  return ownerDocument[MIME].voidElements.test(localName);
+};
+
+// </utils>
+
+/**
+ * @implements globalThis.Element
+ */
+let Element$1 = class Element extends ParentNode {
+  constructor(ownerDocument, localName) {
+    super(ownerDocument, localName, ELEMENT_NODE);
+    this[CLASS_LIST] = null;
+    this[DATASET] = null;
+    this[STYLE] = null;
+  }
+
+  // <Mixins>
+  get isConnected() { return isConnected(this); }
+  get parentElement() { return parentElement(this); }
+  get previousSibling() { return previousSibling(this); }
+  get nextSibling() { return nextSibling(this); }
+  get namespaceURI() {
+    return 'http://www.w3.org/1999/xhtml';
+  }
+
+  get previousElementSibling() { return previousElementSibling(this); }
+  get nextElementSibling() { return nextElementSibling$1(this); }
+
+  before(...nodes) { before(this, nodes); }
+  after(...nodes) { after(this, nodes); }
+  replaceWith(...nodes) { replaceWith(this, nodes); }
+  remove() { remove(this[PREV], this, this[END][NEXT]); }
+  // </Mixins>
+
+  // <specialGetters>
+  get id() { return stringAttribute.get(this, 'id'); }
+  set id(value) { stringAttribute.set(this, 'id', value); }
+
+  get className() { return this.classList.value; }
+  set className(value) {
+    const {classList} = this;
+    classList.clear();
+    classList.add(...($String(value).split(/\s+/)));
+  }
+
+  get nodeName() { return localCase(this); }
+  get tagName() { return localCase(this); }
+
+  get classList() {
+    return this[CLASS_LIST] || (
+      this[CLASS_LIST] = new DOMTokenList(this)
+    );
+  }
+
+  get dataset() {
+    return this[DATASET] || (
+      this[DATASET] = new DOMStringMap(this)
+    );
+  }
+
+  getBoundingClientRect() {
+    return {
+      x: 0,
+      y: 0,
+      bottom: 0,
+      height: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      width: 0
+    };
+  }
+
+  get nonce() { return stringAttribute.get(this, 'nonce'); }
+  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
+
+  get style() {
+    return this[STYLE] || (
+      this[STYLE] = new CSSStyleDeclaration$1(this)
+    );
+  }
+
+  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
+  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
+
+  get slot() { return stringAttribute.get(this, 'slot'); }
+  set slot(value) { stringAttribute.set(this, 'slot', value); }
+  // </specialGetters>
+
+
+  // <contentRelated>
+  get innerText() {
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      if (next.nodeType === TEXT_NODE) {
+        text.push(next.textContent.replace(/\s+/g, ' '));
+      } else if(
+        text.length && next[NEXT] != end &&
+        BLOCK_ELEMENTS.has(next.tagName)
+      ) {
+        text.push('\n');
+      }
+      next = next[NEXT];
+    }
+    return text.join('');
+  }
+
+  /**
+   * @returns {String}
+   */
+  get textContent() {
+    const text = [];
+    let {[NEXT]: next, [END]: end} = this;
+    while (next !== end) {
+      const nodeType = next.nodeType;
+      if (nodeType === TEXT_NODE || nodeType === CDATA_SECTION_NODE)
+        text.push(next.textContent);
+      next = next[NEXT];
+    }
+    return text.join('');
+  }
+
+  set textContent(text) {
+    this.replaceChildren();
+    if (text != null && text !== '')
+      this.appendChild(new Text$1(this.ownerDocument, text));
+  }
+
+  get innerHTML() {
+    return getInnerHtml(this);
+  }
+  set innerHTML(html) {
+    setInnerHtml(this, html);
+  }
+
+  get outerHTML() { return this.toString(); }
+  set outerHTML(html) {
+    const template = this.ownerDocument.createElement('');
+    template.innerHTML = html;
+    this.replaceWith(...template.childNodes);
+  }
+  // </contentRelated>
+
+  // <attributes>
+  get attributes() {
+    const attributes = new NamedNodeMap(this);
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      attributes.push(next);
+      next = next[NEXT];
+    }
+    return new Proxy(attributes, attributesHandler);
+  }
+
+  focus() { this.dispatchEvent(new GlobalEvent('focus')); }
+
+  getAttribute(name) {
+    if (name === 'class')
+      return this.className;
+    const attribute = this.getAttributeNode(name);
+    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
+  }
+
+  getAttributeNode(name) {
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      if (next.name === name)
+        return next;
+      next = next[NEXT];
+    }
+    return null;
+  }
+
+  getAttributeNames() {
+    const attributes = new NodeList;
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      attributes.push(next.name);
+      next = next[NEXT];
+    }
+    return attributes;
+  }
+
+  hasAttribute(name) { return !!this.getAttributeNode(name); }
+  hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
+
+  removeAttribute(name) {
+    if (name === 'class' && this[CLASS_LIST])
+        this[CLASS_LIST].clear();
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      if (next.name === name) {
+        removeAttribute(this, next);
+        return;
+      }
+      next = next[NEXT];
+    }
+  }
+
+  removeAttributeNode(attribute) {
+    let next = this[NEXT];
+    while (next.nodeType === ATTRIBUTE_NODE) {
+      if (next === attribute) {
+        removeAttribute(this, next);
+        return;
+      }
+      next = next[NEXT];
+    }
+  }
+
+  setAttribute(name, value) {
+    if (name === 'class')
+      this.className = value;
+    else {
+      const attribute = this.getAttributeNode(name);
+      if (attribute)
+        attribute.value = value;
+      else
+        setAttribute(this, new Attr$1(this.ownerDocument, name, value));
+    }
+  }
+
+  setAttributeNode(attribute) {
+    const {name} = attribute;
+    const previously = this.getAttributeNode(name);
+    if (previously !== attribute) {
+      if (previously)
+        this.removeAttributeNode(previously);
+      const {ownerElement} = attribute;
+      if (ownerElement)
+        ownerElement.removeAttributeNode(attribute);
+      setAttribute(this, attribute);
+    }
+    return previously;
+  }
+
+  toggleAttribute(name, force) {
+    if (this.hasAttribute(name)) {
+      if (!force) {
+        this.removeAttribute(name);
+        return false;
+      }
+      return true;
+    }
+    else if (force || arguments.length === 1) {
+      this.setAttribute(name, '');
+      return true;
+    }
+    return false;
+  }
+  // </attributes>
+
+  // <ShadowDOM>
+  get shadowRoot() {
+    if (shadowRoots.has(this)) {
+      const {mode, shadowRoot} = shadowRoots.get(this);
+      if (mode === 'open')
+        return shadowRoot;
+    }
+    return null;
+  }
+
+  attachShadow(init) {
+    if (shadowRoots.has(this))
+      throw new Error('operation not supported');
+    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
+    //       but until DSD is out, I am not sure I should spend time on this.
+    const shadowRoot = new ShadowRoot$1(this);
+    shadowRoots.set(this, {
+      mode: init.mode,
+      shadowRoot
+    });
+    return shadowRoot;
+  }
+  // </ShadowDOM>
+
+  // <selectors>
+  matches(selectors) { return matches(this, selectors); }
+  closest(selectors) {
+    let parentElement = this;
+    const matches = prepareMatch(parentElement, selectors);
+    while (parentElement && !matches(parentElement))
+      parentElement = parentElement.parentElement;
+    return parentElement;
+  }
+  // </selectors>
+
+  // <insertAdjacent>
+  insertAdjacentElement(position, element) {
+    const {parentElement} = this;
+    switch (position) {
+      case 'beforebegin':
+        if (parentElement) {
+          parentElement.insertBefore(element, this);
+          break;
+        }
+        return null;
+      case 'afterbegin':
+        this.insertBefore(element, this.firstChild);
+        break;
+      case 'beforeend':
+        this.insertBefore(element, null);
+        break;
+      case 'afterend':
+        if (parentElement) {
+          parentElement.insertBefore(element, this.nextSibling);
+          break;
+        }
+        return null;
+    }
+    return element;
+  }
+
+  insertAdjacentHTML(position, html) {
+    this.insertAdjacentElement(position, htmlToFragment(this.ownerDocument, html));
+  }
+
+  insertAdjacentText(position, text) {
+    const node = this.ownerDocument.createTextNode(text);
+    this.insertAdjacentElement(position, node);
+  }
+  // </insertAdjacent>
+
+  cloneNode(deep = false) {
+    const {ownerDocument, localName} = this;
+    const addNext = next => {
+      next.parentNode = parentNode;
+      knownAdjacent($next, next);
+      $next = next;
+    };
+    const clone = create(ownerDocument, this, localName);
+    let parentNode = clone, $next = clone;
+    let {[NEXT]: next, [END]: prev} = this;
+    while (next !== prev && (deep || next.nodeType === ATTRIBUTE_NODE)) {
+      switch (next.nodeType) {
+        case NODE_END:
+          knownAdjacent($next, parentNode[END]);
+          $next = parentNode[END];
+          parentNode = parentNode.parentNode;
+          break;
+        case ELEMENT_NODE: {
+          const node = create(ownerDocument, next, next.localName);
+          addNext(node);
+          parentNode = node;
+          break;
+        }
+        case ATTRIBUTE_NODE: {
+          const attr = next.cloneNode(deep);
+          attr.ownerElement = parentNode;
+          addNext(attr);
+          break;
+        }
+        case TEXT_NODE:
+        case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
+          addNext(next.cloneNode(deep));
+          break;
+      }
+      next = next[NEXT];
+    }
+    knownAdjacent($next, clone[END]);
+    return clone;
+  }
+
+  // <custom>
+  toString() {
+    const out = [];
+    const {[END]: end} = this;
+    let next = {[NEXT]: this};
+    let isOpened = false;
+    do {
+      next = next[NEXT];
+      switch (next.nodeType) {
+        case ATTRIBUTE_NODE: {
+          const attr = ' ' + next;
+          switch (attr) {
+            case ' id':
+            case ' class':
+            case ' style':
+              break;
+            default:
+              out.push(attr);
+          }
+          break;
+        }
+        case NODE_END: {
+          const start = next[START];
+          if (isOpened) {
+            if ('ownerSVGElement' in start)
+              out.push(' />');
+            else if (isVoid(start))
+              out.push(ignoreCase(start) ? '>' : ' />');
+            else
+              out.push(`></${start.localName}>`);
+            isOpened = false;
+          }
+          else
+            out.push(`</${start.localName}>`);
+          break;
+        }
+        case ELEMENT_NODE:
+          if (isOpened)
+            out.push('>');
+          if (next.toString !== this.toString) {
+            out.push(next.toString());
+            next = next[END];
+            isOpened = false;
+          }
+          else {
+            out.push(`<${next.localName}`);
+            isOpened = true;
+          }
+          break;
+        case TEXT_NODE:
+        case COMMENT_NODE:
+        case CDATA_SECTION_NODE:
+          out.push((isOpened ? '>' : '') + next);
+          isOpened = false;
+          break;
+      }
+    } while (next !== end);
+    return out.join('');
+  }
+
+  toJSON() {
+    const json = [];
+    elementAsJSON(this, json);
+    return json;
+  }
+  // </custom>
+
+
+  /* c8 ignore start */
+  getAttributeNS(_, name) { return this.getAttribute(name); }
+  getElementsByTagNameNS(_, name) { return this.getElementsByTagName(name); }
+  hasAttributeNS(_, name) { return this.hasAttribute(name); }
+  removeAttributeNS(_, name) { this.removeAttribute(name); }
+  setAttributeNS(_, name, value) { this.setAttribute(name, value); }
+  setAttributeNodeNS(attr) { return this.setAttributeNode(attr); }
+  /* c8 ignore stop */
+};
+
+const classNames = new WeakMap;
+
+const handler = {
+  get(target, name) {
+    return target[name];
+  },
+  set(target, name, value) {
+    target[name] = value;
+    return true;
+  }
+};
+
+/**
+ * @implements globalThis.SVGElement
+ */
+let SVGElement$1 = class SVGElement extends Element$1 {
+  constructor(ownerDocument, localName, ownerSVGElement = null) {
+    super(ownerDocument, localName);
+    this.ownerSVGElement = ownerSVGElement;
+  }
+
+  get className() {
+    if (!classNames.has(this))
+      classNames.set(this, new Proxy({baseVal: '', animVal: ''}, handler));
+    return classNames.get(this);
+  }
+
+  /* c8 ignore start */
+  set className(value) {
+    const {classList} = this;
+    classList.clear();
+    classList.add(...($String(value).split(/\s+/)));
+  }
+  /* c8 ignore stop */
+
+  get namespaceURI() {
+    return 'http://www.w3.org/2000/svg';
+  }
+
+  getAttribute(name) {
+    return name === 'class' ?
+      [...this.classList].join(' ') :
+      super.getAttribute(name);
+  }
+
+  setAttribute(name, value) {
+    if (name === 'class')
+      this.className = value;
+    else if (name === 'style') {
+      const {className} = this;
+      className.baseVal = className.animVal = value;
+    }
+    super.setAttribute(name, value);
+  }
+};
+
+/* c8 ignore start */
+const illegalConstructor = () => {
+  throw new TypeError('Illegal constructor');
+};
+
+function Attr() { illegalConstructor(); }
+setPrototypeOf(Attr, Attr$1);
+Attr.prototype = Attr$1.prototype;
+
+function CDATASection() { illegalConstructor(); }
+setPrototypeOf(CDATASection, CDATASection$1);
+CDATASection.prototype = CDATASection$1.prototype;
+
+function CharacterData() { illegalConstructor(); }
+setPrototypeOf(CharacterData, CharacterData$1);
+CharacterData.prototype = CharacterData$1.prototype;
+
+function Comment() { illegalConstructor(); }
+setPrototypeOf(Comment, Comment$2);
+Comment.prototype = Comment$2.prototype;
+
+function DocumentFragment() { illegalConstructor(); }
+setPrototypeOf(DocumentFragment, DocumentFragment$1);
+DocumentFragment.prototype = DocumentFragment$1.prototype;
+
+function DocumentType() { illegalConstructor(); }
+setPrototypeOf(DocumentType, DocumentType$1);
+DocumentType.prototype = DocumentType$1.prototype;
+
+function Element() { illegalConstructor(); }
+setPrototypeOf(Element, Element$1);
+Element.prototype = Element$1.prototype;
+
+function Node() { illegalConstructor(); }
+setPrototypeOf(Node, Node$1);
+Node.prototype = Node$1.prototype;
+
+function ShadowRoot() { illegalConstructor(); }
+setPrototypeOf(ShadowRoot, ShadowRoot$1);
+ShadowRoot.prototype = ShadowRoot$1.prototype;
+
+function Text() { illegalConstructor(); }
+setPrototypeOf(Text, Text$1);
+Text.prototype = Text$1.prototype;
+
+function SVGElement() { illegalConstructor(); }
+setPrototypeOf(SVGElement, SVGElement$1);
+SVGElement.prototype = SVGElement$1.prototype;
+/* c8 ignore stop */
+
+const Facades = {
+  Attr,
+  CDATASection,
+  CharacterData,
+  Comment,
+  DocumentFragment,
+  DocumentType,
+  Element,
+  Node,
+  ShadowRoot,
+  Text,
+  SVGElement
+};
+
+const Level0 = new WeakMap;
+const level0 = {
+  get(element, name) {
+    return Level0.has(element) && Level0.get(element)[name] || null;
+  },
+  set(element, name, value) {
+    if (!Level0.has(element))
+      Level0.set(element, {});
+    const handlers = Level0.get(element);
+    const type = name.slice(2);
+    if (handlers[name])
+      element.removeEventListener(type, handlers[name], false);
+    if ((handlers[name] = value))
+      element.addEventListener(type, value, false);
+  }
+};
+
+/**
+ * @implements globalThis.HTMLElement
+ */
+class HTMLElement extends Element$1 {
+
+  static get observedAttributes() { return []; }
+
+  constructor(ownerDocument = null, localName = '') {
+    super(ownerDocument, localName);
+
+    const ownerLess = !ownerDocument;
+    let options;
+
+    if (ownerLess) {
+      const {constructor: Class} = this;
+      if (!Classes.has(Class))
+        throw new Error('unable to initialize this Custom Element');
+      ({ownerDocument, localName, options} = Classes.get(Class));
+    }
+
+    if (ownerDocument[UPGRADE]) {
+      const {element, values} = ownerDocument[UPGRADE];
+      ownerDocument[UPGRADE] = null;
+      for (const [key, value] of values)
+        element[key] = value;
+      return element;
+    }
+
+    if (ownerLess) {
+      this.ownerDocument = this[END].ownerDocument = ownerDocument;
+      this.localName = localName;
+      customElements.set(this, {connected: false});
+      if (options.is)
+        this.setAttribute('is', options.is);
+    }
+  }
+
+  /* c8 ignore start */
+
+  /* TODO: what about these?
+  offsetHeight
+  offsetLeft
+  offsetParent
+  offsetTop
+  offsetWidth
+  */
+
+  blur() { this.dispatchEvent(new GlobalEvent('blur')); }
+  click() {
+    const clickEvent = new GlobalEvent('click', {bubbles: true, cancelable: true});
+    clickEvent.button = 0;
+
+    this.dispatchEvent(clickEvent);
+  }
+
+  // Boolean getters
+  get accessKeyLabel() {
+    const {accessKey} = this;
+    return accessKey && `Alt+Shift+${accessKey}`;
+  }
+  get isContentEditable() { return this.hasAttribute('contenteditable'); }
+
+  // Boolean Accessors
+  get contentEditable() { return booleanAttribute.get(this, 'contenteditable'); }
+  set contentEditable(value) { booleanAttribute.set(this, 'contenteditable', value); }
+  get draggable() { return booleanAttribute.get(this, 'draggable'); }
+  set draggable(value) { booleanAttribute.set(this, 'draggable', value); }
+  get hidden() { return booleanAttribute.get(this, 'hidden'); }
+  set hidden(value) { booleanAttribute.set(this, 'hidden', value); }
+  get spellcheck() { return booleanAttribute.get(this, 'spellcheck'); }
+  set spellcheck(value) { booleanAttribute.set(this, 'spellcheck', value); }
+
+  // String Accessors
+  get accessKey() { return stringAttribute.get(this, 'accesskey'); }
+  set accessKey(value) { stringAttribute.set(this, 'accesskey', value); }
+  get dir() { return stringAttribute.get(this, 'dir'); }
+  set dir(value) { stringAttribute.set(this, 'dir', value); }
+  get lang() { return stringAttribute.get(this, 'lang'); }
+  set lang(value) { stringAttribute.set(this, 'lang', value); }
+  get title() { return stringAttribute.get(this, 'title'); }
+  set title(value) { stringAttribute.set(this, 'title', value); }
+
+  // DOM Level 0
+  get onabort() { return level0.get(this, 'onabort'); }
+  set onabort(value) { level0.set(this, 'onabort', value); }
+
+  get onblur() { return level0.get(this, 'onblur'); }
+  set onblur(value) { level0.set(this, 'onblur', value); }
+
+  get oncancel() { return level0.get(this, 'oncancel'); }
+  set oncancel(value) { level0.set(this, 'oncancel', value); }
+
+  get oncanplay() { return level0.get(this, 'oncanplay'); }
+  set oncanplay(value) { level0.set(this, 'oncanplay', value); }
+
+  get oncanplaythrough() { return level0.get(this, 'oncanplaythrough'); }
+  set oncanplaythrough(value) { level0.set(this, 'oncanplaythrough', value); }
+
+  get onchange() { return level0.get(this, 'onchange'); }
+  set onchange(value) { level0.set(this, 'onchange', value); }
+
+  get onclick() { return level0.get(this, 'onclick'); }
+  set onclick(value) { level0.set(this, 'onclick', value); }
+
+  get onclose() { return level0.get(this, 'onclose'); }
+  set onclose(value) { level0.set(this, 'onclose', value); }
+
+  get oncontextmenu() { return level0.get(this, 'oncontextmenu'); }
+  set oncontextmenu(value) { level0.set(this, 'oncontextmenu', value); }
+
+  get oncuechange() { return level0.get(this, 'oncuechange'); }
+  set oncuechange(value) { level0.set(this, 'oncuechange', value); }
+
+  get ondblclick() { return level0.get(this, 'ondblclick'); }
+  set ondblclick(value) { level0.set(this, 'ondblclick', value); }
+
+  get ondrag() { return level0.get(this, 'ondrag'); }
+  set ondrag(value) { level0.set(this, 'ondrag', value); }
+
+  get ondragend() { return level0.get(this, 'ondragend'); }
+  set ondragend(value) { level0.set(this, 'ondragend', value); }
+
+  get ondragenter() { return level0.get(this, 'ondragenter'); }
+  set ondragenter(value) { level0.set(this, 'ondragenter', value); }
+
+  get ondragleave() { return level0.get(this, 'ondragleave'); }
+  set ondragleave(value) { level0.set(this, 'ondragleave', value); }
+
+  get ondragover() { return level0.get(this, 'ondragover'); }
+  set ondragover(value) { level0.set(this, 'ondragover', value); }
+
+  get ondragstart() { return level0.get(this, 'ondragstart'); }
+  set ondragstart(value) { level0.set(this, 'ondragstart', value); }
+
+  get ondrop() { return level0.get(this, 'ondrop'); }
+  set ondrop(value) { level0.set(this, 'ondrop', value); }
+
+  get ondurationchange() { return level0.get(this, 'ondurationchange'); }
+  set ondurationchange(value) { level0.set(this, 'ondurationchange', value); }
+
+  get onemptied() { return level0.get(this, 'onemptied'); }
+  set onemptied(value) { level0.set(this, 'onemptied', value); }
+
+  get onended() { return level0.get(this, 'onended'); }
+  set onended(value) { level0.set(this, 'onended', value); }
+
+  get onerror() { return level0.get(this, 'onerror'); }
+  set onerror(value) { level0.set(this, 'onerror', value); }
+
+  get onfocus() { return level0.get(this, 'onfocus'); }
+  set onfocus(value) { level0.set(this, 'onfocus', value); }
+
+  get oninput() { return level0.get(this, 'oninput'); }
+  set oninput(value) { level0.set(this, 'oninput', value); }
+
+  get oninvalid() { return level0.get(this, 'oninvalid'); }
+  set oninvalid(value) { level0.set(this, 'oninvalid', value); }
+
+  get onkeydown() { return level0.get(this, 'onkeydown'); }
+  set onkeydown(value) { level0.set(this, 'onkeydown', value); }
+
+  get onkeypress() { return level0.get(this, 'onkeypress'); }
+  set onkeypress(value) { level0.set(this, 'onkeypress', value); }
+
+  get onkeyup() { return level0.get(this, 'onkeyup'); }
+  set onkeyup(value) { level0.set(this, 'onkeyup', value); }
+
+  get onload() { return level0.get(this, 'onload'); }
+  set onload(value) { level0.set(this, 'onload', value); }
+
+  get onloadeddata() { return level0.get(this, 'onloadeddata'); }
+  set onloadeddata(value) { level0.set(this, 'onloadeddata', value); }
+
+  get onloadedmetadata() { return level0.get(this, 'onloadedmetadata'); }
+  set onloadedmetadata(value) { level0.set(this, 'onloadedmetadata', value); }
+
+  get onloadstart() { return level0.get(this, 'onloadstart'); }
+  set onloadstart(value) { level0.set(this, 'onloadstart', value); }
+
+  get onmousedown() { return level0.get(this, 'onmousedown'); }
+  set onmousedown(value) { level0.set(this, 'onmousedown', value); }
+
+  get onmouseenter() { return level0.get(this, 'onmouseenter'); }
+  set onmouseenter(value) { level0.set(this, 'onmouseenter', value); }
+
+  get onmouseleave() { return level0.get(this, 'onmouseleave'); }
+  set onmouseleave(value) { level0.set(this, 'onmouseleave', value); }
+
+  get onmousemove() { return level0.get(this, 'onmousemove'); }
+  set onmousemove(value) { level0.set(this, 'onmousemove', value); }
+
+  get onmouseout() { return level0.get(this, 'onmouseout'); }
+  set onmouseout(value) { level0.set(this, 'onmouseout', value); }
+
+  get onmouseover() { return level0.get(this, 'onmouseover'); }
+  set onmouseover(value) { level0.set(this, 'onmouseover', value); }
+
+  get onmouseup() { return level0.get(this, 'onmouseup'); }
+  set onmouseup(value) { level0.set(this, 'onmouseup', value); }
+
+  get onmousewheel() { return level0.get(this, 'onmousewheel'); }
+  set onmousewheel(value) { level0.set(this, 'onmousewheel', value); }
+
+  get onpause() { return level0.get(this, 'onpause'); }
+  set onpause(value) { level0.set(this, 'onpause', value); }
+
+  get onplay() { return level0.get(this, 'onplay'); }
+  set onplay(value) { level0.set(this, 'onplay', value); }
+
+  get onplaying() { return level0.get(this, 'onplaying'); }
+  set onplaying(value) { level0.set(this, 'onplaying', value); }
+
+  get onprogress() { return level0.get(this, 'onprogress'); }
+  set onprogress(value) { level0.set(this, 'onprogress', value); }
+
+  get onratechange() { return level0.get(this, 'onratechange'); }
+  set onratechange(value) { level0.set(this, 'onratechange', value); }
+
+  get onreset() { return level0.get(this, 'onreset'); }
+  set onreset(value) { level0.set(this, 'onreset', value); }
+
+  get onresize() { return level0.get(this, 'onresize'); }
+  set onresize(value) { level0.set(this, 'onresize', value); }
+
+  get onscroll() { return level0.get(this, 'onscroll'); }
+  set onscroll(value) { level0.set(this, 'onscroll', value); }
+
+  get onseeked() { return level0.get(this, 'onseeked'); }
+  set onseeked(value) { level0.set(this, 'onseeked', value); }
+
+  get onseeking() { return level0.get(this, 'onseeking'); }
+  set onseeking(value) { level0.set(this, 'onseeking', value); }
+
+  get onselect() { return level0.get(this, 'onselect'); }
+  set onselect(value) { level0.set(this, 'onselect', value); }
+
+  get onshow() { return level0.get(this, 'onshow'); }
+  set onshow(value) { level0.set(this, 'onshow', value); }
+
+  get onstalled() { return level0.get(this, 'onstalled'); }
+  set onstalled(value) { level0.set(this, 'onstalled', value); }
+
+  get onsubmit() { return level0.get(this, 'onsubmit'); }
+  set onsubmit(value) { level0.set(this, 'onsubmit', value); }
+
+  get onsuspend() { return level0.get(this, 'onsuspend'); }
+  set onsuspend(value) { level0.set(this, 'onsuspend', value); }
+
+  get ontimeupdate() { return level0.get(this, 'ontimeupdate'); }
+  set ontimeupdate(value) { level0.set(this, 'ontimeupdate', value); }
+
+  get ontoggle() { return level0.get(this, 'ontoggle'); }
+  set ontoggle(value) { level0.set(this, 'ontoggle', value); }
+
+  get onvolumechange() { return level0.get(this, 'onvolumechange'); }
+  set onvolumechange(value) { level0.set(this, 'onvolumechange', value); }
+
+  get onwaiting() { return level0.get(this, 'onwaiting'); }
+  set onwaiting(value) { level0.set(this, 'onwaiting', value); }
+
+  get onauxclick() { return level0.get(this, 'onauxclick'); }
+  set onauxclick(value) { level0.set(this, 'onauxclick', value); }
+
+  get ongotpointercapture() { return level0.get(this, 'ongotpointercapture'); }
+  set ongotpointercapture(value) { level0.set(this, 'ongotpointercapture', value); }
+
+  get onlostpointercapture() { return level0.get(this, 'onlostpointercapture'); }
+  set onlostpointercapture(value) { level0.set(this, 'onlostpointercapture', value); }
+
+  get onpointercancel() { return level0.get(this, 'onpointercancel'); }
+  set onpointercancel(value) { level0.set(this, 'onpointercancel', value); }
+
+  get onpointerdown() { return level0.get(this, 'onpointerdown'); }
+  set onpointerdown(value) { level0.set(this, 'onpointerdown', value); }
+
+  get onpointerenter() { return level0.get(this, 'onpointerenter'); }
+  set onpointerenter(value) { level0.set(this, 'onpointerenter', value); }
+
+  get onpointerleave() { return level0.get(this, 'onpointerleave'); }
+  set onpointerleave(value) { level0.set(this, 'onpointerleave', value); }
+
+  get onpointermove() { return level0.get(this, 'onpointermove'); }
+  set onpointermove(value) { level0.set(this, 'onpointermove', value); }
+
+  get onpointerout() { return level0.get(this, 'onpointerout'); }
+  set onpointerout(value) { level0.set(this, 'onpointerout', value); }
+
+  get onpointerover() { return level0.get(this, 'onpointerover'); }
+  set onpointerover(value) { level0.set(this, 'onpointerover', value); }
+
+  get onpointerup() { return level0.get(this, 'onpointerup'); }
+  set onpointerup(value) { level0.set(this, 'onpointerup', value); }
+  /* c8 ignore stop */
+
+}
+
+const tagName$h = 'template';
+
+/**
+ * @implements globalThis.HTMLTemplateElement
+ */
+class HTMLTemplateElement extends HTMLElement {
+  constructor(ownerDocument) {
+    super(ownerDocument, tagName$h);
+    const content = this.ownerDocument.createDocumentFragment();
+    (this[CONTENT] = content)[PRIVATE] = this;
+  }
+
+  get content() {
+    if (this.hasChildNodes() && !this[CONTENT].hasChildNodes()) {
+      for (const node of this.childNodes)
+        this[CONTENT].appendChild(node.cloneNode(true));
+    }
+    return this[CONTENT];
+  }
+}
+
+registerHTMLClass(tagName$h, HTMLTemplateElement);
+
+/**
+ * @implements globalThis.HTMLHtmlElement
+ */
+class HTMLHtmlElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'html') {
+    super(ownerDocument, localName);
+  }
+}
+
+const {toString} = HTMLElement.prototype;
+
+class TextElement extends HTMLElement {
+
+  get innerHTML() { return this.textContent; }
+  set innerHTML(html) { this.textContent = html; }
+
+  toString() {
+    const outerHTML = toString.call(this.cloneNode());
+    return outerHTML.replace('><', () => `>${this.textContent}<`);
+  }
+}
+
+const tagName$g = 'script';
+
+/**
+ * @implements globalThis.HTMLScriptElement
+ */
+class HTMLScriptElement extends TextElement {
+  constructor(ownerDocument, localName = tagName$g) {
+    super(ownerDocument, localName);
+  }
+
+  get type() {
+    return stringAttribute.get(this, 'type');
+  }
+  set type(value) {
+    stringAttribute.set(this, 'type', value);
+  }
+
+  get src() {
+    return stringAttribute.get(this, 'src');
+  }
+  set src(value) {
+    stringAttribute.set(this, 'src', value);
+  }
+
+  get defer() {
+    return booleanAttribute.get(this, 'defer');
+  }
+
+  set defer(value) {
+    booleanAttribute.set(this, 'defer', value);
+  }
+
+  get crossOrigin() {
+    return stringAttribute.get(this, 'crossorigin');
+  }
+  set crossOrigin(value) {
+    stringAttribute.set(this, 'crossorigin', value);
+  }
+
+  get nomodule() {
+    return booleanAttribute.get(this, 'nomodule');
+  }
+  set nomodule(value) {
+    booleanAttribute.set(this, 'nomodule', value);
+  }
+
+  get referrerPolicy() {
+    return stringAttribute.get(this, 'referrerpolicy');
+  }
+  set referrerPolicy(value) {
+    stringAttribute.set(this, 'referrerpolicy', value);
+  }
+
+  get nonce() {
+    return stringAttribute.get(this, 'nonce');
+  }
+  set nonce(value) {
+    stringAttribute.set(this, 'nonce', value);
+  }
+
+  get async() {
+    return booleanAttribute.get(this, 'async');
+  }
+  set async(value) {
+    booleanAttribute.set(this, 'async', value);
+  }
+
+  get text() { return this.textContent; }
+  set text(content) { this.textContent = content; }
+}
+
+registerHTMLClass(tagName$g, HTMLScriptElement);
+
+/**
+ * @implements globalThis.HTMLFrameElement
+ */
+class HTMLFrameElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'frame') {
+    super(ownerDocument, localName);
+  }
+}
+
+const tagName$f = 'iframe';
+
+/**
+ * @implements globalThis.HTMLIFrameElement
+ */
+class HTMLIFrameElement extends HTMLElement {
+  constructor(ownerDocument, localName = tagName$f) {
+    super(ownerDocument, localName);
+  }
+
+  /* c8 ignore start */
+  get src() { return stringAttribute.get(this, 'src'); }
+  set src(value) { stringAttribute.set(this, 'src', value); }
+
+  get srcdoc() { return stringAttribute.get(this, "srcdoc"); }
+  set srcdoc(value) { stringAttribute.set(this, "srcdoc", value); }
+
+  get name() { return stringAttribute.get(this, "name"); }
+  set name(value) { stringAttribute.set(this, "name", value); }
+
+  get allow() { return stringAttribute.get(this, "allow"); }
+  set allow(value) { stringAttribute.set(this, "allow", value); }
+
+  get allowFullscreen() { return booleanAttribute.get(this, "allowfullscreen"); }
+  set allowFullscreen(value) { booleanAttribute.set(this, "allowfullscreen", value); }
+  
+  get referrerPolicy() { return stringAttribute.get(this, "referrerpolicy"); }
+  set referrerPolicy(value) { stringAttribute.set(this, "referrerpolicy", value); }
+  
+  get loading() { return stringAttribute.get(this, "loading"); }
+  set loading(value) { stringAttribute.set(this, "loading", value); }
+  /* c8 ignore stop */
+}
+
+registerHTMLClass(tagName$f, HTMLIFrameElement);
+
+/**
+ * @implements globalThis.HTMLObjectElement
+ */
+class HTMLObjectElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'object') {
+    super(ownerDocument, localName);
+  }
+}
+
+/**
+ * @implements globalThis.HTMLHeadElement
+ */
+class HTMLHeadElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'head') {
+    super(ownerDocument, localName);
+  }
+}
+
+/**
+ * @implements globalThis.HTMLBodyElement
+ */
+class HTMLBodyElement extends HTMLElement {
+  constructor(ownerDocument, localName = 'body') {
+    super(ownerDocument, localName);
+  }
+}
+
 // @ts-nocheck
 // src/data/gen/property-list.ts
 /**
@@ -7320,21 +8655,17 @@ const FONT_FACE_DESCRIPTORS = /* @__PURE__ */ new Set("ascent-override,descent-o
 const PAGE_ALLOWED_PROPERTIES = /* @__PURE__ */ new Set("bleed,break-after,break-before,break-inside,counter-increment,counter-reset,counter-set,margin,margin-block,margin-block-end,margin-block-start,margin-bottom,margin-inline,margin-inline-end,margin-inline-start,margin-left,margin-right,margin-top,marks,orphans,page,page-break-after,page-break-before,page-break-inside,page-margin-safety,page-orientation,quotes,size,widows".split(","));
 const PAGE_DESCRIPTOR_PROPERTIES = [
 	"margin",
-	"marginTop",
-	"marginRight",
-	"marginBottom",
-	"marginLeft",
 	"margin-top",
 	"margin-right",
 	"margin-bottom",
 	"margin-left",
 	"size",
-	"pageOrientation",
 	"page-orientation",
 	"marks",
 	"bleed"
 ];
-const COUNTER_STYLE_DESCRIPTORS = [
+const POSITION_TRY_ALLOWED_PROPERTIES = /* @__PURE__ */ new Set("align-self,block-size,bottom,height,inline-size,inset,inset-area,inset-block,inset-block-end,inset-block-start,inset-inline,inset-inline-end,inset-inline-start,justify-self,left,margin,margin-block,margin-block-end,margin-block-start,margin-bottom,margin-inline,margin-inline-end,margin-inline-start,margin-left,margin-right,margin-top,max-block-size,max-height,max-inline-size,max-width,min-block-size,min-height,min-inline-size,min-width,place-self,position-anchor,position-area,right,top,width".split(","));
+const COUNTER_STYLE_PROP_BY_DESCRIPTOR = /* @__PURE__ */ new Map([
 	["additive-symbols", "additiveSymbols"],
 	["fallback", "fallback"],
 	["negative", "negative"],
@@ -7345,8 +8676,7 @@ const COUNTER_STYLE_DESCRIPTORS = [
 	["suffix", "suffix"],
 	["symbols", "symbols"],
 	["system", "system"]
-];
-const COUNTER_STYLE_PROP_BY_DESCRIPTOR = /* @__PURE__ */ new Map(COUNTER_STYLE_DESCRIPTORS);
+]);
 const FONT_FEATURE_VALUE_MAP_DEFS = [
 	["annotation", "annotation"],
 	["ornaments", "ornaments"],
@@ -7380,303 +8710,6 @@ const SYSTEM_FONT_KEYWORDS = /* @__PURE__ */ new Set("initial,inherit,unset,reve
 const FONT_STRETCH_KEYWORDS = /* @__PURE__ */ new Set("ultra-condensed,extra-condensed,condensed,semi-condensed,semi-expanded,expanded,extra-expanded,ultra-expanded".split(","));
 const FONT_SIZE_KEYWORDS = /* @__PURE__ */ new Set("xx-small,x-small,small,medium,large,x-large,xx-large,xxx-large,smaller,larger".split(","));
 const FLEX_BASIS_KEYWORDS = /* @__PURE__ */ new Set("auto,content,max-content,min-content,fit-content".split(","));
-// src/utils.ts
-/**
-* @license
-* Copyright 2026 Google LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     https://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-function camelToDashed(str) {
-	return str.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()).replace(/^ms-/, "-ms-");
-}
-function createIndexedProxy(target, getArray, mapValue) {
-	return new Proxy(target, { get(t, prop) {
-		if (typeof prop === "string" && !isNaN(Number(prop))) {
-			const index = Number(prop);
-			const val = getArray(t)[index];
-			return val !== void 0 ? mapValue ? mapValue(val) : val : void 0;
-		}
-		return t[prop];
-	} });
-}
-function deleteRuleFromArray(rules, index) {
-	if (index < 0 || index >= rules.length) throw new DOMException("Index size error", "IndexSizeError");
-	const oldRule = rules[index];
-	rules.splice(index, 1);
-	if (oldRule && typeof oldRule === "object") {
-		if ("_parentRule" in oldRule) oldRule._parentRule = null;
-		if ("_parentStyleSheet" in oldRule) oldRule._parentStyleSheet = null;
-	}
-	return oldRule;
-}
-// src/parse-hooks.ts
-/**
-* @license
-* Copyright 2026 Google LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     https://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-/**
-* Upward optional feature hooks allowing `cssomnom/parse` (`./parse`) to tree-shake
-* out Typed OM, `@property` registry, `MediaParser`, and `CSS.supports`.
-*
-* Downward parser functions are imported directly from `src/parser.ts`.
-*/
-const ParseHooks = {
-	parseMediaQueryList: (text) => {
-		return text.split(",").map((s) => s.trim()).filter(Boolean).map((m) => ({
-			type: "media-query",
-			mediaType: m,
-			tokens: [],
-			raw: m
-		}));
-	},
-	serializeMediaQuery: (query) => {
-		return query.raw ?? query.mediaType ?? "";
-	},
-	validatePropertyValue: (_property, _value, _rawValue) => {
-		return true;
-	},
-	supports: (_conditionText) => {
-		return false;
-	},
-	createStylePropertyMap: (_style) => {
-		throw new Error("createStylePropertyMap not injected (import cssomnom/typed-om)");
-	},
-	validatePropertyRuleDescriptor: (_def) => {
-		return true;
-	},
-	registerPropertyRule: (_def) => {
-		return false;
-	},
-	unregisterPropertyRule: (_name) => {}
-};
-// src/rules/collections.ts
-/**
-* @license
-* Copyright 2026 Google LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     https://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-var StyleSheetList = class {
-	_sheets;
-	constructor(sheets) {
-		this._sheets = sheets;
-		return createIndexedProxy(this, (t) => t._sheets);
-	}
-	get length() {
-		return this._sheets.length;
-	}
-	item(index) {
-		return this._sheets[index] || null;
-	}
-	get [Symbol.toStringTag]() {
-		return "StyleSheetList";
-	}
-	*[Symbol.iterator]() {
-		for (let i = 0; i < this.length; i++) yield this._sheets[i];
-	}
-};
-var MediaList = class {
-	_mediaQueries = [];
-	constructor(mediaText = "") {
-		this.mediaText = mediaText;
-		return createIndexedProxy(this, (t) => t._mediaQueries.map((q) => ParseHooks.serializeMediaQuery(q)));
-	}
-	get [Symbol.toStringTag]() {
-		return "MediaList";
-	}
-	get mediaText() {
-		return this._mediaQueries.map((q) => ParseHooks.serializeMediaQuery(q)).join(", ");
-	}
-	set mediaText(value) {
-		if (!value) {
-			this._mediaQueries = [];
-			return;
-		}
-		this._mediaQueries = ParseHooks.parseMediaQueryList(value);
-	}
-	get length() {
-		return this._mediaQueries.length;
-	}
-	item(index) {
-		const q = this._mediaQueries[index];
-		return q ? ParseHooks.serializeMediaQuery(q) : null;
-	}
-	toString() {
-		return this.mediaText;
-	}
-	get mediaQueriesAST() {
-		return this._mediaQueries;
-	}
-	appendMedium(medium) {
-		const parsed = ParseHooks.parseMediaQueryList(medium);
-		if (parsed.length !== 1) return;
-		const m = parsed[0];
-		const mText = ParseHooks.serializeMediaQuery(m);
-		if (this._mediaQueries.some((q) => ParseHooks.serializeMediaQuery(q) === mText)) return;
-		this._mediaQueries.push(m);
-	}
-	deleteMedium(medium) {
-		const parsed = ParseHooks.parseMediaQueryList(medium);
-		if (parsed.length !== 1) return;
-		const mText = ParseHooks.serializeMediaQuery(parsed[0]);
-		let i = this._mediaQueries.length;
-		let found = false;
-		while (i--) if (ParseHooks.serializeMediaQuery(this._mediaQueries[i]) === mText) {
-			this._mediaQueries.splice(i, 1);
-			found = true;
-		}
-		if (!found) throw new DOMException(`The medium '${medium}' does not exist in the MediaList.`, "NotFoundError");
-	}
-	*[Symbol.iterator]() {
-		for (let i = 0; i < this.length; i++) yield ParseHooks.serializeMediaQuery(this._mediaQueries[i]);
-	}
-};
-var CSSRuleList = class {
-	_getRules;
-	constructor(rulesOrGetter) {
-		this._getRules = typeof rulesOrGetter === "function" ? rulesOrGetter : () => rulesOrGetter;
-		return createIndexedProxy(this, (t) => t._getRules(), (v) => v);
-	}
-	get length() {
-		return this._getRules().length;
-	}
-	item(index) {
-		return this._getRules()[index] || null;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSRuleList";
-	}
-	*[Symbol.iterator]() {
-		const rules = this._getRules();
-		for (let i = 0; i < rules.length; i++) yield rules[i];
-	}
-};
-// src/rules/utils.ts
-/**
-* @license
-* Copyright 2026 Google LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     https://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-function isImportRule(r) {
-	return r.type === 3;
-}
-function isNamespaceRule(r) {
-	return r.type === 10;
-}
-function isRegularRule(r) {
-	return !isImportRule(r) && !isNamespaceRule(r);
-}
-function serializeGroupingRule(atKeyword, condition, rules) {
-	const cond = condition ? " " + condition : "";
-	const ruleTexts = rules.map((r) => r.cssText).filter((p) => p !== "");
-	if (ruleTexts.length === 0) return atKeyword === "keyframes" ? `@${atKeyword}${cond} { }` : `@${atKeyword}${cond} {\n}`;
-	return `@${atKeyword}${cond} {\n${ruleTexts.map((t) => "  " + t).join("\n")}\n}`;
-}
-function findParentStyleSheet(rule) {
-	let sheet = rule.parentStyleSheet;
-	let curr = rule.parentRule;
-	while (!sheet && curr) {
-		sheet = curr.parentStyleSheet;
-		curr = curr.parentRule;
-	}
-	return sheet;
-}
-/**
-* Validates that component values match <supports-condition> grammar.
-* css-conditional-3 #at-supports
-*/
-function isGrammaticallyValidSupportsCondition(values) {
-	const items = values.filter((v) => v.type !== "whitespace" && v.type !== "comment");
-	if (items.length === 0) return false;
-	const isSupportsInParens = (item) => {
-		if (item.type === "function") return true;
-		if (item.type === "simple-block" && item.associatedToken.value === "(") {
-			const blockValues = item.value.filter((v) => v.type !== "whitespace" && v.type !== "comment");
-			if (blockValues.length === 0) return true;
-			const hasTopOp = blockValues.some((v) => v.type === "ident" && [
-				"and",
-				"or",
-				"not"
-			].includes(String(v.value).toLowerCase()));
-			const isNestedParenBlock = blockValues.length === 1 && blockValues[0].type === "simple-block" && blockValues[0].associatedToken.value === "(";
-			if (hasTopOp || isNestedParenBlock) return isGrammaticallyValidSupportsCondition(item.value);
-			return true;
-		}
-		return false;
-	};
-	const operands = [];
-	const operators = [];
-	let i = 0;
-	while (i < items.length) {
-		if (items[i].type === "ident" && String(items[i].value).toLowerCase() === "not") {
-			if (i + 1 >= items.length) return false;
-			if (!isSupportsInParens(items[i + 1])) return false;
-			operands.push(true);
-			i += 2;
-		} else if (isSupportsInParens(items[i])) {
-			operands.push(true);
-			i += 1;
-		} else return false;
-		if (i < items.length) {
-			if (items[i].type !== "ident") return false;
-			const op = String(items[i].value).toLowerCase();
-			if (op !== "and" && op !== "or") return false;
-			operators.push(op);
-			i += 1;
-		}
-	}
-	if (operands.length === 0) return false;
-	if (operands.length !== operators.length + 1) return false;
-	if (operators.length > 0) {
-		const firstOp = operators[0];
-		if (!operators.every((op) => op === firstOp)) return false;
-	}
-	return true;
-}
 // src/webidl.ts
 /**
 * @license
@@ -7718,6 +8751,12 @@ function applyWebIDLInterface(ctor, options = {}) {
 	const rejectSet = new Set(options.rejectOperations || []);
 	Object.defineProperty(ctor, "length", {
 		value: 0,
+		writable: false,
+		enumerable: false,
+		configurable: true
+	});
+	Object.defineProperty(proto, Symbol.toStringTag, {
+		value: interfaceName,
 		writable: false,
 		enumerable: false,
 		configurable: true
@@ -7817,6 +8856,302 @@ function applyWebIDLConstants(ctor, constants) {
 		});
 	}
 }
+// src/utils.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function camelToDashed(str) {
+	return str.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()).replace(/^ms-/, "-ms-");
+}
+function createIndexedProxy(target, getArray, mapValue) {
+	hideInternalFields(target);
+	return new Proxy(target, {
+		get(t, prop, receiver) {
+			if (typeof prop === "string") {
+				const index = Number(prop);
+				if (Number.isInteger(index) && index >= 0) {
+					const val = getArray(t)[index];
+					return val !== void 0 ? mapValue ? mapValue(val) : val : void 0;
+				}
+			}
+			return Reflect.get(t, prop, receiver);
+		},
+		set(t, prop, value) {
+			return Reflect.set(t, prop, value, t);
+		}
+	});
+}
+function deleteRuleFromArray(rules, index) {
+	if (index < 0 || index >= rules.length) throw new DOMException("Index size error", "IndexSizeError");
+	const oldRule = rules[index];
+	rules.splice(index, 1);
+	if (oldRule && typeof oldRule === "object") {
+		if ("_parentRule" in oldRule) oldRule._parentRule = null;
+		if ("_parentStyleSheet" in oldRule) oldRule._parentStyleSheet = null;
+	}
+	return oldRule;
+}
+// src/parse-hooks.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Upward optional feature hooks allowing `cssomnom/parse` (`./parse`) to tree-shake
+* out Typed OM, `@property` registry, `MediaParser`, and `CSS.supports`.
+*
+* Downward parser functions are imported directly from `src/parser.ts`.
+*/
+const ParseHooks = {
+	parseMediaQueryList: (text) => {
+		return text.split(",").map((s) => s.trim()).filter(Boolean).map((m) => ({
+			type: "media-query",
+			mediaType: m,
+			tokens: [],
+			raw: m
+		}));
+	},
+	serializeMediaQuery: (query) => {
+		return query.raw ?? query.mediaType ?? "";
+	},
+	validatePropertyValue: (_property, _value, _rawValue) => {
+		return true;
+	},
+	supports: (_conditionText) => {
+		return false;
+	},
+	createStylePropertyMap: (_style) => {
+		throw new Error("createStylePropertyMap not injected (import cssomnom/typed-om)");
+	},
+	validatePropertyRuleDescriptor: (_def) => {
+		return true;
+	},
+	registerPropertyRule: (_def) => {
+		return false;
+	},
+	unregisterPropertyRule: (_name) => {}
+};
+// src/rules/collections.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var StyleSheetList = class {
+	/** @internal */
+	_sheets;
+	constructor(sheets) {
+		this._sheets = sheets;
+		return createIndexedProxy(this, (t) => t._sheets);
+	}
+	get length() {
+		return this._sheets.length;
+	}
+	item(index) {
+		return this._sheets[index] || null;
+	}
+	*[Symbol.iterator]() {
+		for (let i = 0; i < this.length; i++) yield this._sheets[i];
+	}
+};
+var MediaList = class {
+	/** @internal */
+	_mediaQueries = [];
+	constructor(mediaText = "") {
+		this.mediaText = mediaText;
+		return createIndexedProxy(this, (t) => t._mediaQueries.map((q) => ParseHooks.serializeMediaQuery(q)));
+	}
+	get mediaText() {
+		return this._mediaQueries.map((q) => ParseHooks.serializeMediaQuery(q)).join(", ");
+	}
+	set mediaText(value) {
+		if (!value) {
+			this._mediaQueries = [];
+			return;
+		}
+		this._mediaQueries = ParseHooks.parseMediaQueryList(value);
+	}
+	get length() {
+		return this._mediaQueries.length;
+	}
+	item(index) {
+		const q = this._mediaQueries[index];
+		return q ? ParseHooks.serializeMediaQuery(q) : null;
+	}
+	toString() {
+		return this.mediaText;
+	}
+	appendMedium(medium) {
+		const parsed = ParseHooks.parseMediaQueryList(medium);
+		if (parsed.length !== 1) return;
+		const m = parsed[0];
+		const mText = ParseHooks.serializeMediaQuery(m);
+		if (this._mediaQueries.some((q) => ParseHooks.serializeMediaQuery(q) === mText)) return;
+		this._mediaQueries.push(m);
+	}
+	deleteMedium(medium) {
+		const parsed = ParseHooks.parseMediaQueryList(medium);
+		if (parsed.length !== 1) return;
+		const mText = ParseHooks.serializeMediaQuery(parsed[0]);
+		let i = this._mediaQueries.length;
+		let found = false;
+		while (i--) if (ParseHooks.serializeMediaQuery(this._mediaQueries[i]) === mText) {
+			this._mediaQueries.splice(i, 1);
+			found = true;
+		}
+		if (!found) throw new DOMException(`The medium '${medium}' does not exist in the MediaList.`, "NotFoundError");
+	}
+	*[Symbol.iterator]() {
+		for (let i = 0; i < this.length; i++) yield ParseHooks.serializeMediaQuery(this._mediaQueries[i]);
+	}
+};
+var CSSRuleList = class {
+	/** @internal */
+	_getRules;
+	constructor(rulesOrGetter) {
+		this._getRules = typeof rulesOrGetter === "function" ? rulesOrGetter : () => rulesOrGetter;
+		return createIndexedProxy(this, (t) => t._getRules(), (v) => v);
+	}
+	get length() {
+		return this._getRules().length;
+	}
+	item(index) {
+		return this._getRules()[index] || null;
+	}
+	*[Symbol.iterator]() {
+		const rules = this._getRules();
+		for (let i = 0; i < rules.length; i++) yield rules[i];
+	}
+};
+// src/rules/utils.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function isImportRule(r) {
+	return r.type === 3;
+}
+function isNamespaceRule(r) {
+	return r.type === 10;
+}
+function isRegularRule(r) {
+	return !isImportRule(r) && !isNamespaceRule(r);
+}
+function serializeGroupingRule(atKeyword, condition, rules) {
+	const cond = condition ? " " + condition : "";
+	const ruleTexts = rules.map((r) => r.cssText).filter((p) => p !== "");
+	if (ruleTexts.length === 0) return atKeyword === "keyframes" ? `@${atKeyword}${cond} { }` : `@${atKeyword}${cond} {\n}`;
+	return `@${atKeyword}${cond} {\n${ruleTexts.map((t) => "  " + t).join("\n")}\n}`;
+}
+function findParentStyleSheet(rule) {
+	let sheet = rule.parentStyleSheet;
+	let curr = rule.parentRule;
+	while (!sheet && curr) {
+		sheet = curr.parentStyleSheet;
+		curr = curr.parentRule;
+	}
+	return sheet;
+}
+/**
+* Validates that component values match <supports-condition> grammar.
+* css-conditional-3 #at-supports
+*/
+function isGrammaticallyValidSupportsCondition(values) {
+	const items = values.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+	if (items.length === 0) return false;
+	const isSupportsInParens = (item) => {
+		if (item.type === "function") return true;
+		if (item.type === "simple-block" && item.associatedToken.value === "(") {
+			const blockValues = item.value.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+			if (blockValues.length === 0) return true;
+			const hasTopOp = blockValues.some((v) => v.type === "ident" && [
+				"and",
+				"or",
+				"not"
+			].includes(String(v.value).toLowerCase()));
+			const isNestedParenBlock = blockValues.length === 1 && blockValues[0].type === "simple-block" && blockValues[0].associatedToken.value === "(";
+			if (hasTopOp || isNestedParenBlock) return isGrammaticallyValidSupportsCondition(item.value);
+			return true;
+		}
+		return false;
+	};
+	const operands = [];
+	const operators = [];
+	let i = 0;
+	while (i < items.length) {
+		if (items[i].type === "ident" && String(items[i].value).toLowerCase() === "not") {
+			if (i + 1 >= items.length) return false;
+			if (!isSupportsInParens(items[i + 1])) return false;
+			operands.push(true);
+			i += 2;
+		} else if (isSupportsInParens(items[i])) {
+			operands.push(true);
+			i += 1;
+		} else return false;
+		if (i < items.length) {
+			if (items[i].type !== "ident") return false;
+			const op = String(items[i].value).toLowerCase();
+			if (op !== "and" && op !== "or") return false;
+			operators.push(op);
+			i += 1;
+		}
+	}
+	if (operands.length === 0) return false;
+	if (operands.length !== operators.length + 1) return false;
+	if (operators.length > 0) {
+		const firstOp = operators[0];
+		if (!operators.every((op) => op === firstOp)) return false;
+	}
+	return true;
+}
 // src/rules/base.ts
 /**
 * @license
@@ -7850,9 +9185,6 @@ const RULE_CONSTANTS = {
 	FONT_FEATURE_VALUES_RULE: 14
 };
 var CSSRule = class {
-	get [Symbol.toStringTag]() {
-		return "CSSRule";
-	}
 	/** @internal */
 	_parentRule = null;
 	/** @internal */
@@ -7908,16 +9240,11 @@ var CSSGroupingRule = class CSSGroupingRule extends CSSRule {
 		const isStyleRule = (r) => r[Symbol.toStringTag] === "CSSStyleRule";
 		const isNested = isStyleRule(this) || isScopeRule(this) || this.parentRule !== null;
 		let isInsideStyleRule = isStyleRule(this);
-		if (!isInsideStyleRule) {
-			let p = this.parentRule;
-			while (p) {
-				if (isStyleRule(p)) {
-					isInsideStyleRule = true;
-					break;
-				}
-				p = p.parentRule;
-			}
-		}
+		let isDirectlyInScope = isScopeRule(this);
+		for (let p = this.parentRule, seenStyle = isInsideStyleRule; p; p = p.parentRule) if (isStyleRule(p)) {
+			isInsideStyleRule = true;
+			seenStyle = true;
+		} else if (!seenStyle && isScopeRule(p)) isDirectlyInScope = true;
 		if (!CSSGroupingRule._parser) throw new DOMException("Parser not initialized", "SyntaxError");
 		const { parseRule, parseRuleInBlock, parseRuleInScopeBlock } = CSSGroupingRule._parser;
 		let topRule = null;
@@ -7927,18 +9254,6 @@ var CSSGroupingRule = class CSSGroupingRule extends CSSRule {
 		if (topRule) {
 			if (isImportRule(topRule) || isNamespaceRule(topRule)) throw new DOMException("HierarchyRequestError: @import and @namespace rules are not allowed inside grouping rules", "HierarchyRequestError");
 			if (isInsideStyleRule && !(topRule instanceof CSSGroupingRule)) throw new DOMException("HierarchyRequestError: This rule cannot be inserted inside a nested rule", "HierarchyRequestError");
-		}
-		let isDirectlyInScope = isScopeRule(this);
-		if (!isDirectlyInScope && !isStyleRule(this)) {
-			let parent = this.parentRule;
-			while (parent) {
-				if (isStyleRule(parent)) break;
-				if (isScopeRule(parent)) {
-					isDirectlyInScope = true;
-					break;
-				}
-				parent = parent.parentRule;
-			}
 		}
 		const parsedRule = isDirectlyInScope ? parseRuleInScopeBlock(rule) : parseRuleInBlock(rule, isNested);
 		if (!parsedRule) throw new DOMException("Syntax error", "SyntaxError");
@@ -10959,6 +12274,7 @@ var SelectorParser = class SelectorParser {
 	declaredNamespaces;
 	strictSupports;
 	allowVendorPseudos;
+	allowUnknownPseudos;
 	constructor(values, options = {}) {
 		this.cursor = new ComponentValueCursor(values);
 		this.allowRelative = options.allowRelative ?? false;
@@ -10968,6 +12284,7 @@ var SelectorParser = class SelectorParser {
 		this.declaredNamespaces = options.declaredNamespaces;
 		this.strictSupports = options.strictSupports ?? false;
 		this.allowVendorPseudos = options.allowVendorPseudos ?? false;
+		this.allowUnknownPseudos = options.allowUnknownPseudos ?? false;
 	}
 	hasAmpersand(values) {
 		return values.some((val) => {
@@ -11334,7 +12651,7 @@ var SelectorParser = class SelectorParser {
 			if (isPseudoElement) {
 				if (this.forbidPseudo || this.insideHas) throw new DOMException("Pseudo-elements are not allowed in this context", "SyntaxError");
 				const isAllowedVendor = this.allowVendorPseudos && isVendorPrefixed || !this.strictSupports && effectiveLowerName.startsWith("-webkit-");
-				if (!PSEUDO_ELEMENTS.has(effectiveLowerName) && !isAllowedVendor) throw new DOMException(`Unknown pseudo-element ::${name}`, "SyntaxError");
+				if (!PSEUDO_ELEMENTS.has(effectiveLowerName) && !isAllowedVendor && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-element ::${name}`, "SyntaxError");
 				return {
 					type: "pseudo-element-selector",
 					name
@@ -11353,7 +12670,7 @@ var SelectorParser = class SelectorParser {
 				};
 			}
 			const isAllowedVendor = this.allowVendorPseudos && isVendorPrefixed || !this.strictSupports && effectiveLowerName.startsWith("-webkit-");
-			if (!PSEUDO_CLASSES.has(effectiveLowerName) && !isAllowedVendor) throw new DOMException(`Unknown pseudo-class :${name}`, "SyntaxError");
+			if (!PSEUDO_CLASSES.has(effectiveLowerName) && !isAllowedVendor && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-class :${name}`, "SyntaxError");
 			return {
 				type: "pseudo-class-selector",
 				name
@@ -11365,14 +12682,15 @@ var SelectorParser = class SelectorParser {
 			const isVendorPrefixed = /^-[a-zA-Z0-9]+-/.test(lowerName);
 			if (isPseudoElement) {
 				if (this.forbidPseudo || this.insideHas) throw new DOMException("Pseudo-elements are not allowed in this context", "SyntaxError");
-				if (!PSEUDO_ELEMENTS.has(lowerName) && !(this.allowVendorPseudos && isVendorPrefixed)) throw new DOMException(`Unknown pseudo-element ::${name}()`, "SyntaxError");
+				if (!PSEUDO_ELEMENTS.has(lowerName) && !(this.allowVendorPseudos && isVendorPrefixed) && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-element ::${name}()`, "SyntaxError");
 				if (lowerName === "slotted") {
 					const subParser = new SelectorParser(func.value, {
 						insideHas: this.insideHas,
 						forbidPseudo: true,
 						declaredNamespaces: this.declaredNamespaces,
 						strictSupports: this.strictSupports,
-						allowVendorPseudos: this.allowVendorPseudos
+						allowVendorPseudos: this.allowVendorPseudos,
+						allowUnknownPseudos: this.allowUnknownPseudos
 					});
 					subParser.cursor.skipWhitespace();
 					const compound = subParser.consumeCompoundSelector();
@@ -11397,7 +12715,7 @@ var SelectorParser = class SelectorParser {
 					argument: func.value
 				};
 			}
-			if (!PSEUDO_CLASSES.has(lowerName) && lowerName !== "matches" && !(this.allowVendorPseudos && isVendorPrefixed)) throw new DOMException(`Unknown pseudo-class :${name}()`, "SyntaxError");
+			if (!PSEUDO_CLASSES.has(lowerName) && lowerName !== "matches" && !(this.allowVendorPseudos && isVendorPrefixed) && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-class :${name}()`, "SyntaxError");
 			if ([
 				"is",
 				"not",
@@ -11428,7 +12746,8 @@ var SelectorParser = class SelectorParser {
 						forbidPseudo: isLogicalPseudo || isHas || this.forbidPseudo,
 						declaredNamespaces: this.declaredNamespaces,
 						strictSupports: this.strictSupports,
-						allowVendorPseudos: this.allowVendorPseudos
+						allowVendorPseudos: this.allowVendorPseudos,
+						allowUnknownPseudos: this.allowUnknownPseudos
 					}).parse()
 				};
 			}
@@ -11438,7 +12757,8 @@ var SelectorParser = class SelectorParser {
 					forbidPseudo: true,
 					declaredNamespaces: this.declaredNamespaces,
 					strictSupports: this.strictSupports,
-					allowVendorPseudos: this.allowVendorPseudos
+					allowVendorPseudos: this.allowVendorPseudos,
+					allowUnknownPseudos: this.allowUnknownPseudos
 				});
 				subParser.cursor.skipWhitespace();
 				const compound = subParser.consumeCompoundSelector();
@@ -11484,7 +12804,8 @@ var SelectorParser = class SelectorParser {
 							allowRelative: false,
 							declaredNamespaces: this.declaredNamespaces,
 							strictSupports: this.strictSupports,
-							allowVendorPseudos: this.allowVendorPseudos
+							allowVendorPseudos: this.allowVendorPseudos,
+							allowUnknownPseudos: this.allowUnknownPseudos
 						}).parse(),
 						nth
 					};
@@ -11797,6 +13118,10 @@ function getLastToken(node) {
 	if (t.type === "EOF") return null;
 	return t;
 }
+/**
+* Serializes an array of CSS component values or tokens back into a CSS string,
+* inserting `/** /` comment separators between adjacent tokens that would otherwise merge.
+*/
 function serialize(nodes, preserveCase = false, propertyName) {
 	if (propertyName === "font-family") return serializeFontFamily(nodes);
 	let result = "";
@@ -13230,6 +14555,9 @@ var AbstractTokenizer = class {
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+/**
+* Tokenizes a CSS input string into an array of CSS Syntax Level 3 tokens (ending with an `EOF` token).
+*/
 function tokenize(input, unicodeRangesAllowed = false, errors) {
 	const tokenizer = new Tokenizer(input);
 	tokenizer.unicodeRangesAllowed = unicodeRangesAllowed;
@@ -13358,9 +14686,6 @@ var StyleSheet = class {
 	_media;
 	/** @internal */
 	_disabledFlag = false;
-	get [Symbol.toStringTag]() {
-		return "StyleSheet";
-	}
 	get type() {
 		return this._type;
 	}
@@ -13437,9 +14762,6 @@ var CSSStyleSheet = class CSSStyleSheet extends StyleSheet {
 		if (this._ownerRule) return this._ownerRule.parentStyleSheet;
 		return super.parentStyleSheet;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSStyleSheet";
-	}
 	get cssRules() {
 		if (!this._originCleanFlag) throw new DOMException("The stylesheet is not origin-clean", "SecurityError");
 		return this._cssRules;
@@ -13493,7 +14815,7 @@ var CSSStyleSheet = class CSSStyleSheet extends StyleSheet {
 		return sheet;
 	}
 	_replaceRulesFromText(text) {
-		const filteredRules = consumeListOfRules(tokenize(text), true).filter((rule) => {
+		const filteredRules = consumeListOfRules(tokenize(text), true, { source: text }).filter((rule) => {
 			if (isImportRule(rule)) {
 				console.warn("CSS Parse Error: @import rules are not allowed in constructed stylesheets and were removed.");
 				return false;
@@ -13597,7 +14919,7 @@ var CSSStyleRule = class CSSStyleRule extends CSSGroupingRule {
 		super(rules, parseRuleInBlock);
 		this._selectorText = selectorText;
 		this._selectorAST = selectorAST;
-		this._style = new CSSStyleDeclaration$1(styleDeclarations);
+		this._style = new CSSStyleDeclaration(styleDeclarations);
 		this._style._parentRule = this;
 		hideInternalFields(this);
 	}
@@ -13611,9 +14933,6 @@ var CSSStyleRule = class CSSStyleRule extends CSSGroupingRule {
 	}
 	set style(value) {
 		this._style.cssText = value;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSStyleRule";
 	}
 	_getNamespaceContext() {
 		let hasDefaultNamespace = false;
@@ -13686,9 +15005,6 @@ var CSSStyleRule = class CSSStyleRule extends CSSGroupingRule {
 			this._selectorText = serializeSelectorList(selectorAST, nsContext);
 		}
 	}
-	get selectorAST() {
-		return this._selectorAST;
-	}
 	get type() {
 		return 1;
 	}
@@ -13725,12 +15041,6 @@ const cssomClasses = [
 for (const ctor of cssomClasses) if (ctor === CSSStyleSheet) applyWebIDLInterface(ctor, { rejectOperations: ["replace"] });
 else if (ctor === CSSRule) applyWebIDLInterface(ctor, { exclude: ["location"] });
 else applyWebIDLInterface(ctor);
-Object.defineProperty(CSSStyleProperties.prototype, Symbol.toStringTag, {
-	value: "CSSStyleProperties",
-	configurable: true,
-	writable: false,
-	enumerable: false
-});
 // src/internal-token.ts
 /**
 * @license
@@ -13784,9 +15094,6 @@ var CSSMediaRule = class extends CSSConditionRule {
 	set media(val) {
 		this._media.mediaText = val === null ? "" : String(val);
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSMediaRule";
-	}
 	get conditionText() {
 		return this._media.mediaText;
 	}
@@ -13813,9 +15120,6 @@ var CSSCustomMediaRule = class extends CSSRule {
 	get query() {
 		return this._query;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSCustomMediaRule";
-	}
 	get cssText() {
 		const queryStr = typeof this._query === "boolean" ? String(this._query) : this._query.mediaText;
 		return `@custom-media ${this._name}${queryStr ? " " + queryStr : ""};`;
@@ -13834,9 +15138,6 @@ var CSSSupportsRule = class extends CSSConditionRule {
 	}
 	get matches() {
 		return ParseHooks.supports(this._conditionText);
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSSupportsRule";
 	}
 	get type() {
 		return 12;
@@ -13889,9 +15190,6 @@ var CSSContainerRule = class extends CSSConditionRule {
 		if (this._containerName) return this._containerQuery ? `${this._containerName} ${this._containerQuery}` : this._containerName;
 		return this._containerQuery;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSContainerRule";
-	}
 	get cssText() {
 		return serializeGroupingRule("container", this.conditionText, this._rules);
 	}
@@ -13914,9 +15212,6 @@ var CSSLayerBlockRule = class extends CSSGroupingRule {
 	get name() {
 		return this._name;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSLayerBlockRule";
-	}
 	get cssText() {
 		return serializeGroupingRule("layer", serializeLayerName(this._name), this._rules);
 	}
@@ -13932,9 +15227,6 @@ var CSSLayerStatementRule = class extends CSSRule {
 	}
 	get nameList() {
 		return this._nameList;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSLayerStatementRule";
 	}
 	get cssText() {
 		return `@layer ${this._nameList.map(serializeLayerName).join(", ")};`;
@@ -13959,15 +15251,6 @@ var CSSScopeRule = class extends CSSGroupingRule {
 		this._endSelector = endSelector;
 		hideInternalFields(this);
 	}
-	get startSelector() {
-		return this._startSelector;
-	}
-	get endSelector() {
-		return this._endSelector;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSScopeRule";
-	}
 	get start() {
 		return this._startSelector ? this._startSelector.replace(/^\(/, "").replace(/\)$/, "").trim() || null : null;
 	}
@@ -13991,9 +15274,6 @@ var CSSViewTransitionRule = class extends CSSRule {
 	}
 	get navigation() {
 		return this._navigation;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSViewTransitionRule";
 	}
 	get cssText() {
 		return `@view-transition { navigation: ${this._navigation}; }`;
@@ -14027,25 +15307,9 @@ var CSSKeyframesRule = class extends CSSRule {
 		this._name = name;
 		this._rules = rules;
 		this._cssRules = new CSSRuleList(() => this._rules);
-		hideInternalFields(this);
-		return new Proxy(this, {
-			get(target, prop) {
-				if (typeof prop === "string") {
-					const index = Number(prop);
-					if (Number.isInteger(index) && index >= 0) return target._rules[index];
-				}
-				const val = Reflect.get(target, prop, target);
-				if (typeof val === "function") return val.bind(target);
-				return val;
-			},
-			set(target, prop, value) {
-				return Reflect.set(target, prop, value, target);
-			},
-			ownKeys() {
-				return [];
-			},
-			getOwnPropertyDescriptor() {}
-		});
+		const proxy = createIndexedProxy(this, (t) => t._rules);
+		for (const rule of rules) if (rule instanceof CSSRule) rule._parentRule = proxy;
+		return proxy;
 	}
 	get name() {
 		return this._name;
@@ -14058,9 +15322,6 @@ var CSSKeyframesRule = class extends CSSRule {
 	}
 	get type() {
 		return 7;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSKeyframesRule";
 	}
 	get length() {
 		return this._rules.length;
@@ -14116,7 +15377,7 @@ var CSSKeyframesRule = class extends CSSRule {
 	}
 	deleteRule(select) {
 		const idx = this._findRuleIndex(select);
-		if (idx !== -1) this._rules.splice(idx, 1);
+		if (idx !== -1) deleteRuleFromArray(this._rules, idx);
 	}
 };
 var CSSKeyframeRule = class extends CSSRule {
@@ -14144,9 +15405,6 @@ var CSSKeyframeRule = class extends CSSRule {
 	get type() {
 		return 8;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSKeyframeRule";
-	}
 	get cssText() {
 		return formatInlineStyleBlock(this.keyText, this._style);
 	}
@@ -14154,12 +15412,9 @@ var CSSKeyframeRule = class extends CSSRule {
 };
 var CSSNestedDeclarations = class extends CSSRule {
 	/** @internal */ _style;
-	get [Symbol.toStringTag]() {
-		return "CSSNestedDeclarations";
-	}
 	constructor(styleDeclarations) {
 		super();
-		this._style = new CSSStyleDeclaration$1(styleDeclarations);
+		this._style = new CSSStyleDeclaration(styleDeclarations);
 		this._style._parentRule = this;
 		hideInternalFields(this);
 	}
@@ -14188,9 +15443,6 @@ var CSSFontFaceRule = class extends CSSRule {
 	set style(value) {
 		this._style.cssText = value;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSFontFaceRule";
-	}
 	get type() {
 		return 5;
 	}
@@ -14218,9 +15470,6 @@ var CSSMarginRule = class extends CSSRule {
 	}
 	set style(value) {
 		this._style.cssText = value;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSMarginRule";
 	}
 	get type() {
 		return 9;
@@ -14285,18 +15534,6 @@ var CSSImportRule = class extends CSSRule {
 	get supportsText() {
 		return this._supportsText;
 	}
-	get scopeStart() {
-		return this._scopeStart;
-	}
-	get scopeEnd() {
-		return this._scopeEnd;
-	}
-	get isScoped() {
-		return this._isScoped;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSImportRule";
-	}
 	get type() {
 		return 3;
 	}
@@ -14332,9 +15569,6 @@ var CSSNamespaceRule = class extends CSSRule {
 	}
 	get prefix() {
 		return this._prefix;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSNamespaceRule";
 	}
 	get type() {
 		return 10;
@@ -14406,9 +15640,6 @@ var CSSPageRule = class extends CSSGroupingRule {
 	set style(value) {
 		this._style.cssText = value;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSPageRule";
-	}
 	get type() {
 		return 6;
 	}
@@ -14447,9 +15678,6 @@ var CSSPropertyRule = class extends CSSRule {
 	get initialValue() {
 		return this._initialValue;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSPropertyRule";
-	}
 	get cssText() {
 		let body = `syntax: ${serializeString(this._syntax)}; inherits: ${this._inherits};`;
 		if (this._initialValue !== null) body += `initial-value: ${this._initialValue};`;
@@ -14478,6 +15706,9 @@ var CSSAtRule = class extends CSSRule {
 		this._block = block;
 		this._childRules = childRules;
 		this._declarations = declarations;
+		if (childRules) {
+			for (const rule of childRules) if (rule instanceof CSSRule) rule._parentRule = this;
+		}
 		hideInternalFields(this);
 	}
 	get name() {
@@ -14556,9 +15787,6 @@ var CSSCounterStyleRule = class extends CSSRule {
 	set name(value) {
 		this._name = value;
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSCounterStyleRule";
-	}
 	get type() {
 		return 11;
 	}
@@ -14571,7 +15799,7 @@ var CSSCounterStyleRule = class extends CSSRule {
 	}
 	set cssText(_value) {}
 };
-for (const [, prop] of COUNTER_STYLE_DESCRIPTORS) Object.defineProperty(CSSCounterStyleRule.prototype, prop, {
+for (const prop of COUNTER_STYLE_PROP_BY_DESCRIPTOR.values()) Object.defineProperty(CSSCounterStyleRule.prototype, prop, {
 	get() {
 		return this._descriptors[prop];
 	},
@@ -14582,7 +15810,11 @@ for (const [, prop] of COUNTER_STYLE_DESCRIPTORS) Object.defineProperty(CSSCount
 	configurable: true
 });
 var CSSFontFeatureValuesMap = class {
+	/** @internal */
 	_map = /* @__PURE__ */ new Map();
+	constructor() {
+		hideInternalFields(this);
+	}
 	get size() {
 		return this._map.size;
 	}
@@ -14610,11 +15842,11 @@ var CSSFontFeatureValuesMap = class {
 	values() {
 		return this._map.values();
 	}
+	forEach(callbackfn, thisArg) {
+		this._map.forEach((value, key) => callbackfn.call(thisArg, value, key, this));
+	}
 	[Symbol.iterator]() {
 		return this._map[Symbol.iterator]();
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSFontFeatureValuesMap";
 	}
 };
 var CSSFontFeatureValuesRule = class extends CSSRule {
@@ -14630,9 +15862,6 @@ var CSSFontFeatureValuesRule = class extends CSSRule {
 	}
 	set fontFamily(value) {
 		this._fontFamily = value;
-	}
-	get [Symbol.toStringTag]() {
-		return "CSSFontFeatureValuesRule";
 	}
 	get type() {
 		return 14;
@@ -14658,6 +15887,32 @@ for (const [, prop] of FONT_FEATURE_VALUE_MAP_DEFS) Object.defineProperty(CSSFon
 	enumerable: true,
 	configurable: true
 });
+var CSSPositionTryRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _style;
+	constructor(name, declarations, internalToken) {
+		if (internalToken !== INTERNAL_RULE_TOKEN) throw new TypeError("Illegal constructor");
+		super();
+		this._name = name;
+		this._style = new CSSPositionTryDescriptors(declarations, PAGE_DESCRIPTORS_INTERNAL);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get name() {
+		return serializeIdentifier(this._name);
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get cssText() {
+		const body = this._style.cssText.trim();
+		return `@position-try ${this.name} { ${body ? body + " " : ""}}`;
+	}
+	set cssText(_value) {}
+};
 for (const ctor of [
 	CSSAtRule,
 	CSSConditionRule,
@@ -14681,7 +15936,8 @@ for (const ctor of [
 	CSSFontFeatureValuesRule,
 	CSSCustomMediaRule,
 	CSSFontFaceRule,
-	CSSPageRule
+	CSSPageRule,
+	CSSPositionTryRule
 ]) applyWebIDLInterface(ctor);
 // src/TokenStream.ts
 /**
@@ -14848,7 +16104,7 @@ function splitLeadingDeclarations(blockContents) {
 	const nestedRules = [];
 	for (let i = 0; i < blockContents.length; i++) {
 		const item = blockContents[i];
-		if (i === 0 && item instanceof CSSNestedDeclarations) declarations.push(...item.style._declarations);
+		if (i === 0 && item instanceof CSSNestedDeclarations) declarations.push(...item.style._rawDeclarations);
 		else nestedRules.push(item);
 	}
 	return {
@@ -14901,14 +16157,15 @@ var Parser = class Parser {
 		namespace: (parser, rule) => parser.handleNamespaceRule(rule),
 		"counter-style": (parser, rule, block) => block ? parser.handleCounterStyleRule(rule, block) : null,
 		"font-feature-values": (parser, rule, block) => block ? parser.handleFontFeatureValuesRule(rule, block) : null,
-		"custom-media": (parser, rule) => parser.handleCustomMediaRule(rule)
+		"custom-media": (parser, rule) => parser.handleCustomMediaRule(rule),
+		"position-try": (parser, rule, block) => block ? parser.handlePositionTryRule(rule, block) : null
 	};
 	getAtRuleHandler(name) {
 		if (MARGIN_RULE_NAMES.has(name)) return (parser, rule, block) => block ? parser.handleMarginRule(rule, block) : null;
 		if (name === "keyframes" || name.endsWith("-keyframes")) return (parser, rule, block) => block ? parser.handleKeyframesRule(rule, block) : null;
 		return Parser.AT_RULE_HANDLERS[name];
 	}
-	static NESTED_GROUP_AT_RULES = /* @__PURE__ */ new Set("media,supports,container,layer,scope,starting-style,keyframes,property,counter-style,font-feature-values,view-transition".split(","));
+	static NESTED_GROUP_AT_RULES = /* @__PURE__ */ new Set("media,supports,container,layer,scope,starting-style,keyframes,property,counter-style,font-feature-values,view-transition,position-try".split(","));
 	isSupportedAtRule(name, nested = false) {
 		const lower = name.toLowerCase();
 		if (lower === "charset") return false;
@@ -15018,7 +16275,7 @@ var Parser = class Parser {
 		return rule;
 	}
 	parseStyleAttribute() {
-		return new CSSStyleDeclaration$1(this.consumeDeclarationsFromBlockContents(this.parseComponentValues()));
+		return new CSSStyleDeclaration(this.consumeDeclarationsFromBlockContents(this.parseComponentValues()));
 	}
 	parseStyleSheetContents() {
 		return this.consumeListOfRules(true);
@@ -15338,6 +16595,13 @@ var Parser = class Parser {
 		if (ParseHooks.validatePropertyRuleDescriptor) ; else if (!isValidDashedIdent(name) || typeof syntax !== "string" || syntax.length === 0 || typeof inherits !== "boolean") return null;
 		return new CSSPropertyRule(name, syntax, inherits, initialValue);
 	}
+	handlePositionTryRule(rule, block) {
+		const nonWsPrelude = trimComponentValues(rule.prelude, true);
+		if (nonWsPrelude.length !== 1 || nonWsPrelude[0].type !== "ident") return null;
+		const name = nonWsPrelude[0].value;
+		if (!isValidDashedIdent(name)) return null;
+		return new CSSPositionTryRule(name, this.consumeDeclarationsFromBlockContents(block.value), INTERNAL_RULE_TOKEN);
+	}
 	parseImportScopeArgs(scopeArgs) {
 		let scopeStart = null;
 		let scopeEnd = null;
@@ -15583,7 +16847,10 @@ var Parser = class Parser {
 				if (next.type === "EOF" || next.type === "}" || next.type === "semicolon") return true;
 				if (next.type === "simple-block" && next.associatedToken?.type === "{") {
 					const selectorCandidate = serialize(lookaheadTokens).trim();
-					return Parser.parseSelectorAST(selectorCandidate) === null;
+					return Parser.parseSelectorAST(selectorCandidate, {
+						allowVendorPseudos: Boolean(this.options.allowVendorPseudos),
+						allowUnknownPseudos: Boolean(this.options.allowUnknownPseudos)
+					}) === null;
 				}
 				lookaheadTokens.push(stream.next());
 			}
@@ -15740,7 +17007,8 @@ var Parser = class Parser {
 			selectorAST = Parser.parseSelectorAST(selectorText, {
 				declaredNamespaces: this.declaredNamespaces,
 				allowRelative: true,
-				allowVendorPseudos: Boolean(this.options.allowVendorPseudos)
+				allowVendorPseudos: Boolean(this.options.allowVendorPseudos),
+				allowUnknownPseudos: Boolean(this.options.allowUnknownPseudos)
 			});
 			if (selectorAST === null) return null;
 		} else {
@@ -15749,7 +17017,8 @@ var Parser = class Parser {
 				selectorAST = new SelectorParser(prelude, {
 					declaredNamespaces: this.declaredNamespaces,
 					allowRelative,
-					allowVendorPseudos: Boolean(this.options.allowVendorPseudos)
+					allowVendorPseudos: Boolean(this.options.allowVendorPseudos),
+					allowUnknownPseudos: Boolean(this.options.allowUnknownPseudos)
 				}).parse();
 			} catch {
 				return null;
@@ -15775,14 +17044,19 @@ var Parser = class Parser {
 		const declaredNamespaces = isOptionsObj ? declaredNamespacesOrOptions.declaredNamespaces : declaredNamespacesOrOptions;
 		const isRelative = isOptionsObj ? declaredNamespacesOrOptions.allowRelative ?? false : allowRelative;
 		const vendorPseudos = isOptionsObj ? declaredNamespacesOrOptions.allowVendorPseudos ?? false : allowVendorPseudos;
-		const parser = new Parser(tokenize(text), { allowVendorPseudos: vendorPseudos });
+		const unknownPseudos = isOptionsObj ? declaredNamespacesOrOptions.allowUnknownPseudos ?? false : false;
+		const parser = new Parser(tokenize(text), {
+			allowVendorPseudos: vendorPseudos,
+			allowUnknownPseudos: unknownPseudos
+		});
 		const prelude = Parser.#consumeSelectorTokens(parser);
 		if (prelude === null) return null;
 		try {
 			return new SelectorParser(prelude, {
 				allowRelative: isRelative,
 				declaredNamespaces,
-				allowVendorPseudos: vendorPseudos
+				allowVendorPseudos: vendorPseudos,
+				allowUnknownPseudos: unknownPseudos
 			}).parse();
 		} catch {
 			return null;
@@ -16033,8 +17307,8 @@ function parseStyleAttribute(tokens) {
 function consumeRule(tokens) {
 	return new Parser(tokens).consumeRule();
 }
-function consumeListOfRules(tokens, topLevel) {
-	return new Parser(tokens).consumeListOfRules(topLevel);
+function consumeListOfRules(tokens, topLevel, options) {
+	return new Parser(tokens, options).consumeListOfRules(topLevel);
 }
 function parseComponentValues(tokens, errors) {
 	const p = new Parser(tokens);
@@ -16046,6 +17320,10 @@ const parseSelectorAST = Parser.parseSelectorAST;
 function validateCustomPropertyValue(values) {
 	return validateDeclarationValue(values, true, true);
 }
+/**
+* Parses a CSS stylesheet string into a standard `CSSStyleSheet` instance,
+* populating 1-based `rule.location` offsets on all parsed rules.
+*/
 function parse$1(css, options) {
 	return new Parser(tokenize(css), {
 		source: css,
@@ -16086,7 +17364,7 @@ function createStyleProxy(target) {
 					return decl ? decl.name : void 0;
 				}
 				if (prop in t && (typeof t[prop] !== "undefined" || prop.startsWith("_"))) return t[prop];
-				if (prop.startsWith("--")) return t.getPropertyValue(prop);
+				if (prop.startsWith("--")) return t._allowCustomProperties ? t.getPropertyValue(prop) : void 0;
 				const isCustomProp = prop.startsWith("--");
 				let cssProp = prop;
 				if (!isCustomProp) {
@@ -16105,7 +17383,7 @@ function createStyleProxy(target) {
 					return true;
 				}
 				if (prop.startsWith("--")) {
-					t.setProperty(prop, value);
+					if (t._allowCustomProperties) t.setProperty(prop, value);
 					return true;
 				}
 				let cssProp = prop;
@@ -16153,8 +17431,9 @@ function createStyleProxy(target) {
 		}
 	});
 }
-var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties {
+var CSSStyleDeclaration = class extends CSSStyleProperties {
 	/** @internal */ _declarations;
+	/** @internal */ _rawDeclarations;
 	/** @internal */ _declMap;
 	/** @internal */ _readonly = false;
 	/** @internal */ _parentRule = null;
@@ -16172,9 +17451,18 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 	get _filterDeclarationsInConstructor() {
 		return false;
 	}
+	/** @internal */
+	get _allowCustomProperties() {
+		return true;
+	}
+	/** @internal */
+	get _allowImportant() {
+		return true;
+	}
 	constructor(parentRuleOrDeclarations, onChangeOrReadonly) {
 		super();
 		this._declarations = [];
+		this._rawDeclarations = [];
 		this._declMap = /* @__PURE__ */ new Map();
 		let declarations = [];
 		if (Array.isArray(parentRuleOrDeclarations)) {
@@ -16186,11 +17474,14 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 			this._readonly = typeof onChangeOrReadonly === "boolean" ? onChangeOrReadonly : false;
 			if (typeof onChangeOrReadonly === "function") this._onChange = onChangeOrReadonly;
 		}
-		const addDeclarationRecursive = (decl) => {
+		const addDeclarationRecursive = (decl, isTopLevel = false) => {
 			if (decl.name === "--") return;
+			if (decl.important && !this._allowImportant) return;
 			const normalizedName = decl.name.startsWith("--") ? decl.name : decl.name.toLowerCase();
+			if (normalizedName.startsWith("--") && !this._allowCustomProperties) return;
 			if (this._filterDeclarationsInConstructor && !normalizedName.startsWith("--") && !this._isPropertySupported(normalizedName)) return;
 			decl.name = normalizedName;
+			if (isTopLevel) this._rawDeclarations.push(decl);
 			const shorthand = SHORTHANDS[decl.name];
 			if (shorthand) {
 				if (!(serialize(decl.value).includes("var(") || serialize(decl.value).includes("env("))) {
@@ -16209,7 +17500,7 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 			}
 			this._addDeclaration(decl);
 		};
-		for (const d of declarations) addDeclarationRecursive(d);
+		for (const d of declarations) addDeclarationRecursive(d, true);
 		return createStyleProxy(this);
 	}
 	_addDeclaration(d) {
@@ -16463,11 +17754,13 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 	_setPropertyInternal(property, value, priority = "", notify = true, fromAll = false) {
 		if (this._readonly) throw new DOMException("Modification is disallowed", "NoModificationAllowedError");
 		if (property === "--") return;
+		if (property.startsWith("--") && !this._allowCustomProperties) return;
 		if (!property.startsWith("--")) property = property.toLowerCase();
 		if (!property.startsWith("--") && !this._isPropertySupported(property)) return;
 		const normalizedPriority = (priority ?? "").trim().toLowerCase();
 		if (normalizedPriority !== "" && normalizedPriority !== "important") return;
 		const isImportant = normalizedPriority === "important";
+		if (isImportant && !this._allowImportant) return;
 		if (value === null || value === "") {
 			this.removeProperty(property);
 			return;
@@ -16500,7 +17793,17 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 						for (const [lh, val] of Object.entries(expanded)) if (!ParseHooks.validatePropertyValue(lh, serialize(val), val)) ;
 					}
 					for (const [lh, val] of Object.entries(expanded)) this._setPropertyInternal(lh, serialize(val), normalizedPriority, false, property === "all" || fromAll);
-					if (notify) this._onChange?.();
+					if (notify) {
+						const allLh = getShorthandAllLonghands(shorthand);
+						this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property && !allLh.includes(d.name));
+						this._rawDeclarations.push({
+							type: "declaration",
+							name: property,
+							value: compVals,
+							important: isImportant
+						});
+						this._onChange?.();
+					}
 					return;
 				}
 			}
@@ -16544,7 +17847,17 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 			this._declarations.push(decl);
 			this._declMap.set(property, decl);
 		}
-		if (notify) this._onChange?.();
+		if (notify) {
+			this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property);
+			this._rawDeclarations.push({
+				type: "declaration",
+				name: property,
+				value: componentValues,
+				important: isImportant,
+				raw: property.startsWith("--") ? valueStr ?? void 0 : void 0
+			});
+			this._onChange?.();
+		}
 	}
 	removeProperty(property) {
 		if (this._readonly) throw new DOMException("Modification is disallowed", "NoModificationAllowedError");
@@ -16552,6 +17865,7 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 		if (property === "all") {
 			const value = this.getPropertyValue("all");
 			let changed = false;
+			this._rawDeclarations = this._rawDeclarations.filter((d) => d.name === "direction" || d.name === "unicode-bidi" || d.name.startsWith("--"));
 			for (let i = this._declarations.length - 1; i >= 0; i--) {
 				const d = this._declarations[i];
 				if (d.name !== "direction" && d.name !== "unicode-bidi" && !d.name.startsWith("--")) {
@@ -16567,6 +17881,7 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 		if (shorthand) {
 			const value = this.getPropertyValue(property);
 			const allLh = shorthand.logicalLonghands ? [...shorthand.longhands, ...shorthand.logicalLonghands] : shorthand.longhands;
+			this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property && !allLh.includes(d.name));
 			let changed = false;
 			for (const lh of allLh) if (this._declMap.has(lh)) {
 				const index = this._declarations.findIndex((d) => d.name === lh);
@@ -16586,6 +17901,7 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 			return value;
 		}
 		const value = this.getPropertyValue(property);
+		this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property);
 		const index = this._declarations.findIndex((d) => d.name === property);
 		if (index !== -1) {
 			this._declarations.splice(index, 1);
@@ -16609,10 +17925,17 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 		}
 		if (!newStyle) return false;
 		this._declarations.length = 0;
+		this._rawDeclarations = newStyle._rawDeclarations.filter((d) => {
+			if (d.important && !this._allowImportant) return false;
+			if (d.name.startsWith("--")) return this._allowCustomProperties;
+			return this._isPropertySupported(d.name.toLowerCase());
+		});
 		this._declMap.clear();
 		for (const d of newStyle._declarations) {
 			if (d.name === "--") continue;
+			if (d.important && !this._allowImportant) continue;
 			const normalizedName = d.name.startsWith("--") ? d.name : d.name.toLowerCase();
+			if (normalizedName.startsWith("--") && !this._allowCustomProperties) continue;
 			if (!normalizedName.startsWith("--") && !this._isPropertySupported(normalizedName)) continue;
 			d.name = normalizedName;
 			const shorthand = SHORTHANDS[d.name];
@@ -16647,14 +17970,8 @@ var CSSStyleDeclaration$1 = class CSSStyleDeclaration extends CSSStyleProperties
 		for (let i = 0; i < this.length; i++) yield this.item(i);
 	}
 };
-applyWebIDLInterface(CSSStyleDeclaration$1);
-Object.defineProperty(CSSStyleDeclaration$1.prototype, Symbol.toStringTag, {
-	value: "CSSStyleDeclaration",
-	configurable: true,
-	writable: false,
-	enumerable: false
-});
-var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration$1 {
+applyWebIDLInterface(CSSStyleDeclaration);
+var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration {
 	/** @internal */
 	get _filterDeclarationsInConstructor() {
 		return true;
@@ -16664,17 +17981,14 @@ var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration$1 {
 		return property !== "animation-name" && super._isPropertySupported(property);
 	}
 };
-var CSSFontFaceDescriptors = class extends CSSStyleDeclaration$1 {
-	get [Symbol.toStringTag]() {
-		return "CSSFontFaceDescriptors";
-	}
+var CSSFontFaceDescriptors = class extends CSSStyleDeclaration {
 	/** @internal */
 	_isPropertySupported(property) {
 		return super._isPropertySupported(property) || FONT_FACE_DESCRIPTORS.has(property);
 	}
 };
 const PAGE_DESCRIPTORS_INTERNAL = Symbol("CSSPageDescriptors.internal");
-var CSSPageDescriptors = class extends CSSStyleDeclaration$1 {
+var CSSPageDescriptors = class extends CSSStyleDeclaration {
 	/** @internal */
 	get _filterDeclarationsInConstructor() {
 		return true;
@@ -16687,1330 +18001,56 @@ var CSSPageDescriptors = class extends CSSStyleDeclaration$1 {
 	_isPropertySupported(property) {
 		return PAGE_ALLOWED_PROPERTIES.has(property);
 	}
-	get [Symbol.toStringTag]() {
-		return "CSSPageDescriptors";
+};
+function defineDescriptorProperties(proto, dashedProps, skip) {
+	for (const cssProp of dashedProps) {
+		if (cssProp === skip) continue;
+		const desc = {
+			get() {
+				return this.getPropertyValue(cssProp);
+			},
+			set(val) {
+				this.setProperty(cssProp, val === null || val === void 0 ? "" : String(val));
+			},
+			enumerable: true,
+			configurable: true
+		};
+		Object.defineProperty(proto, cssProp, desc);
+		if (cssProp.includes("-")) {
+			const camelProp = cssProp.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+			Object.defineProperty(proto, camelProp, desc);
+		}
+	}
+}
+defineDescriptorProperties(CSSPageDescriptors.prototype, PAGE_DESCRIPTOR_PROPERTIES);
+var CSSPositionTryDescriptors = class extends CSSStyleDeclaration {
+	/** @internal */
+	get _filterDeclarationsInConstructor() {
+		return true;
+	}
+	/** @internal */
+	get _allowCustomProperties() {
+		return false;
+	}
+	/** @internal */
+	get _allowImportant() {
+		return false;
+	}
+	constructor(declarations, internalToken) {
+		if (internalToken !== PAGE_DESCRIPTORS_INTERNAL) throw new TypeError("Illegal constructor");
+		super(declarations);
+	}
+	/** @internal */
+	_isPropertySupported(property) {
+		return POSITION_TRY_ALLOWED_PROPERTIES.has(property);
 	}
 };
-for (const prop of PAGE_DESCRIPTOR_PROPERTIES) {
-	const cssProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
-	Object.defineProperty(CSSPageDescriptors.prototype, prop, {
-		get() {
-			return this.getPropertyValue(cssProp);
-		},
-		set(val) {
-			this.setProperty(cssProp, val === null || val === void 0 ? "" : String(val));
-		},
-		enumerable: true,
-		configurable: true
-	});
-}
-var CSSMarginDescriptors = class extends CSSStyleDeclaration$1 {};
+defineDescriptorProperties(CSSPositionTryDescriptors.prototype, POSITION_TRY_ALLOWED_PROPERTIES, "inset-area");
+var CSSMarginDescriptors = class extends CSSStyleDeclaration {};
 applyWebIDLInterface(CSSFontFaceDescriptors);
 applyWebIDLInterface(CSSPageDescriptors);
+applyWebIDLInterface(CSSPositionTryDescriptors);
 applyWebIDLInterface(CSSMarginDescriptors);
-
-const refs = new WeakMap;
-
-const sync = decl => {
-  const data = refs.get(decl);
-  if (!data) return;
-  const {element} = data;
-  const attr = element.getAttributeNode('style');
-  if (attr !== data.attr || (attr && attr[CHANGED])) {
-    data.attr = attr;
-    const {onChange} = decl;
-    decl.onChange = null;
-    decl.cssText = attr ? attr[VALUE] : '';
-    decl.onChange = onChange;
-    if (attr) attr[CHANGED] = false;
-  }
-};
-
-const handler$1 = {
-  get(target, prop, receiver) {
-    sync(target);
-    return Reflect.get(target, prop, receiver);
-  },
-
-  set(target, prop, value, receiver) {
-    sync(target);
-    return Reflect.set(target, prop, value, receiver);
-  },
-
-  has(target, prop) {
-    sync(target);
-    return Reflect.has(target, prop);
-  },
-
-  ownKeys(target) {
-    sync(target);
-    return Reflect.ownKeys(target);
-  },
-
-  getOwnPropertyDescriptor(target, prop) {
-    sync(target);
-    return Reflect.getOwnPropertyDescriptor(target, prop);
-  }
-};
-
-/**
- * @implements globalThis.CSSStyleDeclaration
- */
-class CSSStyleDeclaration extends CSSStyleDeclaration$1 {
-  /**
-   * @param {Element} [element]
-   */
-  constructor(element) {
-    const decl = super();
-    if (!element) return decl;
-
-    const attr = element.getAttributeNode('style');
-    if (attr && attr[VALUE]) {
-      decl.cssText = attr[VALUE];
-    }
-
-    const data = {element, attr};
-    refs.set(decl, data);
-
-    decl.onChange = () => {
-      let attr = element.getAttributeNode('style');
-      const cssText = decl.cssText;
-      if (!attr) {
-        if (cssText) {
-          attr = element.ownerDocument.createAttribute('style');
-          attr[VALUE] = cssText;
-          element.setAttributeNode(attr);
-          data.attr = attr;
-          attr[CHANGED] = false;
-        }
-      } else {
-        data.attr = attr;
-        if (attr[VALUE] !== cssText) {
-          attr.value = cssText;
-          attr[CHANGED] = false;
-        }
-      }
-    };
-
-    const proxy = new Proxy(decl, handler$1);
-    refs.set(proxy, data);
-    return proxy;
-  }
-
-  toString() {
-    sync(this);
-    return this.cssText;
-  }
-}
-
-// https://dom.spec.whatwg.org/#interface-event
-
-/* c8 ignore start */
-
-// Node 15 has Event but 14 and 12 don't
-const BUBBLING_PHASE = 3;
-const AT_TARGET = 2;
-const CAPTURING_PHASE = 1;
-const NONE = 0;
-
-function getCurrentTarget(ev) {
-  return ev.currentTarget;
-}
-
-/**
- * @implements globalThis.Event
- */
-class GlobalEvent {
-    static get BUBBLING_PHASE() { return BUBBLING_PHASE; }
-    static get AT_TARGET() { return AT_TARGET; }
-    static get CAPTURING_PHASE() { return CAPTURING_PHASE; }
-    static get NONE() { return NONE; }
-
-    constructor(type, eventInitDict = {}) {
-      this.type = type;
-      this.bubbles = !!eventInitDict.bubbles;
-      this.cancelBubble = false;
-      this._stopImmediatePropagationFlag = false;
-      this.cancelable = !!eventInitDict.cancelable;
-      this.eventPhase = this.NONE;
-      this.timeStamp = Date.now();
-      this.defaultPrevented = false;
-      this.originalTarget = null;
-      this.returnValue = null;
-      this.srcElement = null;
-      this.target = null;
-      this._path = [];
-    }
-
-    get BUBBLING_PHASE() { return BUBBLING_PHASE; }
-    get AT_TARGET() { return AT_TARGET; }
-    get CAPTURING_PHASE() { return CAPTURING_PHASE; }
-    get NONE() { return NONE; }
-
-    preventDefault() { this.defaultPrevented = true; }
-
-    // simplified implementation, should be https://dom.spec.whatwg.org/#dom-event-composedpath
-    composedPath() {
-      return this._path.map(getCurrentTarget);
-    }
-
-    stopPropagation() {
-      this.cancelBubble = true;
-    }
-    
-    stopImmediatePropagation() {
-      this.stopPropagation();
-      this._stopImmediatePropagationFlag = true;
-    }
-  }
-
-/* c8 ignore stop */
-
-/**
- * @implements globalThis.NamedNodeMap
- */
-class NamedNodeMap extends Array {
-  constructor(ownerElement) {
-    super();
-    this.ownerElement = ownerElement;
-  }
-
-  getNamedItem(name) {
-    return this.ownerElement.getAttributeNode(name);
-  }
-
-  setNamedItem(attr) {
-    this.ownerElement.setAttributeNode(attr);
-    this.unshift(attr);
-  }
-
-  removeNamedItem(name) {
-    const item = this.getNamedItem(name);
-    this.ownerElement.removeAttribute(name);
-    this.splice(this.indexOf(item), 1);
-  }
-
-  item(index) {
-    return index < this.length ? this[index] : null;
-  }
-
-  /* c8 ignore start */
-  getNamedItemNS(_, name) {
-    return this.getNamedItem(name);
-  }
-
-  setNamedItemNS(_, attr) {
-    return this.setNamedItem(attr);
-  }
-
-  removeNamedItemNS(_, name) {
-    return this.removeNamedItem(name);
-  }
-  /* c8 ignore stop */
-}
-
-/**
- * @implements globalThis.ShadowRoot
- */
-let ShadowRoot$1 = class ShadowRoot extends NonElementParentNode {
-  constructor(host) {
-    super(host.ownerDocument, '#shadow-root', DOCUMENT_FRAGMENT_NODE);
-    this.host = host;
-  }
-
-  get innerHTML() {
-    return getInnerHtml(this);
-  }
-  set innerHTML(html) {
-    setInnerHtml(this, html);
-  }
-};
-
-// https://dom.spec.whatwg.org/#interface-element
-
-
-// <utils>
-const attributesHandler = {
-  get(target, key) {
-    return key in target ? target[key] : target.find(({name}) => name === key);
-  }
-};
-
-const create = (ownerDocument, element, localName)  => {
-  if ('ownerSVGElement' in element) {
-    const svg = ownerDocument.createElementNS(SVG_NAMESPACE, localName);
-    svg.ownerSVGElement = element.ownerSVGElement;
-    return svg;
-  }
-  return ownerDocument.createElement(localName);
-};
-
-const isVoid = ({localName, ownerDocument}) => {
-  return ownerDocument[MIME].voidElements.test(localName);
-};
-
-// </utils>
-
-/**
- * @implements globalThis.Element
- */
-let Element$1 = class Element extends ParentNode {
-  constructor(ownerDocument, localName) {
-    super(ownerDocument, localName, ELEMENT_NODE);
-    this[CLASS_LIST] = null;
-    this[DATASET] = null;
-    this[STYLE] = null;
-  }
-
-  // <Mixins>
-  get isConnected() { return isConnected(this); }
-  get parentElement() { return parentElement(this); }
-  get previousSibling() { return previousSibling(this); }
-  get nextSibling() { return nextSibling(this); }
-  get namespaceURI() {
-    return 'http://www.w3.org/1999/xhtml';
-  }
-
-  get previousElementSibling() { return previousElementSibling(this); }
-  get nextElementSibling() { return nextElementSibling$1(this); }
-
-  before(...nodes) { before(this, nodes); }
-  after(...nodes) { after(this, nodes); }
-  replaceWith(...nodes) { replaceWith(this, nodes); }
-  remove() { remove(this[PREV], this, this[END][NEXT]); }
-  // </Mixins>
-
-  // <specialGetters>
-  get id() { return stringAttribute.get(this, 'id'); }
-  set id(value) { stringAttribute.set(this, 'id', value); }
-
-  get className() { return this.classList.value; }
-  set className(value) {
-    const {classList} = this;
-    classList.clear();
-    classList.add(...($String(value).split(/\s+/)));
-  }
-
-  get nodeName() { return localCase(this); }
-  get tagName() { return localCase(this); }
-
-  get classList() {
-    return this[CLASS_LIST] || (
-      this[CLASS_LIST] = new DOMTokenList(this)
-    );
-  }
-
-  get dataset() {
-    return this[DATASET] || (
-      this[DATASET] = new DOMStringMap(this)
-    );
-  }
-
-  getBoundingClientRect() {
-    return {
-      x: 0,
-      y: 0,
-      bottom: 0,
-      height: 0,
-      left: 0,
-      right: 0,
-      top: 0,
-      width: 0
-    };
-  }
-
-  get nonce() { return stringAttribute.get(this, 'nonce'); }
-  set nonce(value) { stringAttribute.set(this, 'nonce', value); }
-
-  get style() {
-    return this[STYLE] || (
-      this[STYLE] = new CSSStyleDeclaration(this)
-    );
-  }
-
-  get tabIndex() { return numericAttribute.get(this, 'tabindex') || -1; }
-  set tabIndex(value) { numericAttribute.set(this, 'tabindex', value); }
-
-  get slot() { return stringAttribute.get(this, 'slot'); }
-  set slot(value) { stringAttribute.set(this, 'slot', value); }
-  // </specialGetters>
-
-
-  // <contentRelated>
-  get innerText() {
-    const text = [];
-    let {[NEXT]: next, [END]: end} = this;
-    while (next !== end) {
-      if (next.nodeType === TEXT_NODE) {
-        text.push(next.textContent.replace(/\s+/g, ' '));
-      } else if(
-        text.length && next[NEXT] != end &&
-        BLOCK_ELEMENTS.has(next.tagName)
-      ) {
-        text.push('\n');
-      }
-      next = next[NEXT];
-    }
-    return text.join('');
-  }
-
-  /**
-   * @returns {String}
-   */
-  get textContent() {
-    const text = [];
-    let {[NEXT]: next, [END]: end} = this;
-    while (next !== end) {
-      const nodeType = next.nodeType;
-      if (nodeType === TEXT_NODE || nodeType === CDATA_SECTION_NODE)
-        text.push(next.textContent);
-      next = next[NEXT];
-    }
-    return text.join('');
-  }
-
-  set textContent(text) {
-    this.replaceChildren();
-    if (text != null && text !== '')
-      this.appendChild(new Text$1(this.ownerDocument, text));
-  }
-
-  get innerHTML() {
-    return getInnerHtml(this);
-  }
-  set innerHTML(html) {
-    setInnerHtml(this, html);
-  }
-
-  get outerHTML() { return this.toString(); }
-  set outerHTML(html) {
-    const template = this.ownerDocument.createElement('');
-    template.innerHTML = html;
-    this.replaceWith(...template.childNodes);
-  }
-  // </contentRelated>
-
-  // <attributes>
-  get attributes() {
-    const attributes = new NamedNodeMap(this);
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      attributes.push(next);
-      next = next[NEXT];
-    }
-    return new Proxy(attributes, attributesHandler);
-  }
-
-  focus() { this.dispatchEvent(new GlobalEvent('focus')); }
-
-  getAttribute(name) {
-    if (name === 'class')
-      return this.className;
-    const attribute = this.getAttributeNode(name);
-    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
-  }
-
-  getAttributeNode(name) {
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name)
-        return next;
-      next = next[NEXT];
-    }
-    return null;
-  }
-
-  getAttributeNames() {
-    const attributes = new NodeList;
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      attributes.push(next.name);
-      next = next[NEXT];
-    }
-    return attributes;
-  }
-
-  hasAttribute(name) { return !!this.getAttributeNode(name); }
-  hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
-
-  removeAttribute(name) {
-    if (name === 'class' && this[CLASS_LIST])
-        this[CLASS_LIST].clear();
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name) {
-        removeAttribute(this, next);
-        return;
-      }
-      next = next[NEXT];
-    }
-  }
-
-  removeAttributeNode(attribute) {
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next === attribute) {
-        removeAttribute(this, next);
-        return;
-      }
-      next = next[NEXT];
-    }
-  }
-
-  setAttribute(name, value) {
-    if (name === 'class')
-      this.className = value;
-    else {
-      const attribute = this.getAttributeNode(name);
-      if (attribute)
-        attribute.value = value;
-      else
-        setAttribute(this, new Attr$1(this.ownerDocument, name, value));
-    }
-  }
-
-  setAttributeNode(attribute) {
-    const {name} = attribute;
-    const previously = this.getAttributeNode(name);
-    if (previously !== attribute) {
-      if (previously)
-        this.removeAttributeNode(previously);
-      const {ownerElement} = attribute;
-      if (ownerElement)
-        ownerElement.removeAttributeNode(attribute);
-      setAttribute(this, attribute);
-    }
-    return previously;
-  }
-
-  toggleAttribute(name, force) {
-    if (this.hasAttribute(name)) {
-      if (!force) {
-        this.removeAttribute(name);
-        return false;
-      }
-      return true;
-    }
-    else if (force || arguments.length === 1) {
-      this.setAttribute(name, '');
-      return true;
-    }
-    return false;
-  }
-  // </attributes>
-
-  // <ShadowDOM>
-  get shadowRoot() {
-    if (shadowRoots.has(this)) {
-      const {mode, shadowRoot} = shadowRoots.get(this);
-      if (mode === 'open')
-        return shadowRoot;
-    }
-    return null;
-  }
-
-  attachShadow(init) {
-    if (shadowRoots.has(this))
-      throw new Error('operation not supported');
-    // TODO: shadowRoot should be likely a specialized class that extends DocumentFragment
-    //       but until DSD is out, I am not sure I should spend time on this.
-    const shadowRoot = new ShadowRoot$1(this);
-    shadowRoots.set(this, {
-      mode: init.mode,
-      shadowRoot
-    });
-    return shadowRoot;
-  }
-  // </ShadowDOM>
-
-  // <selectors>
-  matches(selectors) { return matches(this, selectors); }
-  closest(selectors) {
-    let parentElement = this;
-    const matches = prepareMatch(parentElement, selectors);
-    while (parentElement && !matches(parentElement))
-      parentElement = parentElement.parentElement;
-    return parentElement;
-  }
-  // </selectors>
-
-  // <insertAdjacent>
-  insertAdjacentElement(position, element) {
-    const {parentElement} = this;
-    switch (position) {
-      case 'beforebegin':
-        if (parentElement) {
-          parentElement.insertBefore(element, this);
-          break;
-        }
-        return null;
-      case 'afterbegin':
-        this.insertBefore(element, this.firstChild);
-        break;
-      case 'beforeend':
-        this.insertBefore(element, null);
-        break;
-      case 'afterend':
-        if (parentElement) {
-          parentElement.insertBefore(element, this.nextSibling);
-          break;
-        }
-        return null;
-    }
-    return element;
-  }
-
-  insertAdjacentHTML(position, html) {
-    this.insertAdjacentElement(position, htmlToFragment(this.ownerDocument, html));
-  }
-
-  insertAdjacentText(position, text) {
-    const node = this.ownerDocument.createTextNode(text);
-    this.insertAdjacentElement(position, node);
-  }
-  // </insertAdjacent>
-
-  cloneNode(deep = false) {
-    const {ownerDocument, localName} = this;
-    const addNext = next => {
-      next.parentNode = parentNode;
-      knownAdjacent($next, next);
-      $next = next;
-    };
-    const clone = create(ownerDocument, this, localName);
-    let parentNode = clone, $next = clone;
-    let {[NEXT]: next, [END]: prev} = this;
-    while (next !== prev && (deep || next.nodeType === ATTRIBUTE_NODE)) {
-      switch (next.nodeType) {
-        case NODE_END:
-          knownAdjacent($next, parentNode[END]);
-          $next = parentNode[END];
-          parentNode = parentNode.parentNode;
-          break;
-        case ELEMENT_NODE: {
-          const node = create(ownerDocument, next, next.localName);
-          addNext(node);
-          parentNode = node;
-          break;
-        }
-        case ATTRIBUTE_NODE: {
-          const attr = next.cloneNode(deep);
-          attr.ownerElement = parentNode;
-          addNext(attr);
-          break;
-        }
-        case TEXT_NODE:
-        case COMMENT_NODE:
-        case CDATA_SECTION_NODE:
-          addNext(next.cloneNode(deep));
-          break;
-      }
-      next = next[NEXT];
-    }
-    knownAdjacent($next, clone[END]);
-    return clone;
-  }
-
-  // <custom>
-  toString() {
-    const out = [];
-    const {[END]: end} = this;
-    let next = {[NEXT]: this};
-    let isOpened = false;
-    do {
-      next = next[NEXT];
-      switch (next.nodeType) {
-        case ATTRIBUTE_NODE: {
-          const attr = ' ' + next;
-          switch (attr) {
-            case ' id':
-            case ' class':
-            case ' style':
-              break;
-            default:
-              out.push(attr);
-          }
-          break;
-        }
-        case NODE_END: {
-          const start = next[START];
-          if (isOpened) {
-            if ('ownerSVGElement' in start)
-              out.push(' />');
-            else if (isVoid(start))
-              out.push(ignoreCase(start) ? '>' : ' />');
-            else
-              out.push(`></${start.localName}>`);
-            isOpened = false;
-          }
-          else
-            out.push(`</${start.localName}>`);
-          break;
-        }
-        case ELEMENT_NODE:
-          if (isOpened)
-            out.push('>');
-          if (next.toString !== this.toString) {
-            out.push(next.toString());
-            next = next[END];
-            isOpened = false;
-          }
-          else {
-            out.push(`<${next.localName}`);
-            isOpened = true;
-          }
-          break;
-        case TEXT_NODE:
-        case COMMENT_NODE:
-        case CDATA_SECTION_NODE:
-          out.push((isOpened ? '>' : '') + next);
-          isOpened = false;
-          break;
-      }
-    } while (next !== end);
-    return out.join('');
-  }
-
-  toJSON() {
-    const json = [];
-    elementAsJSON(this, json);
-    return json;
-  }
-  // </custom>
-
-
-  /* c8 ignore start */
-  getAttributeNS(_, name) { return this.getAttribute(name); }
-  getElementsByTagNameNS(_, name) { return this.getElementsByTagName(name); }
-  hasAttributeNS(_, name) { return this.hasAttribute(name); }
-  removeAttributeNS(_, name) { this.removeAttribute(name); }
-  setAttributeNS(_, name, value) { this.setAttribute(name, value); }
-  setAttributeNodeNS(attr) { return this.setAttributeNode(attr); }
-  /* c8 ignore stop */
-};
-
-const classNames = new WeakMap;
-
-const handler = {
-  get(target, name) {
-    return target[name];
-  },
-  set(target, name, value) {
-    target[name] = value;
-    return true;
-  }
-};
-
-/**
- * @implements globalThis.SVGElement
- */
-let SVGElement$1 = class SVGElement extends Element$1 {
-  constructor(ownerDocument, localName, ownerSVGElement = null) {
-    super(ownerDocument, localName);
-    this.ownerSVGElement = ownerSVGElement;
-  }
-
-  get className() {
-    if (!classNames.has(this))
-      classNames.set(this, new Proxy({baseVal: '', animVal: ''}, handler));
-    return classNames.get(this);
-  }
-
-  /* c8 ignore start */
-  set className(value) {
-    const {classList} = this;
-    classList.clear();
-    classList.add(...($String(value).split(/\s+/)));
-  }
-  /* c8 ignore stop */
-
-  get namespaceURI() {
-    return 'http://www.w3.org/2000/svg';
-  }
-
-  getAttribute(name) {
-    return name === 'class' ?
-      [...this.classList].join(' ') :
-      super.getAttribute(name);
-  }
-
-  setAttribute(name, value) {
-    if (name === 'class')
-      this.className = value;
-    else if (name === 'style') {
-      const {className} = this;
-      className.baseVal = className.animVal = value;
-    }
-    super.setAttribute(name, value);
-  }
-};
-
-/* c8 ignore start */
-const illegalConstructor = () => {
-  throw new TypeError('Illegal constructor');
-};
-
-function Attr() { illegalConstructor(); }
-setPrototypeOf(Attr, Attr$1);
-Attr.prototype = Attr$1.prototype;
-
-function CDATASection() { illegalConstructor(); }
-setPrototypeOf(CDATASection, CDATASection$1);
-CDATASection.prototype = CDATASection$1.prototype;
-
-function CharacterData() { illegalConstructor(); }
-setPrototypeOf(CharacterData, CharacterData$1);
-CharacterData.prototype = CharacterData$1.prototype;
-
-function Comment() { illegalConstructor(); }
-setPrototypeOf(Comment, Comment$2);
-Comment.prototype = Comment$2.prototype;
-
-function DocumentFragment() { illegalConstructor(); }
-setPrototypeOf(DocumentFragment, DocumentFragment$1);
-DocumentFragment.prototype = DocumentFragment$1.prototype;
-
-function DocumentType() { illegalConstructor(); }
-setPrototypeOf(DocumentType, DocumentType$1);
-DocumentType.prototype = DocumentType$1.prototype;
-
-function Element() { illegalConstructor(); }
-setPrototypeOf(Element, Element$1);
-Element.prototype = Element$1.prototype;
-
-function Node() { illegalConstructor(); }
-setPrototypeOf(Node, Node$1);
-Node.prototype = Node$1.prototype;
-
-function ShadowRoot() { illegalConstructor(); }
-setPrototypeOf(ShadowRoot, ShadowRoot$1);
-ShadowRoot.prototype = ShadowRoot$1.prototype;
-
-function Text() { illegalConstructor(); }
-setPrototypeOf(Text, Text$1);
-Text.prototype = Text$1.prototype;
-
-function SVGElement() { illegalConstructor(); }
-setPrototypeOf(SVGElement, SVGElement$1);
-SVGElement.prototype = SVGElement$1.prototype;
-/* c8 ignore stop */
-
-const Facades = {
-  Attr,
-  CDATASection,
-  CharacterData,
-  Comment,
-  DocumentFragment,
-  DocumentType,
-  Element,
-  Node,
-  ShadowRoot,
-  Text,
-  SVGElement
-};
-
-const Level0 = new WeakMap;
-const level0 = {
-  get(element, name) {
-    return Level0.has(element) && Level0.get(element)[name] || null;
-  },
-  set(element, name, value) {
-    if (!Level0.has(element))
-      Level0.set(element, {});
-    const handlers = Level0.get(element);
-    const type = name.slice(2);
-    if (handlers[name])
-      element.removeEventListener(type, handlers[name], false);
-    if ((handlers[name] = value))
-      element.addEventListener(type, value, false);
-  }
-};
-
-/**
- * @implements globalThis.HTMLElement
- */
-class HTMLElement extends Element$1 {
-
-  static get observedAttributes() { return []; }
-
-  constructor(ownerDocument = null, localName = '') {
-    super(ownerDocument, localName);
-
-    const ownerLess = !ownerDocument;
-    let options;
-
-    if (ownerLess) {
-      const {constructor: Class} = this;
-      if (!Classes.has(Class))
-        throw new Error('unable to initialize this Custom Element');
-      ({ownerDocument, localName, options} = Classes.get(Class));
-    }
-
-    if (ownerDocument[UPGRADE]) {
-      const {element, values} = ownerDocument[UPGRADE];
-      ownerDocument[UPGRADE] = null;
-      for (const [key, value] of values)
-        element[key] = value;
-      return element;
-    }
-
-    if (ownerLess) {
-      this.ownerDocument = this[END].ownerDocument = ownerDocument;
-      this.localName = localName;
-      customElements.set(this, {connected: false});
-      if (options.is)
-        this.setAttribute('is', options.is);
-    }
-  }
-
-  /* c8 ignore start */
-
-  /* TODO: what about these?
-  offsetHeight
-  offsetLeft
-  offsetParent
-  offsetTop
-  offsetWidth
-  */
-
-  blur() { this.dispatchEvent(new GlobalEvent('blur')); }
-  click() {
-    const clickEvent = new GlobalEvent('click', {bubbles: true, cancelable: true});
-    clickEvent.button = 0;
-
-    this.dispatchEvent(clickEvent);
-  }
-
-  // Boolean getters
-  get accessKeyLabel() {
-    const {accessKey} = this;
-    return accessKey && `Alt+Shift+${accessKey}`;
-  }
-  get isContentEditable() { return this.hasAttribute('contenteditable'); }
-
-  // Boolean Accessors
-  get contentEditable() { return booleanAttribute.get(this, 'contenteditable'); }
-  set contentEditable(value) { booleanAttribute.set(this, 'contenteditable', value); }
-  get draggable() { return booleanAttribute.get(this, 'draggable'); }
-  set draggable(value) { booleanAttribute.set(this, 'draggable', value); }
-  get hidden() { return booleanAttribute.get(this, 'hidden'); }
-  set hidden(value) { booleanAttribute.set(this, 'hidden', value); }
-  get spellcheck() { return booleanAttribute.get(this, 'spellcheck'); }
-  set spellcheck(value) { booleanAttribute.set(this, 'spellcheck', value); }
-
-  // String Accessors
-  get accessKey() { return stringAttribute.get(this, 'accesskey'); }
-  set accessKey(value) { stringAttribute.set(this, 'accesskey', value); }
-  get dir() { return stringAttribute.get(this, 'dir'); }
-  set dir(value) { stringAttribute.set(this, 'dir', value); }
-  get lang() { return stringAttribute.get(this, 'lang'); }
-  set lang(value) { stringAttribute.set(this, 'lang', value); }
-  get title() { return stringAttribute.get(this, 'title'); }
-  set title(value) { stringAttribute.set(this, 'title', value); }
-
-  // DOM Level 0
-  get onabort() { return level0.get(this, 'onabort'); }
-  set onabort(value) { level0.set(this, 'onabort', value); }
-
-  get onblur() { return level0.get(this, 'onblur'); }
-  set onblur(value) { level0.set(this, 'onblur', value); }
-
-  get oncancel() { return level0.get(this, 'oncancel'); }
-  set oncancel(value) { level0.set(this, 'oncancel', value); }
-
-  get oncanplay() { return level0.get(this, 'oncanplay'); }
-  set oncanplay(value) { level0.set(this, 'oncanplay', value); }
-
-  get oncanplaythrough() { return level0.get(this, 'oncanplaythrough'); }
-  set oncanplaythrough(value) { level0.set(this, 'oncanplaythrough', value); }
-
-  get onchange() { return level0.get(this, 'onchange'); }
-  set onchange(value) { level0.set(this, 'onchange', value); }
-
-  get onclick() { return level0.get(this, 'onclick'); }
-  set onclick(value) { level0.set(this, 'onclick', value); }
-
-  get onclose() { return level0.get(this, 'onclose'); }
-  set onclose(value) { level0.set(this, 'onclose', value); }
-
-  get oncontextmenu() { return level0.get(this, 'oncontextmenu'); }
-  set oncontextmenu(value) { level0.set(this, 'oncontextmenu', value); }
-
-  get oncuechange() { return level0.get(this, 'oncuechange'); }
-  set oncuechange(value) { level0.set(this, 'oncuechange', value); }
-
-  get ondblclick() { return level0.get(this, 'ondblclick'); }
-  set ondblclick(value) { level0.set(this, 'ondblclick', value); }
-
-  get ondrag() { return level0.get(this, 'ondrag'); }
-  set ondrag(value) { level0.set(this, 'ondrag', value); }
-
-  get ondragend() { return level0.get(this, 'ondragend'); }
-  set ondragend(value) { level0.set(this, 'ondragend', value); }
-
-  get ondragenter() { return level0.get(this, 'ondragenter'); }
-  set ondragenter(value) { level0.set(this, 'ondragenter', value); }
-
-  get ondragleave() { return level0.get(this, 'ondragleave'); }
-  set ondragleave(value) { level0.set(this, 'ondragleave', value); }
-
-  get ondragover() { return level0.get(this, 'ondragover'); }
-  set ondragover(value) { level0.set(this, 'ondragover', value); }
-
-  get ondragstart() { return level0.get(this, 'ondragstart'); }
-  set ondragstart(value) { level0.set(this, 'ondragstart', value); }
-
-  get ondrop() { return level0.get(this, 'ondrop'); }
-  set ondrop(value) { level0.set(this, 'ondrop', value); }
-
-  get ondurationchange() { return level0.get(this, 'ondurationchange'); }
-  set ondurationchange(value) { level0.set(this, 'ondurationchange', value); }
-
-  get onemptied() { return level0.get(this, 'onemptied'); }
-  set onemptied(value) { level0.set(this, 'onemptied', value); }
-
-  get onended() { return level0.get(this, 'onended'); }
-  set onended(value) { level0.set(this, 'onended', value); }
-
-  get onerror() { return level0.get(this, 'onerror'); }
-  set onerror(value) { level0.set(this, 'onerror', value); }
-
-  get onfocus() { return level0.get(this, 'onfocus'); }
-  set onfocus(value) { level0.set(this, 'onfocus', value); }
-
-  get oninput() { return level0.get(this, 'oninput'); }
-  set oninput(value) { level0.set(this, 'oninput', value); }
-
-  get oninvalid() { return level0.get(this, 'oninvalid'); }
-  set oninvalid(value) { level0.set(this, 'oninvalid', value); }
-
-  get onkeydown() { return level0.get(this, 'onkeydown'); }
-  set onkeydown(value) { level0.set(this, 'onkeydown', value); }
-
-  get onkeypress() { return level0.get(this, 'onkeypress'); }
-  set onkeypress(value) { level0.set(this, 'onkeypress', value); }
-
-  get onkeyup() { return level0.get(this, 'onkeyup'); }
-  set onkeyup(value) { level0.set(this, 'onkeyup', value); }
-
-  get onload() { return level0.get(this, 'onload'); }
-  set onload(value) { level0.set(this, 'onload', value); }
-
-  get onloadeddata() { return level0.get(this, 'onloadeddata'); }
-  set onloadeddata(value) { level0.set(this, 'onloadeddata', value); }
-
-  get onloadedmetadata() { return level0.get(this, 'onloadedmetadata'); }
-  set onloadedmetadata(value) { level0.set(this, 'onloadedmetadata', value); }
-
-  get onloadstart() { return level0.get(this, 'onloadstart'); }
-  set onloadstart(value) { level0.set(this, 'onloadstart', value); }
-
-  get onmousedown() { return level0.get(this, 'onmousedown'); }
-  set onmousedown(value) { level0.set(this, 'onmousedown', value); }
-
-  get onmouseenter() { return level0.get(this, 'onmouseenter'); }
-  set onmouseenter(value) { level0.set(this, 'onmouseenter', value); }
-
-  get onmouseleave() { return level0.get(this, 'onmouseleave'); }
-  set onmouseleave(value) { level0.set(this, 'onmouseleave', value); }
-
-  get onmousemove() { return level0.get(this, 'onmousemove'); }
-  set onmousemove(value) { level0.set(this, 'onmousemove', value); }
-
-  get onmouseout() { return level0.get(this, 'onmouseout'); }
-  set onmouseout(value) { level0.set(this, 'onmouseout', value); }
-
-  get onmouseover() { return level0.get(this, 'onmouseover'); }
-  set onmouseover(value) { level0.set(this, 'onmouseover', value); }
-
-  get onmouseup() { return level0.get(this, 'onmouseup'); }
-  set onmouseup(value) { level0.set(this, 'onmouseup', value); }
-
-  get onmousewheel() { return level0.get(this, 'onmousewheel'); }
-  set onmousewheel(value) { level0.set(this, 'onmousewheel', value); }
-
-  get onpause() { return level0.get(this, 'onpause'); }
-  set onpause(value) { level0.set(this, 'onpause', value); }
-
-  get onplay() { return level0.get(this, 'onplay'); }
-  set onplay(value) { level0.set(this, 'onplay', value); }
-
-  get onplaying() { return level0.get(this, 'onplaying'); }
-  set onplaying(value) { level0.set(this, 'onplaying', value); }
-
-  get onprogress() { return level0.get(this, 'onprogress'); }
-  set onprogress(value) { level0.set(this, 'onprogress', value); }
-
-  get onratechange() { return level0.get(this, 'onratechange'); }
-  set onratechange(value) { level0.set(this, 'onratechange', value); }
-
-  get onreset() { return level0.get(this, 'onreset'); }
-  set onreset(value) { level0.set(this, 'onreset', value); }
-
-  get onresize() { return level0.get(this, 'onresize'); }
-  set onresize(value) { level0.set(this, 'onresize', value); }
-
-  get onscroll() { return level0.get(this, 'onscroll'); }
-  set onscroll(value) { level0.set(this, 'onscroll', value); }
-
-  get onseeked() { return level0.get(this, 'onseeked'); }
-  set onseeked(value) { level0.set(this, 'onseeked', value); }
-
-  get onseeking() { return level0.get(this, 'onseeking'); }
-  set onseeking(value) { level0.set(this, 'onseeking', value); }
-
-  get onselect() { return level0.get(this, 'onselect'); }
-  set onselect(value) { level0.set(this, 'onselect', value); }
-
-  get onshow() { return level0.get(this, 'onshow'); }
-  set onshow(value) { level0.set(this, 'onshow', value); }
-
-  get onstalled() { return level0.get(this, 'onstalled'); }
-  set onstalled(value) { level0.set(this, 'onstalled', value); }
-
-  get onsubmit() { return level0.get(this, 'onsubmit'); }
-  set onsubmit(value) { level0.set(this, 'onsubmit', value); }
-
-  get onsuspend() { return level0.get(this, 'onsuspend'); }
-  set onsuspend(value) { level0.set(this, 'onsuspend', value); }
-
-  get ontimeupdate() { return level0.get(this, 'ontimeupdate'); }
-  set ontimeupdate(value) { level0.set(this, 'ontimeupdate', value); }
-
-  get ontoggle() { return level0.get(this, 'ontoggle'); }
-  set ontoggle(value) { level0.set(this, 'ontoggle', value); }
-
-  get onvolumechange() { return level0.get(this, 'onvolumechange'); }
-  set onvolumechange(value) { level0.set(this, 'onvolumechange', value); }
-
-  get onwaiting() { return level0.get(this, 'onwaiting'); }
-  set onwaiting(value) { level0.set(this, 'onwaiting', value); }
-
-  get onauxclick() { return level0.get(this, 'onauxclick'); }
-  set onauxclick(value) { level0.set(this, 'onauxclick', value); }
-
-  get ongotpointercapture() { return level0.get(this, 'ongotpointercapture'); }
-  set ongotpointercapture(value) { level0.set(this, 'ongotpointercapture', value); }
-
-  get onlostpointercapture() { return level0.get(this, 'onlostpointercapture'); }
-  set onlostpointercapture(value) { level0.set(this, 'onlostpointercapture', value); }
-
-  get onpointercancel() { return level0.get(this, 'onpointercancel'); }
-  set onpointercancel(value) { level0.set(this, 'onpointercancel', value); }
-
-  get onpointerdown() { return level0.get(this, 'onpointerdown'); }
-  set onpointerdown(value) { level0.set(this, 'onpointerdown', value); }
-
-  get onpointerenter() { return level0.get(this, 'onpointerenter'); }
-  set onpointerenter(value) { level0.set(this, 'onpointerenter', value); }
-
-  get onpointerleave() { return level0.get(this, 'onpointerleave'); }
-  set onpointerleave(value) { level0.set(this, 'onpointerleave', value); }
-
-  get onpointermove() { return level0.get(this, 'onpointermove'); }
-  set onpointermove(value) { level0.set(this, 'onpointermove', value); }
-
-  get onpointerout() { return level0.get(this, 'onpointerout'); }
-  set onpointerout(value) { level0.set(this, 'onpointerout', value); }
-
-  get onpointerover() { return level0.get(this, 'onpointerover'); }
-  set onpointerover(value) { level0.set(this, 'onpointerover', value); }
-
-  get onpointerup() { return level0.get(this, 'onpointerup'); }
-  set onpointerup(value) { level0.set(this, 'onpointerup', value); }
-  /* c8 ignore stop */
-
-}
-
-const tagName$h = 'template';
-
-/**
- * @implements globalThis.HTMLTemplateElement
- */
-class HTMLTemplateElement extends HTMLElement {
-  constructor(ownerDocument) {
-    super(ownerDocument, tagName$h);
-    const content = this.ownerDocument.createDocumentFragment();
-    (this[CONTENT] = content)[PRIVATE] = this;
-  }
-
-  get content() {
-    if (this.hasChildNodes() && !this[CONTENT].hasChildNodes()) {
-      for (const node of this.childNodes)
-        this[CONTENT].appendChild(node.cloneNode(true));
-    }
-    return this[CONTENT];
-  }
-}
-
-registerHTMLClass(tagName$h, HTMLTemplateElement);
-
-/**
- * @implements globalThis.HTMLHtmlElement
- */
-class HTMLHtmlElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'html') {
-    super(ownerDocument, localName);
-  }
-}
-
-const {toString} = HTMLElement.prototype;
-
-class TextElement extends HTMLElement {
-
-  get innerHTML() { return this.textContent; }
-  set innerHTML(html) { this.textContent = html; }
-
-  toString() {
-    const outerHTML = toString.call(this.cloneNode());
-    return outerHTML.replace('><', () => `>${this.textContent}<`);
-  }
-}
-
-const tagName$g = 'script';
-
-/**
- * @implements globalThis.HTMLScriptElement
- */
-class HTMLScriptElement extends TextElement {
-  constructor(ownerDocument, localName = tagName$g) {
-    super(ownerDocument, localName);
-  }
-
-  get type() {
-    return stringAttribute.get(this, 'type');
-  }
-  set type(value) {
-    stringAttribute.set(this, 'type', value);
-  }
-
-  get src() {
-    return stringAttribute.get(this, 'src');
-  }
-  set src(value) {
-    stringAttribute.set(this, 'src', value);
-  }
-
-  get defer() {
-    return booleanAttribute.get(this, 'defer');
-  }
-
-  set defer(value) {
-    booleanAttribute.set(this, 'defer', value);
-  }
-
-  get crossOrigin() {
-    return stringAttribute.get(this, 'crossorigin');
-  }
-  set crossOrigin(value) {
-    stringAttribute.set(this, 'crossorigin', value);
-  }
-
-  get nomodule() {
-    return booleanAttribute.get(this, 'nomodule');
-  }
-  set nomodule(value) {
-    booleanAttribute.set(this, 'nomodule', value);
-  }
-
-  get referrerPolicy() {
-    return stringAttribute.get(this, 'referrerpolicy');
-  }
-  set referrerPolicy(value) {
-    stringAttribute.set(this, 'referrerpolicy', value);
-  }
-
-  get nonce() {
-    return stringAttribute.get(this, 'nonce');
-  }
-  set nonce(value) {
-    stringAttribute.set(this, 'nonce', value);
-  }
-
-  get async() {
-    return booleanAttribute.get(this, 'async');
-  }
-  set async(value) {
-    booleanAttribute.set(this, 'async', value);
-  }
-
-  get text() { return this.textContent; }
-  set text(content) { this.textContent = content; }
-}
-
-registerHTMLClass(tagName$g, HTMLScriptElement);
-
-/**
- * @implements globalThis.HTMLFrameElement
- */
-class HTMLFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'frame') {
-    super(ownerDocument, localName);
-  }
-}
-
-const tagName$f = 'iframe';
-
-/**
- * @implements globalThis.HTMLIFrameElement
- */
-class HTMLIFrameElement extends HTMLElement {
-  constructor(ownerDocument, localName = tagName$f) {
-    super(ownerDocument, localName);
-  }
-
-  /* c8 ignore start */
-  get src() { return stringAttribute.get(this, 'src'); }
-  set src(value) { stringAttribute.set(this, 'src', value); }
-
-  get srcdoc() { return stringAttribute.get(this, "srcdoc"); }
-  set srcdoc(value) { stringAttribute.set(this, "srcdoc", value); }
-
-  get name() { return stringAttribute.get(this, "name"); }
-  set name(value) { stringAttribute.set(this, "name", value); }
-
-  get allow() { return stringAttribute.get(this, "allow"); }
-  set allow(value) { stringAttribute.set(this, "allow", value); }
-
-  get allowFullscreen() { return booleanAttribute.get(this, "allowfullscreen"); }
-  set allowFullscreen(value) { booleanAttribute.set(this, "allowfullscreen", value); }
-  
-  get referrerPolicy() { return stringAttribute.get(this, "referrerpolicy"); }
-  set referrerPolicy(value) { stringAttribute.set(this, "referrerpolicy", value); }
-  
-  get loading() { return stringAttribute.get(this, "loading"); }
-  set loading(value) { stringAttribute.set(this, "loading", value); }
-  /* c8 ignore stop */
-}
-
-registerHTMLClass(tagName$f, HTMLIFrameElement);
-
-/**
- * @implements globalThis.HTMLObjectElement
- */
-class HTMLObjectElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'object') {
-    super(ownerDocument, localName);
-  }
-}
-
-/**
- * @implements globalThis.HTMLHeadElement
- */
-class HTMLHeadElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'head') {
-    super(ownerDocument, localName);
-  }
-}
-
-/**
- * @implements globalThis.HTMLBodyElement
- */
-class HTMLBodyElement extends HTMLElement {
-  constructor(ownerDocument, localName = 'body') {
-    super(ownerDocument, localName);
-  }
-}
 
 const tagName$e = 'style';
 
