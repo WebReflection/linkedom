@@ -38,6 +38,7 @@ document = (new DOMParser).parseFromString('<!DOCTYPE html><html />', 'text/html
 assert(document.title, '', 'no title');
 document.title = '"hello"';
 assert(document.title, '"hello"', 'title not escaped');
+
 assert(document.toString(), '<!DOCTYPE html><html><head><title>"hello"</title></head></html>');
 assert(document.body.tagName, 'BODY');
 
@@ -98,3 +99,23 @@ const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></h
 issue187.body.innerHTML = '<span></span>';
 let span = issue187.body.firstElementChild;
 assert(span.ownerDocument.body, issue187.body);
+
+// https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+// https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
+const attributeCaseDocument = (new DOMParser).parseFromString('<!DOCTYPE html><html><body><div ID="target" CLASS="a b" STYLE="color: red"></div></body></html>', 'text/html');
+const idElement = attributeCaseDocument.getElementById('target');
+
+assert(idElement.tagName, 'DIV', 'getElementById finds an uppercase ID attribute');
+assert(idElement.getAttributeNames().join(' '), 'id class style', 'uppercase ID, CLASS and STYLE are parsed as lowercase');
+assert(idElement.className, 'a b', 'classList reads the uppercase CLASS attribute');
+assert(idElement.classList.contains('b'), true, 'classList contains the uppercase CLASS tokens');
+assert(idElement.style.color, 'red', 'style reads the uppercase STYLE attribute');
+assert(idElement.getAttribute('class'), 'a b', 'getAttribute reads the uppercase CLASS attribute');
+assert(idElement.getAttribute('CLASS'), 'a b', 'getAttribute lowercases CLASS through classList');
+assert(idElement.toString(), '<div id="target" class="a b" style="color: red"></div>', 'uppercase attributes serialize lowercased');
+
+idElement.setAttribute('CLASS', 'c');
+assert(idElement.className, 'c', 'setAttribute updates the lowercase class attribute');
+assert(idElement.getAttributeNames().join(' '), 'id class style', 'setAttribute does not duplicate the class attribute');
+assert(idElement.toString(), '<div id="target" class="c" style="color: red"></div>', 'setAttribute keeps serialization lowercase');
+assert(idElement.getAttribute('CLASS'), 'c', 'getAttribute reads class after a CLASS update');

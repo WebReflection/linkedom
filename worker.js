@@ -1986,7 +1986,38 @@ const {
 
 const $String = String;
 
+const allUpperCase = /[A-Z]/g;
+
+// ASCII uppercase only: cheaper than a regular expression, as this runs on every lookup
+const hasUpperCase = name => {
+  if (typeof name !== 'string')
+    return false;
+  for (let i = 0; i < name.length; i++) {
+    const code = name.charCodeAt(i);
+    if (64 < code && 91 > code)
+      return true;
+  }
+  return false;
+};
+
+// https://infra.spec.whatwg.org/#ascii-lowercase
+const asciiLowerCase = name => $String(name).replace(
+  allUpperCase,
+  character => character.toLowerCase()
+);
+
 const getEnd = node => node.nodeType === ELEMENT_NODE ? node[END] : node;
+
+// an element is in SVG when it is one, or when it lives inside one: svg.innerHTML builds
+// HTML class elements (a pre-existing limitation), so checking ownerSVGElement is not enough
+const inSvg = node => {
+  while (node) {
+    if (node.ownerSVGElement !== undefined)
+      return true;
+    node = node.parentNode;
+  }
+  return false;
+};
 
 const ignoreCase = ({ownerDocument}) => ownerDocument[MIME].ignoreCase;
 
@@ -2247,115 +2278,6 @@ class CustomElementRegistry {
     return null;
   }
 }
-
-const {Parser: Parser$1} = HTMLParser2;
-
-const append$2 = (self, node, active) => {
-  const end = self[END];
-  node.parentNode = self;
-  knownBoundaries(end[PREV], node, end);
-  if (active && node.nodeType === ELEMENT_NODE)
-    connectedCallback(node);
-  return node;
-};
-
-const attribute = (element, end, attribute, value, active) => {
-  attribute[VALUE] = value;
-  attribute.ownerElement = element;
-  knownSiblings(end[PREV], attribute, end);
-  if (attribute.name === 'class')
-    element.className = value;
-  if (active)
-    attributeChangedCallback$1(element, attribute.name, null, value);
-};
-
-const parseFromString = (document, isHTML, markupLanguage) => {
-  const {active, registry} = document[CUSTOM_ELEMENTS];
-
-  let node = document;
-  let ownerSVGElement = null;
-  let parsingCData = false;
-
-  const content = new Parser$1({
-    // <!DOCTYPE ...>
-    onprocessinginstruction(name, data) {
-      if (name.toLowerCase() === '!doctype')
-        document.doctype = data.slice(name.length).trim();
-    },
-
-    // <tagName>
-    onopentag(name, attributes) {
-      let create = true;
-      if (isHTML) {
-        if (ownerSVGElement) {
-          node = append$2(node, document.createElementNS(SVG_NAMESPACE, name), active);
-          node.ownerSVGElement = ownerSVGElement;
-          create = false;
-        }
-        else if (name === 'svg' || name === 'SVG') {
-          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
-          node = append$2(node, ownerSVGElement, active);
-          create = false;
-        }
-        else if (active) {
-          const ce = name.includes('-') ? name : (attributes.is || '');
-          if (ce && registry.has(ce)) {
-            const {Class} = registry.get(ce);
-            node = append$2(node, new Class, active);
-            delete attributes.is;
-            create = false;
-          }
-        }
-      }
-
-      if (create)
-        node = append$2(node, document.createElement(name), false);
-
-      let end = node[END];
-      for (const name of keys(attributes))
-        attribute(node, end, document.createAttribute(name), attributes[name], active);
-    },
-
-    // #text, #comment
-    oncomment(data) { append$2(node, document.createComment(data), active); },
-    ontext(text) {
-      if (parsingCData) {
-        append$2(node, document.createCDATASection(text), active);
-      } else {
-        append$2(node, document.createTextNode(text), active);
-      }
-    },
-
-    // #cdata
-    oncdatastart() { parsingCData = true; },
-    oncdataend() { parsingCData = false; },
-
-    // </tagName>
-    onclosetag() {
-      if (isHTML && node === ownerSVGElement)
-        ownerSVGElement = null;
-      node = node.parentNode;
-    }
-  }, {
-    lowerCaseAttributeNames: false,
-    decodeEntities: true,
-    xmlMode: !isHTML
-  });
-
-  content.write(markupLanguage);
-  content.end();
-
-  return document;
-};
-
-const htmlClasses = new Map;
-
-const registerHTMLClass = (names, Class) => {
-  for (const name of [].concat(names)) {
-    htmlClasses.set(name, Class);
-    htmlClasses.set(name.toUpperCase(), Class);
-  }
-};
 
 const loopSegment = ({[NEXT]: next, [END]: end}, json) => {
   while (next !== end) {
@@ -3040,6 +2962,122 @@ let Attr$1 = class Attr extends Node$1 {
     const json = [];
     attrAsJSON(this, json);
     return json;
+  }
+};
+
+const {Parser: Parser$1} = HTMLParser2;
+
+const append$2 = (self, node, active) => {
+  const end = self[END];
+  node.parentNode = self;
+  knownBoundaries(end[PREV], node, end);
+  if (active && node.nodeType === ELEMENT_NODE)
+    connectedCallback(node);
+  return node;
+};
+
+const attribute = (element, end, attribute, value, active) => {
+  attribute[VALUE] = value;
+  attribute.ownerElement = element;
+  knownSiblings(end[PREV], attribute, end);
+  if (attribute.name === 'class')
+    element.className = value;
+  if (active)
+    attributeChangedCallback$1(element, attribute.name, null, value);
+};
+
+const parseFromString = (document, isHTML, markupLanguage, svg = false) => {
+  const {active, registry} = document[CUSTOM_ELEMENTS];
+
+  let node = document;
+  let ownerSVGElement = null;
+  let parsingCData = false;
+
+  const content = new Parser$1({
+    // <!DOCTYPE ...>
+    onprocessinginstruction(name, data) {
+      if (name.toLowerCase() === '!doctype')
+        document.doctype = data.slice(name.length).trim();
+    },
+
+    // <tagName>
+    onopentag(name, attributes) {
+      let create = true;
+      let htmlAttributes = isHTML && !svg;
+      if (isHTML) {
+        if (ownerSVGElement) {
+          node = append$2(node, document.createElementNS(SVG_NAMESPACE, name), active);
+          node.ownerSVGElement = ownerSVGElement;
+          create = false;
+          htmlAttributes = false;
+        }
+        else if (name === 'svg' || name === 'SVG') {
+          ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
+          node = append$2(node, ownerSVGElement, active);
+          create = false;
+          htmlAttributes = false;
+        }
+        else if (active) {
+          const ce = name.includes('-') ? name : (attributes.is || '');
+          if (ce && registry.has(ce)) {
+            const {Class} = registry.get(ce);
+            node = append$2(node, new Class, active);
+            delete attributes.is;
+            create = false;
+          }
+        }
+      }
+
+      if (create)
+        node = append$2(node, document.createElement(name), false);
+
+      let end = node[END];
+      // the HTML tokenizer lowercases attribute names, but SVG ones keep their case
+      // https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+      for (const name of keys(attributes)) {
+        const htmlName = htmlAttributes && hasUpperCase(name) ? asciiLowerCase(name) : name;
+        attribute(node, end, new Attr$1(document, htmlName), attributes[name], active);
+      }
+    },
+
+    // #text, #comment
+    oncomment(data) { append$2(node, document.createComment(data), active); },
+    ontext(text) {
+      if (parsingCData) {
+        append$2(node, document.createCDATASection(text), active);
+      } else {
+        append$2(node, document.createTextNode(text), active);
+      }
+    },
+
+    // #cdata
+    oncdatastart() { parsingCData = true; },
+    oncdataend() { parsingCData = false; },
+
+    // </tagName>
+    onclosetag() {
+      if (isHTML && node === ownerSVGElement)
+        ownerSVGElement = null;
+      node = node.parentNode;
+    }
+  }, {
+    lowerCaseAttributeNames: false,
+    decodeEntities: true,
+    xmlMode: !isHTML
+  });
+
+  content.write(markupLanguage);
+  content.end();
+
+  return document;
+};
+
+const htmlClasses = new Map;
+
+const registerHTMLClass = (names, Class) => {
+  for (const name of [].concat(names)) {
+    htmlClasses.set(name, Class);
+    htmlClasses.set(name.toUpperCase(), Class);
   }
 };
 
@@ -7056,7 +7094,8 @@ const setInnerHtml = (node, html) => {
   const {constructor} = ownerDocument;
   const document = new constructor;
   document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
-  const {childNodes} = parseFromString(document, ignoreCase(node), html);
+  // an SVG context keeps attribute names as they are, like it does when parsing a whole document
+  const {childNodes} = parseFromString(document, ignoreCase(node), html, inSvg(node));
 
   node.replaceChildren(...childNodes.map(setOwnerDocument, ownerDocument));
 };
@@ -7486,6 +7525,34 @@ const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
 };
 
+const findAttribute = (element, name) => {
+  let next = element[NEXT];
+  while (next.nodeType === ATTRIBUTE_NODE) {
+    if (next.name === name)
+      return next;
+    next = next[NEXT];
+  }
+  return null;
+};
+
+// the name an element stores: only HTML elements in HTML documents hold ASCII lowercase names
+const attributeName = (element, name) => (
+  hasUpperCase(name) && ignoreCase(element) && !inSvg(element) ?
+    asciiLowerCase(name) :
+    name
+);
+
+// https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
+// every attribute created for an HTML element is ASCII lowercase, so the name is looked up as
+// given first, and only a non canonical one (from another document, for instance) is kept as is
+const attributeByName = (element, name) => {
+  const attribute = findAttribute(element, name);
+  if (attribute)
+    return attribute;
+  const storedName = attributeName(element, name);
+  return storedName === name ? null : findAttribute(element, storedName);
+};
+
 // </utils>
 
 /**
@@ -7641,20 +7708,17 @@ let Element$1 = class Element extends ParentNode {
   focus() { this.dispatchEvent(new GlobalEvent('focus')); }
 
   getAttribute(name) {
-    if (name === 'class')
+    const attribute = attributeByName(this, name);
+    if (!attribute)
+      return name === 'class' ? this.className : null;
+    // class is proxied through classList
+    if (attribute.name === 'class')
       return this.className;
-    const attribute = this.getAttributeNode(name);
-    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
+    return ignoreCase(this) ? attribute.value : escape(attribute.value);
   }
 
   getAttributeNode(name) {
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name)
-        return next;
-      next = next[NEXT];
-    }
-    return null;
+    return attributeByName(this, name);
   }
 
   getAttributeNames() {
@@ -7667,19 +7731,15 @@ let Element$1 = class Element extends ParentNode {
     return attributes;
   }
 
-  hasAttribute(name) { return !!this.getAttributeNode(name); }
+  hasAttribute(name) { return !!attributeByName(this, name); }
   hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
 
   removeAttribute(name) {
-    if (name === 'class' && this[CLASS_LIST])
+    const attribute = attributeByName(this, name);
+    if (attribute) {
+      if (attribute.name === 'class' && this[CLASS_LIST])
         this[CLASS_LIST].clear();
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name) {
-        removeAttribute(this, next);
-        return;
-      }
-      next = next[NEXT];
+      removeAttribute(this, attribute);
     }
   }
 
@@ -7695,12 +7755,17 @@ let Element$1 = class Element extends ParentNode {
   }
 
   setAttribute(name, value) {
-    if (name === 'class')
-      this.className = value;
-    else {
-      const attribute = this.getAttributeNode(name);
-      if (attribute)
+    const attribute = attributeByName(this, name);
+    if (attribute) {
+      if (attribute.name === 'class')
+        this.className = value;
+      else
         attribute.value = value;
+    }
+    else {
+      name = attributeName(this, name);
+      if (name === 'class')
+        this.className = value;
       else
         setAttribute(this, new Attr$1(this.ownerDocument, name, value));
     }
@@ -19318,7 +19383,7 @@ let Document$1 = class Document extends NonElementParentNode {
     return this[EVENT_TARGET];
   }
 
-  createAttribute(name) { return new Attr$1(this, name); }
+  createAttribute(name) { return new Attr$1(this, this[MIME].ignoreCase ? asciiLowerCase(name) : name); }
   createCDATASection(data) { return new CDATASection$1(this, data); }
   createComment(textContent) { return new Comment$2(this, textContent); }
   createDocumentFragment() { return new DocumentFragment$1(this); }
@@ -19631,7 +19696,8 @@ const parseJSON = value => {
       case ATTRIBUTE_NODE: {
         const name = array[i++];
         const value = typeof array[i] === 'string' ? array[i++] : '';
-        const attr = new Attr$1(document, name, value);
+        const htmlName = inSvg(parentNode) || !hasUpperCase(name) ? name : asciiLowerCase(name);
+        const attr = new Attr$1(document, htmlName, value);
         attr.ownerElement = parentNode;
         knownSiblings(end[PREV], attr, end);
         break;

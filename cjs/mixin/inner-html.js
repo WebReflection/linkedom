@@ -2,7 +2,7 @@
 const {ELEMENT_NODE, DOCUMENT_FRAGMENT_NODE} = require('../shared/constants.js');
 const {CUSTOM_ELEMENTS} = require('../shared/symbols.js');
 const {parseFromString} = require('../shared/parse-from-string.js');
-const {ignoreCase} = require('../shared/utils.js');
+const {ignoreCase, inSvg} = require('../shared/utils.js');
 
 
 /**
@@ -21,7 +21,8 @@ const setInnerHtml = (node, html) => {
   const {constructor} = ownerDocument;
   const document = new constructor;
   document[CUSTOM_ELEMENTS] = ownerDocument[CUSTOM_ELEMENTS];
-  const {childNodes} = parseFromString(document, ignoreCase(node), html);
+  // an SVG context keeps attribute names as they are, like it does when parsing a whole document
+  const {childNodes} = parseFromString(document, ignoreCase(node), html, inSvg(node));
 
   node.replaceChildren(...childNodes.map(setOwnerDocument, ownerDocument));
 };

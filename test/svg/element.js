@@ -47,3 +47,28 @@ assert(svg.getAttribute('class'), 'a b c');
 svg.setAttribute('class', 'd e');
 assert(svg.getAttribute('class'), 'd e');
 assert(svg.namespaceURI, 'http://www.w3.org/2000/svg');
+
+const {document: svgCaseDocument} = parseHTML('<div><svg viewBox="0 0 1 1"><text textLength="10">x</text></svg></div>');
+const svgCaseRoot = svgCaseDocument.querySelector('svg');
+const svgCaseText = svgCaseDocument.querySelector('text');
+
+assert(svgCaseRoot.getAttributeNames().join(' '), 'viewBox', 'SVG attributes in HTML keep their case when parsed');
+assert(svgCaseRoot.getAttribute('viewBox'), '0 0 1 1', 'SVG attributes are reachable with their case');
+assert(svgCaseRoot.getAttribute('viewbox'), null, 'SVG attributes are not reachable lowercased');
+assert(svgCaseText.getAttribute('textLength'), '10', 'SVG children attributes keep their case too');
+assert(svgCaseText.getAttribute('textlength'), null, 'SVG children attributes stay case sensitive');
+assert(svgCaseRoot.toString(), '<svg viewBox="0 0 1 1"><text textLength="10">x</text></svg>', 'SVG serialization keeps the case');
+
+svgCaseRoot.setAttribute('viewBox', '0 0 2 2');
+assert(svgCaseRoot.getAttributeNames().join(' '), 'viewBox', 'setAttribute does not lowercase SVG attribute names');
+assert(svgCaseRoot.getAttribute('viewBox'), '0 0 2 2', 'setAttribute kept the SVG attribute case');
+
+svgCaseRoot.removeAttribute('viewBox');
+assert(svgCaseRoot.hasAttributes(), false, 'removeAttribute does not lowercase SVG attribute names');
+
+svgCaseRoot.innerHTML = '<text textLength="10">x</text>';
+assert(svgCaseRoot.innerHTML, '<text textLength="10">x</text>', 'innerHTML keeps SVG attribute names as they are');
+assert(svgCaseRoot.firstElementChild.getAttribute('textLength'), '10', 'innerHTML SVG attributes are reachable with their case');
+
+svgCaseRoot.firstElementChild.innerHTML = '<tspan textLength="5">y</tspan>';
+assert(svgCaseRoot.innerHTML, '<text textLength="10"><tspan textLength="5">y</tspan></text>', 'nested innerHTML keeps SVG attribute names');

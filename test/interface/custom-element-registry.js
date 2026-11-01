@@ -235,3 +235,23 @@ assert(document.querySelector('custom-element').isCurrentThisSameAsConstructorTh
 const ceWithoutConstructorArgs = document.querySelector('custom-element-without-constructor-args');
 customElements.define('custom-element-without-constructor-args', class extends HTMLElement {});
 assert(ceWithoutConstructorArgs.localName, 'custom-element-without-constructor-args', 'constructor without args');
+
+args = [];
+customElements.define('c-e-case', class extends HTMLElement {
+  static get observedAttributes() { return ['test']; }
+  attributeChangedCallback(name, oldValue, newValue) {
+    args.push(name, oldValue, newValue);
+  }
+});
+
+ce = document.createElement('c-e-case');
+ce.setAttribute('TEST', 'value');
+assert(JSON.stringify(args.splice(0)), '["test",null,"value"]', 'attributeChangedCallback receives the lowercase name');
+
+ce.removeAttribute('TEST');
+assert(JSON.stringify(args.splice(0)), '["test","value",null]', 'attributeChangedCallback receives the lowercase name on removal');
+
+const caseContainer = document.createElement('div');
+caseContainer.innerHTML = '<c-e-case TEST="parsed"></c-e-case>';
+assert(JSON.stringify(args.splice(0)), '["test",null,"parsed"]', 'parsed uppercase attributes are reported lowercase');
+assert(caseContainer.toString(), '<div><c-e-case test="parsed"></c-e-case></div>', 'parsed uppercase attributes are lowercase');
