@@ -33,7 +33,7 @@ export class DOMParser {
     if (isHTML && markupLanguage === '...')
       markupLanguage = '<!doctype html><html><head></head><body></body></html>';
     return markupLanguage ?
-            parseFromString(document, isHTML, markupLanguage) :
+            parseFromString(document, isHTML, markupLanguage, true) :
             document;
   }
 }
