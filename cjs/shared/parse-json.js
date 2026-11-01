@@ -14,7 +14,7 @@ const {
 const {END, PREV} = require('./symbols.js');
 
 const {htmlClasses} = require('./register-html-class.js');
-const {knownBoundaries, knownSiblings} = require('./utils.js');
+const {asciiLowerCase, hasUpperCase, inSvg, knownBoundaries, knownSiblings} = require('./utils.js');
 
 const {Attr} = require('../interface/attr.js');
 const {CDATASection} = require('../interface/cdata-section.js');
@@ -75,7 +75,8 @@ const parseJSON = value => {
       case ATTRIBUTE_NODE: {
         const name = array[i++];
         const value = typeof array[i] === 'string' ? array[i++] : '';
-        const attr = new Attr(document, name, value);
+        const htmlName = inSvg(parentNode) || !hasUpperCase(name) ? name : asciiLowerCase(name);
+        const attr = new Attr(document, htmlName, value);
         attr.ownerElement = parentNode;
         knownSiblings(end[PREV], attr, end);
         break;

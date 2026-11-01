@@ -8,7 +8,7 @@ import {
 import {Facades, illegalConstructor} from '../shared/facades.js';
 import {HTMLClasses} from '../shared/html-classes.js';
 import {Mime} from '../shared/mime.js';
-import {knownSiblings} from '../shared/utils.js';
+import {asciiLowerCase, knownSiblings} from '../shared/utils.js';
 import {assign, create, defineProperties, setPrototypeOf} from '../shared/object.js';
 
 import {NonElementParentNode} from '../mixin/non-element-parent-node.js';
@@ -169,7 +169,7 @@ export class Document extends NonElementParentNode {
     return this[EVENT_TARGET];
   }
 
-  createAttribute(name) { return new Attr(this, name); }
+  createAttribute(name) { return new Attr(this, this[MIME].ignoreCase ? asciiLowerCase(name) : name); }
   createCDATASection(data) { return new CDATASection(this, data); }
   createComment(textContent) { return new Comment(this, textContent); }
   createDocumentFragment() { return new DocumentFragment(this); }

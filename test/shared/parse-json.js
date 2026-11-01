@@ -39,6 +39,15 @@ assert(div.toString(), '<div><svg><rect /></svg><c-e></c-e></div>');
 
 assert(div.querySelector('c-e').constructed, void 0, 'not constructed');
 
+const parsedCase = parseJSON([1,'div',2,'data-itemId','a',-1]);
+assert(parsedCase.getAttributeNames().join(' '), 'data-itemid', 'restored HTML attributes are ASCII lowercase');
+assert(parsedCase.getAttribute('data-itemId'), 'a', 'restored HTML attributes are reachable with any case');
+assert(parsedCase.toString(), '<div data-itemid="a"></div>', 'restored HTML attributes serialize lowercase');
+
+const parsedSVG = parseJSON([1,'div',1,'svg',2,'viewBox','0 0 1 1',-2]);
+assert(parsedSVG.querySelector('svg').getAttributeNames().join(' '), 'viewBox', 'restored SVG attributes keep their case');
+assert(parsedSVG.querySelector('svg').getAttribute('viewBox'), '0 0 1 1', 'restored SVG attributes are reachable with their case');
+
 document.importNode(div, true);
 
 assert(div.querySelector('c-e').constructed, void 0, 'not constructed');

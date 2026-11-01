@@ -1,5 +1,8 @@
 export { $String as String };
+export function hasUpperCase(name: any): boolean;
+export function asciiLowerCase(name: any): string;
 export function getEnd(node: any): any;
+export function inSvg(node: any): boolean;
 export function ignoreCase({ ownerDocument }: {
     ownerDocument: any;
 }): any;

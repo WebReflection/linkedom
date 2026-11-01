@@ -4,8 +4,10 @@ import {ELEMENT_NODE, SVG_NAMESPACE} from './constants.js';
 import {CUSTOM_ELEMENTS, PREV, END, VALUE} from './symbols.js';
 import {keys} from './object.js';
 
-import {knownBoundaries, knownSiblings} from './utils.js';
+import {asciiLowerCase, hasUpperCase, knownBoundaries, knownSiblings} from './utils.js';
 import {attributeChangedCallback, connectedCallback} from '../interface/custom-element-registry.js';
+
+import {Attr} from '../interface/attr.js';
 
 const {Parser} = HTMLParser2;
 
@@ -38,7 +40,7 @@ const attribute = (element, end, attribute, value, active) => {
 
 export const isNotParsing = () => notParsing;
 
-export const parseFromString = (document, isHTML, markupLanguage) => {
+export const parseFromString = (document, isHTML, markupLanguage, svg = false) => {
   const {active, registry} = document[CUSTOM_ELEMENTS];
 
   let node = document;
@@ -57,16 +59,19 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
     // <tagName>
     onopentag(name, attributes) {
       let create = true;
+      let htmlAttributes = isHTML && !svg;
       if (isHTML) {
         if (ownerSVGElement) {
           node = append(node, document.createElementNS(SVG_NAMESPACE, name), active);
           node.ownerSVGElement = ownerSVGElement;
           create = false;
+          htmlAttributes = false;
         }
         else if (name === 'svg' || name === 'SVG') {
           ownerSVGElement = document.createElementNS(SVG_NAMESPACE, name);
           node = append(node, ownerSVGElement, active);
           create = false;
+          htmlAttributes = false;
         }
         else if (active) {
           const ce = name.includes('-') ? name : (attributes.is || '');
@@ -83,8 +88,12 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
         node = append(node, document.createElement(name), false);
 
       let end = node[END];
-      for (const name of keys(attributes))
-        attribute(node, end, document.createAttribute(name), attributes[name], active);
+      // the HTML tokenizer lowercases attribute names, but SVG ones keep their case
+      // https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+      for (const name of keys(attributes)) {
+        const htmlName = htmlAttributes && hasUpperCase(name) ? asciiLowerCase(name) : name;
+        attribute(node, end, new Attr(document, htmlName), attributes[name], active);
+      }
     },
 
     // #text, #comment

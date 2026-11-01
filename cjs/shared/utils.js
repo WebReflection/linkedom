@@ -5,8 +5,42 @@ const {END, MIME, NEXT, PREV} = require('./symbols.js');
 const $String = String;
 exports.String = $String;
 
+const allUpperCase = /[A-Z]/g;
+
+// ASCII uppercase only: cheaper than a regular expression, as this runs on every lookup
+const hasUpperCase = name => {
+  if (typeof name !== 'string')
+    return false;
+  for (let i = 0; i < name.length; i++) {
+    const code = name.charCodeAt(i);
+    if (64 < code && 91 > code)
+      return true;
+  }
+  return false;
+};
+exports.hasUpperCase = hasUpperCase;
+
+// https://infra.spec.whatwg.org/#ascii-lowercase
+const asciiLowerCase = name => $String(name).replace(
+  allUpperCase,
+  character => character.toLowerCase()
+);
+exports.asciiLowerCase = asciiLowerCase;
+
 const getEnd = node => node.nodeType === ELEMENT_NODE ? node[END] : node;
 exports.getEnd = getEnd;
+
+// an element is in SVG when it is one, or when it lives inside one: svg.innerHTML builds
+// HTML class elements (a pre-existing limitation), so checking ownerSVGElement is not enough
+const inSvg = node => {
+  while (node) {
+    if (node.ownerSVGElement !== undefined)
+      return true;
+    node = node.parentNode;
+  }
+  return false;
+};
+exports.inSvg = inSvg;
 
 const ignoreCase = ({ownerDocument}) => ownerDocument[MIME].ignoreCase;
 exports.ignoreCase = ignoreCase;

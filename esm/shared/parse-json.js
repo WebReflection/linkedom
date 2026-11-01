@@ -13,7 +13,7 @@ import {
 import {END, PREV} from './symbols.js';
 
 import {htmlClasses} from './register-html-class.js';
-import {knownBoundaries, knownSiblings} from './utils.js';
+import {asciiLowerCase, hasUpperCase, inSvg, knownBoundaries, knownSiblings} from './utils.js';
 
 import {Attr} from '../interface/attr.js';
 import {CDATASection} from '../interface/cdata-section.js';
@@ -74,7 +74,8 @@ export const parseJSON = value => {
       case ATTRIBUTE_NODE: {
         const name = array[i++];
         const value = typeof array[i] === 'string' ? array[i++] : '';
-        const attr = new Attr(document, name, value);
+        const htmlName = inSvg(parentNode) || !hasUpperCase(name) ? name : asciiLowerCase(name);
+        const attr = new Attr(document, htmlName, value);
         attr.ownerElement = parentNode;
         knownSiblings(end[PREV], attr, end);
         break;

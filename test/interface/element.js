@@ -94,3 +94,65 @@ const xmlDocWithEmptyAttrFromSet = parser.parseFromString(`<hierarchy><android.v
 assert(xmlDocWithEmptyAttrFromSet.firstChild.getAttribute('style'), '');
 assert(xmlDocWithEmptyAttrFromSet.firstChild.outerHTML, '<android.view.View style="" />');
 assert(xmlDocWithEmptyAttrFromSet.innerHTML, '<android.view.View style="" />');
+
+// https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+// https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
+const {document: attributeCaseDocument} = parseHTML('<html><body><div data-itemId="a" TITLE="b"></div></body></html>');
+
+let attributeCaseDiv = attributeCaseDocument.querySelector('div');
+assert(attributeCaseDiv.getAttributeNames().join(' '), 'data-itemid title', 'HTML attribute names are parsed as ASCII lowercase');
+assert(attributeCaseDiv.getAttribute('data-itemId'), 'a', 'getAttribute lowercases the name');
+assert(attributeCaseDiv.getAttribute('data-itemid'), 'a', 'getAttribute works with the parsed name');
+assert(attributeCaseDiv.getAttribute('DATA-ITEMID'), 'a', 'getAttribute lowercases ASCII uppercase');
+assert(attributeCaseDiv.getAttribute('data-ITEMid'), 'a', 'getAttribute lowercases any ASCII uppercase');
+assert(attributeCaseDiv.getAttribute('Data-ItemId'), 'a', 'getAttribute lowercases mixed case');
+assert(attributeCaseDiv.getAttributeNode('DATA-ITEMID').name, 'data-itemid', 'getAttributeNode lowercases the name');
+assert(attributeCaseDiv.hasAttribute('data-itemId'), true, 'hasAttribute lowercases the name');
+assert(attributeCaseDiv.outerHTML, '<div data-itemid="a" title="b"></div>', 'serialization uses lowercase names');
+assert(attributeCaseDocument.querySelector('[data-itemid]'), attributeCaseDiv, 'querySelector matches the lowercase name');
+assert(attributeCaseDocument.querySelector('[data-itemId]'), attributeCaseDiv, 'querySelector matches the original name too');
+assert(attributeCaseDocument.querySelector('[DATA-ITEMID]'), attributeCaseDiv, 'querySelector lowercases the selector name');
+assert(attributeCaseDiv.matches('[TITLE]'), true, 'matches lowercases the selector name');
+
+attributeCaseDiv.setAttribute('Foo', 'x');
+assert(attributeCaseDiv.getAttributeNames().join(' '), 'foo data-itemid title', 'setAttribute lowercases the name');
+assert(attributeCaseDiv.getAttribute('FOO'), 'x', 'setAttribute is reachable with any case');
+
+attributeCaseDiv.setAttribute('FOO', 'y');
+assert(attributeCaseDiv.getAttributeNames().join(' '), 'foo data-itemid title', 'setAttribute does not create case variants');
+assert(attributeCaseDiv.getAttribute('foo'), 'y', 'setAttribute updates the same attribute');
+
+attributeCaseDiv.removeAttribute('DATA-ITEMID');
+assert(attributeCaseDiv.hasAttribute('data-itemid'), false, 'removeAttribute lowercases the name');
+
+assert(attributeCaseDiv.toggleAttribute('Bar'), true, 'toggleAttribute adds a lowercase attribute');
+assert(attributeCaseDiv.getAttributeNames().join(' '), 'bar foo title', 'toggleAttribute lowercases the name');
+assert(attributeCaseDiv.toggleAttribute('BAR'), false, 'toggleAttribute removes a lowercase attribute');
+assert(attributeCaseDiv.hasAttribute('bar'), false, 'toggleAttribute lowercased the name again');
+
+assert(attributeCaseDocument.querySelectorAll('[title]').length, 1, 'querySelectorAll matches the lowercase name');
+
+const createdAttribute = attributeCaseDocument.createAttribute('Data-Foo');
+assert(createdAttribute.name, 'data-foo', 'createAttribute lowercases the name in an HTML document');
+attributeCaseDiv.setAttributeNode(createdAttribute);
+assert(attributeCaseDiv.getAttribute('data-foo'), '', 'setAttributeNode uses the lowercased created name');
+assert(attributeCaseDiv.attributes.getNamedItem('TITLE').name, 'title', 'NamedNodeMap#getNamedItem lowercases the name');
+assert(attributeCaseDiv.dataset.itemId, undefined, 'data-itemId is parsed as data-itemid, not as a dataset entry');
+
+assert(attributeCaseDiv.getAttribute(null), null, 'non string names are not lowercased');
+assert(attributeCaseDiv.hasAttribute(undefined), false, 'non string names do not throw');
+attributeCaseDiv.setAttribute(null, 'null-attribute');
+assert(attributeCaseDiv.getAttribute('null'), 'null-attribute', 'non string names are stored as strings');
+
+// an attribute from another document keeps its name: the name is looked up as given before the
+// ASCII lowercase one is used, which is the one case where this differs from browsers
+const xmlAttribute = xmlDoc.ownerDocument.createAttribute('Foo');
+attributeCaseDiv.setAttributeNode(xmlAttribute);
+assert(attributeCaseDiv.getAttributeNames().includes('Foo'), true, 'a non canonical attribute keeps its name');
+assert(attributeCaseDiv.getAttribute('Foo'), '', 'a non canonical attribute is found by its exact name');
+assert(attributeCaseDiv.hasAttribute('Foo'), true, 'hasAttribute finds a non canonical attribute by its exact name');
+assert(attributeCaseDiv.getAttribute('foo'), null, 'the lowercase name does not match a non canonical attribute');
+attributeCaseDiv.setAttribute('Foo', 'updated');
+assert(attributeCaseDiv.getAttribute('Foo'), 'updated', 'setAttribute updates a non canonical attribute by its exact name');
+attributeCaseDiv.removeAttribute('Foo');
+assert(attributeCaseDiv.hasAttribute('Foo'), false, 'a non canonical attribute is removed by its exact name');

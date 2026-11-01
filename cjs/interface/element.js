@@ -21,8 +21,11 @@ const {
 } = require('../shared/symbols.js');
 
 const {
+  asciiLowerCase,
+  hasUpperCase,
   htmlToFragment,
   ignoreCase,
+  inSvg,
   knownAdjacent,
   localCase,
   String
@@ -69,6 +72,34 @@ const create = (ownerDocument, element, localName)  => {
 
 const isVoid = ({localName, ownerDocument}) => {
   return ownerDocument[MIME].voidElements.test(localName);
+};
+
+const findAttribute = (element, name) => {
+  let next = element[NEXT];
+  while (next.nodeType === ATTRIBUTE_NODE) {
+    if (next.name === name)
+      return next;
+    next = next[NEXT];
+  }
+  return null;
+};
+
+// the name an element stores: only HTML elements in HTML documents hold ASCII lowercase names
+const attributeName = (element, name) => (
+  hasUpperCase(name) && ignoreCase(element) && !inSvg(element) ?
+    asciiLowerCase(name) :
+    name
+);
+
+// https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
+// every attribute created for an HTML element is ASCII lowercase, so the name is looked up as
+// given first, and only a non canonical one (from another document, for instance) is kept as is
+const attributeByName = (element, name) => {
+  const attribute = findAttribute(element, name);
+  if (attribute)
+    return attribute;
+  const storedName = attributeName(element, name);
+  return storedName === name ? null : findAttribute(element, storedName);
 };
 
 // </utils>
@@ -226,20 +257,17 @@ class Element extends ParentNode {
   focus() { this.dispatchEvent(new Event('focus')); }
 
   getAttribute(name) {
-    if (name === 'class')
+    const attribute = attributeByName(this, name);
+    if (!attribute)
+      return name === 'class' ? this.className : null;
+    // class is proxied through classList
+    if (attribute.name === 'class')
       return this.className;
-    const attribute = this.getAttributeNode(name);
-    return attribute && (ignoreCase(this) ? attribute.value : escape(attribute.value));
+    return ignoreCase(this) ? attribute.value : escape(attribute.value);
   }
 
   getAttributeNode(name) {
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name)
-        return next;
-      next = next[NEXT];
-    }
-    return null;
+    return attributeByName(this, name);
   }
 
   getAttributeNames() {
@@ -252,19 +280,15 @@ class Element extends ParentNode {
     return attributes;
   }
 
-  hasAttribute(name) { return !!this.getAttributeNode(name); }
+  hasAttribute(name) { return !!attributeByName(this, name); }
   hasAttributes() { return this[NEXT].nodeType === ATTRIBUTE_NODE; }
 
   removeAttribute(name) {
-    if (name === 'class' && this[CLASS_LIST])
+    const attribute = attributeByName(this, name);
+    if (attribute) {
+      if (attribute.name === 'class' && this[CLASS_LIST])
         this[CLASS_LIST].clear();
-    let next = this[NEXT];
-    while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next.name === name) {
-        removeAttribute(this, next);
-        return;
-      }
-      next = next[NEXT];
+      removeAttribute(this, attribute);
     }
   }
 
@@ -280,12 +304,17 @@ class Element extends ParentNode {
   }
 
   setAttribute(name, value) {
-    if (name === 'class')
-      this.className = value;
-    else {
-      const attribute = this.getAttributeNode(name);
-      if (attribute)
+    const attribute = attributeByName(this, name);
+    if (attribute) {
+      if (attribute.name === 'class')
+        this.className = value;
+      else
         attribute.value = value;
+    }
+    else {
+      name = attributeName(this, name);
+      if (name === 'class')
+        this.className = value;
       else
         setAttribute(this, new Attr(this.ownerDocument, name, value));
     }
