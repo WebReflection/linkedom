@@ -1,4 +1,4 @@
-import {parse} from '@acemir/cssom';
+import {parse} from 'cssomnom/parse';
 
 import {registerHTMLClass} from '../shared/register-html-class.js';
 import {SHEET} from '../shared/symbols.js';

@@ -757,7 +757,7 @@ const Sequences = {
     ]), // `</textarea`
     XmpEnd: new Uint8Array([0x3c, 0x2f, 0x78, 0x6d, 0x70]), // `</xmp`
 };
-class Tokenizer {
+let Tokenizer$1 = class Tokenizer {
     constructor({ xmlMode = false, decodeEntities = true, }, cbs) {
         this.cbs = cbs;
         /** The current state the tokenizer is in. */
@@ -1444,7 +1444,7 @@ class Tokenizer {
             this.cbs.ontextentity(cp, this.sectionStart);
         }
     }
-}
+};
 
 const formTags = new Set([
     "input",
@@ -1542,7 +1542,7 @@ const htmlIntegrationElements = new Set([
     "title",
 ]);
 const reNameEnd = /\s|\//;
-let Parser$1 = class Parser {
+let Parser$2 = class Parser {
     constructor(cbs, options = {}) {
         var _a, _b, _c, _d, _e, _f;
         this.options = options;
@@ -1573,7 +1573,7 @@ let Parser$1 = class Parser {
             (_b = options.lowerCaseAttributeNames) !== null && _b !== void 0 ? _b : this.htmlMode;
         this.recognizeSelfClosing =
             (_c = options.recognizeSelfClosing) !== null && _c !== void 0 ? _c : !this.htmlMode;
-        this.tokenizer = new ((_d = options.Tokenizer) !== null && _d !== void 0 ? _d : Tokenizer)(this.options, this);
+        this.tokenizer = new ((_d = options.Tokenizer) !== null && _d !== void 0 ? _d : Tokenizer$1)(this.options, this);
         this.foreignContext = [!this.htmlMode];
         (_f = (_e = this.cbs).onparserinit) === null || _f === void 0 ? void 0 : _f.call(_e, this);
     }
@@ -1936,9 +1936,9 @@ let Parser$1 = class Parser {
 
 var HTMLParser2 = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    Parser: Parser$1,
+    Parser: Parser$2,
     get QuoteType () { return QuoteType; },
-    Tokenizer: Tokenizer
+    Tokenizer: Tokenizer$1
 });
 
 // Internal
@@ -2248,7 +2248,7 @@ class CustomElementRegistry {
   }
 }
 
-const {Parser} = HTMLParser2;
+const {Parser: Parser$1} = HTMLParser2;
 
 const append$2 = (self, node, active) => {
   const end = self[END];
@@ -2276,7 +2276,7 @@ const parseFromString = (document, isHTML, markupLanguage) => {
   let ownerSVGElement = null;
   let parsingCData = false;
 
-  const content = new Parser({
+  const content = new Parser$1({
     // <!DOCTYPE ...>
     onprocessinginstruction(name, data) {
       if (name.toLowerCase() === '!doctype')
@@ -8631,7432 +8631,9426 @@ class HTMLBodyElement extends HTMLElement {
   }
 }
 
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-var lib = {};
-
-var CSSOM_1;
-var hasRequiredCSSOM;
-
-function requireCSSOM () {
-	if (hasRequiredCSSOM) return CSSOM_1;
-	hasRequiredCSSOM = 1;
-	var CSSOM = {
-	  /**
-	   * Creates and configures a new CSSOM instance with the specified options.
-	   * 
-	   * @param {Object} opts - Configuration options for the CSSOM instance
-	   * @param {Object} [opts.globalObject] - Optional global object to be assigned to CSSOM objects prototype
-	   * @returns {Object} A new CSSOM instance with the applied configuration
-	   * @description
-	   * This method creates a new instance of CSSOM and optionally
-	   * configures CSSStyleSheet with a global object reference. When a globalObject is provided
-	   * and CSSStyleSheet exists on the instance, it creates a new CSSStyleSheet constructor
-	   * using a factory function and assigns the globalObject to its prototype's __globalObject property.
-	   */
-	  setup: function (opts) {
-	    var instance = Object.create(this);
-	    if (opts.globalObject) {
-	      if (instance.CSSStyleSheet) {
-	        var factoryCSSStyleSheet = createFunctionFactory(instance.CSSStyleSheet);
-	        var CSSStyleSheet = factoryCSSStyleSheet();
-	        CSSStyleSheet.prototype.__globalObject = opts.globalObject;
-
-	        instance.CSSStyleSheet = CSSStyleSheet;
-	      }
-	    }
-	    return instance;
-	  }
-	};
-
-	function createFunctionFactory(fn) {
-	  return function() {
-	    // Create a new function that delegates to the original
-	    var newFn = function() {
-	      return fn.apply(this, arguments);
-	    };
-
-	    // Copy prototype chain
-	    Object.setPrototypeOf(newFn, Object.getPrototypeOf(fn));
-
-	    // Copy own properties
-	    for (var key in fn) {
-	      if (Object.prototype.hasOwnProperty.call(fn, key)) {
-	        newFn[key] = fn[key];
-	      }
-	    }
-
-	    // Clone the .prototype object for constructor-like behavior
-	    if (fn.prototype) {
-	      newFn.prototype = Object.create(fn.prototype);
-	    }
-
-	    return newFn;
-	  };
-	}
-
-	//.CommonJS
-	CSSOM_1 = CSSOM;
-	///CommonJS
-	return CSSOM_1;
+// @ts-nocheck
+// src/data/gen/property-list.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SUPPORTED_PROPERTIES = /* @__PURE__ */ new Set("-webkit-align-content,-webkit-align-items,-webkit-align-self,-webkit-animation,-webkit-animation-delay,-webkit-animation-direction,-webkit-animation-duration,-webkit-animation-fill-mode,-webkit-animation-iteration-count,-webkit-animation-name,-webkit-animation-play-state,-webkit-animation-timing-function,-webkit-appearance,-webkit-backface-visibility,-webkit-background-clip,-webkit-background-origin,-webkit-background-size,-webkit-border-bottom-left-radius,-webkit-border-bottom-right-radius,-webkit-border-radius,-webkit-border-top-left-radius,-webkit-border-top-right-radius,-webkit-box-align,-webkit-box-flex,-webkit-box-ordinal-group,-webkit-box-orient,-webkit-box-pack,-webkit-box-shadow,-webkit-box-sizing,-webkit-filter,-webkit-flex,-webkit-flex-basis,-webkit-flex-direction,-webkit-flex-flow,-webkit-flex-grow,-webkit-flex-shrink,-webkit-flex-wrap,-webkit-justify-content,-webkit-line-clamp,-webkit-mask,-webkit-mask-box-image,-webkit-mask-box-image-outset,-webkit-mask-box-image-repeat,-webkit-mask-box-image-slice,-webkit-mask-box-image-source,-webkit-mask-box-image-width,-webkit-mask-clip,-webkit-mask-composite,-webkit-mask-image,-webkit-mask-origin,-webkit-mask-position,-webkit-mask-repeat,-webkit-mask-size,-webkit-order,-webkit-perspective,-webkit-perspective-origin,-webkit-text-fill-color,-webkit-text-size-adjust,-webkit-text-stroke,-webkit-text-stroke-color,-webkit-text-stroke-width,-webkit-transform,-webkit-transform-origin,-webkit-transform-style,-webkit-transition,-webkit-transition-delay,-webkit-transition-duration,-webkit-transition-property,-webkit-transition-timing-function,-webkit-user-select,accent-color,align-content,align-items,align-self,alignment-baseline,all,anchor-name,anchor-scope,animation,animation-composition,animation-delay,animation-delay-end,animation-delay-start,animation-direction,animation-duration,animation-fill-mode,animation-iteration-count,animation-name,animation-play-state,animation-range,animation-range-center,animation-range-end,animation-range-start,animation-timeline,animation-timing-function,animation-trigger,appearance,aspect-ratio,backdrop-filter,backface-visibility,background,background-attachment,background-blend-mode,background-clip,background-color,background-image,background-origin,background-position,background-position-block,background-position-inline,background-position-x,background-position-y,background-repeat,background-repeat-block,background-repeat-inline,background-repeat-x,background-repeat-y,background-size,background-tbd,baseline-shift,baseline-source,block-ellipsis,block-size,block-step,block-step-align,block-step-insert,block-step-round,block-step-size,bookmark-label,bookmark-level,bookmark-state,border,border-block,border-block-clip,border-block-color,border-block-end,border-block-end-clip,border-block-end-color,border-block-end-radius,border-block-end-style,border-block-end-width,border-block-start,border-block-start-clip,border-block-start-color,border-block-start-radius,border-block-start-style,border-block-start-width,border-block-style,border-block-width,border-bottom,border-bottom-clip,border-bottom-color,border-bottom-left-radius,border-bottom-radius,border-bottom-right-radius,border-bottom-style,border-bottom-width,border-boundary,border-clip,border-collapse,border-color,border-end-end-radius,border-end-start-radius,border-image,border-image-outset,border-image-repeat,border-image-slice,border-image-source,border-image-width,border-inline,border-inline-clip,border-inline-color,border-inline-end,border-inline-end-clip,border-inline-end-color,border-inline-end-radius,border-inline-end-style,border-inline-end-width,border-inline-start,border-inline-start-clip,border-inline-start-color,border-inline-start-radius,border-inline-start-style,border-inline-start-width,border-inline-style,border-inline-width,border-left,border-left-clip,border-left-color,border-left-radius,border-left-style,border-left-width,border-limit,border-radius,border-right,border-right-clip,border-right-color,border-right-radius,border-right-style,border-right-width,border-shape,border-spacing,border-start-end-radius,border-start-start-radius,border-style,border-top,border-top-clip,border-top-color,border-top-left-radius,border-top-radius,border-top-right-radius,border-top-style,border-top-width,border-width,bottom,box-decoration-break,box-shadow,box-shadow-blur,box-shadow-color,box-shadow-offset,box-shadow-position,box-shadow-spread,box-sizing,box-snap,break-after,break-before,break-inside,caption-side,caret,caret-animation,caret-color,caret-shape,clear,clip,clip-path,clip-rule,color,color-adjust,color-interpolation,color-interpolation-filters,color-scheme,column-count,column-fill,column-gap,column-height,column-rule,column-rule-break,column-rule-color,column-rule-inset,column-rule-inset-cap,column-rule-inset-cap-end,column-rule-inset-cap-start,column-rule-inset-end,column-rule-inset-junction,column-rule-inset-junction-end,column-rule-inset-junction-start,column-rule-inset-start,column-rule-style,column-rule-visibility-items,column-rule-width,column-span,column-width,column-wrap,columns,contain,contain-intrinsic-block-size,contain-intrinsic-height,contain-intrinsic-inline-size,contain-intrinsic-size,contain-intrinsic-width,container,container-name,container-type,content,content-visibility,continue,copy-into,corner,corner-block-end,corner-block-end-shape,corner-block-start,corner-block-start-shape,corner-bottom,corner-bottom-left,corner-bottom-left-shape,corner-bottom-right,corner-bottom-right-shape,corner-bottom-shape,corner-end-end,corner-end-end-shape,corner-end-start,corner-end-start-shape,corner-inline-end,corner-inline-end-shape,corner-inline-start,corner-inline-start-shape,corner-left,corner-left-shape,corner-right,corner-right-shape,corner-shape,corner-start-end,corner-start-end-shape,corner-start-start,corner-start-start-shape,corner-top,corner-top-left,corner-top-left-shape,corner-top-right,corner-top-right-shape,corner-top-shape,counter-increment,counter-reset,counter-set,cue,cue-after,cue-before,cursor,cx,cy,d,direction,display,dominant-baseline,dynamic-range-limit,empty-cells,event-trigger,event-trigger-name,event-trigger-source,field-sizing,fill,fill-break,fill-color,fill-image,fill-opacity,fill-origin,fill-position,fill-repeat,fill-rule,fill-size,filter,fit-tolerance,flex,flex-basis,flex-direction,flex-flow,flex-grow,flex-line-count,flex-shrink,flex-wrap,float,float-defer,float-offset,float-reference,flood-color,flood-opacity,flow-from,flow-into,font,font-family,font-feature-settings,font-kerning,font-language-override,font-optical-sizing,font-palette,font-presentation,font-size,font-size-adjust,font-stretch,font-style,font-synthesis,font-synthesis-position,font-synthesis-small-caps,font-synthesis-style,font-synthesis-weight,font-variant,font-variant-alternates,font-variant-caps,font-variant-east-asian,font-variant-emoji,font-variant-ligatures,font-variant-numeric,font-variant-position,font-variation-settings,font-weight,font-width,footnote-display,footnote-policy,forced-color-adjust,frame-sizing,gap,glyph-orientation-vertical,grid,grid-area,grid-auto-columns,grid-auto-flow,grid-auto-rows,grid-column,grid-column-end,grid-column-gap,grid-column-start,grid-gap,grid-row,grid-row-end,grid-row-gap,grid-row-start,grid-template,grid-template-areas,grid-template-columns,grid-template-rows,hanging-punctuation,height,hyphenate-character,hyphenate-limit-chars,hyphenate-limit-last,hyphenate-limit-lines,hyphenate-limit-zone,hyphens,image-animation,image-orientation,image-rendering,image-resolution,initial-letter,initial-letter-align,initial-letter-wrap,inline-size,inline-sizing,input-security,inset,inset-block,inset-block-end,inset-block-start,inset-inline,inset-inline-end,inset-inline-start,interactivity,interest-delay,interest-delay-end,interest-delay-start,interpolate-size,isolation,justify-content,justify-items,justify-self,left,letter-spacing,lighting-color,line-break,line-clamp,line-fit-edge,line-grid,line-height,line-height-step,line-padding,line-snap,link-parameters,list-style,list-style-image,list-style-position,list-style-type,margin,margin-block,margin-block-end,margin-block-start,margin-bottom,margin-break,margin-inline,margin-inline-end,margin-inline-start,margin-left,margin-right,margin-top,margin-trim,marker,marker-end,marker-mid,marker-side,marker-start,mask,mask-border,mask-border-mode,mask-border-outset,mask-border-repeat,mask-border-slice,mask-border-source,mask-border-width,mask-clip,mask-composite,mask-image,mask-mode,mask-origin,mask-position,mask-repeat,mask-size,mask-type,math-depth,math-shift,math-style,max-block-size,max-height,max-inline-size,max-lines,max-size,max-width,min-block-size,min-height,min-inline-size,min-intrinsic-sizing,min-size,min-width,mix-blend-mode,nav-down,nav-left,nav-right,nav-up,object-fit,object-position,object-view-box,offset,offset-anchor,offset-distance,offset-path,offset-position,offset-rotate,opacity,order,orphans,outline,outline-color,outline-offset,outline-style,outline-width,overflow,overflow-anchor,overflow-block,overflow-clip-margin,overflow-clip-margin-block,overflow-clip-margin-block-end,overflow-clip-margin-block-start,overflow-clip-margin-bottom,overflow-clip-margin-inline,overflow-clip-margin-inline-end,overflow-clip-margin-inline-start,overflow-clip-margin-left,overflow-clip-margin-right,overflow-clip-margin-top,overflow-inline,overflow-wrap,overflow-x,overflow-y,overlay,overscroll-behavior,overscroll-behavior-block,overscroll-behavior-inline,overscroll-behavior-x,overscroll-behavior-y,padding,padding-block,padding-block-end,padding-block-start,padding-bottom,padding-inline,padding-inline-end,padding-inline-start,padding-left,padding-right,padding-top,page,page-break-after,page-break-before,page-break-inside,paint-order,path-length,pause,pause-after,pause-before,perspective,perspective-origin,place-content,place-items,place-self,pointer-events,pointer-timeline,pointer-timeline-axis,pointer-timeline-name,position,position-anchor,position-area,position-try,position-try-fallbacks,position-try-order,position-visibility,print-color-adjust,quotes,r,reading-flow,reading-order,region-fragment,resize,rest,rest-after,rest-before,right,rotate,row-gap,row-rule,row-rule-break,row-rule-color,row-rule-inset,row-rule-inset-cap,row-rule-inset-cap-end,row-rule-inset-cap-start,row-rule-inset-end,row-rule-inset-junction,row-rule-inset-junction-end,row-rule-inset-junction-start,row-rule-inset-start,row-rule-style,row-rule-visibility-items,row-rule-width,ruby-align,ruby-merge,ruby-overhang,ruby-position,rule,rule-break,rule-color,rule-inset,rule-inset-cap,rule-inset-end,rule-inset-junction,rule-inset-start,rule-overlap,rule-style,rule-visibility-items,rule-width,rx,ry,scale,scroll-axis-lock,scroll-behavior,scroll-initial-target,scroll-margin,scroll-margin-block,scroll-margin-block-end,scroll-margin-block-start,scroll-margin-bottom,scroll-margin-inline,scroll-margin-inline-end,scroll-margin-inline-start,scroll-margin-left,scroll-margin-right,scroll-margin-top,scroll-marker-group,scroll-padding,scroll-padding-block,scroll-padding-block-end,scroll-padding-block-start,scroll-padding-bottom,scroll-padding-inline,scroll-padding-inline-end,scroll-padding-inline-start,scroll-padding-left,scroll-padding-right,scroll-padding-top,scroll-snap-align,scroll-snap-stop,scroll-snap-type,scroll-target-group,scroll-timeline,scroll-timeline-axis,scroll-timeline-name,scrollbar-color,scrollbar-gutter,scrollbar-width,shape-image-threshold,shape-inside,shape-margin,shape-outside,shape-padding,shape-rendering,size,slider-orientation,spatial-navigation-action,spatial-navigation-contain,spatial-navigation-function,speak,speak-as,stop-color,stop-opacity,string-set,stroke,stroke-align,stroke-alignment,stroke-break,stroke-color,stroke-dash-corner,stroke-dash-justify,stroke-dashadjust,stroke-dasharray,stroke-dashcorner,stroke-dashoffset,stroke-image,stroke-linecap,stroke-linejoin,stroke-miterlimit,stroke-opacity,stroke-origin,stroke-position,stroke-repeat,stroke-size,stroke-width,tab-size,table-layout,text-align,text-align-all,text-align-last,text-anchor,text-autospace,text-box,text-box-edge,text-box-trim,text-combine-upright,text-decoration,text-decoration-color,text-decoration-inset,text-decoration-line,text-decoration-skip,text-decoration-skip-box,text-decoration-skip-ink,text-decoration-skip-self,text-decoration-skip-spaces,text-decoration-style,text-decoration-thickness,text-emphasis,text-emphasis-color,text-emphasis-position,text-emphasis-skip,text-emphasis-style,text-fit,text-group-align,text-indent,text-justify,text-orientation,text-overflow,text-rendering,text-shadow,text-size-adjust,text-spacing,text-spacing-trim,text-transform,text-underline-offset,text-underline-position,text-wrap,text-wrap-mode,text-wrap-style,timeline-scope,timeline-trigger,timeline-trigger-activation-range,timeline-trigger-activation-range-end,timeline-trigger-activation-range-start,timeline-trigger-active-range,timeline-trigger-active-range-end,timeline-trigger-active-range-start,timeline-trigger-name,timeline-trigger-range,timeline-trigger-source,top,touch-action,transform,transform-box,transform-origin,transform-style,transition,transition-behavior,transition-delay,transition-duration,transition-property,transition-timing-function,translate,trigger-scope,unicode-bidi,user-select,vector-effect,vertical-align,view-timeline,view-timeline-axis,view-timeline-inset,view-timeline-name,view-transition-class,view-transition-group,view-transition-name,view-transition-scope,visibility,voice-balance,voice-duration,voice-family,voice-pitch,voice-range,voice-rate,voice-stress,voice-volume,white-space,white-space-collapse,white-space-trim,widows,width,will-change,window-drag,word-break,word-space-transform,word-spacing,word-wrap,wrap-after,wrap-before,wrap-flow,wrap-inside,wrap-through,writing-mode,x,y,z-index,zoom".split(","));
+const CUSTOM_IDENT_PROPERTIES = /* @__PURE__ */ new Set("-webkit-animation,-webkit-animation-name,-webkit-transition,-webkit-transition-property,animation,animation-name,color-scheme,container,container-name,copy-into,counter-increment,counter-reset,counter-set,flow-from,flow-into,font,font-family,grid,grid-area,grid-column,grid-column-end,grid-column-start,grid-row,grid-row-end,grid-row-start,grid-template,grid-template-columns,grid-template-rows,list-style,list-style-type,page,string-set,transition,transition-property,view-transition-class,view-transition-group,view-transition-name,will-change".split(","));
+const FONT_FACE_DESCRIPTORS = /* @__PURE__ */ new Set("ascent-override,descent-override,font-display,font-family,font-feature-settings,font-language-override,font-named-instance,font-size,font-stretch,font-style,font-variant,font-variation-settings,font-weight,font-width,line-gap-override,size-adjust,src,subscript-position-override,subscript-size-override,superscript-position-override,superscript-size-override,unicode-range".split(","));
+const PAGE_ALLOWED_PROPERTIES = /* @__PURE__ */ new Set("bleed,break-after,break-before,break-inside,counter-increment,counter-reset,counter-set,margin,margin-block,margin-block-end,margin-block-start,margin-bottom,margin-inline,margin-inline-end,margin-inline-start,margin-left,margin-right,margin-top,marks,orphans,page,page-break-after,page-break-before,page-break-inside,page-margin-safety,page-orientation,quotes,size,widows".split(","));
+const PAGE_DESCRIPTOR_PROPERTIES = [
+	"margin",
+	"margin-top",
+	"margin-right",
+	"margin-bottom",
+	"margin-left",
+	"size",
+	"page-orientation",
+	"marks",
+	"bleed"
+];
+const POSITION_TRY_ALLOWED_PROPERTIES = /* @__PURE__ */ new Set("align-self,block-size,bottom,height,inline-size,inset,inset-area,inset-block,inset-block-end,inset-block-start,inset-inline,inset-inline-end,inset-inline-start,justify-self,left,margin,margin-block,margin-block-end,margin-block-start,margin-bottom,margin-inline,margin-inline-end,margin-inline-start,margin-left,margin-right,margin-top,max-block-size,max-height,max-inline-size,max-width,min-block-size,min-height,min-inline-size,min-width,place-self,position-anchor,position-area,right,top,width".split(","));
+const COUNTER_STYLE_PROP_BY_DESCRIPTOR = /* @__PURE__ */ new Map([
+	["additive-symbols", "additiveSymbols"],
+	["fallback", "fallback"],
+	["negative", "negative"],
+	["pad", "pad"],
+	["prefix", "prefix"],
+	["range", "range"],
+	["speak-as", "speakAs"],
+	["suffix", "suffix"],
+	["symbols", "symbols"],
+	["system", "system"]
+]);
+const FONT_FEATURE_VALUE_MAP_DEFS = [
+	["annotation", "annotation"],
+	["ornaments", "ornaments"],
+	["stylistic", "stylistic"],
+	["swash", "swash"],
+	["character-variant", "characterVariant"],
+	["styleset", "styleset"],
+	["historical-forms", "historicalForms"]
+];
+const FONT_FEATURE_VALUE_BLOCKS = {
+	"annotation": "annotation",
+	"ornaments": "ornaments",
+	"stylistic": "stylistic",
+	"swash": "swash",
+	"character-variant": "characterVariant",
+	"charactervariant": "characterVariant",
+	"styleset": "styleset",
+	"historical-forms": "historicalForms",
+	"historicalforms": "historicalForms"
+};
+const MARGIN_RULE_NAMES = /* @__PURE__ */ new Set("bottom-center,bottom-left,bottom-left-corner,bottom-right,bottom-right-corner,left-bottom,left-middle,left-top,right-bottom,right-middle,right-top,top-center,top-left,top-left-corner,top-right,top-right-corner".split(","));
+const GENERIC_FONT_FAMILIES = /* @__PURE__ */ new Set("cursive,emoji,fangsong,fantasy,math,monospace,sans-serif,serif,system-ui,ui-monospace,ui-rounded,ui-sans-serif,ui-serif".split(","));
+const FONT_VARIANT_LIGATURES_KEYWORDS = /* @__PURE__ */ new Set("common-ligatures,no-common-ligatures,discretionary-ligatures,no-discretionary-ligatures,historical-ligatures,no-historical-ligatures,contextual,no-contextual".split(","));
+const FONT_VARIANT_CAPS_KEYWORDS = /* @__PURE__ */ new Set("small-caps,all-small-caps,petite-caps,all-petite-caps,unicase,titling-caps".split(","));
+const FONT_VARIANT_NUMERIC_KEYWORDS = /* @__PURE__ */ new Set("lining-nums,oldstyle-nums,proportional-nums,tabular-nums,diagonal-fractions,stacked-fractions,ordinal,slashed-zero".split(","));
+const FONT_VARIANT_EAST_ASIAN_KEYWORDS = /* @__PURE__ */ new Set("jis78,jis83,jis90,jis04,simplified,traditional,full-width,proportional-width,ruby".split(","));
+const FONT_VARIANT_POSITION_KEYWORDS = /* @__PURE__ */ new Set("sub,super".split(","));
+const FONT_VARIANT_EMOJI_KEYWORDS = /* @__PURE__ */ new Set("text,emoji,unicode".split(","));
+const FONT_VARIANT_ALTERNATES_FUNCTIONS = /* @__PURE__ */ new Set("stylistic,styleset,character-variant,swash,ornaments,annotation".split(","));
+const SYSTEM_FONT_KEYWORDS = /* @__PURE__ */ new Set("initial,inherit,unset,revert,revert-layer,default,caption,icon,menu,message-box,small-caption,status-bar".split(","));
+const FONT_STRETCH_KEYWORDS = /* @__PURE__ */ new Set("ultra-condensed,extra-condensed,condensed,semi-condensed,semi-expanded,expanded,extra-expanded,ultra-expanded".split(","));
+const FONT_SIZE_KEYWORDS = /* @__PURE__ */ new Set("xx-small,x-small,small,medium,large,x-large,xx-large,xxx-large,smaller,larger".split(","));
+const FLEX_BASIS_KEYWORDS = /* @__PURE__ */ new Set("auto,content,max-content,min-content,fit-content".split(","));
+// src/webidl.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function hideInternalFields(instance) {
+	for (const key of Object.getOwnPropertyNames(instance)) if (key.startsWith("_")) Object.defineProperty(instance, key, { enumerable: false });
 }
-
-var errorUtils = {};
-
-var hasRequiredErrorUtils;
-
-function requireErrorUtils () {
-	if (hasRequiredErrorUtils) return errorUtils;
-	hasRequiredErrorUtils = 1;
-	// Utility functions for CSSOM error handling
-
-	/**
-	 * Gets the appropriate error constructor from the global object context.
-	 * Tries to find the error constructor from parentStyleSheet.__globalObject,
-	 * then from __globalObject, then falls back to the native constructor.
-	 * 
-	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
-	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
-	 * @return {Function} The error constructor
-	 */
-	function getErrorConstructor(context, errorType) {
-		// Try parentStyleSheet.__globalObject first
-		if (context.parentStyleSheet && context.parentStyleSheet.__globalObject && context.parentStyleSheet.__globalObject[errorType]) {
-			return context.parentStyleSheet.__globalObject[errorType];
-		}
-		
-		// Try __parentStyleSheet (alternative naming)
-		if (context.__parentStyleSheet && context.__parentStyleSheet.__globalObject && context.__parentStyleSheet.__globalObject[errorType]) {
-			return context.__parentStyleSheet.__globalObject[errorType];
-		}
-		
-		// Try __globalObject on the context itself
-		if (context.__globalObject && context.__globalObject[errorType]) {
-			return context.__globalObject[errorType];
-		}
-		
-		// Fall back to native constructor
-		return (typeof commonjsGlobal !== 'undefined' && commonjsGlobal[errorType]) || 
-		       (typeof window !== 'undefined' && window[errorType]) || 
-		       eval(errorType);
-	}
-
-	/**
-	 * Creates an appropriate error with context-aware constructor.
-	 * 
-	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
-	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
-	 * @param {string} message - The error message
-	 * @param {string} [name] - Optional name for DOMException
-	 */
-	function createError(context, errorType, message, name) {
-		var ErrorConstructor = getErrorConstructor(context, errorType);
-		return new ErrorConstructor(message, name);
-	}
-
-	/**
-	 * Creates and throws an appropriate error with context-aware constructor.
-	 * 
-	 * @param {Object} context - The CSSOM object (rule, stylesheet, etc.)
-	 * @param {string} errorType - The error type ('TypeError', 'RangeError', 'DOMException', etc.)
-	 * @param {string} message - The error message
-	 * @param {string} [name] - Optional name for DOMException
-	 */
-	function throwError(context, errorType, message, name) {
-		throw createError(context, errorType, message, name);
-	}
-
-	/**
-	 * Throws a TypeError for missing required arguments.
-	 * 
-	 * @param {Object} context - The CSSOM object
-	 * @param {string} methodName - The method name (e.g., 'appendRule')
-	 * @param {string} objectName - The object name (e.g., 'CSSKeyframesRule')
-	 * @param {number} [required=1] - Number of required arguments
-	 * @param {number} [provided=0] - Number of provided arguments
-	 */
-	function throwMissingArguments(context, methodName, objectName, required, provided) {
-		required = required || 1;
-		provided = provided || 0;
-		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " + 
-		              required + " argument" + (required > 1 ? "s" : "") + " required, but only " + 
-		              provided + " present.";
-		throwError(context, 'TypeError', message);
-	}
-
-	/**
-	 * Throws a DOMException for parse errors.
-	 * 
-	 * @param {Object} context - The CSSOM object
-	 * @param {string} methodName - The method name
-	 * @param {string} objectName - The object name
-	 * @param {string} rule - The rule that failed to parse
-	 * @param {string} [name='SyntaxError'] - The DOMException name
-	 */
-	function throwParseError(context, methodName, objectName, rule, name) {
-		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " +
-		              "Failed to parse the rule '" + rule + "'.";
-		throwError(context, 'DOMException', message, name || 'SyntaxError');
-	}
-
-	/**
-	 * Throws a DOMException for index errors.
-	 * 
-	 * @param {Object} context - The CSSOM object
-	 * @param {string} methodName - The method name
-	 * @param {string} objectName - The object name
-	 * @param {number} index - The invalid index
-	 * @param {number} maxIndex - The maximum valid index
-	 * @param {string} [name='IndexSizeError'] - The DOMException name
-	 */
-	function throwIndexError(context, methodName, objectName, index, maxIndex, name) {
-		var message = "Failed to execute '" + methodName + "' on '" + objectName + "': " +
-		              "The index provided (" + index + ") is larger than the maximum index (" + maxIndex + ").";
-		throwError(context, 'DOMException', message, name || 'IndexSizeError');
-	}
-
-	var errorUtils$1 = {
-		createError: createError,
-		getErrorConstructor: getErrorConstructor,
-		throwError: throwError,
-		throwMissingArguments: throwMissingArguments,
-		throwParseError: throwParseError,
-		throwIndexError: throwIndexError
-	};
-
-	//.CommonJS
-	errorUtils.errorUtils = errorUtils$1;
-	///CommonJS
-	return errorUtils;
-}
-
-var regexPatterns = {};
-
-var hasRequiredRegexPatterns;
-
-function requireRegexPatterns () {
-	if (hasRequiredRegexPatterns) return regexPatterns;
-	hasRequiredRegexPatterns = 1;
-	// Shared regex patterns for CSS parsing and validation
-	// These patterns are compiled once and reused across multiple files for better performance
-
-	// Regex patterns for CSS parsing
-	var atKeyframesRegExp = /@(-(?:\w+-)+)?keyframes/g; // Match @keyframes and vendor-prefixed @keyframes
-	var beforeRulePortionRegExp = /{(?!.*{)|}(?!.*})|;(?!.*;)|\*\/(?!.*\*\/)/g; // Match the closest allowed character (a opening or closing brace, a semicolon or a comment ending) before the rule
-	var beforeRuleValidationRegExp = /^[\s{};]*(\*\/\s*)?$/; // Match that the portion before the rule is empty or contains only whitespace, semicolons, opening/closing braces, and optionally a comment ending (*/) followed by whitespace
-	var forwardRuleValidationRegExp = /(?:\s|\/\*|\{|\()/; // Match that the rule is followed by any whitespace, a opening comment, a condition opening parenthesis or a opening brace
-	var forwardImportRuleValidationRegExp = /(?:\s|\/\*|'|")/; // Match that the rule is followed by any whitespace, an opening comment, a single quote or double quote
-	var forwardRuleClosingBraceRegExp = /{[^{}]*}|}/; // Finds the next closing brace of a rule block
-	var forwardRuleSemicolonAndOpeningBraceRegExp = /^.*?({|;)/; // Finds the next semicolon or opening brace after the at-rule
-
-	// Regex patterns for CSS selector validation and parsing
-	var cssCustomIdentifierRegExp = /^(-?[_a-zA-Z]+(\.[_a-zA-Z]+)*[_a-zA-Z0-9-]*)$/; // Validates a css custom identifier
-	var startsWithCombinatorRegExp = /^\s*[>+~]/; // Checks if a selector starts with a CSS combinator (>, +, ~)
-
-	/**
-	 * Parse `@page` selectorText for page name and pseudo-pages
-	 * Valid formats:
-	 * - (empty - no name, no pseudo-page)
-	 * - `:left`, `:right`, `:first`, `:blank` (pseudo-page only)
-	 * - `named` (named page only)
-	 * - `named:first` (named page with single pseudo-page)
-	 * - `named:first:left` (named page with multiple pseudo-pages)
-	 */
-	var atPageRuleSelectorRegExp = /^([^\s:]+)?((?::\w+)*)$/; // Validates @page rule selectors
-
-	// Regex patterns for CSSImportRule parsing
-	var layerRegExp = /layer\(([^)]*)\)/; // Matches layer() function in @import
-	var layerRuleNameRegExp = /^(-?[_a-zA-Z]+(\.[_a-zA-Z]+)*[_a-zA-Z0-9-]*)$/; // Validates layer name (same as custom identifier)
-	var doubleOrMoreSpacesRegExp = /\s{2,}/g; // Matches two or more consecutive whitespace characters
-
-
-	// Regex patterns for CSS escape sequences and identifiers
-	var startsWithHexEscapeRegExp = /^\\[0-9a-fA-F]/; // Checks if escape sequence starts with hex escape
-	var identStartCharRegExp = /[a-zA-Z_\u00A0-\uFFFF]/; // Valid identifier start character
-	var identCharRegExp = /^[a-zA-Z0-9_\-\u00A0-\uFFFF\\]/; // Valid identifier character
-	var specialCharsNeedEscapeRegExp = /[!"#$%&'()*+,./:;<=>?@\[\\\]^`{|}~\s]/; // Characters that need escaping
-	var combinatorOrSeparatorRegExp = /[\s>+~,()]/; // Selector boundaries and combinators
-	var afterHexEscapeSeparatorRegExp = /[\s>+~,(){}\[\]]/; // Characters that separate after hex escape
-	var trailingSpaceSeparatorRegExp = /[\s>+~,(){}]/; // Characters that allow trailing space
-	var endsWithHexEscapeRegExp = /\\[0-9a-fA-F]{1,6}\s+$/; // Matches selector ending with hex escape + space(s)
-
-	/**
-	 * Regular expression to detect invalid characters in the value portion of a CSS style declaration.
-	 *
-	 * This regex matches a colon (:) that is not inside parentheses and not inside single or double quotes.
-	 * It is used to ensure that the value part of a CSS property does not contain unexpected colons,
-	 * which would indicate a malformed declaration (e.g., "color: foo:bar;" is invalid).
-	 *
-	 * The negative lookahead `(?![^(]*\))` ensures that the colon is not followed by a closing
-	 * parenthesis without encountering an opening parenthesis, effectively ignoring colons inside
-	 * function-like values (e.g., `url(data:image/png;base64,...)`).
-	 *
-	 * The lookahead `(?=(?:[^'"]|'[^']*'|"[^"]*")*$)` ensures that the colon is not inside single or double quotes,
-	 * allowing colons within quoted strings (e.g., `content: ":";` or `background: url("foo:bar.png");`).
-	 *
-	 * Example:
-	 * - `color: red;`         // valid, does not match
-	 * - `background: url(data:image/png;base64,...);` // valid, does not match
-	 * - `content: ':';`       // valid, does not match
-	 * - `color: foo:bar;`     // invalid, matches
-	 */
-	var basicStylePropertyValueValidationRegExp = /:(?![^(]*\))(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/;
-
-	// Attribute selector pattern: matches attribute-name operator value
-	// Operators: =, ~=, |=, ^=, $=, *=
-	// Rewritten to avoid ReDoS by using greedy match and trimming in JavaScript
-	var attributeSelectorContentRegExp = /^([^\s=~|^$*]+)\s*(~=|\|=|\^=|\$=|\*=|=)\s*(.+)$/;
-
-	// Selector validation patterns
-	var pseudoElementRegExp = /::[a-zA-Z][\w-]*|:(before|after|first-line|first-letter)(?![a-zA-Z0-9_-])/; // Matches pseudo-elements
-	var invalidCombinatorLtGtRegExp = /<>/; // Invalid <> combinator
-	var invalidCombinatorDoubleGtRegExp = />>/; // Invalid >> combinator
-	var consecutiveCombinatorsRegExp = /[>+~]\s*[>+~]/; // Invalid consecutive combinators
-	var invalidSlottedRegExp = /(?:^|[\s>+~,\[])slotted\s*\(/i; // Invalid slotted() without ::
-	var invalidPartRegExp = /(?:^|[\s>+~,\[])part\s*\(/i; // Invalid part() without ::
-	var invalidCueRegExp = /(?:^|[\s>+~,\[])cue\s*\(/i; // Invalid cue() without ::
-	var invalidCueRegionRegExp = /(?:^|[\s>+~,\[])cue-region\s*\(/i; // Invalid cue-region() without ::
-	var invalidNestingPattern = /&(?![.\#\[:>\+~\s])[a-zA-Z]/; // Invalid & followed by type selector
-	var emptyPseudoClassRegExp = /:(?:is|not|where|has)\(\s*\)/; // Empty pseudo-class like :is()
-	var whitespaceNormalizationRegExp = /(['"])(?:\\.|[^\\])*?\1|(\r\n|\r|\n)/g; // Normalize newlines outside quotes
-	var newlineRemovalRegExp = /\n/g; // Remove all newlines
-	var whitespaceAndDotRegExp = /[\s.]/; // Matches whitespace or dot
-	var declarationOrOpenBraceRegExp = /[{;}]/; // Matches declaration separator or open brace
-	var ampersandRegExp = /&/; // Matches nesting selector
-	var hexEscapeSequenceRegExp = /^([0-9a-fA-F]{1,6})[ \t\r\n\f]?/; // Matches hex escape sequence (1-6 hex digits optionally followed by whitespace)
-	var attributeCaseFlagRegExp = /^(.+?)\s+([is])$/i; // Matches case-sensitivity flag at end of attribute value
-	var prependedAmpersandRegExp = /^&\s+[:\\.]/; // Matches prepended ampersand pattern (& followed by space and : or .)
-	var openBraceGlobalRegExp = /{/g; // Matches opening braces (global)
-	var closeBraceGlobalRegExp = /}/g; // Matches closing braces (global)
-	var scopePreludeSplitRegExp = /\s*\)\s*to\s+\(/; // Splits scope prelude by ") to ("
-	var leadingWhitespaceRegExp = /^\s+/; // Matches leading whitespace (used to implement a ES5-compliant alternative to trimStart())
-	var doubleQuoteRegExp = /"/g; // Match all double quotes (for escaping in attribute values)
-	var backslashRegExp = /\\/g; // Match all backslashes (for escaping in attribute values)
-
-	// Media query validation patterns
-	var invalidMediaOperatorWithoutSpaceRegExp = /\)(and|or)\(/i; // )and( or )or( - missing space after operator
-	var invalidMediaNotAfterOperatorRegExp = /\b(and|or)\s+not\b/i; // and not or or not - not after operator
-	var invalidMediaNotIdentifierRegExp = /\)\s+not\(/i; // ) not( - not() identifier after media feature
-	var invalidMediaNotAfterFeatureRegExp = /\)\s+not\s+/i; // ) not <space> - not operator after media feature (only valid at start or after comma)
-	var invalidMediaOperatorBetweenParensRegExp = /\)\s+(?!and\b|or\b)[a-z]+\s+\(/i; // ) xx ( - invalid operator between ) and (
-	var invalidMediaNotWithMediaTypeRegExp = /\bnot\s+[a-z][a-z0-9_-]*\s+\(/i; // not <media-type> ( - missing 'and' between media type and feature
-
-	// Media query normalization patterns
-	var mediaFeatureColonRegExp = /(\(\s*)([^():]+):(\s*)([^()]*\))/g; // Match colon in media features
-	var identifierBeforeParenRegExp = /[a-z0-9_-]/i; // Match identifier character before opening paren
-	var mediaAndOperatorRegExp = /\s*\band\b\s*/gi; // Match 'and' operator with word boundaries
-	var mediaOrOperatorRegExp = /\s*\bor\b\s*/gi; // Match 'or' operator with word boundaries
-	var mediaNotOperatorStartRegExp = /^\s*not\s+(?=\S)/i; // Match 'not' operator at start
-	var mediaNotOperatorRegExp = /\s+\bnot\s+(?=\S)/gi; // Match 'not' operator after space
-
-	var regexPatterns$1 = {
-		// Parsing patterns
-		atKeyframesRegExp: atKeyframesRegExp,
-		beforeRulePortionRegExp: beforeRulePortionRegExp,
-		beforeRuleValidationRegExp: beforeRuleValidationRegExp,
-		forwardRuleValidationRegExp: forwardRuleValidationRegExp,
-		forwardImportRuleValidationRegExp: forwardImportRuleValidationRegExp,
-		forwardRuleClosingBraceRegExp: forwardRuleClosingBraceRegExp,
-		forwardRuleSemicolonAndOpeningBraceRegExp: forwardRuleSemicolonAndOpeningBraceRegExp,
-		
-		// Selector validation patterns
-		cssCustomIdentifierRegExp: cssCustomIdentifierRegExp,
-		startsWithCombinatorRegExp: startsWithCombinatorRegExp,
-		atPageRuleSelectorRegExp: atPageRuleSelectorRegExp,
-		
-		// Parsing patterns used in CSSImportRule
-		layerRegExp: layerRegExp,
-		layerRuleNameRegExp: layerRuleNameRegExp,
-		doubleOrMoreSpacesRegExp: doubleOrMoreSpacesRegExp,
-		
-		// Escape sequence and identifier patterns
-		startsWithHexEscapeRegExp: startsWithHexEscapeRegExp,
-		identStartCharRegExp: identStartCharRegExp,
-		identCharRegExp: identCharRegExp,
-		specialCharsNeedEscapeRegExp: specialCharsNeedEscapeRegExp,
-		combinatorOrSeparatorRegExp: combinatorOrSeparatorRegExp,
-		afterHexEscapeSeparatorRegExp: afterHexEscapeSeparatorRegExp,
-		trailingSpaceSeparatorRegExp: trailingSpaceSeparatorRegExp,
-		endsWithHexEscapeRegExp: endsWithHexEscapeRegExp,
-
-		// Basic style property value validation
-		basicStylePropertyValueValidationRegExp: basicStylePropertyValueValidationRegExp,
-
-		// Attribute selector patterns
-		attributeSelectorContentRegExp: attributeSelectorContentRegExp,
-
-		// Selector validation patterns
-		pseudoElementRegExp: pseudoElementRegExp,
-		invalidCombinatorLtGtRegExp: invalidCombinatorLtGtRegExp,
-		invalidCombinatorDoubleGtRegExp: invalidCombinatorDoubleGtRegExp,
-		consecutiveCombinatorsRegExp: consecutiveCombinatorsRegExp,
-		invalidSlottedRegExp: invalidSlottedRegExp,
-		invalidPartRegExp: invalidPartRegExp,
-		invalidCueRegExp: invalidCueRegExp,
-		invalidCueRegionRegExp: invalidCueRegionRegExp,
-		invalidNestingPattern: invalidNestingPattern,
-		emptyPseudoClassRegExp: emptyPseudoClassRegExp,
-		whitespaceNormalizationRegExp: whitespaceNormalizationRegExp,
-		newlineRemovalRegExp: newlineRemovalRegExp,
-		whitespaceAndDotRegExp: whitespaceAndDotRegExp,
-		declarationOrOpenBraceRegExp: declarationOrOpenBraceRegExp,
-		ampersandRegExp: ampersandRegExp,
-		hexEscapeSequenceRegExp: hexEscapeSequenceRegExp,
-		attributeCaseFlagRegExp: attributeCaseFlagRegExp,
-		prependedAmpersandRegExp: prependedAmpersandRegExp,
-		openBraceGlobalRegExp: openBraceGlobalRegExp,
-		closeBraceGlobalRegExp: closeBraceGlobalRegExp,
-		scopePreludeSplitRegExp: scopePreludeSplitRegExp,
-		leadingWhitespaceRegExp: leadingWhitespaceRegExp,
-		doubleQuoteRegExp: doubleQuoteRegExp,
-		backslashRegExp: backslashRegExp,
-		
-		// Media query validation patterns
-		invalidMediaOperatorWithoutSpaceRegExp: invalidMediaOperatorWithoutSpaceRegExp,
-		invalidMediaNotAfterOperatorRegExp: invalidMediaNotAfterOperatorRegExp,
-		invalidMediaNotIdentifierRegExp: invalidMediaNotIdentifierRegExp,
-		invalidMediaNotAfterFeatureRegExp: invalidMediaNotAfterFeatureRegExp,
-		invalidMediaOperatorBetweenParensRegExp: invalidMediaOperatorBetweenParensRegExp,
-		invalidMediaNotWithMediaTypeRegExp: invalidMediaNotWithMediaTypeRegExp,
-		
-		// Media query normalization patterns
-		mediaFeatureColonRegExp: mediaFeatureColonRegExp,
-		identifierBeforeParenRegExp: identifierBeforeParenRegExp,
-		mediaAndOperatorRegExp: mediaAndOperatorRegExp,
-		mediaOrOperatorRegExp: mediaOrOperatorRegExp,
-		mediaNotOperatorStartRegExp: mediaNotOperatorStartRegExp,
-		mediaNotOperatorRegExp: mediaNotOperatorRegExp
-	};
-
-	//.CommonJS
-	regexPatterns.regexPatterns = regexPatterns$1;
-	///CommonJS
-	return regexPatterns;
-}
-
-var CSSStyleDeclaration = {};
-
-var parse$1 = {};
-
-var CSSStyleSheet = {};
-
-var MediaList = {};
-
-var hasRequiredMediaList;
-
-function requireMediaList () {
-	if (hasRequiredMediaList) return MediaList;
-	hasRequiredMediaList = 1;
-	//.CommonJS
-	var CSSOM = {};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#the-medialist-interface
-	 */
-	CSSOM.MediaList = function MediaList(){
-		this.length = 0;
-	};
-
-	CSSOM.MediaList.prototype = {
-
-		constructor: CSSOM.MediaList,
-
-		/**
-		 * @return {string}
-		 */
-		get mediaText() {
-			return Array.prototype.join.call(this, ", ");
-		},
-
-		/**
-		 * @param {string} value
-		 */
-		set mediaText(value) {
-			if (typeof value === "string") {
-				var values = value.split(",").filter(function(text){
-					return !!text;
+const appliedCtors = /* @__PURE__ */ new WeakSet();
+/**
+* Aligns regular prototype properties of a WebIDL interface object with specification requirements:
+* 1. Interface prototype members are { enumerable: true, configurable: true }.
+* 2. Attribute getters/setters perform brand checks, throwing TypeError when invoked on the prototype
+*    itself or on an incompatible receiver (WebIDL § 3.6.1, § 3.6.2).
+* 3. Operations are { writable: true, enumerable: true, configurable: true } and throw TypeError
+*    when invoked with fewer arguments than required (WebIDL § 3.7).
+*/
+function applyWebIDLInterface(ctor, options = {}) {
+	const proto = ctor.prototype;
+	if (!proto) return;
+	if (appliedCtors.has(ctor)) return;
+	appliedCtors.add(ctor);
+	const brandCheck = options.brandCheck ?? true;
+	const arityCheck = options.arityCheck ?? true;
+	const interfaceName = options.interfaceName || ctor.name;
+	const excludeSet = new Set(options.exclude || []);
+	const rejectSet = new Set(options.rejectOperations || []);
+	Object.defineProperty(ctor, "length", {
+		value: 0,
+		writable: false,
+		enumerable: false,
+		configurable: true
+	});
+	Object.defineProperty(proto, Symbol.toStringTag, {
+		value: interfaceName,
+		writable: false,
+		enumerable: false,
+		configurable: true
+	});
+	const names = Object.getOwnPropertyNames(proto);
+	for (const name of names) {
+		if (name === "constructor" || name.startsWith("_") || excludeSet.has(name)) continue;
+		const desc = Object.getOwnPropertyDescriptor(proto, name);
+		if (!desc) continue;
+		if (desc.get || desc.set) {
+			const origGet = desc.get;
+			const origSet = desc.set;
+			let get = origGet;
+			if (origGet && brandCheck) {
+				get = function() {
+					if (!this || this === proto || !(this instanceof ctor)) throw new TypeError(`Failed to read the '${name}' property from '${interfaceName}': The provided value is not of type '${interfaceName}'.`);
+					return origGet.call(this);
+				};
+				Object.defineProperty(get, "name", {
+					value: `get ${name}`,
+					configurable: true
 				});
-				var length = this.length = values.length;
-				for (var i=0; i<length; i++) {
-					this[i] = values[i].trim();
-				}
-			} else if (value === null) {
-				var length = this.length;
-				for (var i = 0; i < length; i++) {
-					delete this[i];
-				}
-				this.length = 0;
 			}
-		},
-
-		/**
-		 * @param {string} medium
-		 */
-		appendMedium: function(medium) {
-			if (Array.prototype.indexOf.call(this, medium) === -1) {
-				this[this.length] = medium;
-				this.length++;
+			let set = origSet;
+			if (origSet && brandCheck) {
+				set = function(val) {
+					if (!this || this === proto || !(this instanceof ctor)) throw new TypeError(`Failed to set the '${name}' property on '${interfaceName}': The provided value is not of type '${interfaceName}'.`);
+					return origSet.call(this, val);
+				};
+				Object.defineProperty(set, "name", {
+					value: `set ${name}`,
+					configurable: true
+				});
 			}
-		},
-
-		/**
-		 * @param {string} medium
-		 */
-		deleteMedium: function(medium) {
-			var index = Array.prototype.indexOf.call(this, medium);
-			if (index !== -1) {
-				Array.prototype.splice.call(this, index, 1);
-			}
-		},
-
-		item: function(index) {
-			return this[index] || null;
-		},
-
-		toString: function() {
-			return this.mediaText;
+			Object.defineProperty(proto, name, {
+				get,
+				set: origSet ? set : void 0,
+				enumerable: true,
+				configurable: true
+			});
+			continue;
 		}
-	};
-
-
-	//.CommonJS
-	MediaList.MediaList = CSSOM.MediaList;
-	///CommonJS
-	return MediaList;
+		if (typeof desc.value === "function") {
+			const origFn = desc.value;
+			const minArgs = origFn.length;
+			let fn = origFn;
+			if (brandCheck || arityCheck && minArgs > 0) {
+				fn = function(...args) {
+					if (brandCheck && (!this || this === proto || !(this instanceof ctor))) {
+						const err = /* @__PURE__ */ new TypeError(`Failed to execute '${name}' on '${interfaceName}': The provided value is not of type '${interfaceName}'.`);
+						if (rejectSet.has(name)) return Promise.reject(err);
+						throw err;
+					}
+					if (arityCheck && arguments.length < minArgs) {
+						const err = /* @__PURE__ */ new TypeError(`Failed to execute '${name}' on '${interfaceName}': ${minArgs} argument${minArgs === 1 ? "" : "s"} required, but only ${arguments.length} present.`);
+						if (rejectSet.has(name)) return Promise.reject(err);
+						throw err;
+					}
+					return origFn.apply(this, args);
+				};
+				Object.defineProperty(fn, "name", {
+					value: origFn.name,
+					configurable: true
+				});
+				Object.defineProperty(fn, "length", {
+					value: minArgs,
+					configurable: true
+				});
+			}
+			Object.defineProperty(proto, name, {
+				value: fn,
+				writable: true,
+				enumerable: true,
+				configurable: true
+			});
+		}
+	}
 }
-
-var StyleSheet = {};
-
-var hasRequiredStyleSheet;
-
-function requireStyleSheet () {
-	if (hasRequiredStyleSheet) return StyleSheet;
-	hasRequiredStyleSheet = 1;
-	//.CommonJS
-	var CSSOM = {
-		MediaList: requireMediaList().MediaList
-	};
-	///CommonJS
-
-
-	/**
-	 * @see http://dev.w3.org/csswg/cssom/#the-stylesheet-interface
-	 */
-	CSSOM.StyleSheet = function StyleSheet() {
-		this.__href = null;
-		this.__ownerNode = null;
-		this.__title = null;
-		this.__media = new CSSOM.MediaList();
-		this.__parentStyleSheet = null;
-		this.disabled = false;
-	};
-
-	Object.defineProperties(CSSOM.StyleSheet.prototype, {
-		type: {
-			get: function() {
-				return "text/css";
-			}
-		},
-		href: {
-			get: function() {
-				return this.__href;
-			}
-		},
-		ownerNode: {
-			get: function() {
-				return this.__ownerNode;
-			}
-		},
-		title: {
-			get: function() {
-				return this.__title;
-			}
-		},
-		media: {
-			get: function() {
-				return this.__media;
-			},
-			set: function(value) {
-				if (typeof value === "string") {
-					this.__media.mediaText = value;
-				} else {
-					this.__media = value;
-				}
-			}
-		},
-		parentStyleSheet: {
-			get: function() {
-				return this.__parentStyleSheet;
-			}
-		}
-	});
-
-	//.CommonJS
-	StyleSheet.StyleSheet = CSSOM.StyleSheet;
-	///CommonJS
-	return StyleSheet;
-}
-
-var CSSRuleList = {};
-
-var hasRequiredCSSRuleList;
-
-function requireCSSRuleList () {
-	if (hasRequiredCSSRuleList) return CSSRuleList;
-	hasRequiredCSSRuleList = 1;
-	//.CommonJS
-	var CSSOM = {};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/cssom/#the-cssrulelist-interface
-	 */
-	CSSOM.CSSRuleList = function CSSRuleList(){
-	  var arr = new Array();
-	  Object.setPrototypeOf(arr, CSSOM.CSSRuleList.prototype);
-	  return arr;
-	};
-
-	CSSOM.CSSRuleList.prototype = Object.create(Array.prototype);
-	CSSOM.CSSRuleList.prototype.constructor = CSSOM.CSSRuleList;
-
-	CSSOM.CSSRuleList.prototype.item = function(index) {
-	    return this[index] || null;
-	};
-
-
-	//.CommonJS
-	CSSRuleList.CSSRuleList = CSSOM.CSSRuleList;
-	///CommonJS
-	return CSSRuleList;
-}
-
-var CSSStyleRule = {};
-
-var CSSRule = {};
-
-var hasRequiredCSSRule;
-
-function requireCSSRule () {
-	if (hasRequiredCSSRule) return CSSRule;
-	hasRequiredCSSRule = 1;
-	//.CommonJS
-	var CSSOM = {};
-	///CommonJS
-
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#the-cssrule-interface
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
-	 */
-	CSSOM.CSSRule = function CSSRule() {
-	  this.__parentRule = null;
-	  this.__parentStyleSheet = null;
-	};
-
-	CSSOM.CSSRule.UNKNOWN_RULE = 0; // obsolete
-	CSSOM.CSSRule.STYLE_RULE = 1;
-	CSSOM.CSSRule.CHARSET_RULE = 2; // obsolete
-	CSSOM.CSSRule.IMPORT_RULE = 3;
-	CSSOM.CSSRule.MEDIA_RULE = 4;
-	CSSOM.CSSRule.FONT_FACE_RULE = 5;
-	CSSOM.CSSRule.PAGE_RULE = 6;
-	CSSOM.CSSRule.KEYFRAMES_RULE = 7;
-	CSSOM.CSSRule.KEYFRAME_RULE = 8;
-	CSSOM.CSSRule.MARGIN_RULE = 9;
-	CSSOM.CSSRule.NAMESPACE_RULE = 10;
-	CSSOM.CSSRule.COUNTER_STYLE_RULE = 11;
-	CSSOM.CSSRule.SUPPORTS_RULE = 12;
-	CSSOM.CSSRule.DOCUMENT_RULE = 13;
-	CSSOM.CSSRule.FONT_FEATURE_VALUES_RULE = 14;
-	CSSOM.CSSRule.VIEWPORT_RULE = 15;
-	CSSOM.CSSRule.REGION_STYLE_RULE = 16;
-	CSSOM.CSSRule.CONTAINER_RULE = 17;
-	CSSOM.CSSRule.LAYER_BLOCK_RULE = 18;
-	CSSOM.CSSRule.STARTING_STYLE_RULE = 1002;
-
-	Object.defineProperties(CSSOM.CSSRule.prototype, {
-
-	  constructor: { value: CSSOM.CSSRule },
-
-	  cssRule: {
-	    value: "",
-	    configurable: true,
-	    enumerable: true
-	  },
-
-	  cssText: {
-	    get: function() {
-	      // Default getter: subclasses should override this
-	      return "";
-	    },
-	    set: function(cssText) {
-	      return cssText;
-	    }
-	  },
-
-	  parentRule: {
-	    get: function() {
-	      return this.__parentRule
-	    }
-	  },
-
-	  parentStyleSheet: {
-	    get: function() {
-	      return this.__parentStyleSheet
-	    }
-	  },
-	  
-	  UNKNOWN_RULE: { value: 0, enumerable: true }, // obsolet
-	  STYLE_RULE: { value: 1, enumerable: true },
-	  CHARSET_RULE: { value: 2, enumerable: true }, // obsolet
-	  IMPORT_RULE: { value: 3, enumerable: true },
-	  MEDIA_RULE: { value: 4, enumerable: true },
-	  FONT_FACE_RULE: { value: 5, enumerable: true },
-	  PAGE_RULE: { value: 6, enumerable: true },
-	  KEYFRAMES_RULE: { value: 7, enumerable: true },
-	  KEYFRAME_RULE: { value: 8, enumerable: true },
-	  MARGIN_RULE: { value: 9, enumerable: true },
-	  NAMESPACE_RULE: { value: 10, enumerable: true },
-	  COUNTER_STYLE_RULE: { value: 11, enumerable: true },
-	  SUPPORTS_RULE: { value: 12, enumerable: true },
-	  DOCUMENT_RULE: { value: 13, enumerable: true },
-	  FONT_FEATURE_VALUES_RULE: { value: 14, enumerable: true },
-	  VIEWPORT_RULE: { value: 15, enumerable: true },
-	  REGION_STYLE_RULE: { value: 16, enumerable: true },
-	  CONTAINER_RULE: { value: 17, enumerable: true },
-	  LAYER_BLOCK_RULE: { value: 18, enumerable: true },
-	  STARTING_STYLE_RULE: { value: 1002, enumerable: true },
-	});
-
-	//.CommonJS
-	CSSRule.CSSRule = CSSOM.CSSRule;
-	///CommonJS
-	return CSSRule;
-}
-
-var CSSGroupingRule = {};
-
-var hasRequiredCSSGroupingRule;
-
-function requireCSSGroupingRule () {
-	if (hasRequiredCSSGroupingRule) return CSSGroupingRule;
-	hasRequiredCSSGroupingRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSRuleList: requireCSSRuleList().CSSRuleList,
-		parse: requireParse().parse
-	};
-	var errorUtils = requireErrorUtils().errorUtils;
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/cssom/#the-cssgroupingrule-interface
-	 */
-	CSSOM.CSSGroupingRule = function CSSGroupingRule() {
-		CSSOM.CSSRule.call(this);
-		this.__cssRules = new CSSOM.CSSRuleList();
-	};
-
-	CSSOM.CSSGroupingRule.prototype  = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSGroupingRule.prototype.constructor = CSSOM.CSSGroupingRule;
-
-	Object.setPrototypeOf(CSSOM.CSSGroupingRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSGroupingRule.prototype, "cssRules", {
-		get: function() {
-			return this.__cssRules;
-		}
-	});
-
-	/**
-	 * Used to insert a new CSS rule to a list of CSS rules.
-	 *
-	 * @example
-	 *   cssGroupingRule.cssText
-	 *   -> "body{margin:0;}"
-	 *   cssGroupingRule.insertRule("img{border:none;}", 1)
-	 *   -> 1
-	 *   cssGroupingRule.cssText
-	 *   -> "body{margin:0;}img{border:none;}"
-	 *
-	 * @param {string} rule
-	 * @param {number} [index]
-	 * @see https://www.w3.org/TR/cssom-1/#dom-cssgroupingrule-insertrule
-	 * @return {number} The index within the grouping rule's collection of the newly inserted rule.
-	 */
-	 CSSOM.CSSGroupingRule.prototype.insertRule = function insertRule(rule, index) {
-		if (rule === undefined && index === undefined) {
-			errorUtils.throwMissingArguments(this, 'insertRule', this.constructor.name);
-		}
-		if (index === void 0) {
-			index = 0;
-		}
-		index = Number(index);
-		if (index < 0) {
-			index = 4294967296 + index;
-		}
-		if (index > this.cssRules.length) {
-			errorUtils.throwIndexError(this, 'insertRule', this.constructor.name, index, this.cssRules.length);
-		}
-		var ruleToParse = processedRuleToParse = String(rule);
-		ruleToParse = ruleToParse.trim().replace(/^\/\*[\s\S]*?\*\/\s*/, "");
-		var isNestedSelector = this.constructor.name === "CSSStyleRule";
-		if (isNestedSelector === false) {
-			var currentRule = this;
-			while (currentRule.parentRule) {
-				currentRule = currentRule.parentRule;
-				if (currentRule.constructor.name === "CSSStyleRule") {
-					isNestedSelector = true;
-					break;
-				}
-			}
-		}
-		if (isNestedSelector) {
-			processedRuleToParse = 's { n { } ' + ruleToParse + '}';
-		}
-		var isScopeRule = this.constructor.name === "CSSScopeRule";
-		if (isScopeRule) {
-			if (isNestedSelector) {
-				processedRuleToParse = 's { ' + '@scope {' + ruleToParse + '}}';
-			} else {
-				processedRuleToParse = '@scope {' + ruleToParse + '}';
-			}
-		}
-		var parsedRules = new CSSOM.CSSRuleList();
-		CSSOM.parse(processedRuleToParse, {
-			styleSheet: this.parentStyleSheet,
-			cssRules: parsedRules
+/**
+* Defines constants on an interface object and its prototype per WebIDL:
+* - WebIDL #es-constants: { [[Writable]]: false, [[Enumerable]]: true, [[Configurable]]: false }
+* - WebIDL #constants-on-interface-prototype-object: same attributes on prototype
+*/
+function applyWebIDLConstants(ctor, constants) {
+	for (const [name, val] of Object.entries(constants)) {
+		Object.defineProperty(ctor, name, {
+			value: val,
+			writable: false,
+			enumerable: true,
+			configurable: false
 		});
-		if (isScopeRule) {
-			if (isNestedSelector) {
-				parsedRules = parsedRules[0].cssRules[0].cssRules;
-			} else {
-				parsedRules = parsedRules[0].cssRules;
-			}
-		}
-		if (isNestedSelector) {
-			parsedRules = parsedRules[0].cssRules.slice(1);
-		}
-		if (parsedRules.length !== 1) {
-			if (isNestedSelector && parsedRules.length === 0 && ruleToParse.indexOf('@font-face') === 0) {
-				errorUtils.throwError(this, 'DOMException', 
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': " +
-					"Only conditional nested group rules, style rules, @scope rules, @apply rules, and nested declaration rules may be nested.",
-					'HierarchyRequestError');
-			} else {
-				errorUtils.throwParseError(this, 'insertRule', this.constructor.name, ruleToParse, 'SyntaxError');
-			}
-		}
-		var cssRule = parsedRules[0];
-
-		if (cssRule.constructor.name === 'CSSNestedDeclarations' && cssRule.style.length === 0) {
-			errorUtils.throwParseError(this, 'insertRule', this.constructor.name, ruleToParse, 'SyntaxError');	
-		}
-		
-		// Check for rules that cannot be inserted inside a CSSGroupingRule
-		if (cssRule.constructor.name === 'CSSImportRule' || cssRule.constructor.name === 'CSSNamespaceRule') {
-			var ruleKeyword = cssRule.constructor.name === 'CSSImportRule' ? '@import' : '@namespace';
-			errorUtils.throwError(this, 'DOMException', 
-				"Failed to execute 'insertRule' on '" + this.constructor.name + "': " +
-				"'" + ruleKeyword + "' rules cannot be inserted inside a group rule.",
-				'HierarchyRequestError');
-		}
-		
-		// Check for CSSLayerStatementRule (@layer statement rules)
-		if (cssRule.constructor.name === 'CSSLayerStatementRule') {
-			errorUtils.throwParseError(this, 'insertRule', this.constructor.name, ruleToParse, 'SyntaxError');
-		}
-		
-		cssRule.__parentRule = this;
-		this.cssRules.splice(index, 0, cssRule);
-		return index;
-	};
-
-	/**
-	 * Used to delete a rule from the grouping rule.
-	 *
-	 *   cssGroupingRule.cssText
-	 *   -> "img{border:none;}body{margin:0;}"
-	 *   cssGroupingRule.deleteRule(0)
-	 *   cssGroupingRule.cssText
-	 *   -> "body{margin:0;}"
-	 *
-	 * @param {number} index within the grouping rule's rule list of the rule to remove.
-	 * @see https://www.w3.org/TR/cssom-1/#dom-cssgroupingrule-deleterule
-	 */
-	 CSSOM.CSSGroupingRule.prototype.deleteRule = function deleteRule(index) {
-		if (index === undefined) {
-			errorUtils.throwMissingArguments(this, 'deleteRule', this.constructor.name);
-		}
-		index = Number(index);
-		if (index < 0) {
-			index = 4294967296 + index;
-		}
-		if (index >= this.cssRules.length) {
-			errorUtils.throwIndexError(this, 'deleteRule', this.constructor.name, index, this.cssRules.length);
-		}
-		this.cssRules[index].__parentRule = null;
-		this.cssRules[index].__parentStyleSheet = null;
-		this.cssRules.splice(index, 1);
-	};
-
-	//.CommonJS
-	CSSGroupingRule.CSSGroupingRule = CSSOM.CSSGroupingRule;
-	///CommonJS
-	return CSSGroupingRule;
-}
-
-var hasRequiredCSSStyleRule;
-
-function requireCSSStyleRule () {
-	if (hasRequiredCSSStyleRule) return CSSStyleRule;
-	hasRequiredCSSStyleRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
-		CSSRule: requireCSSRule().CSSRule,
-		CSSRuleList: requireCSSRuleList().CSSRuleList,
-		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-	};
-	var regexPatterns = requireRegexPatterns().regexPatterns;
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
+		if (ctor.prototype) Object.defineProperty(ctor.prototype, name, {
+			value: val,
+			writable: false,
+			enumerable: true,
+			configurable: false
+		});
 	}
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#cssstylerule
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
-	 */
-	CSSOM.CSSStyleRule = function CSSStyleRule() {
-		CSSOM.CSSGroupingRule.call(this);
-		this.__selectorText = "";
-		this.__style = new CSSOM.CSSStyleDeclaration();
-		this.__style.parentRule = this;
-	};
-
-	CSSOM.CSSStyleRule.prototype = Object.create(CSSOM.CSSGroupingRule.prototype);
-	CSSOM.CSSStyleRule.prototype.constructor = CSSOM.CSSStyleRule;
-
-	Object.setPrototypeOf(CSSOM.CSSStyleRule, CSSOM.CSSGroupingRule);
-
-	Object.defineProperty(CSSOM.CSSStyleRule.prototype, "type", {
-		value: 1,
-		writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSStyleRule.prototype, "selectorText", {
-		get: function() {
-			return this.__selectorText;	
-		},
-		set: function(value) {
-			if (typeof value === "string") {
-				// Don't trim if the value ends with a hex escape sequence followed by space
-				// (e.g., ".\31 " where the space is part of the escape terminator)
-				var endsWithHexEscapeRegExp = regexPatterns.endsWithHexEscapeRegExp;
-				var endsWithEscape = endsWithHexEscapeRegExp.test(value);
-				var trimmedValue = endsWithEscape ? value.replace(/\s+$/, ' ').trimStart() : value.trim();
-
-				if (trimmedValue === '') {
-					return;
-				}
-
-				// TODO: Setting invalid selectorText should be ignored
-				// There are some validations already on lib/parse.js
-				// but the same validations should be applied here.
-				// Check if we can move these validation logic to a shared function.
-
-				this.__selectorText = trimmedValue;
-			}
-		},
-		configurable: true
-	});
-
-	Object.defineProperty(CSSOM.CSSStyleRule.prototype, "style", {
-		get: function() {
-			return this.__style;	
-		},
-		set: function(value) {
-			if (typeof value === "string") {
-				this.__style.cssText = value;
-			} else {
-				this.__style = value;
-			}
-		},
-		configurable: true
-	});
-
-	Object.defineProperty(CSSOM.CSSStyleRule.prototype, "cssText", {
-		get: function() {
-			var text;
-			if (this.selectorText) {
-				var values = "";
-				if (this.cssRules.length) {
-					var valuesArr = [" {"];
-					this.style.cssText && valuesArr.push(this.style.cssText);
-					valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-						if (rule.cssText !== "") {
-							acc.push(rule.cssText);
-						}
-						return acc;
-					}, []).join("\n  "));
-					values = valuesArr.join("\n  ") + "\n}";
-				} else {
-					values = " {" + (this.style.cssText ? " " + this.style.cssText : "") + " }";
-				}
-				text = this.selectorText + values;
-			} else {
-				text = "";
-			}
-			return text;
-		}
-	});
-
-	//.CommonJS
-	CSSStyleRule.CSSStyleRule = CSSOM.CSSStyleRule;
-	///CommonJS
-	return CSSStyleRule;
 }
-
-var hasRequiredCSSStyleSheet;
-
-function requireCSSStyleSheet () {
-	if (hasRequiredCSSStyleSheet) return CSSStyleSheet;
-	hasRequiredCSSStyleSheet = 1;
-	//.CommonJS
-	var CSSOM = {
-		MediaList: requireMediaList().MediaList,
-		StyleSheet: requireStyleSheet().StyleSheet,
-		CSSRuleList: requireCSSRuleList().CSSRuleList,
-		CSSStyleRule: requireCSSStyleRule().CSSStyleRule,
-	};
-	var errorUtils = requireErrorUtils().errorUtils;
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @param {CSSStyleSheetInit} [opts] - CSSStyleSheetInit options.
-	 * @param {string} [opts.baseURL] - The base URL of the stylesheet.
-	 * @param {boolean} [opts.disabled] - The disabled attribute of the stylesheet.
-	 * @param {MediaList | string} [opts.media] - The media attribute of the stylesheet.
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet
-	 */
-	CSSOM.CSSStyleSheet = function CSSStyleSheet(opts) {
-		CSSOM.StyleSheet.call(this);
-		this.__constructed = true;
-		this.__cssRules = new CSSOM.CSSRuleList();
-		this.__ownerRule = null; 
-
-		if (opts && typeof opts === "object") {
-			if (opts.baseURL && typeof opts.baseURL === "string") {
-				this.__baseURL = opts.baseURL;
-			}
-			if (opts.media && typeof opts.media === "string") {
-				this.media.mediaText = opts.media;
-			}
-			if (typeof opts.disabled === "boolean") {
-				this.disabled = opts.disabled;
-			}
-		}
-	};
-
-
-	CSSOM.CSSStyleSheet.prototype = Object.create(CSSOM.StyleSheet.prototype);
-	CSSOM.CSSStyleSheet.prototype.constructor = CSSOM.CSSStyleSheet;
-
-	Object.setPrototypeOf(CSSOM.CSSStyleSheet, CSSOM.StyleSheet);
-
-	Object.defineProperty(CSSOM.CSSStyleSheet.prototype, "cssRules", {
-		get: function() {
-			return this.__cssRules;
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSStyleSheet.prototype, "rules", {
-		get: function() {
-			return this.__cssRules;
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSStyleSheet.prototype, "ownerRule", {
-		get: function() {
-			return this.__ownerRule;
-		}
-	});
-
-	/**
-	 * Used to insert a new rule into the style sheet. The new rule now becomes part of the cascade.
-	 *
-	 *   sheet = new Sheet("body {margin: 0}")
-	 *   sheet.toString()
-	 *   -> "body{margin:0;}"
-	 *   sheet.insertRule("img {border: none}", 0)
-	 *   -> 0
-	 *   sheet.toString()
-	 *   -> "img{border:none;}body{margin:0;}"
-	 *
-	 * @param {string} rule
-	 * @param {number} [index=0]
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet-insertRule
-	 * @return {number} The index within the style sheet's rule collection of the newly inserted rule.
-	 */
-	CSSOM.CSSStyleSheet.prototype.insertRule = function(rule, index) {
-		if (rule === undefined && index === undefined) {
-			errorUtils.throwMissingArguments(this, 'insertRule', this.constructor.name);
-		}
-		if (index === void 0) {
-			index = 0;
-		}
-		index = Number(index);
-		if (index < 0) {
-			index = 4294967296 + index;
-		}
-		if (index > this.cssRules.length) {
-			errorUtils.throwIndexError(this, 'insertRule', this.constructor.name, index, this.cssRules.length);
-		}
-		
-		var ruleToParse = String(rule);
-		var parseErrors = [];
-		var parsedSheet = CSSOM.parse(ruleToParse, undefined, function(err) {
-			parseErrors.push(err);
-		} );
-		if (parsedSheet.cssRules.length !== 1) {
-			errorUtils.throwParseError(this, 'insertRule', this.constructor.name, ruleToParse, 'SyntaxError');
-		}
-		var cssRule = parsedSheet.cssRules[0];
-		
-		// Helper function to find the first index of a rule that's NOT of specified constructors
-		function findFirstNonConstructorIndex(rules, constructorNames) {
-			for (var i = 0; i < rules.length; i++) {
-				if (constructorNames.indexOf(rules[i].constructor.name) === -1) {
-					return i;
+// src/utils.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function camelToDashed(str) {
+	return str.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()).replace(/^ms-/, "-ms-");
+}
+function createIndexedProxy(target, getArray, mapValue) {
+	hideInternalFields(target);
+	return new Proxy(target, {
+		get(t, prop, receiver) {
+			if (typeof prop === "string") {
+				const index = Number(prop);
+				if (Number.isInteger(index) && index >= 0) {
+					const val = getArray(t)[index];
+					return val !== void 0 ? mapValue ? mapValue(val) : val : void 0;
 				}
 			}
-			return rules.length;
+			return Reflect.get(t, prop, receiver);
+		},
+		set(t, prop, value) {
+			return Reflect.set(t, prop, value, t);
 		}
-		
-		// Validate rule ordering based on CSS specification
-		if (cssRule.constructor.name === 'CSSImportRule') {
-			if (this.__constructed === true) {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Can't insert @import rules into a constructed stylesheet.",
-					'SyntaxError');
-			}
-			// @import rules cannot be inserted after @layer rules that already exist
-			// They can only be inserted at the beginning or after other @import rules
-			var firstLayerIndex = findFirstNonConstructorIndex(this.cssRules, ['CSSImportRule']);
-			if (firstLayerIndex < this.cssRules.length && this.cssRules[firstLayerIndex].constructor.name === 'CSSLayerStatementRule' && index > firstLayerIndex) {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Failed to insert the rule.",
-					'HierarchyRequestError');
-			}
-			
-			// Also cannot insert after @namespace or other rules
-			var firstNonImportIndex = findFirstNonConstructorIndex(this.cssRules, ['CSSImportRule']);
-			if (index > firstNonImportIndex && firstNonImportIndex < this.cssRules.length && 
-			    this.cssRules[firstNonImportIndex].constructor.name !== 'CSSLayerStatementRule') {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Failed to insert the rule.",
-					'HierarchyRequestError');
-			}
-		} else if (cssRule.constructor.name === 'CSSNamespaceRule') {
-			// @namespace rules can come after @layer and @import, but before any other rules
-			// They cannot come before @import rules
-			var firstImportIndex = -1;
-			for (var i = 0; i < this.cssRules.length; i++) {
-				if (this.cssRules[i].constructor.name === 'CSSImportRule') {
-					firstImportIndex = i;
-					break;
-				}
-			}
-			var firstNonImportNamespaceIndex = findFirstNonConstructorIndex(this.cssRules, [
-				'CSSLayerStatementRule', 
-				'CSSImportRule', 
-				'CSSNamespaceRule'
-			]);
-			
-			// Cannot insert before @import rules
-			if (firstImportIndex !== -1 && index <= firstImportIndex) {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Failed to insert the rule.",
-					'HierarchyRequestError');
-			}
-			
-			// Cannot insert if there are already non-special rules
-			if (firstNonImportNamespaceIndex < this.cssRules.length) {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Failed to insert the rule.",
-					'InvalidStateError');
-			}
-			
-			// Cannot insert after other types of rules
-			if (index > firstNonImportNamespaceIndex) {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Failed to insert the rule.",
-					'HierarchyRequestError');
-			}
-
-			
-		} else if (cssRule.constructor.name === 'CSSLayerStatementRule') ; else {
-			// Any other rule cannot be inserted before @import and @namespace
-			var firstNonSpecialRuleIndex = findFirstNonConstructorIndex(this.cssRules, [
-				'CSSLayerStatementRule',
-				'CSSImportRule',
-				'CSSNamespaceRule'
-			]);
-			
-			if (index < firstNonSpecialRuleIndex) {
-				errorUtils.throwError(this, 'DOMException',
-					"Failed to execute 'insertRule' on '" + this.constructor.name + "': Failed to insert the rule.",
-					'HierarchyRequestError');
-			}
-
-			if (parseErrors.filter(function(error) { return !error.isNested; }).length !== 0) {
-				errorUtils.throwParseError(this, 'insertRule', this.constructor.name, ruleToParse, 'SyntaxError');
-			}
+	});
+}
+function deleteRuleFromArray(rules, index) {
+	if (index < 0 || index >= rules.length) throw new DOMException("Index size error", "IndexSizeError");
+	const oldRule = rules[index];
+	rules.splice(index, 1);
+	if (oldRule && typeof oldRule === "object") {
+		if ("_parentRule" in oldRule) oldRule._parentRule = null;
+		if ("_parentStyleSheet" in oldRule) oldRule._parentStyleSheet = null;
+	}
+	return oldRule;
+}
+// src/parse-hooks.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Upward optional feature hooks allowing `cssomnom/parse` (`./parse`) to tree-shake
+* out Typed OM, `@property` registry, `MediaParser`, and `CSS.supports`.
+*
+* Downward parser functions are imported directly from `src/parser.ts`.
+*/
+const ParseHooks = {
+	parseMediaQueryList: (text) => {
+		return text.split(",").map((s) => s.trim()).filter(Boolean).map((m) => ({
+			type: "media-query",
+			mediaType: m,
+			tokens: [],
+			raw: m
+		}));
+	},
+	serializeMediaQuery: (query) => {
+		return query.raw ?? query.mediaType ?? "";
+	},
+	validatePropertyValue: (_property, _value, _rawValue) => {
+		return true;
+	},
+	supports: (_conditionText) => {
+		return false;
+	},
+	createStylePropertyMap: (_style) => {
+		throw new Error("createStylePropertyMap not injected (import cssomnom/typed-om)");
+	},
+	validatePropertyRuleDescriptor: (_def) => {
+		return true;
+	},
+	registerPropertyRule: (_def) => {
+		return false;
+	},
+	unregisterPropertyRule: (_name) => {}
+};
+// src/rules/collections.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var StyleSheetList = class {
+	/** @internal */
+	_sheets;
+	constructor(sheets) {
+		this._sheets = sheets;
+		return createIndexedProxy(this, (t) => t._sheets);
+	}
+	get length() {
+		return this._sheets.length;
+	}
+	item(index) {
+		return this._sheets[index] || null;
+	}
+	*[Symbol.iterator]() {
+		for (let i = 0; i < this.length; i++) yield this._sheets[i];
+	}
+};
+var MediaList = class {
+	/** @internal */
+	_mediaQueries = [];
+	constructor(mediaText = "") {
+		this.mediaText = mediaText;
+		return createIndexedProxy(this, (t) => t._mediaQueries.map((q) => ParseHooks.serializeMediaQuery(q)));
+	}
+	get mediaText() {
+		return this._mediaQueries.map((q) => ParseHooks.serializeMediaQuery(q)).join(", ");
+	}
+	set mediaText(value) {
+		if (!value) {
+			this._mediaQueries = [];
+			return;
 		}
-		
-		cssRule.__parentStyleSheet = this;
-		this.cssRules.splice(index, 0, cssRule);
+		this._mediaQueries = ParseHooks.parseMediaQueryList(value);
+	}
+	get length() {
+		return this._mediaQueries.length;
+	}
+	item(index) {
+		const q = this._mediaQueries[index];
+		return q ? ParseHooks.serializeMediaQuery(q) : null;
+	}
+	toString() {
+		return this.mediaText;
+	}
+	appendMedium(medium) {
+		const parsed = ParseHooks.parseMediaQueryList(medium);
+		if (parsed.length !== 1) return;
+		const m = parsed[0];
+		const mText = ParseHooks.serializeMediaQuery(m);
+		if (this._mediaQueries.some((q) => ParseHooks.serializeMediaQuery(q) === mText)) return;
+		this._mediaQueries.push(m);
+	}
+	deleteMedium(medium) {
+		const parsed = ParseHooks.parseMediaQueryList(medium);
+		if (parsed.length !== 1) return;
+		const mText = ParseHooks.serializeMediaQuery(parsed[0]);
+		let i = this._mediaQueries.length;
+		let found = false;
+		while (i--) if (ParseHooks.serializeMediaQuery(this._mediaQueries[i]) === mText) {
+			this._mediaQueries.splice(i, 1);
+			found = true;
+		}
+		if (!found) throw new DOMException(`The medium '${medium}' does not exist in the MediaList.`, "NotFoundError");
+	}
+	*[Symbol.iterator]() {
+		for (let i = 0; i < this.length; i++) yield ParseHooks.serializeMediaQuery(this._mediaQueries[i]);
+	}
+};
+var CSSRuleList = class {
+	/** @internal */
+	_getRules;
+	constructor(rulesOrGetter) {
+		this._getRules = typeof rulesOrGetter === "function" ? rulesOrGetter : () => rulesOrGetter;
+		return createIndexedProxy(this, (t) => t._getRules(), (v) => v);
+	}
+	get length() {
+		return this._getRules().length;
+	}
+	item(index) {
+		return this._getRules()[index] || null;
+	}
+	*[Symbol.iterator]() {
+		const rules = this._getRules();
+		for (let i = 0; i < rules.length; i++) yield rules[i];
+	}
+};
+// src/rules/utils.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function isImportRule(r) {
+	return r.type === 3;
+}
+function isNamespaceRule(r) {
+	return r.type === 10;
+}
+function isRegularRule(r) {
+	return !isImportRule(r) && !isNamespaceRule(r);
+}
+function serializeGroupingRule(atKeyword, condition, rules) {
+	const cond = condition ? " " + condition : "";
+	const ruleTexts = rules.map((r) => r.cssText).filter((p) => p !== "");
+	if (ruleTexts.length === 0) return atKeyword === "keyframes" ? `@${atKeyword}${cond} { }` : `@${atKeyword}${cond} {\n}`;
+	return `@${atKeyword}${cond} {\n${ruleTexts.map((t) => "  " + t).join("\n")}\n}`;
+}
+function findParentStyleSheet(rule) {
+	let sheet = rule.parentStyleSheet;
+	let curr = rule.parentRule;
+	while (!sheet && curr) {
+		sheet = curr.parentStyleSheet;
+		curr = curr.parentRule;
+	}
+	return sheet;
+}
+/**
+* Validates that component values match <supports-condition> grammar.
+* css-conditional-3 #at-supports
+*/
+function isGrammaticallyValidSupportsCondition(values) {
+	const items = values.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+	if (items.length === 0) return false;
+	const isSupportsInParens = (item) => {
+		if (item.type === "function") return true;
+		if (item.type === "simple-block" && item.associatedToken.value === "(") {
+			const blockValues = item.value.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+			if (blockValues.length === 0) return true;
+			const hasTopOp = blockValues.some((v) => v.type === "ident" && [
+				"and",
+				"or",
+				"not"
+			].includes(String(v.value).toLowerCase()));
+			const isNestedParenBlock = blockValues.length === 1 && blockValues[0].type === "simple-block" && blockValues[0].associatedToken.value === "(";
+			if (hasTopOp || isNestedParenBlock) return isGrammaticallyValidSupportsCondition(item.value);
+			return true;
+		}
+		return false;
+	};
+	const operands = [];
+	const operators = [];
+	let i = 0;
+	while (i < items.length) {
+		if (items[i].type === "ident" && String(items[i].value).toLowerCase() === "not") {
+			if (i + 1 >= items.length) return false;
+			if (!isSupportsInParens(items[i + 1])) return false;
+			operands.push(true);
+			i += 2;
+		} else if (isSupportsInParens(items[i])) {
+			operands.push(true);
+			i += 1;
+		} else return false;
+		if (i < items.length) {
+			if (items[i].type !== "ident") return false;
+			const op = String(items[i].value).toLowerCase();
+			if (op !== "and" && op !== "or") return false;
+			operators.push(op);
+			i += 1;
+		}
+	}
+	if (operands.length === 0) return false;
+	if (operands.length !== operators.length + 1) return false;
+	if (operators.length > 0) {
+		const firstOp = operators[0];
+		if (!operators.every((op) => op === firstOp)) return false;
+	}
+	return true;
+}
+// src/rules/base.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const RULE_CONSTANTS = {
+	STYLE_RULE: 1,
+	CHARSET_RULE: 2,
+	IMPORT_RULE: 3,
+	MEDIA_RULE: 4,
+	FONT_FACE_RULE: 5,
+	PAGE_RULE: 6,
+	KEYFRAMES_RULE: 7,
+	KEYFRAME_RULE: 8,
+	MARGIN_RULE: 9,
+	NAMESPACE_RULE: 10,
+	COUNTER_STYLE_RULE: 11,
+	SUPPORTS_RULE: 12,
+	FONT_FEATURE_VALUES_RULE: 14
+};
+var CSSRule = class {
+	/** @internal */
+	_parentRule = null;
+	/** @internal */
+	_parentStyleSheet = null;
+	/** @internal */
+	_location;
+	/** @internal */
+	_assignedLayerName = null;
+	constructor() {
+		hideInternalFields(this);
+	}
+	get location() {
+		return this._location;
+	}
+	get parentRule() {
+		return this._parentRule;
+	}
+	get parentStyleSheet() {
+		if (this._parentStyleSheet) return this._parentStyleSheet;
+		if (this._parentRule) return this._parentRule.parentStyleSheet;
+		return null;
+	}
+	get type() {
+		return 0;
+	}
+	get cssText() {
+		throw new Error("Not implemented");
+	}
+	set cssText(_value) {}
+};
+applyWebIDLConstants(CSSRule, RULE_CONSTANTS);
+var CSSGroupingRule = class CSSGroupingRule extends CSSRule {
+	/** @internal */
+	static _parser = null;
+	/** @internal */
+	_cssRules;
+	/** @internal */
+	_rules;
+	get cssRules() {
+		if (!this._cssRules) this._cssRules = new CSSRuleList(() => this._rules);
+		return this._cssRules;
+	}
+	constructor(rules, _parseRuleInBlock) {
+		super();
+		this._rules = rules;
+		this._cssRules = new CSSRuleList(() => this._rules);
+		for (const rule of rules) if (rule instanceof CSSRule) rule._parentRule = this;
+		hideInternalFields(this);
+	}
+	insertRule(rule, index = 0) {
+		if (index < 0 || index > this._rules.length) throw new DOMException("Index size error", "IndexSizeError");
+		const isScopeRule = (r) => r[Symbol.toStringTag] === "CSSScopeRule";
+		const isStyleRule = (r) => r[Symbol.toStringTag] === "CSSStyleRule";
+		const isNested = isStyleRule(this) || isScopeRule(this) || this.parentRule !== null;
+		let isInsideStyleRule = isStyleRule(this);
+		let isDirectlyInScope = isScopeRule(this);
+		for (let p = this.parentRule, seenStyle = isInsideStyleRule; p; p = p.parentRule) if (isStyleRule(p)) {
+			isInsideStyleRule = true;
+			seenStyle = true;
+		} else if (!seenStyle && isScopeRule(p)) isDirectlyInScope = true;
+		if (!CSSGroupingRule._parser) throw new DOMException("Parser not initialized", "SyntaxError");
+		const { parseRule, parseRuleInBlock, parseRuleInScopeBlock } = CSSGroupingRule._parser;
+		let topRule = null;
+		try {
+			topRule = parseRule(rule);
+		} catch {}
+		if (topRule) {
+			if (isImportRule(topRule) || isNamespaceRule(topRule)) throw new DOMException("HierarchyRequestError: @import and @namespace rules are not allowed inside grouping rules", "HierarchyRequestError");
+			if (isInsideStyleRule && !(topRule instanceof CSSGroupingRule)) throw new DOMException("HierarchyRequestError: This rule cannot be inserted inside a nested rule", "HierarchyRequestError");
+		}
+		const parsedRule = isDirectlyInScope ? parseRuleInScopeBlock(rule) : parseRuleInBlock(rule, isNested);
+		if (!parsedRule) throw new DOMException("Syntax error", "SyntaxError");
+		if (isImportRule(parsedRule) || isNamespaceRule(parsedRule)) throw new DOMException("HierarchyRequestError: @import and @namespace rules are not allowed inside grouping rules", "HierarchyRequestError");
+		if (parsedRule[Symbol.toStringTag] === "CSSNestedDeclarations") {
+			if (!isNested) throw new DOMException("Syntax error: CSSNestedDeclarations cannot be inserted into top-level grouping rule", "SyntaxError");
+			if (parsedRule.style._declarations.filter((d) => {
+				const name = d.name.toLowerCase();
+				return name.startsWith("--") || SUPPORTED_PROPERTIES.has(name);
+			}).length === 0) throw new DOMException("Syntax error: CSSNestedDeclarations contains no valid declarations", "SyntaxError");
+		}
+		if (parsedRule instanceof CSSRule) {
+			parsedRule._parentRule = this;
+			parsedRule._parentStyleSheet = null;
+		}
+		this._rules.splice(index, 0, parsedRule);
 		return index;
+	}
+	deleteRule(index) {
+		deleteRuleFromArray(this._rules, index);
+	}
+};
+// src/data/gen/shorthands.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SHORTHANDS_DATA = {
+	"-webkit-animation": [
+		"animation-name",
+		"animation-duration",
+		"animation-timing-function",
+		"animation-delay",
+		"animation-iteration-count",
+		"animation-direction",
+		"animation-fill-mode",
+		"animation-play-state",
+		"animation-timeline"
+	],
+	"-webkit-border-radius": [
+		"border-top-left-radius",
+		"border-top-right-radius",
+		"border-bottom-right-radius",
+		"border-bottom-left-radius"
+	],
+	"-webkit-box-shadow": [
+		"box-shadow-color",
+		"box-shadow-offset",
+		"box-shadow-blur",
+		"box-shadow-spread",
+		"box-shadow-position"
+	],
+	"-webkit-flex": [
+		"flex-grow",
+		"flex-shrink",
+		"flex-basis"
+	],
+	"-webkit-flex-flow": ["flex-direction", "flex-wrap"],
+	"-webkit-line-clamp": [
+		"max-lines",
+		"block-ellipsis",
+		"continue"
+	],
+	"-webkit-mask": [
+		"mask-image",
+		"mask-position",
+		"mask-size",
+		"mask-repeat",
+		"mask-origin",
+		"mask-clip",
+		"mask-composite",
+		"mask-mode"
+	],
+	"-webkit-mask-box-image": [
+		"mask-border-source",
+		"mask-border-slice",
+		"mask-border-width",
+		"mask-border-outset",
+		"mask-border-repeat",
+		"mask-border-mode"
+	],
+	"-webkit-text-stroke": ["-webkit-text-stroke-width", "-webkit-text-stroke-color"],
+	"-webkit-transition": [
+		"transition-property",
+		"transition-duration",
+		"transition-timing-function",
+		"transition-delay",
+		"transition-behavior"
+	],
+	"animation": [
+		"animation-name",
+		"animation-duration",
+		"animation-timing-function",
+		"animation-delay",
+		"animation-iteration-count",
+		"animation-direction",
+		"animation-fill-mode",
+		"animation-play-state",
+		"animation-timeline"
+	],
+	"animation-delay": ["animation-delay-start", "animation-delay-end"],
+	"animation-range": ["animation-range-start", "animation-range-end"],
+	"background": [
+		"background-image",
+		"background-position",
+		"background-size",
+		"background-repeat",
+		"background-attachment",
+		"background-origin",
+		"background-clip",
+		"background-color"
+	],
+	"background-position": ["background-position-x", "background-position-y"],
+	"block-step": [
+		"block-step-size",
+		"block-step-insert",
+		"block-step-align",
+		"block-step-round"
+	],
+	"border": [
+		"border-width",
+		"border-style",
+		"border-color"
+	],
+	"border-block": ["border-block-start", "border-block-end"],
+	"border-block-clip": ["border-block-start-clip", "border-block-end-clip"],
+	"border-block-color": ["border-block-start-color", "border-block-end-color"],
+	"border-block-end": [
+		"border-block-end-width",
+		"border-block-end-style",
+		"border-block-end-color"
+	],
+	"border-block-end-radius": ["border-end-start-radius", "border-end-end-radius"],
+	"border-block-start": [
+		"border-block-start-width",
+		"border-block-start-style",
+		"border-block-start-color"
+	],
+	"border-block-start-radius": ["border-start-start-radius", "border-start-end-radius"],
+	"border-block-style": ["border-block-start-style", "border-block-end-style"],
+	"border-block-width": ["border-block-start-width", "border-block-end-width"],
+	"border-bottom": [
+		"border-bottom-width",
+		"border-bottom-style",
+		"border-bottom-color"
+	],
+	"border-bottom-radius": ["border-bottom-left-radius", "border-bottom-right-radius"],
+	"border-clip": [
+		"border-top-clip",
+		"border-right-clip",
+		"border-bottom-clip",
+		"border-left-clip"
+	],
+	"border-color": [
+		"border-top-color",
+		"border-right-color",
+		"border-bottom-color",
+		"border-left-color"
+	],
+	"border-image": [
+		"border-image-source",
+		"border-image-slice",
+		"border-image-width",
+		"border-image-outset",
+		"border-image-repeat"
+	],
+	"border-inline": ["border-inline-start", "border-inline-end"],
+	"border-inline-clip": ["border-inline-start-clip", "border-inline-end-clip"],
+	"border-inline-color": ["border-inline-start-color", "border-inline-end-color"],
+	"border-inline-end": [
+		"border-inline-end-width",
+		"border-inline-end-style",
+		"border-inline-end-color"
+	],
+	"border-inline-end-radius": ["border-start-end-radius", "border-end-end-radius"],
+	"border-inline-start": [
+		"border-inline-start-width",
+		"border-inline-start-style",
+		"border-inline-start-color"
+	],
+	"border-inline-start-radius": ["border-start-start-radius", "border-end-start-radius"],
+	"border-inline-style": ["border-inline-start-style", "border-inline-end-style"],
+	"border-inline-width": ["border-inline-start-width", "border-inline-end-width"],
+	"border-left": [
+		"border-left-width",
+		"border-left-style",
+		"border-left-color"
+	],
+	"border-left-radius": ["border-top-left-radius", "border-bottom-left-radius"],
+	"border-radius": [
+		"border-top-left-radius",
+		"border-top-right-radius",
+		"border-bottom-right-radius",
+		"border-bottom-left-radius"
+	],
+	"border-right": [
+		"border-right-width",
+		"border-right-style",
+		"border-right-color"
+	],
+	"border-right-radius": ["border-top-right-radius", "border-bottom-right-radius"],
+	"border-style": [
+		"border-top-style",
+		"border-right-style",
+		"border-bottom-style",
+		"border-left-style"
+	],
+	"border-top": [
+		"border-top-width",
+		"border-top-style",
+		"border-top-color"
+	],
+	"border-top-radius": ["border-top-left-radius", "border-top-right-radius"],
+	"border-width": [
+		"border-top-width",
+		"border-right-width",
+		"border-bottom-width",
+		"border-left-width"
+	],
+	"box-shadow": [
+		"box-shadow-color",
+		"box-shadow-offset",
+		"box-shadow-blur",
+		"box-shadow-spread",
+		"box-shadow-position"
+	],
+	"caret": [
+		"caret-color",
+		"caret-animation",
+		"caret-shape"
+	],
+	"color-adjust": ["print-color-adjust"],
+	"column-rule": [
+		"column-rule-width",
+		"column-rule-style",
+		"column-rule-color"
+	],
+	"column-rule-inset": [
+		"column-rule-inset-cap-start",
+		"column-rule-inset-cap-end",
+		"column-rule-inset-junction-start",
+		"column-rule-inset-junction-end"
+	],
+	"column-rule-inset-cap": ["column-rule-inset-cap-start", "column-rule-inset-cap-end"],
+	"column-rule-inset-end": ["column-rule-inset-cap-end", "column-rule-inset-junction-end"],
+	"column-rule-inset-junction": ["column-rule-inset-junction-start", "column-rule-inset-junction-end"],
+	"column-rule-inset-start": ["column-rule-inset-cap-start", "column-rule-inset-junction-start"],
+	"columns": [
+		"column-width",
+		"column-count",
+		"column-height"
+	],
+	"contain-intrinsic-size": ["contain-intrinsic-width", "contain-intrinsic-height"],
+	"container": ["container-name", "container-type"],
+	"corner": ["corner-shape", "border-radius"],
+	"corner-block-end": ["border-block-end-radius", "corner-block-end-shape"],
+	"corner-block-end-shape": ["corner-end-start-shape", "corner-end-end-shape"],
+	"corner-block-start": ["border-block-start-radius", "corner-block-start-shape"],
+	"corner-block-start-shape": ["corner-start-start-shape", "corner-start-end-shape"],
+	"corner-bottom": ["border-bottom-radius", "corner-bottom-shape"],
+	"corner-bottom-left": ["border-bottom-left-radius", "corner-bottom-left-shape"],
+	"corner-bottom-right": ["border-bottom-right-radius", "corner-bottom-right-shape"],
+	"corner-bottom-shape": ["corner-bottom-left-shape", "corner-bottom-right-shape"],
+	"corner-end-end": ["border-end-end-radius", "corner-end-end-shape"],
+	"corner-end-start": ["border-end-start-radius", "corner-end-start-shape"],
+	"corner-inline-end": ["border-inline-end-radius", "corner-inline-end-shape"],
+	"corner-inline-end-shape": ["corner-start-end-shape", "corner-end-end-shape"],
+	"corner-inline-start": ["border-inline-start-radius", "corner-inline-start-shape"],
+	"corner-inline-start-shape": ["corner-start-start-shape", "corner-end-start-shape"],
+	"corner-left": ["border-left-radius", "corner-left-shape"],
+	"corner-left-shape": ["corner-top-left-shape", "corner-bottom-left-shape"],
+	"corner-right": ["border-right-radius", "corner-right-shape"],
+	"corner-right-shape": ["corner-top-right-shape", "corner-bottom-right-shape"],
+	"corner-shape": [
+		"corner-top-left-shape",
+		"corner-top-right-shape",
+		"corner-bottom-right-shape",
+		"corner-bottom-left-shape"
+	],
+	"corner-start-end": ["border-start-end-radius", "corner-start-end-shape"],
+	"corner-start-start": ["border-start-start-radius", "corner-start-start-shape"],
+	"corner-top": ["border-top-radius", "corner-top-shape"],
+	"corner-top-left": ["border-top-left-radius", "corner-top-left-shape"],
+	"corner-top-right": ["border-top-right-radius", "corner-top-right-shape"],
+	"corner-top-shape": ["corner-top-left-shape", "corner-top-right-shape"],
+	"cue": ["cue-before", "cue-after"],
+	"flex": [
+		"flex-grow",
+		"flex-shrink",
+		"flex-basis"
+	],
+	"flex-flow": ["flex-direction", "flex-wrap"],
+	"font": [
+		"font-style",
+		"font-variant",
+		"font-weight",
+		"font-stretch",
+		"font-size",
+		"line-height",
+		"font-family"
+	],
+	"font-synthesis": [
+		"font-synthesis-weight",
+		"font-synthesis-style",
+		"font-synthesis-small-caps"
+	],
+	"font-variant": [
+		"font-variant-ligatures",
+		"font-variant-caps",
+		"font-variant-alternates",
+		"font-variant-numeric",
+		"font-variant-east-asian",
+		"font-variant-position",
+		"font-variant-emoji"
+	],
+	"gap": ["row-gap", "column-gap"],
+	"grid": [
+		"grid-template-rows",
+		"grid-template-columns",
+		"grid-template-areas",
+		"grid-auto-rows",
+		"grid-auto-columns",
+		"grid-auto-flow"
+	],
+	"grid-area": [
+		"grid-row-start",
+		"grid-column-start",
+		"grid-row-end",
+		"grid-column-end"
+	],
+	"grid-column": ["grid-column-start", "grid-column-end"],
+	"grid-gap": ["row-gap", "column-gap"],
+	"grid-row": ["grid-row-start", "grid-row-end"],
+	"grid-template": [
+		"grid-template-rows",
+		"grid-template-columns",
+		"grid-template-areas"
+	],
+	"inset": [
+		"top",
+		"right",
+		"bottom",
+		"left"
+	],
+	"inset-block": ["inset-block-start", "inset-block-end"],
+	"inset-inline": ["inset-inline-start", "inset-inline-end"],
+	"interest-delay": ["interest-delay-start", "interest-delay-end"],
+	"line-clamp": [
+		"max-lines",
+		"block-ellipsis",
+		"continue"
+	],
+	"list-style": [
+		"list-style-type",
+		"list-style-position",
+		"list-style-image"
+	],
+	"margin": [
+		"margin-top",
+		"margin-right",
+		"margin-bottom",
+		"margin-left"
+	],
+	"margin-block": ["margin-block-start", "margin-block-end"],
+	"margin-inline": ["margin-inline-start", "margin-inline-end"],
+	"marker": [
+		"marker-start",
+		"marker-mid",
+		"marker-end"
+	],
+	"mask": [
+		"mask-image",
+		"mask-position",
+		"mask-size",
+		"mask-repeat",
+		"mask-origin",
+		"mask-clip",
+		"mask-composite",
+		"mask-mode"
+	],
+	"mask-border": [
+		"mask-border-source",
+		"mask-border-slice",
+		"mask-border-width",
+		"mask-border-outset",
+		"mask-border-repeat",
+		"mask-border-mode"
+	],
+	"max-size": ["max-width", "max-height"],
+	"min-size": ["min-width", "min-height"],
+	"offset": [
+		"offset-path",
+		"offset-distance",
+		"offset-rotate",
+		"offset-anchor",
+		"offset-position"
+	],
+	"outline": [
+		"outline-width",
+		"outline-style",
+		"outline-color"
+	],
+	"overflow": ["overflow-x", "overflow-y"],
+	"overflow-clip-margin": [
+		"overflow-clip-margin-top",
+		"overflow-clip-margin-right",
+		"overflow-clip-margin-bottom",
+		"overflow-clip-margin-left"
+	],
+	"overflow-clip-margin-block": ["overflow-clip-margin-block-start", "overflow-clip-margin-block-end"],
+	"overflow-clip-margin-inline": ["overflow-clip-margin-inline-start", "overflow-clip-margin-inline-end"],
+	"overscroll-behavior": ["overscroll-behavior-x", "overscroll-behavior-y"],
+	"padding": [
+		"padding-top",
+		"padding-right",
+		"padding-bottom",
+		"padding-left"
+	],
+	"padding-block": ["padding-block-start", "padding-block-end"],
+	"padding-inline": ["padding-inline-start", "padding-inline-end"],
+	"pause": ["pause-before", "pause-after"],
+	"place-content": ["align-content", "justify-content"],
+	"place-items": ["align-items", "justify-items"],
+	"place-self": ["align-self", "justify-self"],
+	"pointer-timeline": ["pointer-timeline-name", "pointer-timeline-axis"],
+	"position-try": ["position-try-order", "position-try-fallbacks"],
+	"rest": ["rest-before", "rest-after"],
+	"row-rule": [
+		"row-rule-width",
+		"row-rule-style",
+		"row-rule-color"
+	],
+	"row-rule-inset": [
+		"row-rule-inset-cap-start",
+		"row-rule-inset-cap-end",
+		"row-rule-inset-junction-start",
+		"row-rule-inset-junction-end"
+	],
+	"row-rule-inset-cap": ["row-rule-inset-cap-start", "row-rule-inset-cap-end"],
+	"row-rule-inset-end": ["row-rule-inset-cap-end", "row-rule-inset-junction-end"],
+	"row-rule-inset-junction": ["row-rule-inset-junction-start", "row-rule-inset-junction-end"],
+	"row-rule-inset-start": ["row-rule-inset-cap-start", "row-rule-inset-junction-start"],
+	"rule": ["column-rule", "row-rule"],
+	"rule-break": ["column-rule-break", "row-rule-break"],
+	"rule-color": ["column-rule-color", "row-rule-color"],
+	"rule-inset": ["column-rule-inset", "row-rule-inset"],
+	"rule-inset-cap": ["column-rule-inset-cap"],
+	"rule-inset-end": ["column-rule-inset-end", "row-rule-inset-end"],
+	"rule-inset-junction": ["column-rule-inset-junction"],
+	"rule-inset-start": ["column-rule-inset-start", "row-rule-inset-start"],
+	"rule-style": ["column-rule-style", "row-rule-style"],
+	"rule-visibility-items": ["column-rule-visibility-items"],
+	"rule-width": ["column-rule-width", "row-rule-width"],
+	"scroll-margin": [
+		"scroll-margin-top",
+		"scroll-margin-right",
+		"scroll-margin-bottom",
+		"scroll-margin-left"
+	],
+	"scroll-margin-block": ["scroll-margin-block-start", "scroll-margin-block-end"],
+	"scroll-margin-inline": ["scroll-margin-inline-start", "scroll-margin-inline-end"],
+	"scroll-padding": [
+		"scroll-padding-top",
+		"scroll-padding-right",
+		"scroll-padding-bottom",
+		"scroll-padding-left"
+	],
+	"scroll-padding-block": ["scroll-padding-block-start", "scroll-padding-block-end"],
+	"scroll-padding-inline": ["scroll-padding-inline-start", "scroll-padding-inline-end"],
+	"scroll-timeline": ["scroll-timeline-name", "scroll-timeline-axis"],
+	"size": ["width", "height"],
+	"text-align": ["text-align-all", "text-align-last"],
+	"text-decoration": [
+		"text-decoration-line",
+		"text-decoration-thickness",
+		"text-decoration-style",
+		"text-decoration-color"
+	],
+	"text-decoration-skip": [
+		"text-decoration-skip-self",
+		"text-decoration-skip-box",
+		"text-decoration-skip-spaces",
+		"text-decoration-skip-ink"
+	],
+	"text-emphasis": ["text-emphasis-style", "text-emphasis-color"],
+	"text-spacing": ["text-spacing-trim", "text-autospace"],
+	"text-wrap": ["text-wrap-mode", "text-wrap-style"],
+	"timeline-trigger": [
+		"timeline-trigger-name",
+		"timeline-trigger-source",
+		"timeline-trigger-range"
+	],
+	"timeline-trigger-activation-range": ["timeline-trigger-activation-range-start", "timeline-trigger-activation-range-end"],
+	"timeline-trigger-active-range": ["timeline-trigger-active-range-start", "timeline-trigger-active-range-end"],
+	"timeline-trigger-range": ["timeline-trigger-activation-range", "timeline-trigger-active-range"],
+	"transition": [
+		"transition-property",
+		"transition-duration",
+		"transition-timing-function",
+		"transition-delay",
+		"transition-behavior"
+	],
+	"vertical-align": [
+		"alignment-baseline",
+		"baseline-shift",
+		"baseline-source"
+	],
+	"view-timeline": ["view-timeline-name", "view-timeline-axis"],
+	"white-space": ["white-space-collapse", "text-wrap-mode"]
+};
+// src/data/gen/LogicalMapping.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Logical property to physical property mapping for default horizontal-tb, ltr.
+* css-logical-1 #box
+*/
+const LOGICAL_MAPPING = {
+	"background-position-block": "background-position-y",
+	"background-position-inline": "background-position-x",
+	"background-repeat-block": "background-repeat-y",
+	"background-repeat-inline": "background-repeat-x",
+	"block-size": "height",
+	"border-block-end-clip": "border-bottom-clip",
+	"border-block-end-color": "border-bottom-color",
+	"border-block-end-style": "border-bottom-style",
+	"border-block-end-width": "border-bottom-width",
+	"border-block-start-clip": "border-top-clip",
+	"border-block-start-color": "border-top-color",
+	"border-block-start-style": "border-top-style",
+	"border-block-start-width": "border-top-width",
+	"border-end-end-radius": "border-bottom-right-radius",
+	"border-end-start-radius": "border-bottom-left-radius",
+	"border-inline-end-clip": "border-right-clip",
+	"border-inline-end-color": "border-right-color",
+	"border-inline-end-style": "border-right-style",
+	"border-inline-end-width": "border-right-width",
+	"border-inline-start-clip": "border-left-clip",
+	"border-inline-start-color": "border-left-color",
+	"border-inline-start-style": "border-left-style",
+	"border-inline-start-width": "border-left-width",
+	"border-start-end-radius": "border-top-right-radius",
+	"border-start-start-radius": "border-top-left-radius",
+	"contain-intrinsic-block-size": "contain-intrinsic-height",
+	"contain-intrinsic-inline-size": "contain-intrinsic-width",
+	"corner-end-end-shape": "corner-bottom-right-shape",
+	"corner-end-start-shape": "corner-bottom-left-shape",
+	"corner-start-end-shape": "corner-top-right-shape",
+	"corner-start-start-shape": "corner-top-left-shape",
+	"inline-size": "width",
+	"inset-block-end": "bottom",
+	"inset-block-start": "top",
+	"inset-inline-end": "right",
+	"inset-inline-start": "left",
+	"margin-block-end": "margin-bottom",
+	"margin-block-start": "margin-top",
+	"margin-inline-end": "margin-right",
+	"margin-inline-start": "margin-left",
+	"max-block-size": "max-height",
+	"max-inline-size": "max-width",
+	"min-block-size": "min-height",
+	"min-inline-size": "min-width",
+	"overflow-block": "overflow-y",
+	"overflow-clip-margin-block-end": "overflow-clip-margin-bottom",
+	"overflow-clip-margin-block-start": "overflow-clip-margin-top",
+	"overflow-clip-margin-inline-end": "overflow-clip-margin-right",
+	"overflow-clip-margin-inline-start": "overflow-clip-margin-left",
+	"overflow-inline": "overflow-x",
+	"overscroll-behavior-block": "overscroll-behavior-y",
+	"overscroll-behavior-inline": "overscroll-behavior-x",
+	"padding-block-end": "padding-bottom",
+	"padding-block-start": "padding-top",
+	"padding-inline-end": "padding-right",
+	"padding-inline-start": "padding-left",
+	"scroll-margin-block-end": "scroll-margin-bottom",
+	"scroll-margin-block-start": "scroll-margin-top",
+	"scroll-margin-inline-end": "scroll-margin-right",
+	"scroll-margin-inline-start": "scroll-margin-left",
+	"scroll-padding-block-end": "scroll-padding-bottom",
+	"scroll-padding-block-start": "scroll-padding-top",
+	"scroll-padding-inline-end": "scroll-padding-right",
+	"scroll-padding-inline-start": "scroll-padding-left"
+};
+const PHYSICAL_TO_LOGICAL = {};
+for (const [logical, physical] of Object.entries(LOGICAL_MAPPING)) {
+	if (!PHYSICAL_TO_LOGICAL[physical]) PHYSICAL_TO_LOGICAL[physical] = [];
+	PHYSICAL_TO_LOGICAL[physical].push(logical);
+}
+/**
+* Logical property groups and mapping logic.
+* css-logical-1 #logical-property-group
+*/
+const LOGICAL_PROPERTY_INFO = {
+	"background-position-block": {
+		group: "background-position",
+		logic: "logical"
+	},
+	"background-position-inline": {
+		group: "background-position",
+		logic: "logical"
+	},
+	"background-position-x": {
+		group: "background-position",
+		logic: "physical"
+	},
+	"background-position-y": {
+		group: "background-position",
+		logic: "physical"
+	},
+	"background-repeat-block": {
+		group: "background-repeat",
+		logic: "logical"
+	},
+	"background-repeat-inline": {
+		group: "background-repeat",
+		logic: "logical"
+	},
+	"background-repeat-x": {
+		group: "background-repeat",
+		logic: "physical"
+	},
+	"background-repeat-y": {
+		group: "background-repeat",
+		logic: "physical"
+	},
+	"block-size": {
+		group: "size",
+		logic: "logical"
+	},
+	"border-block-end-clip": {
+		group: "border-clip",
+		logic: "logical"
+	},
+	"border-block-end-color": {
+		group: "border-color",
+		logic: "logical"
+	},
+	"border-block-end-style": {
+		group: "border-style",
+		logic: "logical"
+	},
+	"border-block-end-width": {
+		group: "border-width",
+		logic: "logical"
+	},
+	"border-block-start-clip": {
+		group: "border-clip",
+		logic: "logical"
+	},
+	"border-block-start-color": {
+		group: "border-color",
+		logic: "logical"
+	},
+	"border-block-start-style": {
+		group: "border-style",
+		logic: "logical"
+	},
+	"border-block-start-width": {
+		group: "border-width",
+		logic: "logical"
+	},
+	"border-bottom-clip": {
+		group: "border-clip",
+		logic: "physical"
+	},
+	"border-bottom-color": {
+		group: "border-color",
+		logic: "physical"
+	},
+	"border-bottom-left-radius": {
+		group: "border-radius",
+		logic: "physical"
+	},
+	"border-bottom-right-radius": {
+		group: "border-radius",
+		logic: "physical"
+	},
+	"border-bottom-style": {
+		group: "border-style",
+		logic: "physical"
+	},
+	"border-bottom-width": {
+		group: "border-width",
+		logic: "physical"
+	},
+	"border-end-end-radius": {
+		group: "border-radius",
+		logic: "logical"
+	},
+	"border-end-start-radius": {
+		group: "border-radius",
+		logic: "logical"
+	},
+	"border-inline-end-clip": {
+		group: "border-clip",
+		logic: "logical"
+	},
+	"border-inline-end-color": {
+		group: "border-color",
+		logic: "logical"
+	},
+	"border-inline-end-style": {
+		group: "border-style",
+		logic: "logical"
+	},
+	"border-inline-end-width": {
+		group: "border-width",
+		logic: "logical"
+	},
+	"border-inline-start-clip": {
+		group: "border-clip",
+		logic: "logical"
+	},
+	"border-inline-start-color": {
+		group: "border-color",
+		logic: "logical"
+	},
+	"border-inline-start-style": {
+		group: "border-style",
+		logic: "logical"
+	},
+	"border-inline-start-width": {
+		group: "border-width",
+		logic: "logical"
+	},
+	"border-left-clip": {
+		group: "border-clip",
+		logic: "physical"
+	},
+	"border-left-color": {
+		group: "border-color",
+		logic: "physical"
+	},
+	"border-left-style": {
+		group: "border-style",
+		logic: "physical"
+	},
+	"border-left-width": {
+		group: "border-width",
+		logic: "physical"
+	},
+	"border-right-clip": {
+		group: "border-clip",
+		logic: "physical"
+	},
+	"border-right-color": {
+		group: "border-color",
+		logic: "physical"
+	},
+	"border-right-style": {
+		group: "border-style",
+		logic: "physical"
+	},
+	"border-right-width": {
+		group: "border-width",
+		logic: "physical"
+	},
+	"border-start-end-radius": {
+		group: "border-radius",
+		logic: "logical"
+	},
+	"border-start-start-radius": {
+		group: "border-radius",
+		logic: "logical"
+	},
+	"border-top-clip": {
+		group: "border-clip",
+		logic: "physical"
+	},
+	"border-top-color": {
+		group: "border-color",
+		logic: "physical"
+	},
+	"border-top-left-radius": {
+		group: "border-radius",
+		logic: "physical"
+	},
+	"border-top-right-radius": {
+		group: "border-radius",
+		logic: "physical"
+	},
+	"border-top-style": {
+		group: "border-style",
+		logic: "physical"
+	},
+	"border-top-width": {
+		group: "border-width",
+		logic: "physical"
+	},
+	"bottom": {
+		group: "inset",
+		logic: "physical"
+	},
+	"contain-intrinsic-block-size": {
+		group: "contain-intrinsic-size",
+		logic: "logical"
+	},
+	"contain-intrinsic-height": {
+		group: "contain-intrinsic-size",
+		logic: "physical"
+	},
+	"contain-intrinsic-inline-size": {
+		group: "contain-intrinsic-size",
+		logic: "logical"
+	},
+	"contain-intrinsic-width": {
+		group: "contain-intrinsic-size",
+		logic: "physical"
+	},
+	"corner-bottom-left-shape": {
+		group: "corner-shape",
+		logic: "physical"
+	},
+	"corner-bottom-right-shape": {
+		group: "corner-shape",
+		logic: "physical"
+	},
+	"corner-end-end-shape": {
+		group: "corner-shape",
+		logic: "logical"
+	},
+	"corner-end-start-shape": {
+		group: "corner-shape",
+		logic: "logical"
+	},
+	"corner-start-end-shape": {
+		group: "corner-shape",
+		logic: "logical"
+	},
+	"corner-start-start-shape": {
+		group: "corner-shape",
+		logic: "logical"
+	},
+	"corner-top-left-shape": {
+		group: "corner-shape",
+		logic: "physical"
+	},
+	"corner-top-right-shape": {
+		group: "corner-shape",
+		logic: "physical"
+	},
+	"height": {
+		group: "size",
+		logic: "physical"
+	},
+	"inline-size": {
+		group: "size",
+		logic: "logical"
+	},
+	"inset-block-end": {
+		group: "inset",
+		logic: "logical"
+	},
+	"inset-block-start": {
+		group: "inset",
+		logic: "logical"
+	},
+	"inset-inline-end": {
+		group: "inset",
+		logic: "logical"
+	},
+	"inset-inline-start": {
+		group: "inset",
+		logic: "logical"
+	},
+	"left": {
+		group: "inset",
+		logic: "physical"
+	},
+	"margin-block-end": {
+		group: "margin",
+		logic: "logical"
+	},
+	"margin-block-start": {
+		group: "margin",
+		logic: "logical"
+	},
+	"margin-bottom": {
+		group: "margin",
+		logic: "physical"
+	},
+	"margin-inline-end": {
+		group: "margin",
+		logic: "logical"
+	},
+	"margin-inline-start": {
+		group: "margin",
+		logic: "logical"
+	},
+	"margin-left": {
+		group: "margin",
+		logic: "physical"
+	},
+	"margin-right": {
+		group: "margin",
+		logic: "physical"
+	},
+	"margin-top": {
+		group: "margin",
+		logic: "physical"
+	},
+	"max-block-size": {
+		group: "max-size",
+		logic: "logical"
+	},
+	"max-height": {
+		group: "max-size",
+		logic: "physical"
+	},
+	"max-inline-size": {
+		group: "max-size",
+		logic: "logical"
+	},
+	"max-width": {
+		group: "max-size",
+		logic: "physical"
+	},
+	"min-block-size": {
+		group: "min-size",
+		logic: "logical"
+	},
+	"min-height": {
+		group: "min-size",
+		logic: "physical"
+	},
+	"min-inline-size": {
+		group: "min-size",
+		logic: "logical"
+	},
+	"min-width": {
+		group: "min-size",
+		logic: "physical"
+	},
+	"overflow-block": {
+		group: "overflow",
+		logic: "logical"
+	},
+	"overflow-clip-margin-block-end": {
+		group: "overflow-clip-margin",
+		logic: "logical"
+	},
+	"overflow-clip-margin-block-start": {
+		group: "overflow-clip-margin",
+		logic: "logical"
+	},
+	"overflow-clip-margin-bottom": {
+		group: "overflow-clip-margin",
+		logic: "physical"
+	},
+	"overflow-clip-margin-inline-end": {
+		group: "overflow-clip-margin",
+		logic: "logical"
+	},
+	"overflow-clip-margin-inline-start": {
+		group: "overflow-clip-margin",
+		logic: "logical"
+	},
+	"overflow-clip-margin-left": {
+		group: "overflow-clip-margin",
+		logic: "physical"
+	},
+	"overflow-clip-margin-right": {
+		group: "overflow-clip-margin",
+		logic: "physical"
+	},
+	"overflow-clip-margin-top": {
+		group: "overflow-clip-margin",
+		logic: "physical"
+	},
+	"overflow-inline": {
+		group: "overflow",
+		logic: "logical"
+	},
+	"overflow-x": {
+		group: "overflow",
+		logic: "physical"
+	},
+	"overflow-y": {
+		group: "overflow",
+		logic: "physical"
+	},
+	"overscroll-behavior-block": {
+		group: "overscroll-behavior",
+		logic: "logical"
+	},
+	"overscroll-behavior-inline": {
+		group: "overscroll-behavior",
+		logic: "logical"
+	},
+	"overscroll-behavior-x": {
+		group: "overscroll-behavior",
+		logic: "physical"
+	},
+	"overscroll-behavior-y": {
+		group: "overscroll-behavior",
+		logic: "physical"
+	},
+	"padding-block-end": {
+		group: "padding",
+		logic: "logical"
+	},
+	"padding-block-start": {
+		group: "padding",
+		logic: "logical"
+	},
+	"padding-bottom": {
+		group: "padding",
+		logic: "physical"
+	},
+	"padding-inline-end": {
+		group: "padding",
+		logic: "logical"
+	},
+	"padding-inline-start": {
+		group: "padding",
+		logic: "logical"
+	},
+	"padding-left": {
+		group: "padding",
+		logic: "physical"
+	},
+	"padding-right": {
+		group: "padding",
+		logic: "physical"
+	},
+	"padding-top": {
+		group: "padding",
+		logic: "physical"
+	},
+	"right": {
+		group: "inset",
+		logic: "physical"
+	},
+	"scroll-margin-block-end": {
+		group: "scroll-margin",
+		logic: "logical"
+	},
+	"scroll-margin-block-start": {
+		group: "scroll-margin",
+		logic: "logical"
+	},
+	"scroll-margin-bottom": {
+		group: "scroll-margin",
+		logic: "physical"
+	},
+	"scroll-margin-inline-end": {
+		group: "scroll-margin",
+		logic: "logical"
+	},
+	"scroll-margin-inline-start": {
+		group: "scroll-margin",
+		logic: "logical"
+	},
+	"scroll-margin-left": {
+		group: "scroll-margin",
+		logic: "physical"
+	},
+	"scroll-margin-right": {
+		group: "scroll-margin",
+		logic: "physical"
+	},
+	"scroll-margin-top": {
+		group: "scroll-margin",
+		logic: "physical"
+	},
+	"scroll-padding-block-end": {
+		group: "scroll-padding",
+		logic: "logical"
+	},
+	"scroll-padding-block-start": {
+		group: "scroll-padding",
+		logic: "logical"
+	},
+	"scroll-padding-bottom": {
+		group: "scroll-padding",
+		logic: "physical"
+	},
+	"scroll-padding-inline-end": {
+		group: "scroll-padding",
+		logic: "logical"
+	},
+	"scroll-padding-inline-start": {
+		group: "scroll-padding",
+		logic: "logical"
+	},
+	"scroll-padding-left": {
+		group: "scroll-padding",
+		logic: "physical"
+	},
+	"scroll-padding-right": {
+		group: "scroll-padding",
+		logic: "physical"
+	},
+	"scroll-padding-top": {
+		group: "scroll-padding",
+		logic: "physical"
+	},
+	"top": {
+		group: "inset",
+		logic: "physical"
+	},
+	"width": {
+		group: "size",
+		logic: "physical"
+	}
+};
+/**
+* Resolves a logical property to its physical counterpart based on writing mode and direction.
+*/
+function resolveLogicalProperty(name, writingMode = "horizontal-tb", direction = "ltr") {
+	if (!(name in LOGICAL_MAPPING)) return name;
+	let blockStart = "top";
+	let blockEnd = "bottom";
+	let inlineStart = "left";
+	let inlineEnd = "right";
+	let blockAxis = "y";
+	let inlineAxis = "x";
+	if (writingMode === "vertical-rl" || writingMode === "sideways-rl") {
+		blockStart = "right";
+		blockEnd = "left";
+		inlineStart = "top";
+		inlineEnd = "bottom";
+		blockAxis = "x";
+		inlineAxis = "y";
+	} else if (writingMode === "vertical-lr") {
+		blockStart = "left";
+		blockEnd = "right";
+		inlineStart = "top";
+		inlineEnd = "bottom";
+		blockAxis = "x";
+		inlineAxis = "y";
+	} else if (writingMode === "sideways-lr") {
+		blockStart = "left";
+		blockEnd = "right";
+		inlineStart = "bottom";
+		inlineEnd = "top";
+		blockAxis = "x";
+		inlineAxis = "y";
+	}
+	if (direction === "rtl") {
+		const tmp = inlineStart;
+		inlineStart = inlineEnd;
+		inlineEnd = tmp;
+	}
+	if (name.startsWith("inset-block-start")) return blockStart;
+	if (name.startsWith("inset-block-end")) return blockEnd;
+	if (name.startsWith("inset-inline-start")) return inlineStart;
+	if (name.startsWith("inset-inline-end")) return inlineEnd;
+	const radius = (s1, s2) => {
+		return `-${s1 === "top" || s1 === "bottom" ? s1 : s2}-${s1 === "left" || s1 === "right" ? s1 : s2}-radius`;
 	};
-
-	CSSOM.CSSStyleSheet.prototype.addRule = function(selector, styleBlock, index) {
-		if (index === void 0) {
-			index = this.cssRules.length;
+	const shape = (s1, s2) => {
+		return `-${s1 === "top" || s1 === "bottom" ? s1 : s2}-${s1 === "left" || s1 === "right" ? s1 : s2}-shape`;
+	};
+	const replacements = [
+		{
+			logical: "-block-start",
+			physical: `-${blockStart}`
+		},
+		{
+			logical: "-block-end",
+			physical: `-${blockEnd}`
+		},
+		{
+			logical: "-inline-start",
+			physical: `-${inlineStart}`
+		},
+		{
+			logical: "-inline-end",
+			physical: `-${inlineEnd}`
+		},
+		{
+			logical: "-start-start-radius",
+			physical: radius(blockStart, inlineStart)
+		},
+		{
+			logical: "-start-end-radius",
+			physical: radius(blockStart, inlineEnd)
+		},
+		{
+			logical: "-end-start-radius",
+			physical: radius(blockEnd, inlineStart)
+		},
+		{
+			logical: "-end-end-radius",
+			physical: radius(blockEnd, inlineEnd)
+		},
+		{
+			logical: "-start-start-shape",
+			physical: shape(blockStart, inlineStart)
+		},
+		{
+			logical: "-start-end-shape",
+			physical: shape(blockStart, inlineEnd)
+		},
+		{
+			logical: "-end-start-shape",
+			physical: shape(blockEnd, inlineStart)
+		},
+		{
+			logical: "-end-end-shape",
+			physical: shape(blockEnd, inlineEnd)
+		},
+		{
+			logical: "-block",
+			physical: `-${blockAxis}`
+		},
+		{
+			logical: "-inline",
+			physical: `-${inlineAxis}`
 		}
-		this.insertRule(selector + "{" + styleBlock + "}", index);
-		return -1;
+	];
+	let resolved = name;
+	for (const { logical, physical } of replacements) if (resolved.includes(logical)) {
+		resolved = resolved.replace(logical, physical);
+		break;
+	}
+	const isVertical = writingMode.startsWith("vertical") || writingMode.startsWith("sideways");
+	if (resolved === "block-size") return isVertical ? "width" : "height";
+	if (resolved === "inline-size") return isVertical ? "height" : "width";
+	if (resolved === "min-block-size") return isVertical ? "min-width" : "min-height";
+	if (resolved === "min-inline-size") return isVertical ? "min-height" : "min-width";
+	if (resolved === "max-block-size") return isVertical ? "max-width" : "max-height";
+	if (resolved === "max-inline-size") return isVertical ? "max-height" : "max-width";
+	if (resolved === "contain-intrinsic-block-size") return isVertical ? "contain-intrinsic-width" : "contain-intrinsic-height";
+	if (resolved === "contain-intrinsic-inline-size") return isVertical ? "contain-intrinsic-height" : "contain-intrinsic-width";
+	return resolved;
+}
+// src/data/gen/colors.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const NAMED_COLORS = /* @__PURE__ */ new Set("accentcolor,accentcolortext,activeborder,activecaption,activetext,aliceblue,antiquewhite,appworkspace,aqua,aquamarine,azure,background,beige,bisque,black,blanchedalmond,blue,blueviolet,brown,burlywood,buttonborder,buttonface,buttonhighlight,buttonshadow,buttontext,cadetblue,canvas,canvastext,captiontext,chartreuse,chocolate,coral,cornflowerblue,cornsilk,crimson,currentcolor,cyan,darkblue,darkcyan,darkgoldenrod,darkgray,darkgreen,darkgrey,darkkhaki,darkmagenta,darkolivegreen,darkorange,darkorchid,darkred,darksalmon,darkseagreen,darkslateblue,darkslategray,darkslategrey,darkturquoise,darkviolet,deeppink,deepskyblue,dimgray,dimgrey,dodgerblue,field,fieldtext,firebrick,floralwhite,forestgreen,fuchsia,gainsboro,ghostwhite,gold,goldenrod,gray,graytext,green,greenyellow,grey,highlight,highlighttext,honeydew,hotpink,inactiveborder,inactivecaption,inactivecaptiontext,indianred,indigo,infobackground,infotext,ivory,khaki,lavender,lavenderblush,lawngreen,lemonchiffon,lightblue,lightcoral,lightcyan,lightgoldenrodyellow,lightgray,lightgreen,lightgrey,lightpink,lightsalmon,lightseagreen,lightskyblue,lightslategray,lightslategrey,lightsteelblue,lightyellow,lime,limegreen,linen,linktext,magenta,mark,marktext,maroon,mediumaquamarine,mediumblue,mediumorchid,mediumpurple,mediumseagreen,mediumslateblue,mediumspringgreen,mediumturquoise,mediumvioletred,menu,menutext,midnightblue,mintcream,mistyrose,moccasin,navajowhite,navy,oldlace,olive,olivedrab,orange,orangered,orchid,palegoldenrod,palegreen,paleturquoise,palevioletred,papayawhip,peachpuff,peru,pink,plum,powderblue,purple,rebeccapurple,red,rosybrown,royalblue,saddlebrown,salmon,sandybrown,scrollbar,seagreen,seashell,selecteditem,selecteditemtext,sienna,silver,skyblue,slateblue,slategray,slategrey,snow,springgreen,steelblue,tan,teal,thistle,threeddarkshadow,threedface,threedhighlight,threedlightshadow,threedshadow,tomato,transparent,turquoise,violet,visitedtext,wheat,white,whitesmoke,window,windowframe,windowtext,yellow,yellowgreen".split(","));
+const LENGTH_UNITS = /* @__PURE__ */ new Set("cap,ch,cm,cqb,cqh,cqi,cqmax,cqmin,cqw,dvb,dvh,dvi,dvmax,dvmin,dvw,em,ex,ic,in,lh,lvb,lvh,lvi,lvmax,lvmin,lvw,mm,pc,pt,px,q,rcap,rch,rem,rex,ric,rlh,svb,svh,svi,svmax,svmin,svw,vb,vh,vi,vmax,vmin,vw,%".split(","));
+// src/shorthands.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const CSS_WIDE_KEYWORDS$2 = /* @__PURE__ */ new Set("initial,inherit,unset,revert,revert-layer".split(","));
+const REPEAT_KEYWORDS = /* @__PURE__ */ new Set("repeat,no-repeat,space,round,repeat-x,repeat-y".split(","));
+const ATTACHMENT_KEYWORDS = /* @__PURE__ */ new Set("scroll,fixed,local".split(","));
+const BOX_KEYWORDS = /* @__PURE__ */ new Set("border-box,padding-box,content-box,text,border-area".split(","));
+const CLIP_ONLY_BOX_KEYWORDS = /* @__PURE__ */ new Set("text,border-area".split(","));
+const COLOR_FUNCTIONS = /* @__PURE__ */ new Set("rgb,rgba,hsl,hsla,hwb,lab,lch,oklab,oklch,color".split(","));
+const IMAGE_FUNCTIONS = /* @__PURE__ */ new Set("url,src,image,image-set,linear-gradient,radial-gradient,conic-gradient,repeating-linear-gradient,repeating-radial-gradient,repeating-conic-gradient".split(","));
+const MATH_FUNCTIONS = /* @__PURE__ */ new Set("calc,min,max,clamp".split(","));
+const POSITION_OR_SIZE_KEYWORDS = /* @__PURE__ */ new Set("left,right,top,bottom,center,auto,cover,contain".split(","));
+const BORDER_WIDTH_KEYWORDS = /* @__PURE__ */ new Set("thin,medium,thick".split(","));
+const BORDER_STYLE_KEYWORDS = /* @__PURE__ */ new Set("none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset".split(","));
+function filterSignificantTokens(values) {
+	return values.filter((v) => v.type !== "whitespace" && v.type !== "comment" && v.type !== "EOF");
+}
+function splitTokensByComma(tokens) {
+	const res = [[]];
+	for (const t of tokens) if (t.type === "comma") res.push([]);
+	else res[res.length - 1].push(t);
+	return res;
+}
+function expandUniformLonghands(longhands, val) {
+	const res = {};
+	for (const lh of longhands) res[lh] = val;
+	return res;
+}
+function tryExpandCssWide(filtered, longhands, extraKeywords) {
+	if (filtered.length === 1 && filtered[0].type === "ident") {
+		const v = filtered[0].value.toLowerCase();
+		if (CSS_WIDE_KEYWORDS$2.has(v) || extraKeywords?.has(v)) return expandUniformLonghands(longhands, [filtered[0]]);
+	}
+	return null;
+}
+function checkUniformCssWide(serializedVals, checkVar = false) {
+	if (serializedVals.some((v) => CSS_WIDE_KEYWORDS$2.has(v.toLowerCase()) || checkVar && v.toLowerCase().startsWith("var("))) return serializedVals.every((v) => v.toLowerCase() === serializedVals[0].toLowerCase()) ? serializedVals[0] : null;
+}
+function expandFourSides(data) {
+	const s0 = [data[0]];
+	const s1 = data.length > 1 ? [data[1]] : s0;
+	return [
+		s0,
+		s1,
+		data.length > 2 ? [data[2]] : s0,
+		data.length > 3 ? [data[3]] : s1
+	];
+}
+function formatFourSides(a, b, c, d) {
+	if (a === b && a === c && a === d) return a;
+	if (a === c && b === d) return `${a} ${b}`;
+	if (b === d) return `${a} ${b} ${c}`;
+	return `${a} ${b} ${c} ${d}`;
+}
+function getFunctionName(token) {
+	if (token.type === "function") {
+		if ("name" in token && typeof token.name === "string") return token.name.toLowerCase();
+		if ("value" in token && typeof token.value === "string") return token.value.toLowerCase();
+	}
+	return "";
+}
+function isRepeatKeyword(token) {
+	return token.type === "ident" && REPEAT_KEYWORDS.has(token.value.toLowerCase());
+}
+function isAttachmentKeyword(token) {
+	return token.type === "ident" && ATTACHMENT_KEYWORDS.has(token.value.toLowerCase());
+}
+function isBoxKeyword(token) {
+	return token.type === "ident" && BOX_KEYWORDS.has(token.value.toLowerCase());
+}
+function isClipOnlyBoxKeyword(keyword) {
+	return CLIP_ONLY_BOX_KEYWORDS.has(keyword.toLowerCase());
+}
+function isColorToken(token) {
+	if (token.type === "hash") return true;
+	if (token.type === "ident") return NAMED_COLORS.has(token.value.toLowerCase());
+	if (token.type === "function") return COLOR_FUNCTIONS.has(getFunctionName(token));
+	return false;
+}
+function isImageToken(token) {
+	if (token.type === "ident" && token.value.toLowerCase() === "none") return true;
+	if (token.type === "url") return true;
+	if (token.type === "function") return IMAGE_FUNCTIONS.has(getFunctionName(token));
+	return false;
+}
+function isPositionOrSizeValue(token) {
+	if (token.type === "ident") return POSITION_OR_SIZE_KEYWORDS.has(token.value.toLowerCase());
+	if (token.type === "percentage" || token.type === "dimension") return true;
+	if (token.type === "number" && token.value === 0) return true;
+	if (token.type === "function") return MATH_FUNCTIONS.has(getFunctionName(token));
+	return false;
+}
+function extractSizeTokens(tokens, slashIdx) {
+	if (slashIdx + 1 >= tokens.length) return null;
+	const first = tokens[slashIdx + 1];
+	if (first.type === "ident" && ["cover", "contain"].includes(first.value.toLowerCase())) return {
+		size: [first],
+		consumed: 1
 	};
-
+	const isSizeVal = (t) => t.type === "ident" && t.value.toLowerCase() === "auto" || t.type === "percentage" || t.type === "dimension" || t.type === "number" && t.value === 0 || t.type === "function" && MATH_FUNCTIONS.has(getFunctionName(t));
+	if (!isSizeVal(first)) return null;
+	if (slashIdx + 2 < tokens.length && isSizeVal(tokens[slashIdx + 2])) return {
+		size: [first, tokens[slashIdx + 2]],
+		consumed: 2
+	};
+	return {
+		size: [first],
+		consumed: 1
+	};
+}
+function mapBoxKeywords(keywords) {
+	if (keywords.length === 0) return {
+		origin: "padding-box",
+		clip: "border-box"
+	};
+	if (keywords.length === 1) {
+		const a = keywords[0].toLowerCase();
+		return isClipOnlyBoxKeyword(a) ? {
+			origin: "border-box",
+			clip: a
+		} : {
+			origin: a,
+			clip: a
+		};
+	}
+	if (keywords.length === 2) {
+		const a = keywords[0].toLowerCase();
+		const b = keywords[1].toLowerCase();
+		const aClip = isClipOnlyBoxKeyword(a);
+		const bClip = isClipOnlyBoxKeyword(b);
+		if (aClip && bClip) return {
+			origin: "border-box",
+			clip: `${a} ${b}`
+		};
+		if (aClip) return {
+			origin: b,
+			clip: a
+		};
+		if (bClip) return {
+			origin: a,
+			clip: b
+		};
+		return {
+			origin: a,
+			clip: b
+		};
+	}
+	if (keywords.length === 3) {
+		const clips = keywords.filter(isClipOnlyBoxKeyword);
+		const origins = keywords.filter((k) => !isClipOnlyBoxKeyword(k));
+		return clips.length === 2 && origins.length === 1 ? {
+			origin: origins[0],
+			clip: clips.join(" ")
+		} : null;
+	}
+	return null;
+}
+function parseRepeatTokens(tokens) {
+	if (tokens.length === 1) {
+		const val = tokens[0].value?.toString().toLowerCase();
+		if (val === "repeat-x") return [{
+			type: "ident",
+			value: "repeat"
+		}, {
+			type: "ident",
+			value: "no-repeat"
+		}];
+		if (val === "repeat-y") return [{
+			type: "ident",
+			value: "no-repeat"
+		}, {
+			type: "ident",
+			value: "repeat"
+		}];
+		return [tokens[0]];
+	}
+	return tokens.length === 2 ? tokens : null;
+}
+function normalizePositionTokens(tokens) {
+	if (tokens.length === 1) {
+		const t0 = tokens[0];
+		if (t0.type === "ident") {
+			const v = t0.value.toLowerCase();
+			if (v === "left" || v === "right") return [t0, {
+				type: "ident",
+				value: "center"
+			}];
+			if (v === "top" || v === "bottom") return [{
+				type: "ident",
+				value: "center"
+			}, t0];
+			if (v === "center") return [t0, t0];
+		} else return [t0, {
+			type: "percentage",
+			value: 50,
+			sign: null
+		}];
+	}
+	if (tokens.length === 2 && tokens[0].type === "ident" && tokens[1].type === "ident") {
+		const [t0, t1] = tokens;
+		const v0 = t0.value.toLowerCase();
+		const v1 = t1.value.toLowerCase();
+		const isHoriz = (v) => v === "left" || v === "right";
+		const isVert = (v) => v === "top" || v === "bottom";
+		if (isVert(v0) && isHoriz(v1) || isVert(v0) && v1 === "center") return [t1, t0];
+	}
+	return tokens;
+}
+function normalizeSizeTokens(tokens) {
+	if (tokens.length === 1) {
+		const t0 = tokens[0];
+		if (t0.type === "ident" && ["cover", "contain"].includes(t0.value.toLowerCase())) return [t0];
+		return [t0, {
+			type: "ident",
+			value: "auto"
+		}];
+	}
+	return tokens;
+}
+function joinWithWhitespace(tokens) {
+	const res = [];
+	for (let i = 0; i < tokens.length; i++) {
+		if (i > 0) res.push({
+			type: "whitespace",
+			value: " "
+		});
+		res.push(tokens[i]);
+	}
+	return res;
+}
+function expandBackground(values) {
+	const cssWide = tryExpandCssWide(filterSignificantTokens(values), SHORTHANDS_DATA["background"]);
+	if (cssWide) return cssWide;
+	const layers = splitTokensByComma(values);
+	const numLayers = layers.length;
+	if (numLayers === 0) return null;
+	const imageLayers = [];
+	const positionLayers = [];
+	const sizeLayers = [];
+	const repeatLayers = [];
+	const attachmentLayers = [];
+	const originLayers = [];
+	const clipLayers = [];
+	let parsedColor = null;
+	for (let i = 0; i < numLayers; i++) {
+		const layerClean = filterSignificantTokens(layers[i]);
+		if (layerClean.length === 0) return null;
+		const slashIdx = layerClean.findIndex((t) => t.type === "delim" && t.value === "/");
+		let sizeTokens = null;
+		if (slashIdx !== -1) {
+			const sizeResult = extractSizeTokens(layerClean, slashIdx);
+			if (!sizeResult) return null;
+			sizeTokens = sizeResult.size;
+			layerClean.splice(slashIdx, 1 + sizeResult.consumed);
+		}
+		const repeatTokens = [];
+		const attachmentTokens = [];
+		const boxKeywords = [];
+		let colorTokens = null;
+		let imageTokens = null;
+		const positionTokens = [];
+		for (const token of layerClean) if (isRepeatKeyword(token)) repeatTokens.push(token);
+		else if (isAttachmentKeyword(token)) attachmentTokens.push(token);
+		else if (isBoxKeyword(token)) boxKeywords.push(token.value);
+		else if (isColorToken(token)) {
+			if (i !== numLayers - 1 || colorTokens !== null) return null;
+			colorTokens = [token];
+		} else if (isImageToken(token)) {
+			if (imageTokens !== null) return null;
+			imageTokens = [token];
+		} else if (isPositionOrSizeValue(token)) positionTokens.push(token);
+		else return null;
+		if (sizeTokens !== null && positionTokens.length === 0 || positionTokens.length > 4) return null;
+		const boxMapped = mapBoxKeywords(boxKeywords);
+		if (!boxMapped) return null;
+		const repeatMapped = parseRepeatTokens(repeatTokens);
+		imageLayers.push(imageTokens || [{
+			type: "ident",
+			value: "none"
+		}]);
+		positionLayers.push(positionTokens.length > 0 ? joinWithWhitespace(normalizePositionTokens(positionTokens)) : joinWithWhitespace([{
+			type: "percentage",
+			value: 0,
+			sign: null
+		}, {
+			type: "percentage",
+			value: 0,
+			sign: null
+		}]));
+		sizeLayers.push(sizeTokens !== null ? joinWithWhitespace(normalizeSizeTokens(sizeTokens)) : [{
+			type: "ident",
+			value: "auto"
+		}]);
+		repeatLayers.push(repeatMapped ? joinWithWhitespace(repeatMapped) : [{
+			type: "ident",
+			value: "repeat"
+		}]);
+		attachmentLayers.push(attachmentTokens.length > 0 ? joinWithWhitespace(attachmentTokens) : [{
+			type: "ident",
+			value: "scroll"
+		}]);
+		originLayers.push([{
+			type: "ident",
+			value: boxMapped.origin
+		}]);
+		clipLayers.push(joinWithWhitespace(boxMapped.clip.split(" ").map((c) => ({
+			type: "ident",
+			value: c
+		}))));
+		if (colorTokens !== null) parsedColor = colorTokens;
+	}
+	const joinLayers = (layerList) => {
+		const res = [];
+		for (let i = 0; i < layerList.length; i++) {
+			if (i > 0) res.push({
+				type: "comma",
+				value: ","
+			}, {
+				type: "whitespace",
+				value: " "
+			});
+			res.push(...layerList[i]);
+		}
+		return res;
+	};
+	return {
+		"background-image": joinLayers(imageLayers),
+		"background-position": joinLayers(positionLayers),
+		"background-size": joinLayers(sizeLayers),
+		"background-repeat": joinLayers(repeatLayers),
+		"background-attachment": joinLayers(attachmentLayers),
+		"background-origin": joinLayers(originLayers),
+		"background-clip": joinLayers(clipLayers),
+		"background-color": parsedColor || [{
+			type: "ident",
+			value: "transparent"
+		}]
+	};
+}
+function contractBackground(longhands) {
+	const image = longhands["background-image"];
+	const position = longhands["background-position"];
+	const size = longhands["background-size"];
+	const repeat = longhands["background-repeat"];
+	const attachment = longhands["background-attachment"];
+	const origin = longhands["background-origin"];
+	const clip = longhands["background-clip"];
+	const color = longhands["background-color"];
+	if (!image || !position || !size || !repeat || !attachment || !origin || !clip || !color) return null;
+	const imageLayers = splitTokensByComma(image);
+	const positionLayers = splitTokensByComma(position);
+	const sizeLayers = splitTokensByComma(size);
+	const repeatLayers = splitTokensByComma(repeat);
+	const attachmentLayers = splitTokensByComma(attachment);
+	const originLayers = splitTokensByComma(origin);
+	const clipLayers = splitTokensByComma(clip);
+	const numLayers = imageLayers.length;
+	if (positionLayers.length !== numLayers || sizeLayers.length !== numLayers || repeatLayers.length !== numLayers || attachmentLayers.length !== numLayers || originLayers.length !== numLayers || clipLayers.length !== numLayers) return null;
+	const layerStrings = [];
+	for (let i = 0; i < numLayers; i++) {
+		const imgVal = serialize(imageLayers[i]).trim();
+		const posVal = serialize(positionLayers[i]).trim();
+		const sizeVal = serialize(sizeLayers[i]).trim();
+		const repVal = serialize(repeatLayers[i]).trim();
+		const attVal = serialize(attachmentLayers[i]).trim();
+		const origVal = serialize(originLayers[i]).trim();
+		const clipVal = serialize(clipLayers[i]).trim();
+		const parts = [];
+		if (imgVal !== "none" && imgVal !== "") parts.push(imgVal);
+		const isInitialPosition = posVal !== "" && [
+			"0% 0%",
+			"left top",
+			"0% center",
+			"center left",
+			"left center"
+		].includes(posVal.toLowerCase());
+		const isInitialSize = sizeVal !== "" && ["auto", "auto auto"].includes(sizeVal.toLowerCase());
+		if (posVal !== "" && sizeVal !== "") {
+			if (!isInitialSize) parts.push(`${posVal} / ${sizeVal}`);
+			else if (!isInitialPosition) parts.push(posVal);
+		}
+		const isInitialRepeat = repVal !== "" && ["repeat", "repeat repeat"].includes(repVal.toLowerCase());
+		if (repVal !== "" && !isInitialRepeat) {
+			const tokens = repeatLayers[i].filter((t) => t.type !== "whitespace" && t.type !== "EOF");
+			if (tokens.length === 2) {
+				const v0 = tokens[0].value?.toString().toLowerCase();
+				const v1 = tokens[1].value?.toString().toLowerCase();
+				if (v0 === "repeat" && v1 === "no-repeat") parts.push("repeat-x");
+				else if (v0 === "no-repeat" && v1 === "repeat") parts.push("repeat-y");
+				else if (v0 === v1 && v0) parts.push(v0);
+				else parts.push(`${v0} ${v1}`);
+			} else parts.push(repVal);
+		}
+		if (attVal !== "" && attVal.toLowerCase() !== "scroll") parts.push(attVal);
+		if (origVal !== "" && clipVal !== "") {
+			const isClipOnly = ["text", "border-area"].includes(clipVal.toLowerCase()) || clipVal.toLowerCase().includes("text") || clipVal.toLowerCase().includes("border-area");
+			const defaultOrigin = isClipOnly ? "border-box" : "padding-box";
+			if (origVal.toLowerCase() !== "padding-box" || clipVal.toLowerCase() !== "border-box") {
+				if (isClipOnly) parts.push(origVal.toLowerCase() === defaultOrigin ? clipVal : `${origVal} ${clipVal}`);
+				else parts.push(origVal.toLowerCase() === clipVal.toLowerCase() ? origVal : `${origVal} ${clipVal}`);
+			}
+		}
+		if (i === numLayers - 1) {
+			const colVal = serialize(color).trim();
+			if (colVal !== "" && colVal.toLowerCase() !== "transparent") parts.push(colVal);
+		}
+		if (parts.length === 0) parts.push("none");
+		layerStrings.push(parts.join(" "));
+	}
+	return layerStrings.join(", ");
+}
+function isValidLengthOrPercentage(val, allowNegative = true) {
+	if (val.type === "ident") {
+		const kw = (val.value ?? "").toString().toLowerCase();
+		return kw === "auto" || CSS_WIDE_KEYWORDS$2.has(kw);
+	}
+	if (val.type === "dimension") {
+		if (!allowNegative && typeof val.value === "number" && val.value < 0) return false;
+		return LENGTH_UNITS.has((val.unit ?? "").toLowerCase());
+	}
+	if (val.type === "percentage") return allowNegative || typeof val.value !== "number" || val.value >= 0;
+	if (val.type === "number" && val.value === 0) return true;
+	if (val.type === "function") {
+		const fnName = getFunctionName(val);
+		return MATH_FUNCTIONS.has(fnName) || fnName === "env";
+	}
+	return false;
+}
+const expandBox = (physical, logical) => (values) => {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0) return null;
+	const isLogical = filtered[0].type === "ident" && filtered[0].value.toLowerCase() === "logical";
+	const data = isLogical ? filtered.slice(1) : filtered;
+	if (data.length < 1 || data.length > 4) return null;
+	const isLengthBox = physical[0].startsWith("margin") || physical[0].startsWith("padding") || physical[0] === "top" || physical[0].startsWith("scroll-") || physical[0].startsWith("border-") && physical[0].endsWith("-width");
+	const allowNegative = !physical[0].startsWith("padding") && !physical[0].startsWith("scroll-padding") && !(physical[0].startsWith("border-") && physical[0].endsWith("-width"));
+	if (isLengthBox && !data.every((v) => isValidLengthOrPercentage(v, allowNegative))) return null;
+	const target = isLogical ? logical : physical;
+	const [s0, s1, s2, s3] = expandFourSides(data);
+	return {
+		[target[0]]: s0,
+		[target[1]]: s1,
+		[target[2]]: s2,
+		[target[3]]: s3
+	};
+};
+const contractBox = (physical, logical) => (values) => {
+	const t = values[physical[0]];
+	const r = values[physical[1]];
+	const b = values[physical[2]];
+	const l = values[physical[3]];
+	if (t && r && b && l) {
+		const serialized = [
+			t,
+			r,
+			b,
+			l
+		].map((v) => serialize(v).trim());
+		const cssWide = checkUniformCssWide(serialized);
+		if (cssWide !== void 0) return cssWide;
+		return formatFourSides(serialized[0], serialized[1], serialized[2], serialized[3]);
+	}
+	const lbs = values[logical[0]];
+	const lbe = values[logical[2]];
+	const lis = values[logical[1]];
+	const lie = values[logical[3]];
+	if (lbs && lbe && lis && lie) {
+		const [sbs, sis, sbe, sie] = [
+			lbs,
+			lis,
+			lbe,
+			lie
+		].map((v) => serialize(v).trim());
+		const cssWide = checkUniformCssWide([
+			sbs,
+			sis,
+			sbe,
+			sie
+		]);
+		if (cssWide !== void 0) return cssWide;
+		return `logical ${formatFourSides(sbs, sis, sbe, sie)}`;
+	}
+	return null;
+};
+const expandTwoValue = (longhands) => (values) => {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length < 1 || filtered.length > 2) return null;
+	if (longhands[0].startsWith("padding") || longhands[0].endsWith("-width")) {
+		for (const v of filtered) if ((v.type === "dimension" || v.type === "percentage" || v.type === "number") && typeof v.value === "number" && v.value < 0) return null;
+	}
+	return {
+		[longhands[0]]: [filtered[0]],
+		[longhands[1]]: filtered.length > 1 ? [filtered[1]] : [filtered[0]]
+	};
+};
+const contractTwoValue = (longhands) => (values) => {
+	const v1 = values[longhands[0]];
+	const v2 = values[longhands[1]];
+	if (!v1 || !v2) return null;
+	const s1 = serialize(v1).trim();
+	const s2 = serialize(v2).trim();
+	const cssWide = checkUniformCssWide([s1, s2]);
+	if (cssWide !== void 0) return cssWide;
+	return s1 === s2 ? s1 : `${s1} ${s2}`;
+};
+function formatBorderSideValue(widthVal, styleVal, colorVal) {
+	const w = widthVal.trim();
+	const s = styleVal.trim();
+	const c = colorVal.trim();
+	const cssWide = checkUniformCssWide([
+		w,
+		s,
+		c
+	]);
+	if (cssWide !== void 0) return cssWide;
+	const isInitialWidth = w.toLowerCase() === "medium";
+	const isInitialStyle = s.toLowerCase() === "none";
+	const isInitialColor = c.toLowerCase() === "currentcolor";
+	if (isInitialWidth && isInitialStyle && isInitialColor) return "none";
+	const parts = [];
+	if (!isInitialWidth) parts.push(w);
+	if (!isInitialStyle) parts.push(s);
+	if (!isInitialColor) parts.push(c);
+	return parts.length === 0 ? "none" : parts.join(" ");
+}
+function parseBorderTriplet(filtered, allowAutoStyle = false) {
+	let widthVal = [{
+		type: "ident",
+		value: "medium"
+	}];
+	let styleVal = [{
+		type: "ident",
+		value: "none"
+	}];
+	let colorVal = [{
+		type: "ident",
+		value: "currentcolor"
+	}];
+	for (const val of filtered) if (val.type === "ident") {
+		const v = val.value.toLowerCase();
+		if (BORDER_WIDTH_KEYWORDS.has(v)) widthVal = [val];
+		else if (BORDER_STYLE_KEYWORDS.has(v) || allowAutoStyle && v === "auto") styleVal = [val];
+		else colorVal = [val];
+	} else if (val.type === "dimension" || val.type === "percentage" || val.type === "number") widthVal = [val];
+	else colorVal = [val];
+	return {
+		widthVal,
+		styleVal,
+		colorVal
+	};
+}
+const BORDER_IMAGE_LONGHANDS = [
+	"border-image-source",
+	"border-image-slice",
+	"border-image-width",
+	"border-image-outset",
+	"border-image-repeat"
+];
+const BORDER_ALL_LONGHANDS = [
+	"border-top-width",
+	"border-right-width",
+	"border-bottom-width",
+	"border-left-width",
+	"border-top-style",
+	"border-right-style",
+	"border-bottom-style",
+	"border-left-style",
+	"border-top-color",
+	"border-right-color",
+	"border-bottom-color",
+	"border-left-color",
+	...BORDER_IMAGE_LONGHANDS
+];
+function createInitialBorderImageValues(source = [{
+	type: "ident",
+	value: "none"
+}]) {
+	return {
+		"border-image-source": source,
+		"border-image-slice": [{
+			type: "percentage",
+			value: 100,
+			sign: null
+		}],
+		"border-image-width": [{
+			type: "number",
+			value: 1,
+			sign: null,
+			numberType: "integer"
+		}],
+		"border-image-outset": [{
+			type: "number",
+			value: 0,
+			sign: null,
+			numberType: "integer"
+		}],
+		"border-image-repeat": [{
+			type: "ident",
+			value: "stretch"
+		}]
+	};
+}
+function isInitialBorderImage(values) {
+	const src = values["border-image-source"];
+	const slice = values["border-image-slice"];
+	const width = values["border-image-width"];
+	const outset = values["border-image-outset"];
+	const repeat = values["border-image-repeat"];
+	if (!src || !slice || !width || !outset || !repeat) return false;
+	const sSrc = serialize(src).trim().toLowerCase();
+	const sSlice = serialize(slice).trim().toLowerCase();
+	const sWidth = serialize(width).trim().toLowerCase();
+	const sOutset = serialize(outset).trim().toLowerCase();
+	const sRepeat = serialize(repeat).trim().toLowerCase();
+	return (sSrc === "none" || sSrc === "") && (sSlice === "100%" || sSlice === "100% 100% 100% 100%" || sSlice === "") && (sWidth === "1" || sWidth === "1 1 1 1" || sWidth === "") && (sOutset === "0" || sOutset === "0px" || sOutset === "0s" || sOutset === "0 0 0 0" || sOutset === "") && (sRepeat === "stretch" || sRepeat === "stretch stretch" || sRepeat === "");
+}
+const expandBorderSide = (prefix) => (values) => {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0 || filtered.length > 3) return null;
+	const longhands = [
+		`${prefix}-width`,
+		`${prefix}-style`,
+		`${prefix}-color`
+	];
+	const cssWide = tryExpandCssWide(filtered, longhands);
+	if (cssWide) return cssWide;
+	const { widthVal, styleVal, colorVal } = parseBorderTriplet(filtered);
+	return {
+		[longhands[0]]: widthVal,
+		[longhands[1]]: styleVal,
+		[longhands[2]]: colorVal
+	};
+};
+const contractBorderSide = (prefix) => (values) => {
+	const w = values[`${prefix}-width`];
+	const s = values[`${prefix}-style`];
+	const c = values[`${prefix}-color`];
+	if (!w || !s || !c) return null;
+	return formatBorderSideValue(serialize(w), serialize(s), serialize(c));
+};
+function expandBorder(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0 || filtered.length > 3) return null;
+	const cssWide = tryExpandCssWide(filtered, BORDER_ALL_LONGHANDS);
+	if (cssWide) return cssWide;
+	const { widthVal, styleVal, colorVal } = parseBorderTriplet(filtered);
+	return {
+		"border-top-width": widthVal,
+		"border-right-width": widthVal,
+		"border-bottom-width": widthVal,
+		"border-left-width": widthVal,
+		"border-top-style": styleVal,
+		"border-right-style": styleVal,
+		"border-bottom-style": styleVal,
+		"border-left-style": styleVal,
+		"border-top-color": colorVal,
+		"border-right-color": colorVal,
+		"border-bottom-color": colorVal,
+		"border-left-color": colorVal,
+		...createInitialBorderImageValues()
+	};
+}
+function contractBorder(values) {
+	for (const lh of BORDER_ALL_LONGHANDS) if (!values[lh]) return null;
+	const allSerialized = BORDER_ALL_LONGHANDS.map((lh) => serialize(values[lh]).trim());
+	const cssWide = checkUniformCssWide(allSerialized);
+	if (cssWide !== void 0) return cssWide;
+	if (!isInitialBorderImage(values)) return null;
+	const [w0, w1, w2, w3, s0, s1, s2, s3, c0, c1, c2, c3] = allSerialized;
+	if (w0 !== w1 || w0 !== w2 || w0 !== w3) return null;
+	if (s0 !== s1 || s0 !== s2 || s0 !== s3) return null;
+	if (c0 !== c1 || c0 !== c2 || c0 !== c3) return null;
+	return formatBorderSideValue(w0, s0, c0);
+}
+function expandBorderImage(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0) return null;
+	const cssWide = tryExpandCssWide(filtered, BORDER_IMAGE_LONGHANDS);
+	if (cssWide) return cssWide;
+	if (filtered.length === 1 && filtered[0].type === "ident" && filtered[0].value.toLowerCase() === "none") return createInitialBorderImageValues();
+	if (filtered.some((t) => t.type === "function" && getFunctionName(t) === "var")) return expandUniformLonghands(BORDER_IMAGE_LONGHANDS, values);
+	let source = [{
+		type: "ident",
+		value: "none"
+	}];
+	for (const token of filtered) if (token.type === "url" || token.type === "function" && [
+		"linear-gradient",
+		"radial-gradient",
+		"conic-gradient",
+		"image",
+		"image-set"
+	].includes(getFunctionName(token))) source = [token];
+	return createInitialBorderImageValues(source);
+}
+function contractBorderImage(values) {
+	for (const lh of BORDER_IMAGE_LONGHANDS) if (!values[lh]) return null;
+	const allVals = BORDER_IMAGE_LONGHANDS.map((lh) => serialize(values[lh]).trim());
+	const cssWide = checkUniformCssWide(allVals, true);
+	if (cssWide !== void 0) return cssWide;
+	if (isInitialBorderImage(values)) return "none";
+	const [sSrc, sSlice, sWidth, sOutset, sRepeat] = allVals;
+	return (sSlice === "100%" || sSlice === "100% 100% 100% 100%") && (sWidth === "1" || sWidth === "1 1 1 1") && (sOutset === "0" || sOutset === "0px" || sOutset === "0s" || sOutset === "0 0 0 0") && (sRepeat === "stretch" || sRepeat === "stretch stretch") ? sSrc : null;
+}
+function expandOutline(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0 || filtered.length > 3) return null;
+	const cssWide = tryExpandCssWide(filtered, [
+		"outline-color",
+		"outline-style",
+		"outline-width"
+	]);
+	if (cssWide) return cssWide;
+	const { widthVal, styleVal, colorVal } = parseBorderTriplet(filtered, true);
+	return {
+		"outline-color": colorVal,
+		"outline-style": styleVal,
+		"outline-width": widthVal
+	};
+}
+function contractOutline(values) {
+	const c = values["outline-color"];
+	const s = values["outline-style"];
+	const w = values["outline-width"];
+	if (!c || !s || !w) return null;
+	const sc = serialize(c).trim();
+	const ss = serialize(s).trim();
+	const sw = serialize(w).trim();
+	const cssWide = checkUniformCssWide([
+		sc,
+		ss,
+		sw
+	]);
+	if (cssWide !== void 0) return cssWide;
+	const isInitialColor = sc.toLowerCase() === "currentcolor";
+	const isInitialStyle = ss.toLowerCase() === "none";
+	const isInitialWidth = sw.toLowerCase() === "medium";
+	if (isInitialColor && isInitialStyle && isInitialWidth) return "none";
+	const parts = [];
+	if (!isInitialColor) parts.push(sc);
+	if (!isInitialStyle) parts.push(ss);
+	if (!isInitialWidth) parts.push(sw);
+	return parts.length === 0 ? "none" : parts.join(" ");
+}
+const FONT_VARIANT_LONGHANDS = [
+	"font-variant-ligatures",
+	"font-variant-caps",
+	"font-variant-alternates",
+	"font-variant-numeric",
+	"font-variant-east-asian",
+	"font-variant-position",
+	"font-variant-emoji"
+];
+function expandFontVariant(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0) return null;
+	const wide = tryExpandCssWide(filtered, FONT_VARIANT_LONGHANDS);
+	if (wide) return wide;
+	if (filtered.length === 1 && filtered[0].type === "ident") {
+		const v = filtered[0].value.toLowerCase();
+		if (v === "normal") return expandUniformLonghands(FONT_VARIANT_LONGHANDS, [{
+			type: "ident",
+			value: "normal"
+		}]);
+		if (v === "none") {
+			const res = expandUniformLonghands(FONT_VARIANT_LONGHANDS, [{
+				type: "ident",
+				value: "normal"
+			}]);
+			res["font-variant-ligatures"] = [{
+				type: "ident",
+				value: "none"
+			}];
+			return res;
+		}
+	}
+	const buckets = {
+		"font-variant-ligatures": [],
+		"font-variant-caps": [],
+		"font-variant-alternates": [],
+		"font-variant-numeric": [],
+		"font-variant-east-asian": [],
+		"font-variant-position": [],
+		"font-variant-emoji": []
+	};
+	for (const token of filtered) if (token.type === "ident") {
+		const val = token.value.toLowerCase();
+		if (val === "normal") continue;
+		if (val === "none" || FONT_VARIANT_LIGATURES_KEYWORDS.has(val)) buckets["font-variant-ligatures"].push(token);
+		else if (FONT_VARIANT_CAPS_KEYWORDS.has(val)) buckets["font-variant-caps"].push(token);
+		else if (val === "historical-forms") buckets["font-variant-alternates"].push(token);
+		else if (FONT_VARIANT_NUMERIC_KEYWORDS.has(val)) buckets["font-variant-numeric"].push(token);
+		else if (FONT_VARIANT_EAST_ASIAN_KEYWORDS.has(val)) buckets["font-variant-east-asian"].push(token);
+		else if (FONT_VARIANT_POSITION_KEYWORDS.has(val)) buckets["font-variant-position"].push(token);
+		else if (FONT_VARIANT_EMOJI_KEYWORDS.has(val)) buckets["font-variant-emoji"].push(token);
+		else return null;
+	} else if (token.type === "function" && FONT_VARIANT_ALTERNATES_FUNCTIONS.has(getFunctionName(token))) buckets["font-variant-alternates"].push(token);
+	else return null;
+	const norm = [{
+		type: "ident",
+		value: "normal"
+	}];
+	const res = {};
+	for (const lh of FONT_VARIANT_LONGHANDS) res[lh] = buckets[lh].length > 0 ? joinWithWhitespace(buckets[lh]) : norm;
+	return res;
+}
+function contractFontVariant(values) {
+	for (const lh of FONT_VARIANT_LONGHANDS) if (!values[lh]) return null;
+	const allVals = FONT_VARIANT_LONGHANDS.map((lh) => serialize(values[lh]).trim());
+	const wide = checkUniformCssWide(allVals);
+	if (wide !== void 0) return wide;
+	if (allVals.every((v) => v.toLowerCase() === "normal")) return "normal";
+	if (allVals[0].toLowerCase() === "none") return allVals.slice(1).every((v) => v.toLowerCase() === "normal") ? "none" : null;
+	const nonNormal = allVals.filter((v) => v.toLowerCase() !== "normal");
+	return nonNormal.length === 0 ? "normal" : nonNormal.join(" ");
+}
+const FONT_LONGHANDS = [
+	"font-style",
+	"font-variant-caps",
+	"font-variant-ligatures",
+	"font-variant-alternates",
+	"font-variant-numeric",
+	"font-variant-east-asian",
+	"font-variant-position",
+	"font-variant-emoji",
+	"font-weight",
+	"font-stretch",
+	"font-size",
+	"line-height",
+	"font-family"
+];
+function expandFont(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0) return null;
+	if (filtered.length === 1 && filtered[0].type === "ident" && SYSTEM_FONT_KEYWORDS.has(filtered[0].value.toLowerCase())) return expandUniformLonghands(FONT_LONGHANDS, [filtered[0]]);
+	const norm = [{
+		type: "ident",
+		value: "normal"
+	}];
+	let styleVal = norm;
+	let capsVal = norm;
+	let weightVal = norm;
+	let stretchVal = norm;
+	let lineHeightVal = norm;
+	let i = 0;
+	while (i < filtered.length) {
+		const token = filtered[i];
+		if (token.type === "ident") {
+			const v = token.value.toLowerCase();
+			if (v === "italic" || v === "oblique") {
+				styleVal = [token];
+				i++;
+				continue;
+			}
+			if (v === "small-caps") {
+				capsVal = [token];
+				i++;
+				continue;
+			}
+			if (v === "bold" || v === "bolder" || v === "lighter") {
+				weightVal = [token];
+				i++;
+				continue;
+			}
+			if (FONT_STRETCH_KEYWORDS.has(v)) {
+				stretchVal = [token];
+				i++;
+				continue;
+			}
+			if (v === "normal") {
+				i++;
+				continue;
+			}
+		} else if (token.type === "number" && typeof token.value === "number" && token.value >= 1 && token.value <= 1e3) {
+			weightVal = [token];
+			i++;
+			continue;
+		}
+		break;
+	}
+	if (i >= filtered.length) return null;
+	const sizeToken = filtered[i];
+	if (!(sizeToken.type === "dimension" || sizeToken.type === "percentage" || sizeToken.type === "number" && sizeToken.value === 0 || sizeToken.type === "ident" && FONT_SIZE_KEYWORDS.has(sizeToken.value.toLowerCase()) || sizeToken.type === "function" && MATH_FUNCTIONS.has(getFunctionName(sizeToken)))) return null;
+	const sizeVal = [sizeToken];
+	i++;
+	if (i < filtered.length && filtered[i].type === "delim" && filtered[i].value === "/") {
+		i++;
+		if (i >= filtered.length) return null;
+		const lhToken = filtered[i];
+		if (!(lhToken.type === "number" || lhToken.type === "dimension" || lhToken.type === "percentage" || lhToken.type === "ident" && lhToken.value.toLowerCase() === "normal" || lhToken.type === "function" && MATH_FUNCTIONS.has(getFunctionName(lhToken)))) return null;
+		lineHeightVal = [lhToken];
+		i++;
+	}
+	if (i >= filtered.length) return null;
+	const lastConsumed = lineHeightVal !== norm ? lineHeightVal[0] : sizeToken;
+	const lastIdx = values.indexOf(lastConsumed);
+	let familyVal;
+	if (lastIdx !== -1) {
+		familyVal = values.slice(lastIdx + 1).filter((t) => t.type !== "EOF");
+		while (familyVal.length > 0 && (familyVal[0].type === "whitespace" || familyVal[0].type === "comment")) familyVal.shift();
+	} else familyVal = filtered.slice(i);
+	const res = expandUniformLonghands(FONT_LONGHANDS, norm);
+	res["font-style"] = styleVal;
+	res["font-variant-caps"] = capsVal;
+	res["font-weight"] = weightVal;
+	res["font-stretch"] = stretchVal;
+	res["font-size"] = sizeVal;
+	res["line-height"] = lineHeightVal;
+	res["font-family"] = familyVal;
+	return res;
+}
+const FONT_PRIMARY_LONGHANDS = [
+	"font-style",
+	"font-variant-caps",
+	"font-weight",
+	"font-stretch",
+	"font-size",
+	"line-height",
+	"font-family"
+];
+const FONT_OTHER_VARIANTS = [
+	"font-variant-ligatures",
+	"font-variant-alternates",
+	"font-variant-numeric",
+	"font-variant-east-asian",
+	"font-variant-position",
+	"font-variant-emoji"
+];
+function contractFont(values) {
+	for (const lh of FONT_PRIMARY_LONGHANDS) if (!values[lh]) return null;
+	for (const lh of FONT_OTHER_VARIANTS) if (values[lh] && serialize(values[lh]).trim().toLowerCase() !== "normal") return null;
+	const sStyle = serialize(values["font-style"]).trim();
+	const sCaps = serialize(values["font-variant-caps"]).trim();
+	const sWeight = serialize(values["font-weight"]).trim();
+	const sStretch = serialize(values["font-stretch"]).trim();
+	const sSize = serialize(values["font-size"]).trim();
+	const sLineHeight = serialize(values["line-height"]).trim();
+	const sFamily = serialize(values["font-family"], false, "font-family").trim();
+	const wide = checkUniformCssWide([
+		sStyle,
+		sCaps,
+		sWeight,
+		sStretch,
+		sSize,
+		sLineHeight,
+		sFamily
+	]);
+	if (wide !== void 0) return wide;
+	if (!sSize || !sFamily) return null;
+	const parts = [];
+	if (sStyle.toLowerCase() !== "normal") parts.push(sStyle);
+	if (sCaps.toLowerCase() !== "normal") parts.push(sCaps);
+	if (sWeight.toLowerCase() !== "normal" && sWeight !== "400") parts.push(sWeight);
+	if (sStretch.toLowerCase() !== "normal") parts.push(sStretch);
+	parts.push(sLineHeight.toLowerCase() !== "normal" ? `${sSize} / ${sLineHeight}` : sSize);
+	parts.push(sFamily);
+	return parts.join(" ");
+}
+const LIST_STYLE_LONGHANDS = [
+	"list-style-type",
+	"list-style-position",
+	"list-style-image"
+];
+function expandListStyle(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0 || filtered.length > 3) return null;
+	const wide = tryExpandCssWide(filtered, LIST_STYLE_LONGHANDS);
+	if (wide) return wide;
+	let typeVal = [{
+		type: "ident",
+		value: "disc"
+	}];
+	let posVal = [{
+		type: "ident",
+		value: "outside"
+	}];
+	let imgVal = [{
+		type: "ident",
+		value: "none"
+	}];
+	let hasType = false;
+	let hasPos = false;
+	let hasImg = false;
+	for (const token of filtered) if (token.type === "ident") {
+		const v = token.value.toLowerCase();
+		if ((v === "inside" || v === "outside") && !hasPos) {
+			posVal = [token];
+			hasPos = true;
+		} else if (v === "none") {
+			if (!hasImg && !hasType) {
+				imgVal = [token];
+				typeVal = [token];
+				hasImg = true;
+				hasType = true;
+			} else if (!hasImg) {
+				imgVal = [token];
+				hasImg = true;
+			} else if (!hasType) {
+				typeVal = [token];
+				hasType = true;
+			}
+		} else if (!hasType) {
+			typeVal = [token];
+			hasType = true;
+		} else return null;
+	} else if ((token.type === "url" || token.type === "function" && IMAGE_FUNCTIONS.has(getFunctionName(token))) && !hasImg) {
+		imgVal = [token];
+		hasImg = true;
+	} else return null;
+	return {
+		"list-style-type": typeVal,
+		"list-style-position": posVal,
+		"list-style-image": imgVal
+	};
+}
+function contractListStyle(values) {
+	const t = values["list-style-type"];
+	const p = values["list-style-position"];
+	const i = values["list-style-image"];
+	if (!t || !p || !i) return null;
+	const st = serialize(t).trim();
+	const sp = serialize(p).trim();
+	const si = serialize(i).trim();
+	const wide = checkUniformCssWide([
+		st,
+		sp,
+		si
+	]);
+	if (wide !== void 0) return wide;
+	const parts = [];
+	if (sp.toLowerCase() !== "outside") parts.push(sp);
+	if (si.toLowerCase() !== "none") parts.push(si);
+	if (st.toLowerCase() !== "disc") parts.push(st);
+	return parts.length === 0 ? "disc" : parts.join(" ");
+}
+const FLEX_LONGHANDS = [
+	"flex-grow",
+	"flex-shrink",
+	"flex-basis"
+];
+function expandFlex(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0 || filtered.length > 3) return null;
+	const wide = tryExpandCssWide(filtered, FLEX_LONGHANDS);
+	if (wide) return wide;
+	if (filtered.length === 1 && filtered[0].type === "ident") {
+		const v = filtered[0].value.toLowerCase();
+		if (v === "none") return {
+			"flex-grow": [{
+				type: "number",
+				value: 0,
+				sign: null,
+				numberType: "integer"
+			}],
+			"flex-shrink": [{
+				type: "number",
+				value: 0,
+				sign: null,
+				numberType: "integer"
+			}],
+			"flex-basis": [{
+				type: "ident",
+				value: "auto"
+			}]
+		};
+		if (v === "auto") return {
+			"flex-grow": [{
+				type: "number",
+				value: 1,
+				sign: null,
+				numberType: "integer"
+			}],
+			"flex-shrink": [{
+				type: "number",
+				value: 1,
+				sign: null,
+				numberType: "integer"
+			}],
+			"flex-basis": [{
+				type: "ident",
+				value: "auto"
+			}]
+		};
+	}
+	let grow = null;
+	let shrink = null;
+	let basis = null;
+	for (const token of filtered) if (token.type === "number") {
+		if (grow === null) grow = [token];
+		else if (shrink === null) shrink = [token];
+		else return null;
+	} else if (isValidLengthOrPercentage(token) || token.type === "ident" && FLEX_BASIS_KEYWORDS.has(token.value.toLowerCase())) {
+		if (basis === null) basis = [token];
+		else return null;
+	} else return null;
+	if (grow === null && basis === null) return null;
+	const one = [{
+		type: "number",
+		value: 1,
+		sign: null,
+		numberType: "integer"
+	}];
+	return {
+		"flex-grow": grow ?? one,
+		"flex-shrink": shrink ?? one,
+		"flex-basis": basis ?? (grow !== null ? [{
+			type: "dimension",
+			value: 0,
+			unit: "px",
+			sign: null,
+			numberType: "integer"
+		}] : [{
+			type: "ident",
+			value: "auto"
+		}])
+	};
+}
+function contractFlex(values) {
+	const g = values["flex-grow"];
+	const s = values["flex-shrink"];
+	const b = values["flex-basis"];
+	if (!g || !s || !b) return null;
+	const sg = serialize(g).trim();
+	const ss = serialize(s).trim();
+	const sb = serialize(b).trim();
+	const wide = checkUniformCssWide([
+		sg,
+		ss,
+		sb
+	]);
+	if (wide !== void 0) return wide;
+	if (sg.includes("var(") || ss.includes("var(") || sb.includes("var(")) return sg === ss && sg === sb ? sg : null;
+	if (sb.toLowerCase() === "auto") {
+		if (sg === "0" && ss === "1") return "initial";
+		if (sg === "1" && ss === "1") return "auto";
+		if (sg === "0" && ss === "0") return "none";
+	}
+	if ((sb === "0px" || sb === "0%" || sb === "0") && ss === "1") return `${sg} 1 0px`;
+	return `${sg} ${ss} ${sb}`;
+}
+function contractOverflow(values) {
+	const x = values["overflow-x"];
+	const y = values["overflow-y"];
+	if (!x || !y) return null;
+	const sx = serialize(x).trim();
+	const sy = serialize(y).trim();
+	const wide = checkUniformCssWide([sx, sy]);
+	if (wide !== void 0) return wide;
+	if (sx.includes("var(") || sy.includes("var(")) return sx === sy ? sx : null;
+	return sx === sy ? sx : `${sx} ${sy}`;
+}
+const LINE_CLAMP_LONGHANDS = [
+	"max-lines",
+	"block-ellipsis",
+	"continue"
+];
+function expandLineClamp(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0) return null;
+	const wide = tryExpandCssWide(filtered, LINE_CLAMP_LONGHANDS);
+	if (wide) return wide;
+	const autoToken = [{
+		type: "ident",
+		value: "auto"
+	}];
+	if (filtered.length === 1 && filtered[0].type === "ident" && filtered[0].value.toLowerCase() === "none") return {
+		"max-lines": [{
+			type: "ident",
+			value: "none"
+		}],
+		"block-ellipsis": autoToken,
+		"continue": autoToken
+	};
+	return {
+		"max-lines": filtered,
+		"block-ellipsis": autoToken,
+		"continue": autoToken
+	};
+}
+function contractLineClamp(values) {
+	const lines = values["max-lines"];
+	if (!lines) return null;
+	const sLines = serialize(lines).trim();
+	return sLines.toLowerCase() === "none" ? "none" : sLines;
+}
+const BORDER_RADIUS_PHYSICAL = [
+	"border-top-left-radius",
+	"border-top-right-radius",
+	"border-bottom-right-radius",
+	"border-bottom-left-radius"
+];
+function expandBorderRadius(values) {
+	const filtered = filterSignificantTokens(values);
+	if (filtered.length === 0) return null;
+	if (filtered[0].type === "ident" && filtered[0].value.toLowerCase() === "logical") return null;
+	const slashIndex = filtered.findIndex((v) => v.type === "delim" && v.value === "/");
+	let hValues;
+	let vValues;
+	if (slashIndex !== -1) {
+		hValues = filtered.slice(0, slashIndex);
+		vValues = filtered.slice(slashIndex + 1);
+		if (hValues.length === 0 || hValues.length > 4 || vValues.length === 0 || vValues.length > 4) return null;
+		if (vValues.some((v) => v.type === "delim" && v.value === "/")) return null;
+	} else {
+		if (filtered.length > 4) return null;
+		hValues = filtered;
+		vValues = filtered;
+	}
+	const hExpanded = expandFourSides(hValues);
+	const vExpanded = expandFourSides(vValues);
+	const result = {};
+	for (let i = 0; i < 4; i++) {
+		const h = hExpanded[i];
+		const v = vExpanded[i];
+		result[BORDER_RADIUS_PHYSICAL[i]] = serialize(h) === serialize(v) ? h : [
+			...h,
+			{
+				type: "whitespace",
+				value: " "
+			},
+			...v
+		];
+	}
+	return result;
+}
+function contractBorderRadius(values) {
+	if (!BORDER_RADIUS_PHYSICAL.every((prop) => values[prop] !== void 0)) return null;
+	const longhands = BORDER_RADIUS_PHYSICAL.map((prop) => values[prop]);
+	const wide = checkUniformCssWide(longhands.map((lh) => serialize(lh).trim()));
+	if (wide !== void 0) return wide;
+	const parsed = longhands.map((lh) => {
+		const filtered = filterSignificantTokens(lh);
+		return {
+			h: serialize([filtered[0]]).trim(),
+			v: serialize([filtered.length > 1 ? filtered[1] : filtered[0]]).trim()
+		};
+	});
+	const hStr = formatFourSides(parsed[0].h, parsed[1].h, parsed[2].h, parsed[3].h);
+	const vStr = formatFourSides(parsed[0].v, parsed[1].v, parsed[2].v, parsed[3].v);
+	return hStr === vStr ? hStr : `${hStr} / ${vStr}`;
+}
+const logicalLonghands = [];
+const physicalLonghands = [];
+for (const prop of SUPPORTED_PROPERTIES) if (prop !== "all" && prop !== "direction" && prop !== "unicode-bidi" && !prop.startsWith("--") && !(prop in SHORTHANDS_DATA)) {
+	if (prop in LOGICAL_MAPPING) logicalLonghands.push(prop);
+	else physicalLonghands.push(prop);
+}
+const ALL_SHORTHAND_LONGHANDS = Object.freeze([...logicalLonghands, ...physicalLonghands]);
+function isCSSWideKeywordOrVar(tokens) {
+	const nonWs = filterSignificantTokens(tokens);
+	if (nonWs.length === 1 && nonWs[0].type === "ident" && CSS_WIDE_KEYWORDS$2.has(nonWs[0].value.toLowerCase())) return true;
+	return nonWs.some((t) => t.type === "function" && getFunctionName(t) === "var");
+}
+function expandAll(value) {
+	if (!value || value.length === 0 || !isCSSWideKeywordOrVar(value)) return null;
+	return expandUniformLonghands(ALL_SHORTHAND_LONGHANDS, value);
+}
+function contractAll(longhands) {
+	let firstVal = null;
+	for (const lh of ALL_SHORTHAND_LONGHANDS) {
+		const valTokens = longhands[lh];
+		if (!valTokens || valTokens.length === 0) return null;
+		const serialized = serialize(valTokens).trim();
+		if (firstVal === null) firstVal = serialized;
+		else if (serialized !== firstVal) return null;
+	}
+	if (!firstVal) return null;
+	const lower = firstVal.toLowerCase();
+	return CSS_WIDE_KEYWORDS$2.has(lower) || lower.startsWith("var(") ? firstVal : null;
+}
+function createBoxShorthand(name, physical, logical) {
+	return {
+		longhands: SHORTHANDS_DATA[name],
+		logicalLonghands: logical,
+		expand: expandBox(physical, logical),
+		contract: contractBox(physical, logical)
+	};
+}
+function createTwoValueShorthand(name, physicalLonghands) {
+	const longhands = SHORTHANDS_DATA[name];
+	return {
+		longhands,
+		...physicalLonghands ? { physicalLonghands } : {},
+		expand: expandTwoValue(longhands),
+		contract: contractTwoValue(longhands)
+	};
+}
+function createBorderSideShorthand(prefix, longhands, physicalLonghands) {
+	return {
+		longhands,
+		...physicalLonghands ? { physicalLonghands } : {},
+		expand: expandBorderSide(prefix),
+		contract: contractBorderSide(prefix)
+	};
+}
+function createBorderAxisShorthand(name, startProp, endProp, physicalLonghands, logicalLonghands) {
+	return {
+		longhands: SHORTHANDS_DATA[name],
+		physicalLonghands,
+		logicalLonghands,
+		expand: (values) => {
+			if (filterSignificantTokens(values).length === 0) return null;
+			return {
+				[startProp]: values,
+				[endProp]: values
+			};
+		},
+		contract: (values) => {
+			const sVal = values[startProp];
+			const eVal = values[endProp];
+			const start = sVal ? serialize(sVal).trim() : contractBorderSide(startProp)(values);
+			const end = eVal ? serialize(eVal).trim() : contractBorderSide(endProp)(values);
+			return start && end && start === end ? start : null;
+		}
+	};
+}
+const SHORTHANDS = {
+	"border-block": createBorderAxisShorthand("border-block", "border-block-start", "border-block-end", [
+		"border-top-width",
+		"border-top-style",
+		"border-top-color",
+		"border-bottom-width",
+		"border-bottom-style",
+		"border-bottom-color"
+	], [
+		"border-block-start-width",
+		"border-block-start-style",
+		"border-block-start-color",
+		"border-block-end-width",
+		"border-block-end-style",
+		"border-block-end-color"
+	]),
+	"border-block-color": createTwoValueShorthand("border-block-color", ["border-top-color", "border-bottom-color"]),
+	"border-block-end": createBorderSideShorthand("border-block-end", SHORTHANDS_DATA["border-block-end"], [
+		"border-bottom-width",
+		"border-bottom-style",
+		"border-bottom-color"
+	]),
+	"border-block-start": createBorderSideShorthand("border-block-start", SHORTHANDS_DATA["border-block-start"], [
+		"border-top-width",
+		"border-top-style",
+		"border-top-color"
+	]),
+	"border-block-style": createTwoValueShorthand("border-block-style", ["border-top-style", "border-bottom-style"]),
+	"border-block-width": createTwoValueShorthand("border-block-width", ["border-top-width", "border-bottom-width"]),
+	"border": {
+		longhands: BORDER_ALL_LONGHANDS,
+		expand: expandBorder,
+		contract: contractBorder
+	},
+	"border-top": createBorderSideShorthand("border-top", [
+		"border-top-width",
+		"border-top-style",
+		"border-top-color"
+	]),
+	"border-right": createBorderSideShorthand("border-right", [
+		"border-right-width",
+		"border-right-style",
+		"border-right-color"
+	]),
+	"border-bottom": createBorderSideShorthand("border-bottom", [
+		"border-bottom-width",
+		"border-bottom-style",
+		"border-bottom-color"
+	]),
+	"border-left": createBorderSideShorthand("border-left", [
+		"border-left-width",
+		"border-left-style",
+		"border-left-color"
+	]),
+	"border-image": {
+		longhands: BORDER_IMAGE_LONGHANDS,
+		expand: expandBorderImage,
+		contract: contractBorderImage
+	},
+	"outline": {
+		longhands: [
+			"outline-color",
+			"outline-style",
+			"outline-width"
+		],
+		expand: expandOutline,
+		contract: contractOutline
+	},
+	"font-variant": {
+		longhands: FONT_VARIANT_LONGHANDS,
+		expand: expandFontVariant,
+		contract: contractFontVariant
+	},
+	"font": {
+		longhands: FONT_LONGHANDS,
+		expand: expandFont,
+		contract: contractFont
+	},
+	"list-style": {
+		longhands: LIST_STYLE_LONGHANDS,
+		expand: expandListStyle,
+		contract: contractListStyle
+	},
+	"overflow": {
+		longhands: SHORTHANDS_DATA["overflow"],
+		expand: expandTwoValue(SHORTHANDS_DATA["overflow"]),
+		contract: contractOverflow
+	},
+	"flex": {
+		longhands: FLEX_LONGHANDS,
+		expand: expandFlex,
+		contract: contractFlex
+	},
+	"-webkit-flex": {
+		longhands: FLEX_LONGHANDS,
+		expand: expandFlex,
+		contract: contractFlex
+	},
+	"line-clamp": {
+		longhands: LINE_CLAMP_LONGHANDS,
+		expand: expandLineClamp,
+		contract: contractLineClamp
+	},
+	"-webkit-line-clamp": {
+		longhands: LINE_CLAMP_LONGHANDS,
+		expand: expandLineClamp,
+		contract: contractLineClamp
+	},
+	"border-color": createBoxShorthand("border-color", [
+		"border-top-color",
+		"border-right-color",
+		"border-bottom-color",
+		"border-left-color"
+	], [
+		"border-block-start-color",
+		"border-inline-start-color",
+		"border-block-end-color",
+		"border-inline-end-color"
+	]),
+	"border-inline": createBorderAxisShorthand("border-inline", "border-inline-start", "border-inline-end", [
+		"border-left-width",
+		"border-left-style",
+		"border-left-color",
+		"border-right-width",
+		"border-right-style",
+		"border-right-color"
+	], [
+		"border-inline-start-width",
+		"border-inline-start-style",
+		"border-inline-start-color",
+		"border-inline-end-width",
+		"border-inline-end-style",
+		"border-inline-end-color"
+	]),
+	"border-inline-color": createTwoValueShorthand("border-inline-color", ["border-left-color", "border-right-color"]),
+	"border-inline-end": createBorderSideShorthand("border-inline-end", SHORTHANDS_DATA["border-inline-end"], [
+		"border-right-width",
+		"border-right-style",
+		"border-right-color"
+	]),
+	"border-inline-start": createBorderSideShorthand("border-inline-start", SHORTHANDS_DATA["border-inline-start"], [
+		"border-left-width",
+		"border-left-style",
+		"border-left-color"
+	]),
+	"border-inline-style": createTwoValueShorthand("border-inline-style", ["border-left-style", "border-right-style"]),
+	"border-inline-width": createTwoValueShorthand("border-inline-width", ["border-left-width", "border-right-width"]),
+	"border-radius": {
+		longhands: SHORTHANDS_DATA["border-radius"],
+		logicalLonghands: [
+			"border-start-start-radius",
+			"border-start-end-radius",
+			"border-end-end-radius",
+			"border-end-start-radius"
+		],
+		expand: expandBorderRadius,
+		contract: contractBorderRadius
+	},
+	"border-style": createBoxShorthand("border-style", [
+		"border-top-style",
+		"border-right-style",
+		"border-bottom-style",
+		"border-left-style"
+	], [
+		"border-block-start-style",
+		"border-inline-start-style",
+		"border-block-end-style",
+		"border-inline-end-style"
+	]),
+	"border-width": createBoxShorthand("border-width", [
+		"border-top-width",
+		"border-right-width",
+		"border-bottom-width",
+		"border-left-width"
+	], [
+		"border-block-start-width",
+		"border-inline-start-width",
+		"border-block-end-width",
+		"border-inline-end-width"
+	]),
+	"inset": createBoxShorthand("inset", [
+		"top",
+		"right",
+		"bottom",
+		"left"
+	], [
+		"inset-block-start",
+		"inset-inline-start",
+		"inset-block-end",
+		"inset-inline-end"
+	]),
+	"inset-block": createTwoValueShorthand("inset-block", ["top", "bottom"]),
+	"inset-inline": createTwoValueShorthand("inset-inline", ["left", "right"]),
+	"margin": createBoxShorthand("margin", [
+		"margin-top",
+		"margin-right",
+		"margin-bottom",
+		"margin-left"
+	], [
+		"margin-block-start",
+		"margin-inline-start",
+		"margin-block-end",
+		"margin-inline-end"
+	]),
+	"margin-block": createTwoValueShorthand("margin-block", ["margin-top", "margin-bottom"]),
+	"margin-inline": createTwoValueShorthand("margin-inline", ["margin-left", "margin-right"]),
+	"padding": createBoxShorthand("padding", [
+		"padding-top",
+		"padding-right",
+		"padding-bottom",
+		"padding-left"
+	], [
+		"padding-block-start",
+		"padding-inline-start",
+		"padding-block-end",
+		"padding-inline-end"
+	]),
+	"padding-block": createTwoValueShorthand("padding-block", ["padding-top", "padding-bottom"]),
+	"padding-inline": createTwoValueShorthand("padding-inline", ["padding-left", "padding-right"]),
+	"scroll-margin": createBoxShorthand("scroll-margin", [
+		"scroll-margin-top",
+		"scroll-margin-right",
+		"scroll-margin-bottom",
+		"scroll-margin-left"
+	], [
+		"scroll-margin-block-start",
+		"scroll-margin-inline-start",
+		"scroll-margin-block-end",
+		"scroll-margin-inline-end"
+	]),
+	"scroll-padding": createBoxShorthand("scroll-padding", [
+		"scroll-padding-top",
+		"scroll-padding-right",
+		"scroll-padding-bottom",
+		"scroll-padding-left"
+	], [
+		"scroll-padding-block-start",
+		"scroll-padding-inline-start",
+		"scroll-padding-block-end",
+		"scroll-padding-inline-end"
+	]),
+	"background": {
+		longhands: SHORTHANDS_DATA["background"],
+		expand: expandBackground,
+		contract: contractBackground
+	},
+	"all": {
+		longhands: ALL_SHORTHAND_LONGHANDS,
+		expand: expandAll,
+		contract: contractAll
+	}
+};
+function getShorthandAllLonghands(shorthand) {
+	if (shorthand.allLonghands) return shorthand.allLonghands;
+	if (!shorthand.logicalLonghands && !shorthand.physicalLonghands) return shorthand.longhands;
+	const combined = Object.freeze([
+		...shorthand.longhands,
+		...shorthand.logicalLonghands || [],
+		...shorthand.physicalLonghands || []
+	]);
+	shorthand.allLonghands = combined;
+	return combined;
+}
+const LONGHAND_TO_SHORTHAND = {};
+for (const [shorthand, def] of Object.entries(SHORTHANDS)) {
+	def.allLonghands = Object.freeze([
+		...def.longhands,
+		...def.logicalLonghands || [],
+		...def.physicalLonghands || []
+	]);
+	if (shorthand === "all") continue;
+	for (const longhand of def.longhands) {
+		if (!LONGHAND_TO_SHORTHAND[longhand]) LONGHAND_TO_SHORTHAND[longhand] = [];
+		LONGHAND_TO_SHORTHAND[longhand].push(shorthand);
+	}
+	if (def.logicalLonghands) for (const longhand of def.logicalLonghands) {
+		if (!LONGHAND_TO_SHORTHAND[longhand]) LONGHAND_TO_SHORTHAND[longhand] = [];
+		LONGHAND_TO_SHORTHAND[longhand].push(shorthand);
+	}
+	if (def.physicalLonghands) for (const longhand of def.physicalLonghands) {
+		if (!LONGHAND_TO_SHORTHAND[longhand]) LONGHAND_TO_SHORTHAND[longhand] = [];
+		if (!LONGHAND_TO_SHORTHAND[longhand].includes(shorthand)) LONGHAND_TO_SHORTHAND[longhand].push(shorthand);
+	}
+}
+// src/utils/format.ts
+/** @license Copyright 2026 Google LLC. SPDX-License-Identifier: Apache-2.0 */
+const formatter = new Intl.NumberFormat("en-US", {
+	useGrouping: false,
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 6
+});
+function formatNumber(val) {
+	if (val === 0) return "0";
+	if (!Number.isFinite(val)) {
+		if (val === Infinity) return "infinity";
+		if (val === -Infinity) return "-infinity";
+		return "nan";
+	}
+	const formatted = formatter.format(val);
+	return formatted === "-0" ? "0" : formatted;
+}
+// src/data/gen/selectors.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const PSEUDO_CLASSES = /* @__PURE__ */ new Set("active,active-view-transition,active-view-transition-type,after,animated-image,any-link,autofill,before,blank,buffering,checked,current,default,defined,dir,disabled,empty,enabled,first,first-child,first-letter,first-line,first-of-page,first-of-type,focus,focus-visible,focus-within,fullscreen,future,has,has-slotted,heading,high-value,host,host-context,hover,in-range,indeterminate,interest-source,interest-target,invalid,is,lang,last-child,last-of-page,last-of-type,left,link,link-to,local-link,low-value,matches,modal,muted,navigation-source,not,nth,nth-child,nth-col,nth-last-child,nth-last-col,nth-last-of-type,nth-of-page,nth-of-type,only-child,only-of-type,open,optimal-value,optional,out-of-range,past,paused,picture-in-picture,placeholder-shown,playing,popover-open,read-only,read-write,required,right,root,scope,seeking,snapped,snapped-block,snapped-inline,snapped-x,snapped-y,stalled,start-of-page,state,target,target-after,target-before,target-current,target-within,unchecked,user-invalid,user-valid,valid,visited,volume-locked,where,xr-overlay".split(","));
+const PSEUDO_ELEMENTS = /* @__PURE__ */ new Set("-moz-progress-bar,-moz-range-progress,-moz-range-thumb,-moz-range-track,-ms-browse,-ms-check,-ms-clear,-ms-expand,-ms-fill,-ms-fill-lower,-ms-fill-upper,-ms-reveal,-ms-thumb,-ms-ticks-after,-ms-ticks-before,-ms-tooltip,-ms-track,-ms-value,-webkit-progress-bar,-webkit-progress-inner-value,-webkit-progress-value,-webkit-slider-runnable-track,-webkit-slider-thumb,after,backdrop,before,checkmark,clear-icon,color-swatch,column,cue,cue-region,details-content,field-component,field-content,field-separator,file-selector-button,first-letter,first-line,grammar-error,highlight,interest-button,marker,nth-fragment,part,picker,picker-icon,placeholder,reveal-icon,scroll-button,scroll-marker,scroll-marker-group,search-text,selection,slider-fill,slider-thumb,slider-track,slotted,spelling-error,step-control,step-down,step-up,target-text,view-transition,view-transition-group,view-transition-group-children,view-transition-image-pair,view-transition-new,view-transition-old".split(","));
+// src/SelectorParser.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function isIdentToken(val) {
+	return val !== void 0 && val.type === "ident";
+}
+function isDelimToken(val, char) {
+	return val !== void 0 && val.type === "delim" && (char === void 0 || val.value === char);
+}
+function isHashToken(val) {
+	return val !== void 0 && val.type === "hash";
+}
+function isStringToken(val) {
+	return val !== void 0 && (val.type === "string" || val.type === "bad-string");
+}
+function isNumberToken(val) {
+	return val !== void 0 && val.type === "number";
+}
+function isDimensionToken(val) {
+	return val !== void 0 && val.type === "dimension";
+}
+function isSimpleBlock(val, associatedType) {
+	return val !== void 0 && val.type === "simple-block" && (associatedType === void 0 || val.associatedToken.type === associatedType);
+}
+function isCSSFunction(val, name) {
+	return val !== void 0 && val.type === "function" && (name === void 0);
+}
+var ComponentValueCursor = class {
+	values;
+	_i = 0;
+	constructor(values) {
+		this.values = values;
+	}
+	get hasNext() {
+		return this._i < this.values.length;
+	}
+	get i() {
+		return this._i;
+	}
+	set i(pos) {
+		this._i = pos;
+	}
+	get length() {
+		return this.values.length;
+	}
+	get next() {
+		return this.values[this._i];
+	}
+	peek(offset = 1) {
+		return this.values[this._i + offset];
+	}
+	consume() {
+		return this.values[this._i++] || { type: "EOF" };
+	}
+	skipWhitespace() {
+		while (this._i < this.values.length && this.values[this._i].type === "whitespace") this._i++;
+	}
+	skipToNextComma() {
+		const commaOffset = this.values.slice(this._i).findIndex((v) => v.type === "comma");
+		this._i = commaOffset === -1 ? this.values.length : this._i + commaOffset;
+	}
+	slice(start, end) {
+		return this.values.slice(start, end ?? this._i);
+	}
+};
+const LEGACY_PSEUDO_CLASS_ALIASES = { "-webkit-autofill": "autofill" };
+/**
+* Selector Parser according to Selectors Level 4.
+*
+* selectors-4 #grammar
+* selectors-4 #parse-selector
+* selectors-4 #parse-relative-selector
+*/
+var SelectorParser = class SelectorParser {
+	static PSEUDO_CLASSES = PSEUDO_CLASSES;
+	static PSEUDO_ELEMENTS = PSEUDO_ELEMENTS;
+	cursor;
+	allowRelative;
+	forgiving;
+	insideHas;
+	forbidPseudo;
+	declaredNamespaces;
+	strictSupports;
+	allowVendorPseudos;
+	allowUnknownPseudos;
+	constructor(values, options = {}) {
+		this.cursor = new ComponentValueCursor(values);
+		this.allowRelative = options.allowRelative ?? false;
+		this.forgiving = options.forgiving ?? false;
+		this.insideHas = options.insideHas ?? false;
+		this.forbidPseudo = options.forbidPseudo ?? false;
+		this.declaredNamespaces = options.declaredNamespaces;
+		this.strictSupports = options.strictSupports ?? false;
+		this.allowVendorPseudos = options.allowVendorPseudos ?? false;
+		this.allowUnknownPseudos = options.allowUnknownPseudos ?? false;
+	}
+	hasAmpersand(values) {
+		return values.some((val) => {
+			if (isDelimToken(val, "&")) return true;
+			if (isSimpleBlock(val)) return this.hasAmpersand(val.value);
+			if (isCSSFunction(val)) return this.hasAmpersand(val.value);
+			return false;
+		});
+	}
 	/**
-	 * Used to delete a rule from the style sheet.
-	 *
-	 *   sheet = new Sheet("img{border:none} body{margin:0}")
-	 *   sheet.toString()
-	 *   -> "img{border:none;}body{margin:0;}"
-	 *   sheet.deleteRule(0)
-	 *   sheet.toString()
-	 *   -> "body{margin:0;}"
-	 *
-	 * @param {number} index within the style sheet's rule list of the rule to remove.
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet-deleteRule
-	 */
-	CSSOM.CSSStyleSheet.prototype.deleteRule = function(index) {
-		if (index === undefined) {
-			errorUtils.throwMissingArguments(this, 'deleteRule', this.constructor.name);
+	* Parses component values into a SelectorList.
+	*
+	* selectors-4 #grouping (<selector-list>)
+	* selectors-4 #grammar (<complex-selector-list>)
+	* selectors-4 #forgiving-selector (parsing forgiving selector list)
+	* selectors-4 #parse-selector
+	*/
+	parse() {
+		const selectors = [];
+		while (this.cursor.hasNext) {
+			this.cursor.skipWhitespace();
+			if (!this.cursor.hasNext || this.cursor.next?.type === "EOF") break;
+			const start = this.cursor.i;
+			try {
+				const selector = this.consumeComplexSelector();
+				this.cursor.skipWhitespace();
+				const next = this.cursor.next;
+				if (!next || next.type === "comma") selectors.push(selector);
+				else throw new DOMException("Unexpected token in selector", "SyntaxError");
+			} catch (e) {
+				if (this.forgiving) {
+					this.cursor.skipToNextComma();
+					const rawSlice = this.cursor.slice(start, this.cursor.i);
+					let trimmedStart = 0;
+					while (trimmedStart < rawSlice.length && rawSlice[trimmedStart].type === "whitespace") trimmedStart++;
+					let trimmedEnd = rawSlice.length - 1;
+					while (trimmedEnd >= trimmedStart && rawSlice[trimmedEnd].type === "whitespace") trimmedEnd--;
+					const failedTokens = rawSlice.slice(trimmedStart, trimmedEnd + 1);
+					if (failedTokens.length > 0) selectors.push({
+						type: "invalid-selector",
+						tokens: failedTokens
+					});
+				} else throw e;
+			}
+			if (this.cursor.next?.type === "comma") this.cursor.consume();
 		}
-		index = Number(index);
-		if (index < 0) {
-			index = 4294967296 + index;
+		if (!this.forgiving && selectors.length === 0) throw new DOMException("Selector list cannot be empty", "SyntaxError");
+		return {
+			type: "selector-list",
+			selectors
+		};
+	}
+	/**
+	* Validates namespace prefixes against declared namespaces.
+	*
+	* selectors-4 #namespaces
+	* selectors-4 #parse-selector step 2
+	*/
+	validateNamespace(namespace) {
+		if (this.declaredNamespaces !== void 0 && namespace !== void 0 && namespace !== "*" && namespace !== "") {
+			if (!this.declaredNamespaces.has(namespace)) throw new DOMException(`Undeclared namespace prefix: "${namespace}"`, "SyntaxError");
 		}
-		if (index >= this.cssRules.length) {
-			errorUtils.throwIndexError(this, 'deleteRule', this.constructor.name, index, this.cssRules.length);
-		}
-		if (this.cssRules[index]) {		
-			if (this.cssRules[index].constructor.name == "CSSNamespaceRule") {
-				var shouldContinue = this.cssRules.every(function (rule) {
-					return ['CSSImportRule','CSSLayerStatementRule','CSSNamespaceRule'].indexOf(rule.constructor.name) !== -1
+	}
+	/**
+	* Consumes a complex selector.
+	*
+	* selectors-4 #structure (<complex-selector>)
+	* selectors-4 #grammar
+	*/
+	consumeComplexSelector() {
+		const items = [];
+		const start = this.cursor.i;
+		let seenPseudoElement = false;
+		while (this.cursor.hasNext) {
+			this.cursor.skipWhitespace();
+			if (!this.cursor.hasNext || this.cursor.next?.type === "comma") break;
+			const combinator = this.tryConsumeCombinator();
+			if (combinator) {
+				if (items.length === 0 && !this.allowRelative) throw new DOMException("Relative selector not allowed in this context", "SyntaxError");
+				if (seenPseudoElement) throw new DOMException("Pseudo-element must be at the end of the selector", "SyntaxError");
+				if (items.length > 0 && items[items.length - 1].type === "combinator") throw new DOMException("Consecutive combinators are not allowed", "SyntaxError");
+				items.push(combinator);
+				continue;
+			}
+			const compound = this.consumeCompoundSelector();
+			if (compound.selectors.length > 0) {
+				if (seenPseudoElement) throw new DOMException("Pseudo-element must be at the end of the selector", "SyntaxError");
+				const hasPseudo = compound.selectors.some((s) => s.type === "pseudo-element-selector");
+				if (items.length > 0 && items[items.length - 1].type === "compound-selector") items.push({
+					type: "combinator",
+					value: " "
 				});
-				if (!shouldContinue) {
-					errorUtils.throwError(this, 'DOMException', "Failed to execute 'deleteRule' on '" + this.constructor.name + "': Failed to delete rule.", "InvalidStateError");
+				items.push(compound);
+				if (hasPseudo) seenPseudoElement = true;
+			} else break;
+		}
+		if (items.length > 0 && items[items.length - 1].type === "combinator") throw new DOMException("Trailing combinator is not allowed", "SyntaxError");
+		if (items.length === 0) throw new DOMException("Complex selector cannot be empty", "SyntaxError");
+		const end = this.cursor.i;
+		return {
+			type: "complex-selector",
+			items,
+			tokens: this.cursor.slice(start, end)
+		};
+	}
+	/**
+	* selectors-4 #combinators
+	* selectors-5 #the-column-combinator (||)
+	*/
+	tryConsumeCombinator() {
+		const token = this.cursor.next;
+		if (!token) return null;
+		if (isDelimToken(token)) {
+			const val = token.value;
+			if (val === ">" || val === "+" || val === "~") {
+				this.cursor.consume();
+				return {
+					type: "combinator",
+					value: val
+				};
+			}
+			if (val === "|" && isDelimToken(this.cursor.peek(1), "|")) {
+				this.cursor.consume();
+				this.cursor.consume();
+				return {
+					type: "combinator",
+					value: "||"
+				};
+			}
+		}
+		return null;
+	}
+	isUserActionPseudoClass(name) {
+		const lower = name.toLowerCase();
+		return [
+			"hover",
+			"active",
+			"focus",
+			"focus-visible",
+			"focus-within"
+		].includes(lower);
+	}
+	validateSimpleSelectorAfterPseudo(selector) {
+		if (selector.type === "pseudo-class-selector") {
+			const lowerName = selector.name.toLowerCase();
+			if ([
+				"not",
+				"is",
+				"where",
+				"has"
+			].includes(lowerName)) return;
+			else if (!this.isUserActionPseudoClass(selector.name)) throw new DOMException("Only user-action pseudo-classes are allowed after a pseudo-element", "SyntaxError");
+		} else throw new DOMException("Only user-action pseudo-classes are allowed after a pseudo-element", "SyntaxError");
+	}
+	consumeCompoundSelector() {
+		const selectors = [];
+		let lastPseudoElement = null;
+		while (this.cursor.hasNext) {
+			const token = this.cursor.next;
+			if (!token || token.type === "whitespace" || token.type === "comma") break;
+			if (isDelimToken(token)) {
+				const val = token.value;
+				if (val === ">" || val === "+" || val === "~") break;
+				if (val === "|") {
+					if (lastPseudoElement) break;
+					if (isDelimToken(this.cursor.peek(1), "|")) break;
+					if (selectors.length > 0) throw new DOMException("Type selector must be first in compound selector", "SyntaxError");
+					selectors.push(this.consumeTypeOrUniversalSelector());
+					continue;
+				}
+				if (val === "*") {
+					if (lastPseudoElement) break;
+					if (selectors.length > 0) throw new DOMException("Universal selector must be first in compound selector", "SyntaxError");
+					selectors.push(this.consumeTypeOrUniversalSelector());
+					continue;
+				}
+				if (val === ".") {
+					if (lastPseudoElement) break;
+					selectors.push(this.consumeClassSelector());
+					continue;
+				}
+				if (val === "&") {
+					if (lastPseudoElement) break;
+					this.cursor.consume();
+					selectors.push({ type: "nesting-selector" });
+					continue;
 				}
 			}
-			if (this.cssRules[index].constructor.name == "CSSImportRule") {
-				this.cssRules[index].styleSheet.__parentStyleSheet = null;
+			if (isHashToken(token)) {
+				if (token.hashType !== "id") throw new DOMException("ID selector must be an identifier", "SyntaxError");
+				if (lastPseudoElement) break;
+				selectors.push({
+					type: "id-selector",
+					name: token.value
+				});
+				this.cursor.consume();
+				continue;
 			}
-
-			this.cssRules[index].__parentStyleSheet = null;
-		}
-		this.cssRules.splice(index, 1);
-	};
-
-	CSSOM.CSSStyleSheet.prototype.removeRule = function(index) {
-		if (index === void 0) {
-			index = 0;
-		}
-		this.deleteRule(index);
-	};
-
-
-	/**
-	 * Replaces the rules of a {@link CSSStyleSheet}
-	 * 
-	 * @returns a promise
-	 * @see https://www.w3.org/TR/cssom-1/#dom-cssstylesheet-replace
-	 */
-	CSSOM.CSSStyleSheet.prototype.replace = function(text) {
-		var _Promise;
-		if (this.__globalObject && this.__globalObject['Promise']) {
-			_Promise = this.__globalObject['Promise'];
-		} else {
-			_Promise = Promise;
-		}
-		var _setTimeout;
-		if (this.__globalObject && this.__globalObject['setTimeout']) {
-			_setTimeout = this.__globalObject['setTimeout'];
-		} else {
-			_setTimeout = setTimeout;
-		}
-		var sheet = this;
-		return new _Promise(function (resolve, reject) {
-			// If the constructed flag is not set, or the disallow modification flag is set, throw a NotAllowedError DOMException.
-			if (!sheet.__constructed || sheet.__disallowModification) {
-				reject(errorUtils.createError(sheet, 'DOMException',
-					"Failed to execute 'replaceSync' on '" + sheet.constructor.name + "': Not allowed.",
-					'NotAllowedError'));
+			if (isIdentToken(token)) {
+				if (lastPseudoElement) break;
+				if (selectors.length > 0) throw new DOMException("Type selector must be first in compound selector", "SyntaxError");
+				selectors.push(this.consumeTypeOrUniversalSelector());
+				continue;
 			}
-			// Set the disallow modification flag.
-			sheet.__disallowModification = true;
-
-			// In parallel, do these steps:
-			_setTimeout(function() {
-				// Let rules be the result of running parse a stylesheet's contents from text.
-				var rules = new CSSOM.CSSRuleList();
-				CSSOM.parse(text, { styleSheet: sheet, cssRules: rules });
-				// If rules contains one or more @import rules, remove those rules from rules.
-				var i = 0;
-				while (i < rules.length) {
-					if (rules[i].constructor.name === 'CSSImportRule') {
-						rules.splice(i, 1);
-					} else {
-						i++;
+			if (isSimpleBlock(token, "[")) {
+				if (lastPseudoElement) break;
+				selectors.push(this.consumeAttributeSelector());
+				continue;
+			}
+			if (token.type === "colon") {
+				const selector = this.consumePseudoSelector();
+				if (lastPseudoElement) {
+					const isSlottedOrPart = ["slotted", "part"].includes(lastPseudoElement.toLowerCase());
+					if (selector.type === "pseudo-element-selector") {
+						if (!isSlottedOrPart) throw new DOMException("Pseudo-elements cannot be nested", "SyntaxError");
+					} else if (selector.type === "pseudo-class-selector") {
+						if (!isSlottedOrPart) this.validateSimpleSelectorAfterPseudo(selector);
+					} else throw new DOMException("Unexpected selector after pseudo-element", "SyntaxError");
+				}
+				if (selector.type === "pseudo-element-selector") lastPseudoElement = selector.name;
+				selectors.push(selector);
+				continue;
+			}
+			break;
+		}
+		return {
+			type: "compound-selector",
+			selectors
+		};
+	}
+	consumeTypeOrUniversalSelector() {
+		let namespace = void 0;
+		const token = this.cursor.next;
+		if (!token) throw new DOMException("Unexpected EOF in type selector", "SyntaxError");
+		const isNextPipe = isDelimToken(this.cursor.peek(1), "|");
+		const isNextNextPipe = isDelimToken(this.cursor.peek(2), "|");
+		const isColumnCombinator = isNextPipe && isNextNextPipe;
+		if (isIdentToken(token) && isNextPipe && !isColumnCombinator) {
+			namespace = token.value;
+			this.cursor.i += 2;
+		} else if (isDelimToken(token, "*") && isNextPipe && !isColumnCombinator) {
+			namespace = "*";
+			this.cursor.i += 2;
+		} else if (isDelimToken(token, "|") && !isNextPipe) {
+			namespace = "";
+			this.cursor.i += 1;
+		}
+		const next = this.cursor.consume();
+		if (isDelimToken(next, "*")) {
+			this.validateNamespace(namespace);
+			return {
+				type: "universal-selector",
+				namespace
+			};
+		}
+		if (!isIdentToken(next)) throw new DOMException("Expected identifier or * after namespace pipe", "SyntaxError");
+		this.validateNamespace(namespace);
+		return {
+			type: "type-selector",
+			name: next.value,
+			namespace
+		};
+	}
+	consumeClassSelector() {
+		this.cursor.consume();
+		const ident = this.cursor.consume();
+		if (!isIdentToken(ident)) return {
+			type: "class-selector",
+			name: ""
+		};
+		return {
+			type: "class-selector",
+			name: ident.value
+		};
+	}
+	consumeAttributeSelector() {
+		const block = this.cursor.consume();
+		if (!isSimpleBlock(block, "[")) throw new DOMException("Expected attribute selector block", "SyntaxError");
+		const subCursor = new ComponentValueCursor(block.value);
+		let name = "";
+		let namespace = void 0;
+		let operator = "";
+		let value = "";
+		let flags = "";
+		subCursor.skipWhitespace();
+		if (subCursor.hasNext) {
+			const v1 = subCursor.next;
+			const v2 = subCursor.peek(1);
+			const v3 = subCursor.peek(2);
+			const isPipeFollowedByEquals = isDelimToken(v2, "|") && isDelimToken(v3, "=");
+			if (isIdentToken(v1) && isDelimToken(v2, "|") && !isPipeFollowedByEquals) {
+				namespace = v1.value;
+				subCursor.i += 2;
+			} else if (isDelimToken(v1, "*") && isDelimToken(v2, "|") && !isPipeFollowedByEquals) {
+				namespace = "*";
+				subCursor.i += 2;
+			} else if (isDelimToken(v1, "|") && !isDelimToken(v2, "=")) {
+				namespace = "";
+				subCursor.i += 1;
+			}
+		}
+		const valName = subCursor.next;
+		if (isIdentToken(valName)) {
+			name = valName.value;
+			subCursor.consume();
+		}
+		subCursor.skipWhitespace();
+		const valOp = subCursor.next;
+		if (isDelimToken(valOp)) {
+			operator = valOp.value;
+			subCursor.consume();
+			const valEq = subCursor.next;
+			if (isDelimToken(valEq, "=")) {
+				operator += valEq.value;
+				subCursor.consume();
+			}
+		}
+		subCursor.skipWhitespace();
+		const valVal = subCursor.next;
+		if (isStringToken(valVal) || isIdentToken(valVal)) {
+			value = valVal.value;
+			subCursor.consume();
+		}
+		subCursor.skipWhitespace();
+		const valFlag = subCursor.next;
+		if (isIdentToken(valFlag)) {
+			const flagValue = valFlag.value;
+			const lowerFlag = flagValue.toLowerCase();
+			if (lowerFlag !== "i" && lowerFlag !== "s") throw new DOMException(`Invalid attribute selector flag: ${flagValue}`, "SyntaxError");
+			flags = flagValue;
+			subCursor.consume();
+		}
+		subCursor.skipWhitespace();
+		if (subCursor.hasNext) throw new DOMException("Unexpected content in attribute selector", "SyntaxError");
+		if (!name) throw new DOMException("Expected attribute name in attribute selector", "SyntaxError");
+		this.validateNamespace(namespace);
+		return {
+			type: "attribute-selector",
+			name,
+			namespace,
+			operator,
+			value,
+			flags
+		};
+	}
+	consumePseudoSelector() {
+		this.cursor.consume();
+		let isPseudoElement = false;
+		if (this.cursor.next?.type === "colon") {
+			this.cursor.consume();
+			isPseudoElement = true;
+		}
+		const token = this.cursor.consume();
+		if (!token) return {
+			type: "pseudo-class-selector",
+			name: ""
+		};
+		if (isIdentToken(token)) {
+			const originalName = token.value;
+			const lowerName = originalName.toLowerCase();
+			const name = LEGACY_PSEUDO_CLASS_ALIASES[lowerName] || originalName;
+			const effectiveLowerName = name.toLowerCase();
+			const isVendorPrefixed = /^-[a-zA-Z0-9]+-/.test(effectiveLowerName);
+			if (isPseudoElement) {
+				if (this.forbidPseudo || this.insideHas) throw new DOMException("Pseudo-elements are not allowed in this context", "SyntaxError");
+				const isAllowedVendor = this.allowVendorPseudos && isVendorPrefixed || !this.strictSupports && effectiveLowerName.startsWith("-webkit-");
+				if (!PSEUDO_ELEMENTS.has(effectiveLowerName) && !isAllowedVendor && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-element ::${name}`, "SyntaxError");
+				return {
+					type: "pseudo-element-selector",
+					name
+				};
+			}
+			if ([
+				"before",
+				"after",
+				"first-line",
+				"first-letter"
+			].includes(effectiveLowerName)) {
+				if (this.forbidPseudo || this.insideHas) throw new DOMException("Pseudo-elements are not allowed in this context", "SyntaxError");
+				return {
+					type: "pseudo-element-selector",
+					name
+				};
+			}
+			const isAllowedVendor = this.allowVendorPseudos && isVendorPrefixed || !this.strictSupports && effectiveLowerName.startsWith("-webkit-");
+			if (!PSEUDO_CLASSES.has(effectiveLowerName) && !isAllowedVendor && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-class :${name}`, "SyntaxError");
+			return {
+				type: "pseudo-class-selector",
+				name
+			};
+		} else if (isCSSFunction(token)) {
+			const func = token;
+			const name = func.name;
+			const lowerName = name.toLowerCase();
+			const isVendorPrefixed = /^-[a-zA-Z0-9]+-/.test(lowerName);
+			if (isPseudoElement) {
+				if (this.forbidPseudo || this.insideHas) throw new DOMException("Pseudo-elements are not allowed in this context", "SyntaxError");
+				if (!PSEUDO_ELEMENTS.has(lowerName) && !(this.allowVendorPseudos && isVendorPrefixed) && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-element ::${name}()`, "SyntaxError");
+				if (lowerName === "slotted") {
+					const subParser = new SelectorParser(func.value, {
+						insideHas: this.insideHas,
+						forbidPseudo: true,
+						declaredNamespaces: this.declaredNamespaces,
+						strictSupports: this.strictSupports,
+						allowVendorPseudos: this.allowVendorPseudos,
+						allowUnknownPseudos: this.allowUnknownPseudos
+					});
+					subParser.cursor.skipWhitespace();
+					const compound = subParser.consumeCompoundSelector();
+					subParser.cursor.skipWhitespace();
+					if (subParser.cursor.i !== func.value.length || compound.selectors.length === 0) throw new DOMException("Argument to ::slotted() must be a compound selector", "SyntaxError");
+					return {
+						type: "pseudo-element-selector",
+						name,
+						argument: {
+							type: "selector-list",
+							selectors: [{
+								type: "complex-selector",
+								items: [compound],
+								tokens: func.value
+							}]
+						}
+					};
+				}
+				return {
+					type: "pseudo-element-selector",
+					name,
+					argument: func.value
+				};
+			}
+			if (!PSEUDO_CLASSES.has(lowerName) && lowerName !== "matches" && !(this.allowVendorPseudos && isVendorPrefixed) && !this.allowUnknownPseudos) throw new DOMException(`Unknown pseudo-class :${name}()`, "SyntaxError");
+			if ([
+				"is",
+				"not",
+				"has",
+				"where",
+				"matches"
+			].includes(lowerName)) {
+				const isHas = lowerName === "has";
+				if (isHas && this.insideHas) throw new DOMException(":has() cannot be nested", "SyntaxError");
+				const isForgiving = !this.strictSupports && [
+					"is",
+					"where",
+					"matches"
+				].includes(lowerName);
+				const isLogicalPseudo = [
+					"is",
+					"where",
+					"not",
+					"matches"
+				].includes(lowerName);
+				return {
+					type: "pseudo-class-selector",
+					name,
+					argument: new SelectorParser(func.value, {
+						allowRelative: isHas,
+						forgiving: isForgiving,
+						insideHas: isHas || this.insideHas,
+						forbidPseudo: isLogicalPseudo || isHas || this.forbidPseudo,
+						declaredNamespaces: this.declaredNamespaces,
+						strictSupports: this.strictSupports,
+						allowVendorPseudos: this.allowVendorPseudos,
+						allowUnknownPseudos: this.allowUnknownPseudos
+					}).parse()
+				};
+			}
+			if (["host", "host-context"].includes(lowerName)) {
+				const subParser = new SelectorParser(func.value, {
+					insideHas: this.insideHas,
+					forbidPseudo: true,
+					declaredNamespaces: this.declaredNamespaces,
+					strictSupports: this.strictSupports,
+					allowVendorPseudos: this.allowVendorPseudos,
+					allowUnknownPseudos: this.allowUnknownPseudos
+				});
+				subParser.cursor.skipWhitespace();
+				const compound = subParser.consumeCompoundSelector();
+				subParser.cursor.skipWhitespace();
+				if (subParser.cursor.i !== func.value.length || compound.selectors.length === 0) throw new DOMException(`Argument to :${name}() must be a compound selector`, "SyntaxError");
+				return {
+					type: "pseudo-class-selector",
+					name,
+					argument: {
+						type: "selector-list",
+						selectors: [{
+							type: "complex-selector",
+							items: [compound],
+							tokens: func.value
+						}]
+					}
+				};
+			}
+			if ([
+				"nth-child",
+				"nth-last-child",
+				"nth-of-type",
+				"nth-last-of-type"
+			].includes(lowerName)) {
+				let ofIdx = -1;
+				for (let k = 0; k < func.value.length; k++) {
+					const v = func.value[k];
+					if (isIdentToken(v) && v.value.toLowerCase() === "of") {
+						ofIdx = k;
+						break;
 					}
 				}
-				// Set sheet's CSS rules to rules.
-				sheet.__cssRules.splice.apply(sheet.__cssRules, [0, sheet.__cssRules.length].concat(rules));
-				// Unset sheet’s disallow modification flag.
-				delete sheet.__disallowModification;
-				// Resolve promise with sheet.
-				resolve(sheet);
+				if (ofIdx !== -1) {
+					if (["nth-of-type", "nth-last-of-type"].includes(lowerName)) throw new DOMException(`'of' is not allowed in :${name}()`, "SyntaxError");
+					const nth = func.value.slice(0, ofIdx);
+					this.validateAnPlusB(nth);
+					return {
+						type: "pseudo-class-selector",
+						name,
+						argument: new SelectorParser(func.value.slice(ofIdx + 1), {
+							insideHas: this.insideHas,
+							forbidPseudo: true,
+							allowRelative: false,
+							declaredNamespaces: this.declaredNamespaces,
+							strictSupports: this.strictSupports,
+							allowVendorPseudos: this.allowVendorPseudos,
+							allowUnknownPseudos: this.allowUnknownPseudos
+						}).parse(),
+						nth
+					};
+				} else {
+					this.validateAnPlusB(func.value);
+					return {
+						type: "pseudo-class-selector",
+						name,
+						argument: func.value,
+						nth: func.value
+					};
+				}
+			}
+			if (lowerName === "dir") this.validateDir(func.value);
+			if (lowerName === "heading") this.validateHeading(func.value);
+			if (lowerName === "lang") this.validateLang(func.value);
+			return {
+				type: "pseudo-class-selector",
+				name,
+				argument: func.value
+			};
+		}
+		throw new DOMException("Expected identifier or function after colon in pseudo-selector", "SyntaxError");
+	}
+	validateAnPlusB(values) {
+		const res = parseAnPlusB(values);
+		if (!res) {
+			const text = getOriginalText(values).trim();
+			throw new DOMException(`Invalid An+B expression: ${text}`, "SyntaxError");
+		}
+		return res;
+	}
+	validateHeading(values) {
+		const nonComment = values.filter((v) => v.type !== "comment");
+		let start = 0;
+		while (start < nonComment.length && nonComment[start].type === "whitespace") start++;
+		let end = nonComment.length - 1;
+		while (end >= start && nonComment[end].type === "whitespace") end--;
+		if (start > end) throw new DOMException("Argument to :heading() cannot be empty", "SyntaxError");
+		const tokens = nonComment.slice(start, end + 1);
+		let expectInteger = true;
+		for (let i = 0; i < tokens.length; i++) {
+			const t = tokens[i];
+			if (t.type === "whitespace") continue;
+			if (expectInteger) {
+				if (t.type === "number" && t.numberType === "integer") expectInteger = false;
+				else throw new DOMException("Argument to :heading() must be comma-separated integers", "SyntaxError");
+			} else if (t.type === "comma" || t.type === "delim" && t.value === ",") expectInteger = true;
+			else throw new DOMException("Expected comma in :heading() arguments", "SyntaxError");
+		}
+		if (expectInteger) throw new DOMException("Trailing comma in :heading() arguments", "SyntaxError");
+	}
+	validateDir(values) {
+		const nonWs = values.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+		const firstToken = nonWs[0];
+		if (nonWs.length !== 1 || !isIdentToken(firstToken)) throw new DOMException("Argument to :dir() must be a single identifier", "SyntaxError");
+		const val = firstToken.value.toLowerCase();
+		if (val !== "ltr" && val !== "rtl" && val !== "auto") throw new DOMException("Argument to :dir() must be ltr, rtl, or auto", "SyntaxError");
+	}
+	validateLang(values) {
+		const nonWs = values.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+		if (nonWs.length === 0) throw new DOMException("Argument to :lang() cannot be empty", "SyntaxError");
+		let expectItem = true;
+		for (const v of nonWs) if (expectItem) {
+			if (!isIdentToken(v) && !isStringToken(v)) throw new DOMException("Argument to :lang() must be identifiers or strings", "SyntaxError");
+			expectItem = false;
+		} else {
+			if (v.type !== "comma") throw new DOMException("Expected comma in :lang() argument", "SyntaxError");
+			expectItem = true;
+		}
+		if (expectItem) throw new DOMException("Trailing comma in :lang() argument", "SyntaxError");
+	}
+};
+/**
+* Parses An+B microsyntax into { a, b }.
+*
+* selectors-4 #child-index
+* css-syntax-3 #anb-microsyntax
+* css-syntax-3 #anb-syntax
+* css-syntax-3 #the-anb-type (<a-n-plus-b> production)
+*/
+function parseAnPlusB(values) {
+	const nonComment = values.filter((v) => v.type !== "comment");
+	let start = 0;
+	while (start < nonComment.length && nonComment[start].type === "whitespace") start++;
+	let end = nonComment.length - 1;
+	while (end >= start && nonComment[end].type === "whitespace") end--;
+	if (start > end) return null;
+	const tokens = nonComment.slice(start, end + 1);
+	const isIntegerNumber = (t) => {
+		return isNumberToken(t) && t.numberType === "integer";
+	};
+	if (tokens.length === 1) {
+		const t = tokens[0];
+		if (isIdentToken(t)) {
+			const lower = t.value.toLowerCase();
+			if (lower === "odd") return {
+				a: 2,
+				b: 1
+			};
+			if (lower === "even") return {
+				a: 2,
+				b: 0
+			};
+			if (lower === "n") return {
+				a: 1,
+				b: 0
+			};
+			if (lower === "-n") return {
+				a: -1,
+				b: 0
+			};
+			const matchNdashDigit = lower.match(/^n-(\d+)$/);
+			if (matchNdashDigit) return {
+				a: 1,
+				b: -parseInt(matchNdashDigit[1], 10)
+			};
+			const matchDashNdashDigit = lower.match(/^-n-(\d+)$/);
+			if (matchDashNdashDigit) return {
+				a: -1,
+				b: -parseInt(matchDashNdashDigit[1], 10)
+			};
+			return null;
+		}
+		if (isIntegerNumber(t)) return {
+			a: 0,
+			b: Number(t.value)
+		};
+		if (isDimensionToken(t) && t.numberType === "integer") {
+			const unit = (t.unit || "").toLowerCase();
+			if (unit === "n") return {
+				a: Number(t.value),
+				b: 0
+			};
+			const matchDim = unit.match(/^n-(\d+)$/);
+			if (matchDim) return {
+				a: Number(t.value),
+				b: -parseInt(matchDim[1], 10)
+			};
+			return null;
+		}
+		return null;
+	}
+	let idx = 0;
+	let plusPrefix = false;
+	if (isDelimToken(tokens[0], "+")) {
+		plusPrefix = true;
+		idx = 1;
+		if (tokens[1]?.type === "whitespace") return null;
+	}
+	const nextNonWs = (from) => {
+		let p = from;
+		while (p < tokens.length && tokens[p].type === "whitespace") p++;
+		return p;
+	};
+	const t1 = tokens[idx];
+	if (!t1) return null;
+	let a = null;
+	let hasDashAfterN = false;
+	if (isIdentToken(t1)) {
+		const lower = t1.value.toLowerCase();
+		if (lower === "n") a = 1;
+		else if (lower === "-n" && !plusPrefix) a = -1;
+		else if (lower === "n-") {
+			a = 1;
+			hasDashAfterN = true;
+		} else if (lower === "-n-" && !plusPrefix) {
+			a = -1;
+			hasDashAfterN = true;
+		} else if (lower.startsWith("n-")) {
+			const match = lower.match(/^n-(\d+)$/);
+			if (match && idx === tokens.length - 1) return {
+				a: 1,
+				b: -parseInt(match[1], 10)
+			};
+		}
+	} else if (isDimensionToken(t1) && t1.numberType === "integer" && !plusPrefix) {
+		const unit = (t1.unit || "").toLowerCase();
+		if (unit === "n") a = Number(t1.value);
+		else if (unit === "n-") {
+			a = Number(t1.value);
+			hasDashAfterN = true;
+		}
+	}
+	if (a === null) return null;
+	const afterT1 = nextNonWs(idx + 1);
+	if (afterT1 >= tokens.length) {
+		if (!hasDashAfterN) return {
+			a,
+			b: 0
+		};
+		return null;
+	}
+	const t2 = tokens[afterT1];
+	if (hasDashAfterN) {
+		if (isIntegerNumber(t2) && !t2.sign) {
+			if (nextNonWs(afterT1 + 1) < tokens.length) return null;
+			return {
+				a,
+				b: -Number(t2.value)
+			};
+		}
+		return null;
+	}
+	if (isIntegerNumber(t2) && t2.sign) {
+		if (nextNonWs(afterT1 + 1) < tokens.length) return null;
+		return {
+			a,
+			b: Number(t2.value)
+		};
+	}
+	if (isDelimToken(t2, "+") || isDelimToken(t2, "-")) {
+		const sign = t2.value === "+" ? 1 : -1;
+		const afterT2 = nextNonWs(afterT1 + 1);
+		if (afterT2 >= tokens.length) return null;
+		const t3 = tokens[afterT2];
+		if (isIntegerNumber(t3) && !t3.sign) {
+			if (nextNonWs(afterT2 + 1) < tokens.length) return null;
+			return {
+				a,
+				b: sign * Number(t3.value)
+			};
+		}
+		return null;
+	}
+	return null;
+}
+// src/serializer.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Determines whether two consecutive tokens require an empty comment separator
+* between them to prevent coalescing per css-syntax-3 #serialization.
+* // css-syntax-3 #serialization-tables
+*/
+function requiresTokenSeparator(t1, t2) {
+	const isIdent1 = t1.type === "ident";
+	const isAtKeyword1 = t1.type === "at-keyword";
+	const isHash1 = t1.type === "hash";
+	const isDimension1 = t1.type === "dimension";
+	const isDelimHash1 = t1.type === "delim" && t1.value === "#";
+	const isDelimDash1 = t1.type === "delim" && t1.value === "-";
+	const isNumber1 = t1.type === "number";
+	const isDelimAt1 = t1.type === "delim" && t1.value === "@";
+	const isDelimDot1 = t1.type === "delim" && t1.value === ".";
+	const isDelimPlus1 = t1.type === "delim" && t1.value === "+";
+	const isDelimSlash1 = t1.type === "delim" && t1.value === "/";
+	if (!isIdent1 && !isAtKeyword1 && !isHash1 && !isDimension1 && !isDelimHash1 && !isDelimDash1 && !isNumber1 && !isDelimAt1 && !isDelimDot1 && !isDelimPlus1 && !isDelimSlash1) return false;
+	const isIdent2 = t2.type === "ident";
+	const isFunction2 = t2.type === "function";
+	const isUrl2 = t2.type === "url";
+	const isBadUrl2 = t2.type === "bad-url";
+	const isDelimDash2 = t2.type === "delim" && t2.value === "-";
+	const isNumber2 = t2.type === "number";
+	const isPercentage2 = t2.type === "percentage";
+	const isDimension2 = t2.type === "dimension";
+	const isCDC2 = t2.type === "CDC";
+	const isOpenParen2 = t2.type === "(" || t2.type === "delim" && t2.value === "(";
+	const isDelimStar2 = t2.type === "delim" && t2.value === "*";
+	const isDelimPercent2 = t2.type === "delim" && t2.value === "%";
+	const inGroupA = isIdent2 || isFunction2 || isUrl2 || isBadUrl2 || isDelimDash2 || isNumber2 || isPercentage2 || isDimension2 || isCDC2;
+	if (isIdent1) return inGroupA || isOpenParen2;
+	if (isAtKeyword1 || isHash1 || isDimension1 || isDelimHash1 || isDelimDash1) return inGroupA;
+	if (isNumber1) return isIdent2 || isFunction2 || isUrl2 || isBadUrl2 || isNumber2 || isPercentage2 || isDimension2 || isCDC2 || isDelimPercent2;
+	if (isDelimAt1) return isIdent2 || isFunction2 || isUrl2 || isBadUrl2 || isDelimDash2 || isCDC2;
+	if (isDelimDot1 || isDelimPlus1) return isNumber2 || isPercentage2 || isDimension2;
+	if (isDelimSlash1) return isDelimStar2;
+	return false;
+}
+function getFirstToken(node) {
+	if (typeof node !== "object" || node === null) return null;
+	if (node.type === "simple-block") return node.associatedToken;
+	if (node.type === "function" && "name" in node) return {
+		type: "function",
+		value: node.name
+	};
+	const t = node;
+	if (t.type === "EOF") return null;
+	return t;
+}
+function getLastToken(node) {
+	if (typeof node !== "object" || node === null) return null;
+	if (node.type === "simple-block") {
+		const start = node.associatedToken?.value;
+		const end = getMirrorToken(start);
+		return {
+			type: end || ")",
+			value: end
+		};
+	}
+	if (node.type === "function" && "name" in node) return {
+		type: ")",
+		value: ")"
+	};
+	const t = node;
+	if (t.type === "EOF") return null;
+	return t;
+}
+/**
+* Serializes an array of CSS component values or tokens back into a CSS string,
+* inserting `/** /` comment separators between adjacent tokens that would otherwise merge.
+*/
+function serialize(nodes, preserveCase = false, propertyName) {
+	if (propertyName === "font-family") return serializeFontFamily(nodes);
+	let result = "";
+	let prevLastToken = null;
+	for (const node of nodes) {
+		if (node.type === "EOF") continue;
+		const firstToken = getFirstToken(node);
+		if (prevLastToken && firstToken && requiresTokenSeparator(prevLastToken, firstToken)) result += "/**/";
+		result += serializeNode(node, preserveCase);
+		const last = getLastToken(node);
+		if (last) prevLastToken = last;
+	}
+	return result;
+}
+function trimWhitespaceTokens(tokens) {
+	let start = 0;
+	while (start < tokens.length && tokens[start].type === "whitespace") start++;
+	let end = tokens.length - 1;
+	while (end >= start && tokens[end].type === "whitespace") end--;
+	return start <= end ? tokens.slice(start, end + 1) : [];
+}
+function serializeNode(node, preserveCase) {
+	if (typeof node !== "object" || node === null || !("type" in node)) return "";
+	if (node.type === "simple-block") {
+		const start = node.associatedToken.value;
+		return start + serialize(node.value, preserveCase) + getMirrorToken(start);
+	}
+	if (node.type === "function" && "name" in node) {
+		let args = node.value;
+		const funcName = preserveCase ? node.name : node.name.toLowerCase();
+		if (funcName === "counter") {
+			let i = args.length - 1;
+			while (i >= 0 && args[i].type === "whitespace") i--;
+			if (i >= 0 && args[i].type === "ident" && args[i].value === "decimal") {
+				let j = i - 1;
+				while (j >= 0 && args[j].type === "whitespace") j--;
+				if (j >= 0 && args[j].type === "comma") args = args.slice(0, j);
+			}
+		} else if (funcName === "url") args = trimWhitespaceTokens(args);
+		else if (funcName === "attr") {
+			let i = 0;
+			while (i < args.length && args[i].type === "whitespace") i++;
+			if (i < args.length && args[i].type === "delim" && args[i].value === "|") {
+				args = args.slice(i + 1);
+				let k = args.length - 1;
+				while (k >= 0 && args[k].type === "whitespace") k--;
+				if (k >= 0 && args[k].type === "string" && args[k].value === "") {
+					let l = k - 1;
+					while (l >= 0 && args[l].type === "whitespace") l--;
+					if (l >= 0 && args[l].type === "comma") args = args.slice(0, l);
+				}
+			}
+			args = trimWhitespaceTokens(args);
+		}
+		return `${funcName}(${serialize(args, preserveCase)})`;
+	}
+	return serializeToken(node, preserveCase);
+}
+function serializeToken(token, preserveCase = false) {
+	switch (token.type) {
+		case "ident": return serializeIdentifier(token.value);
+		case "at-keyword": return "@" + serializeIdentifier(token.value);
+		case "hash": return "#" + token.value;
+		case "string": return preserveCase && token.originalText && !token.originalText.endsWith("\\") ? token.originalText : serializeString(token.value);
+		case "url": return preserveCase ? serializeUrlToken(token.value, token.originalText) : serializeUrl(token.value);
+		case "delim": return token.value === "\\" ? "\\\n" : token.value;
+		case "number": return formatNumber(token.value);
+		case "percentage": return formatNumber(token.value) + "%";
+		case "dimension": return formatNumber(token.value) + (token.unit ? serializeIdentifier(token.unit) : "");
+		case "whitespace": return preserveCase && token.originalText ? token.originalText : token.value;
+		case "comment": return token.value || "/**/";
+		case "CDO": return "<!--";
+		case "CDC": return "-->";
+		case "colon": return ":";
+		case "semicolon": return ";";
+		case "comma": return ",";
+		case "[":
+		case "]":
+		case "{":
+		case "}":
+		case "(":
+		case ")": return token.value;
+		case "function": return serializeIdentifier(preserveCase ? token.value : token.value.toLowerCase()) + "(";
+		case "unicode-range": return token.value;
+		case "EOF": return "";
+		default: return token.value || "";
+	}
+}
+function getMirrorToken(start) {
+	if (start === "{") return "}";
+	if (start === "[") return "]";
+	if (start === "(") return ")";
+	return "";
+}
+function getOriginalText(values) {
+	let text = "";
+	for (const val of values) if (val.type === "simple-block") text += (val.associatedToken.originalText || "") + getOriginalText(val.value) + getMirrorToken(val.associatedToken.value);
+	else if (val.type === "function") {
+		const func = val;
+		text += `${func.name}(${getOriginalText(func.value)})`;
+	} else text += val.originalText || val.value;
+	return text;
+}
+/**
+* // cssom-1 #serialize-an-identifier
+*/
+function serializeIdentifier(id) {
+	let result = "";
+	for (let i = 0; i < id.length; i++) {
+		const charCode = id.charCodeAt(i);
+		const char = id[i];
+		if (charCode === 0) {
+			result += "�";
+			continue;
+		}
+		if (charCode >= 1 && charCode <= 31 || charCode === 127) {
+			result += escapeAsCodePoint(charCode);
+			continue;
+		}
+		if (i === 0 && charCode >= 48 && charCode <= 57) {
+			result += escapeAsCodePoint(charCode);
+			continue;
+		}
+		if (i === 1 && charCode >= 48 && charCode <= 57 && id.charCodeAt(0) === 45) {
+			result += escapeAsCodePoint(charCode);
+			continue;
+		}
+		if (i === 0 && charCode === 45 && id.length === 1) {
+			result += "\\-";
+			continue;
+		}
+		if (charCode >= 128 || charCode === 45 || charCode === 95 || charCode >= 48 && charCode <= 57 || charCode >= 65 && charCode <= 90 || charCode >= 97 && charCode <= 122) {
+			result += char;
+			continue;
+		}
+		result += "\\" + char;
+	}
+	return result;
+}
+/**
+* // cssom-1 #serialize-a-string
+*/
+function serializeString(s) {
+	let result = "\"";
+	for (let i = 0; i < s.length; i++) {
+		const charCode = s.charCodeAt(i);
+		const char = s[i];
+		if (charCode === 0) {
+			result += "�";
+			continue;
+		}
+		if (charCode >= 1 && charCode <= 31 || charCode === 127) {
+			result += escapeAsCodePoint(charCode);
+			continue;
+		}
+		if (charCode === 34 || charCode === 92) {
+			result += "\\" + char;
+			continue;
+		}
+		result += char;
+	}
+	result += "\"";
+	return result;
+}
+function serializeUrl(val) {
+	return `url(${serializeString(val)})`;
+}
+function serializeUrlToken(val, originalText) {
+	if (originalText && !val.includes("�") && originalText.endsWith(")")) return originalText;
+	let result = "";
+	for (let i = 0; i < val.length; i++) {
+		const charCode = val.charCodeAt(i);
+		const char = val[i];
+		if (charCode === 34 || charCode === 39 || charCode === 40 || charCode === 41 || charCode === 92 || charCode <= 32 || charCode === 127) result += "\\" + char;
+		else result += char;
+	}
+	return `url(${result})`;
+}
+function escapeAsCodePoint(charCode) {
+	return "\\" + charCode.toString(16) + " ";
+}
+const logicalShorthandsEntries = Object.entries({
+	"margin-inline": {
+		start: "margin-inline-start",
+		end: "margin-inline-end",
+		allowDifferent: true
+	},
+	"padding-inline": {
+		start: "padding-inline-start",
+		end: "padding-inline-end",
+		allowDifferent: true
+	},
+	"margin-block": {
+		start: "margin-block-start",
+		end: "margin-block-end",
+		allowDifferent: true
+	},
+	"padding-block": {
+		start: "padding-block-start",
+		end: "padding-block-end",
+		allowDifferent: true
+	},
+	"inset-inline": {
+		start: "inset-inline-start",
+		end: "inset-inline-end",
+		allowDifferent: true
+	},
+	"inset-block": {
+		start: "inset-block-start",
+		end: "inset-block-end",
+		allowDifferent: true
+	},
+	"border-inline-width": {
+		start: "border-inline-start-width",
+		end: "border-inline-end-width",
+		allowDifferent: true
+	},
+	"border-block-width": {
+		start: "border-block-start-width",
+		end: "border-block-end-width",
+		allowDifferent: true
+	},
+	"border-inline-style": {
+		start: "border-inline-start-style",
+		end: "border-inline-end-style",
+		allowDifferent: true
+	},
+	"border-block-style": {
+		start: "border-block-start-style",
+		end: "border-block-end-style",
+		allowDifferent: true
+	},
+	"border-inline-color": {
+		start: "border-inline-start-color",
+		end: "border-inline-end-color",
+		allowDifferent: true
+	},
+	"border-block-color": {
+		start: "border-block-start-color",
+		end: "border-block-end-color",
+		allowDifferent: true
+	},
+	"border-inline": {
+		start: "border-inline-start",
+		end: "border-inline-end",
+		allowDifferent: false
+	},
+	"border-block": {
+		start: "border-block-start",
+		end: "border-block-end",
+		allowDifferent: false
+	},
+	"overflow": {
+		start: "overflow-x",
+		end: "overflow-y",
+		allowDifferent: true
+	},
+	"overscroll-behavior": {
+		start: "overscroll-behavior-x",
+		end: "overscroll-behavior-y",
+		allowDifferent: true
+	}
+});
+const propertyToGroup = {
+	"margin-top": "margin",
+	"margin-right": "margin",
+	"margin-bottom": "margin",
+	"margin-left": "margin",
+	"margin-inline-start": "margin",
+	"margin-inline-end": "margin",
+	"margin-block-start": "margin",
+	"margin-block-end": "margin",
+	"padding-top": "padding",
+	"padding-right": "padding",
+	"padding-bottom": "padding",
+	"padding-left": "padding",
+	"padding-inline-start": "padding",
+	"padding-inline-end": "padding",
+	"padding-block-start": "padding",
+	"padding-block-end": "padding",
+	"top": "inset",
+	"right": "inset",
+	"bottom": "inset",
+	"left": "inset",
+	"inset-inline-start": "inset",
+	"inset-inline-end": "inset",
+	"inset-block-start": "inset",
+	"inset-block-end": "inset",
+	"border-top-width": "border-width",
+	"border-right-width": "border-width",
+	"border-bottom-width": "border-width",
+	"border-left-width": "border-width",
+	"border-inline-start-width": "border-width",
+	"border-inline-end-width": "border-width",
+	"border-block-start-width": "border-width",
+	"border-block-end-width": "border-width",
+	"border-top-style": "border-style",
+	"border-right-style": "border-style",
+	"border-bottom-style": "border-style",
+	"border-left-style": "border-style",
+	"border-inline-start-style": "border-style",
+	"border-inline-end-style": "border-style",
+	"border-block-start-style": "border-style",
+	"border-block-end-style": "border-style",
+	"border-top-color": "border-color",
+	"border-right-color": "border-color",
+	"border-bottom-color": "border-color",
+	"border-left-color": "border-color",
+	"border-inline-start-color": "border-color",
+	"border-inline-end-color": "border-color",
+	"border-block-start-color": "border-color",
+	"border-block-end-color": "border-color",
+	"width": "size",
+	"height": "size",
+	"inline-size": "size",
+	"block-size": "size",
+	"min-width": "min-size",
+	"min-height": "min-size",
+	"min-inline-size": "min-size",
+	"min-block-size": "min-size",
+	"max-width": "max-size",
+	"max-height": "max-size",
+	"max-inline-size": "max-size",
+	"max-block-size": "max-size",
+	"border-top-left-radius": "border-radius",
+	"border-top-right-radius": "border-radius",
+	"border-bottom-right-radius": "border-radius",
+	"border-bottom-left-radius": "border-radius",
+	"border-start-start-radius": "border-radius",
+	"border-start-end-radius": "border-radius",
+	"border-end-start-radius": "border-radius",
+	"border-end-end-radius": "border-radius",
+	"border-top": "border",
+	"border-right": "border",
+	"border-bottom": "border",
+	"border-left": "border",
+	"border-block-start": "border",
+	"border-block-end": "border",
+	"border-inline-start": "border",
+	"border-inline-end": "border",
+	"overflow-x": "overflow",
+	"overflow-y": "overflow",
+	"overflow-inline": "overflow",
+	"overflow-block": "overflow",
+	"overscroll-behavior-x": "overscroll-behavior",
+	"overscroll-behavior-y": "overscroll-behavior",
+	"overscroll-behavior-inline": "overscroll-behavior",
+	"overscroll-behavior-block": "overscroll-behavior",
+	"outline-color": "outline",
+	"outline-style": "outline",
+	"outline-width": "outline",
+	"list-style-type": "list-style",
+	"list-style-position": "list-style",
+	"list-style-image": "list-style",
+	"flex-grow": "flex",
+	"flex-shrink": "flex",
+	"flex-basis": "flex",
+	"font-style": "font",
+	"font-variant-caps": "font",
+	"font-weight": "font",
+	"font-stretch": "font",
+	"font-size": "font",
+	"line-height": "font",
+	"font-family": "font",
+	"font-variant-ligatures": "font-variant",
+	"font-variant-alternates": "font-variant",
+	"font-variant-numeric": "font-variant",
+	"font-variant-east-asian": "font-variant",
+	"font-variant-position": "font-variant",
+	"font-variant-emoji": "font-variant"
+};
+const genericShorthands = {
+	"border-top": [
+		"border-top-width",
+		"border-top-style",
+		"border-top-color"
+	],
+	"border-right": [
+		"border-right-width",
+		"border-right-style",
+		"border-right-color"
+	],
+	"border-bottom": [
+		"border-bottom-width",
+		"border-bottom-style",
+		"border-bottom-color"
+	],
+	"border-left": [
+		"border-left-width",
+		"border-left-style",
+		"border-left-color"
+	],
+	"border-block-start": [
+		"border-block-start-width",
+		"border-block-start-style",
+		"border-block-start-color"
+	],
+	"border-block-end": [
+		"border-block-end-width",
+		"border-block-end-style",
+		"border-block-end-color"
+	],
+	"border-inline-start": [
+		"border-inline-start-width",
+		"border-inline-start-style",
+		"border-inline-start-color"
+	],
+	"border-inline-end": [
+		"border-inline-end-width",
+		"border-inline-end-style",
+		"border-inline-end-color"
+	],
+	"outline": [
+		"outline-color",
+		"outline-style",
+		"outline-width"
+	],
+	"list-style": [
+		"list-style-type",
+		"list-style-position",
+		"list-style-image"
+	],
+	"flex": [
+		"flex-grow",
+		"flex-shrink",
+		"flex-basis"
+	],
+	"border-image": [
+		"border-image-source",
+		"border-image-slice",
+		"border-image-width",
+		"border-image-outset",
+		"border-image-repeat"
+	],
+	"line-clamp": [
+		"max-lines",
+		"block-ellipsis",
+		"continue"
+	]
+};
+const genericShorthandsEntries = Object.entries(genericShorthands);
+function checkIntervening(decls, allDecls, declIndices) {
+	const indices = decls.map((d) => declIndices.get(d));
+	const startIdx = Math.min(...indices);
+	const endIdx = Math.max(...indices);
+	const names = new Set(decls.map((d) => d.name));
+	const groups = new Set(decls.map((d) => propertyToGroup[d.name]).filter(Boolean));
+	const isSideShorthand = groups.size > 1;
+	for (let i = startIdx + 1; i < endIdx; i++) {
+		const intervening = allDecls[i];
+		if (names.has(intervening.name)) continue;
+		const interveningGroup = propertyToGroup[intervening.name];
+		if (!interveningGroup) continue;
+		if (isSideShorthand) {
+			const sidePrefix = decls[0].name.replace(/-(width|style|color)$/, "");
+			if (intervening.name.startsWith(sidePrefix + "-") || ["all", "border"].includes(intervening.name)) return true;
+		} else {
+			if (groups.has(interveningGroup)) return true;
+			if (["all", "border"].includes(intervening.name)) return true;
+		}
+	}
+	return false;
+}
+const BOX_SHORTHAND_NAMES = /* @__PURE__ */ new Set("margin,padding,border-width,border-style,border-color,scroll-margin,scroll-padding,inset,overflow-clip-margin,border-radius".split(","));
+const BOX_SHORTHAND_ENTRIES = Object.entries(SHORTHANDS).filter(([shorthand, def]) => BOX_SHORTHAND_NAMES.has(shorthand) && def.logicalLonghands?.length === 4);
+function tryCombineBoxShorthand(d, declMap, processed, declarations, declIndices) {
+	for (const [shorthand, def] of BOX_SHORTHAND_ENTRIES) {
+		const physical = def.longhands;
+		const logical = def.logicalLonghands;
+		const isPhysical = physical.includes(d.name);
+		const isLogical = logical.includes(d.name);
+		if (!isPhysical && !isLogical) continue;
+		const allDecls = (isPhysical ? physical : logical).map((name) => declMap.get(name));
+		if (!allDecls.every((other) => other && !processed.has(other) && other.important === d.important)) continue;
+		if (checkIntervening(allDecls, declarations, declIndices)) continue;
+		const valuesForContract = {};
+		for (const other of allDecls) valuesForContract[other.name] = other.value;
+		const value = def.contract(valuesForContract);
+		if (value !== null) {
+			for (const other of allDecls) processed.add(other);
+			return `${shorthand}: ${value}${d.important ? " !important" : ""}`;
+		}
+	}
+	return null;
+}
+function tryCombineLogicalShorthand(d, declMap, processed, declarations, declIndices) {
+	for (const [shorthand, longhands] of logicalShorthandsEntries) {
+		if (d.name !== longhands.start && d.name !== longhands.end) continue;
+		const otherName = d.name === longhands.start ? longhands.end : longhands.start;
+		const otherDecl = declMap.get(otherName);
+		if (!otherDecl || processed.has(otherDecl) || d.important !== otherDecl.important) continue;
+		if (checkIntervening([d, otherDecl], declarations, declIndices)) continue;
+		const startDecl = d.name === longhands.start ? d : otherDecl;
+		const endDecl = d.name === longhands.end ? d : otherDecl;
+		const valS = serialize(startDecl.value).trim();
+		const valE = serialize(endDecl.value).trim();
+		if (valS === valE) {
+			processed.add(startDecl);
+			processed.add(endDecl);
+			return `${shorthand}: ${valS}${d.important ? " !important" : ""}`;
+		}
+		if (longhands.allowDifferent && !valS.includes("var(") && !valE.includes("var(")) {
+			processed.add(startDecl);
+			processed.add(endDecl);
+			return `${shorthand}: ${valS} ${valE}${d.important ? " !important" : ""}`;
+		}
+	}
+	return null;
+}
+function tryCombineGenericShorthand(d, declMap, processed, declarations, declIndices) {
+	for (const [shorthand, longhands] of genericShorthandsEntries) {
+		if (!longhands.includes(d.name)) continue;
+		const allDecls = longhands.map((name) => declMap.get(name));
+		if (!allDecls.every((other) => other && !processed.has(other) && other.important === d.important)) continue;
+		if (checkIntervening(allDecls, declarations, declIndices)) continue;
+		const record = {};
+		for (const other of allDecls) record[other.name] = other.value;
+		const contracted = SHORTHANDS[shorthand]?.contract(record);
+		if (contracted !== null && contracted !== void 0) {
+			for (const other of allDecls) processed.add(other);
+			return {
+				name: shorthand,
+				value: contracted,
+				important: d.important
+			};
+		}
+	}
+	return null;
+}
+const BORDER_PHYSICAL_SIDE_LONGHANDS = [
+	"border-top-width",
+	"border-top-style",
+	"border-top-color",
+	"border-right-width",
+	"border-right-style",
+	"border-right-color",
+	"border-bottom-width",
+	"border-bottom-style",
+	"border-bottom-color",
+	"border-left-width",
+	"border-left-style",
+	"border-left-color"
+];
+const BORDER_IMAGE_LONGHAND_NAMES = [
+	"border-image-source",
+	"border-image-slice",
+	"border-image-width",
+	"border-image-outset",
+	"border-image-repeat"
+];
+function tryCombineBorderFull(d, declMap, processed, declarations, declIndices) {
+	if (!BORDER_PHYSICAL_SIDE_LONGHANDS.includes(d.name)) return null;
+	const allDecls = BORDER_PHYSICAL_SIDE_LONGHANDS.map((name) => declMap.get(name));
+	if (!allDecls.every((other) => other && !processed.has(other) && other.important === d.important)) return null;
+	if (checkIntervening(allDecls, declarations, declIndices)) return null;
+	const imageDecls = BORDER_IMAGE_LONGHAND_NAMES.map((name) => declMap.get(name)).filter((img) => Boolean(img && !processed.has(img)));
+	if (imageDecls.length === 0) return null;
+	const imageRecord = {
+		"border-image-source": [{
+			type: "ident",
+			value: "none"
+		}],
+		"border-image-slice": [{
+			type: "percentage",
+			value: 100,
+			sign: null
+		}],
+		"border-image-width": [{
+			type: "number",
+			value: 1,
+			sign: null,
+			numberType: "integer"
+		}],
+		"border-image-outset": [{
+			type: "number",
+			value: 0,
+			sign: null,
+			numberType: "integer"
+		}],
+		"border-image-repeat": [{
+			type: "ident",
+			value: "stretch"
+		}]
+	};
+	for (const img of imageDecls) imageRecord[img.name] = img.value;
+	if (!isInitialBorderImage(imageRecord)) return null;
+	const record = { ...imageRecord };
+	for (const other of allDecls) record[other.name] = other.value;
+	const contracted = SHORTHANDS["border"]?.contract(record);
+	if (contracted !== null && contracted !== void 0) {
+		for (const other of allDecls) processed.add(other);
+		for (const img of imageDecls) processed.add(img);
+		return `border: ${contracted}${d.important ? " !important" : ""}`;
+	}
+	return null;
+}
+const ORDERED_SHORTHAND_COMBINERS = [
+	{
+		name: "font",
+		longhands: SHORTHANDS["font"].longhands
+	},
+	{
+		name: "font-variant",
+		longhands: SHORTHANDS["font-variant"].longhands
+	},
+	{
+		name: "background",
+		longhands: [
+			"background-image",
+			"background-position",
+			"background-size",
+			"background-repeat",
+			"background-attachment",
+			"background-origin",
+			"background-clip",
+			"background-color"
+		]
+	},
+	{
+		name: "border-block",
+		longhands: [
+			"border-block-start-width",
+			"border-block-start-style",
+			"border-block-start-color",
+			"border-block-end-width",
+			"border-block-end-style",
+			"border-block-end-color"
+		]
+	},
+	{
+		name: "border-inline",
+		longhands: [
+			"border-inline-start-width",
+			"border-inline-start-style",
+			"border-inline-start-color",
+			"border-inline-end-width",
+			"border-inline-end-style",
+			"border-inline-end-color"
+		]
+	}
+];
+function tryCombineNamedShorthand(shorthandName, longhands, d, declMap, processed, declarations, declIndices) {
+	if (!longhands.includes(d.name)) return null;
+	const allDecls = longhands.map((name) => declMap.get(name));
+	if (!allDecls.every((other) => other && !processed.has(other) && other.important === d.important)) return null;
+	if (checkIntervening(allDecls, declarations, declIndices)) return null;
+	const record = {};
+	for (const other of allDecls) record[other.name] = other.value;
+	const contracted = SHORTHANDS[shorthandName]?.contract(record);
+	if (contracted !== null && contracted !== void 0) {
+		for (const other of allDecls) processed.add(other);
+		return `${shorthandName}: ${contracted}${d.important ? " !important" : ""}`;
+	}
+	return null;
+}
+const CSS_WIDE_AND_DEFAULT = /* @__PURE__ */ new Set("initial,inherit,unset,revert,revert-layer,default".split(","));
+function serializeFontFamilyItem(tokens) {
+	const nonWs = tokens.filter((t) => t.type !== "whitespace" && t.type !== "comment" && t.type !== "EOF");
+	if (nonWs.length === 1 && nonWs[0].type === "string") {
+		let strVal = nonWs[0].value;
+		if (strVal.startsWith("'") && strVal.endsWith("'") || strVal.startsWith("\"") && strVal.endsWith("\"")) strVal = strVal.slice(1, -1);
+		const lower = strVal.toLowerCase();
+		if (GENERIC_FONT_FAMILIES.has(lower) || CSS_WIDE_AND_DEFAULT.has(lower)) return `"${strVal}"`;
+		if (strVal !== strVal.trim() || /\s{2,}|\t|\n|\r/.test(strVal)) return `"${strVal}"`;
+		const words = strVal.split(" ");
+		return words.length > 0 && words.every((word) => word.length > 0 && !/^[0-9]|^--|^-[0-9]/.test(word) && /^[a-zA-Z_-][a-zA-Z0-9_-]*$/.test(word)) ? strVal : `"${strVal}"`;
+	}
+	if (nonWs.every((t) => t.type === "ident")) return nonWs.map((t) => serializeNode(t, false)).join(" ");
+	return tokens.map((t) => serializeNode(t, false)).join("");
+}
+function serializeFontFamily(values) {
+	const groups = [];
+	let current = [];
+	for (const token of values) if (token.type === "comma") {
+		groups.push(current);
+		current = [];
+	} else current.push(token);
+	if (current.length > 0) groups.push(current);
+	return groups.map((g) => serializeFontFamilyItem(g).trim()).filter((s) => s.length > 0).join(", ");
+}
+function serializeDeclarations(declarations) {
+	if (declarations.length === 0) return "";
+	const declMap = /* @__PURE__ */ new Map();
+	const declIndices = /* @__PURE__ */ new Map();
+	for (let i = 0; i < declarations.length; i++) {
+		const d = declarations[i];
+		declMap.set(d.name, d);
+		declIndices.set(d, i);
+	}
+	if (declarations.length >= ALL_SHORTHAND_LONGHANDS.length) {
+		const firstDecl = declMap.get(ALL_SHORTHAND_LONGHANDS[0]);
+		if (firstDecl) {
+			const firstValLower = serialize(firstDecl.value).trim().toLowerCase();
+			const firstImportant = firstDecl.important;
+			if (CSS_WIDE_AND_DEFAULT.has(firstValLower) || firstValLower.startsWith("var(")) {
+				if (ALL_SHORTHAND_LONGHANDS.every((lh) => {
+					const d = declMap.get(lh);
+					return d && serialize(d.value).trim().toLowerCase() === firstValLower && d.important === firstImportant;
+				})) {
+					const allLonghandsSet = new Set(ALL_SHORTHAND_LONGHANDS);
+					const allDecl = {
+						type: "declaration",
+						name: "all",
+						value: firstDecl.value,
+						important: firstImportant
+					};
+					const newDecls = [];
+					let inserted = false;
+					for (const d of declarations) if (allLonghandsSet.has(d.name)) {
+						if (!inserted) {
+							newDecls.push(allDecl);
+							inserted = true;
+						}
+					} else newDecls.push(d);
+					return serializeDeclarations(newDecls);
+				}
+			}
+		}
+	}
+	const processed = /* @__PURE__ */ new Set();
+	const result = [];
+	for (const d of declarations) {
+		if (processed.has(d)) continue;
+		let combined = tryCombineBorderFull(d, declMap, processed, declarations, declIndices);
+		if (!combined) for (const spec of ORDERED_SHORTHAND_COMBINERS) {
+			combined = tryCombineNamedShorthand(spec.name, spec.longhands, d, declMap, processed, declarations, declIndices);
+			if (combined) break;
+		}
+		if (!combined) combined = tryCombineBoxShorthand(d, declMap, processed, declarations, declIndices);
+		if (!combined) {
+			const generic = tryCombineGenericShorthand(d, declMap, processed, declarations, declIndices);
+			if (generic) {
+				const sides = [
+					"border-top",
+					"border-right",
+					"border-bottom",
+					"border-left"
+				];
+				if (sides.includes(generic.name)) {
+					const sideResults = sides.map((side) => {
+						if (side === generic.name) return generic;
+						const existing = declMap.get(side);
+						if (existing && !processed.has(existing)) return {
+							name: side,
+							value: serialize(existing.value).trim(),
+							important: existing.important,
+							decl: existing
+						};
+						const longhands = genericShorthands[side];
+						if (!longhands) return null;
+						const sideLonghands = longhands.map((lh) => declMap.get(lh));
+						if (sideLonghands.every((lh) => lh && !processed.has(lh) && lh.important === generic.important)) {
+							if (checkIntervening(sideLonghands, declarations, declIndices)) return null;
+							return {
+								name: side,
+								value: sideLonghands.map((lh) => serialize(lh.value).trim()).filter((v) => v !== "").join(" "),
+								important: generic.important,
+								longhands: sideLonghands
+							};
+						}
+						return null;
+					});
+					if (sideResults.every((r) => r !== null && r.value === generic.value && r.important === generic.important)) {
+						for (const r of sideResults) if (r && "longhands" in r) r.longhands.forEach((lh) => processed.add(lh));
+						else if (r && "decl" in r) processed.add(r.decl);
+						combined = `border: ${generic.value}${generic.important ? " !important" : ""}`;
+					} else combined = `${generic.name}: ${generic.value}${generic.important ? " !important" : ""}`;
+				} else combined = `${generic.name}: ${generic.value}${generic.important ? " !important" : ""}`;
+			}
+		}
+		if (!combined) combined = tryCombineLogicalShorthand(d, declMap, processed, declarations, declIndices);
+		if (combined) result.push(combined);
+		else {
+			const isCustom = d.name.startsWith("--");
+			let val;
+			if (d.name === "font-family") val = serializeFontFamily(d.value);
+			else if (d.name === "flex-basis" && serialize(d.value).trim() === "0") val = "0px";
+			else val = d.raw && !d.raw.includes("var(") ? d.raw : serialize(d.value, isCustom, d.name).trim();
+			result.push(`${serializeIdentifier(d.name)}: ${val}${d.important ? " !important" : ""}`);
+			processed.add(d);
+		}
+	}
+	return result.join("; ") + ";";
+}
+function serializeSelectorList(list, nsContext) {
+	const context = {
+		hasDefaultNamespace: typeof nsContext === "boolean" ? nsContext : Boolean(nsContext?.hasDefaultNamespace),
+		defaultNamespacePrefixes: typeof nsContext === "object" && nsContext !== null ? nsContext.defaultNamespacePrefixes : void 0
+	};
+	return list.selectors.map((s) => s.type === "invalid-selector" ? serialize(s.tokens) : serializeComplexSelector(s, context)).join(", ");
+}
+function serializeComplexSelector(complex, nsContext) {
+	const { hasDefaultNamespace, defaultNamespacePrefixes } = nsContext;
+	return complex.items.map((item, idx) => {
+		if (item.type === "combinator") {
+			if (item.value === " ") return " ";
+			return idx === 0 ? `${item.value} ` : ` ${item.value} `;
+		}
+		return item.selectors.filter((s, sIdx) => {
+			if (s.type === "universal-selector" && item.selectors.length > 1 && sIdx === 0) {
+				const isDefaultNs = s.namespace !== void 0 && s.namespace !== "" && defaultNamespacePrefixes?.has(s.namespace);
+				if (s.namespace === void 0 || isDefaultNs || s.namespace === "*" && !hasDefaultNamespace) return false;
+			}
+			return true;
+		}).map((s) => serializeSimpleSelector(s, nsContext)).join("");
+	}).join("");
+}
+function formatAnPlusB(tokens) {
+	const parsed = parseAnPlusB(tokens);
+	if (parsed === null) return serialize(tokens).trim();
+	const { a, b } = parsed;
+	if (a === 0) return b.toString();
+	const partA = a === 1 ? "n" : a === -1 ? "-n" : `${a}n`;
+	if (b === 0) return partA;
+	return b > 0 ? `${partA}+${b}` : `${partA}${b}`;
+}
+function formatSelectorNamespacePrefix(namespace, nsContext, isElementSelector) {
+	if (namespace === void 0) return "";
+	if (isElementSelector && namespace !== "" && nsContext.defaultNamespacePrefixes?.has(namespace)) return "";
+	if (namespace === "*") return !isElementSelector || nsContext.hasDefaultNamespace ? "*|" : "";
+	if (namespace === "") return isElementSelector ? "|" : "";
+	return `${serializeIdentifier(namespace)}|`;
+}
+const NTH_PSEUDO_CLASSES = /* @__PURE__ */ new Set("nth-child,nth-last-child,nth-of-type,nth-last-of-type".split(","));
+function serializeSimpleSelector(simple, nsContext) {
+	switch (simple.type) {
+		case "type-selector": return formatSelectorNamespacePrefix(simple.namespace, nsContext, true) + serializeIdentifier(simple.name);
+		case "universal-selector": return formatSelectorNamespacePrefix(simple.namespace, nsContext, true) + "*";
+		case "id-selector": return "#" + serializeIdentifier(simple.name);
+		case "class-selector": return "." + serializeIdentifier(simple.name);
+		case "attribute-selector": {
+			let attr = "[" + formatSelectorNamespacePrefix(simple.namespace, nsContext, false) + serializeIdentifier(simple.name);
+			if (simple.operator) attr += simple.operator + serializeString(simple.value || "");
+			if (simple.flags) attr += " " + simple.flags;
+			return attr + "]";
+		}
+		case "pseudo-class-selector": {
+			let pc = `:${simple.name}`;
+			const isNth = NTH_PSEUDO_CLASSES.has(simple.name.toLowerCase());
+			if (simple.argument) {
+				if ("type" in simple.argument && simple.argument.type === "selector-list") {
+					const selStr = serializeSelectorList(simple.argument, nsContext);
+					pc += isNth && simple.nth ? `(${formatAnPlusB(simple.nth)} of ${selStr})` : `(${selStr})`;
+				} else {
+					const tokens = simple.argument;
+					pc += `(${isNth ? formatAnPlusB(tokens) : serialize(tokens).trim()})`;
+				}
+			}
+			return pc;
+		}
+		case "pseudo-element-selector": {
+			let pe = `::${simple.name}`;
+			if (simple.argument) pe += "type" in simple.argument && simple.argument.type === "selector-list" ? `(${serializeSelectorList(simple.argument, nsContext)})` : `(${serialize(simple.argument).trim()})`;
+			return pe;
+		}
+		case "nesting-selector": return "&";
+		default: return "";
+	}
+}
+// src/AbstractTokenizer.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var AbstractTokenizer = class {
+	unicodeRangesAllowed = false;
+	errors = [];
+	parseError(message) {
+		this.errors.push({ message });
+		console.warn(`CSS Parse Error: ${message}`);
+	}
+	consumeToken() {
+		while (true) {
+			this.consumeComments();
+			const cp = this.consume();
+			if (cp === -1) return {
+				type: "EOF",
+				value: ""
+			};
+			if (this.isWhitespace(cp)) {
+				while (this.isWhitespace(this.cp)) this.consume();
+				return {
+					type: "whitespace",
+					value: " "
+				};
+			}
+			switch (cp) {
+				case 34: return this.consumeStringToken(34);
+				case 35:
+					if (this.isIdentCodePoint(this.cp) || this.isValidEscape(this.cp, this.peek(1))) {
+						const token = {
+							type: "hash",
+							value: "",
+							hashType: "unrestricted"
+						};
+						if (this.wouldStartIdentSequence(this.cp, this.peek(1), this.peek(2))) token.hashType = "id";
+						token.value = this.consumeIdentSequence();
+						return token;
+					}
+					return {
+						type: "delim",
+						value: String.fromCodePoint(cp)
+					};
+				case 39: return this.consumeStringToken(39);
+				case 40: return {
+					type: "(",
+					value: "("
+				};
+				case 41: return {
+					type: ")",
+					value: ")"
+				};
+				case 43:
+					if (this.wouldStartNumber(cp, this.cp, this.peek(1))) {
+						this.reconsume();
+						return this.consumeNumericToken();
+					}
+					return {
+						type: "delim",
+						value: "+"
+					};
+				case 44: return {
+					type: "comma",
+					value: ","
+				};
+				case 45:
+					if (this.wouldStartNumber(cp, this.cp, this.peek(1))) {
+						this.reconsume();
+						return this.consumeNumericToken();
+					}
+					if (this.cp === 45 && this.peek(1) === 62) {
+						this.consume();
+						this.consume();
+						return {
+							type: "CDC",
+							value: "-->"
+						};
+					}
+					if (this.wouldStartIdentSequence(cp, this.cp, this.peek(1))) {
+						this.reconsume();
+						return this.consumeIdentLikeToken();
+					}
+					return {
+						type: "delim",
+						value: "-"
+					};
+				case 46:
+					if (this.wouldStartNumber(cp, this.cp, this.peek(1))) {
+						this.reconsume();
+						return this.consumeNumericToken();
+					}
+					return {
+						type: "delim",
+						value: "."
+					};
+				case 47: return {
+					type: "delim",
+					value: "/"
+				};
+				case 58: return {
+					type: "colon",
+					value: ":"
+				};
+				case 59: return {
+					type: "semicolon",
+					value: ";"
+				};
+				case 60:
+					if (this.cp === 33 && this.peek(1) === 45 && this.peek(2) === 45) {
+						this.consume();
+						this.consume();
+						this.consume();
+						return {
+							type: "CDO",
+							value: "<!--"
+						};
+					}
+					return {
+						type: "delim",
+						value: "<"
+					};
+				case 64:
+					if (this.wouldStartIdentSequence(this.cp, this.peek(1), this.peek(2))) return {
+						type: "at-keyword",
+						value: this.consumeIdentSequence()
+					};
+					return {
+						type: "delim",
+						value: "@"
+					};
+				case 91: return {
+					type: "[",
+					value: "["
+				};
+				case 92:
+					if (this.isValidEscape(cp, this.cp)) {
+						this.reconsume();
+						return this.consumeIdentLikeToken();
+					}
+					this.parseError("Invalid escape sequence");
+					return {
+						type: "delim",
+						value: "\\"
+					};
+				case 93: return {
+					type: "]",
+					value: "]"
+				};
+				case 123: return {
+					type: "{",
+					value: "{"
+				};
+				case 125: return {
+					type: "}",
+					value: "}"
+				};
+			}
+			if (this.isDigit(cp)) {
+				this.reconsume();
+				return this.consumeNumericToken();
+			}
+			if (this.isIdentStartCodePoint(cp)) {
+				this.reconsume();
+				if (this.unicodeRangesAllowed && this.wouldStartUnicodeRange(this.cp, this.peek(1), this.peek(2))) {
+					this.consume();
+					this.consume();
+					return this.consumeUnicodeRangeToken();
+				}
+				return this.consumeIdentLikeToken();
+			}
+			return {
+				type: "delim",
+				value: String.fromCodePoint(cp)
+			};
+		}
+	}
+	consumeComments() {
+		while (this.cp === 47 && this.peek(1) === 42) {
+			this.consume();
+			this.consume();
+			while (true) {
+				const cp = this.consume();
+				if (cp === -1) {
+					this.parseError("EOF reached before comment was closed");
+					return;
+				}
+				if (cp === 42 && this.cp === 47) {
+					this.consume();
+					break;
+				}
+			}
+		}
+	}
+	consumeNumericToken() {
+		const number = this.consumeNumber();
+		if (this.wouldStartIdentSequence(this.cp, this.peek(1), this.peek(2))) {
+			const unit = this.consumeIdentSequence();
+			return {
+				type: "dimension",
+				value: number.value,
+				unit,
+				numberType: number.type,
+				sign: number.sign
+			};
+		}
+		if (this.cp === 37) {
+			this.consume();
+			return {
+				type: "percentage",
+				value: number.value,
+				sign: number.sign
+			};
+		}
+		return {
+			type: "number",
+			value: number.value,
+			numberType: number.type,
+			sign: number.sign
+		};
+	}
+	consumeIdentLikeToken() {
+		const string = this.consumeIdentSequence();
+		if (string.toLowerCase() === "url" && this.cp === 40) {
+			this.consume();
+			while (this.isWhitespace(this.cp) && this.isWhitespace(this.peek(1))) this.consume();
+			const currentCp = this.cp;
+			if (currentCp === 34 || currentCp === 39 || this.isWhitespace(currentCp) && (this.peek(1) === 34 || this.peek(1) === 39)) return {
+				type: "function",
+				value: string
+			};
+			return this.consumeUrlToken();
+		}
+		if (this.cp === 40) {
+			this.consume();
+			return {
+				type: "function",
+				value: string
+			};
+		}
+		return {
+			type: "ident",
+			value: string
+		};
+	}
+	consumeStringToken(endingCodePoint) {
+		const startPos = this.getPosition();
+		let hasEscapes = false;
+		let result = "";
+		while (true) {
+			const cp = this.consume();
+			if (cp === endingCodePoint || cp === -1) {
+				if (cp === -1) this.parseError("EOF reached before string was closed");
+				if (!hasEscapes) {
+					const lengthOffset = cp === -1 ? 0 : 1;
+					return {
+						type: "string",
+						value: this.slice(startPos, this.getPosition() - lengthOffset)
+					};
+				}
+				return {
+					type: "string",
+					value: result
+				};
+			}
+			if (this.isNewline(cp)) {
+				this.parseError("Newline reached before string was closed");
+				this.reconsume();
+				if (!hasEscapes) return {
+					type: "bad-string",
+					value: this.slice(startPos, this.getPosition())
+				};
+				return {
+					type: "bad-string",
+					value: result
+				};
+			}
+			if (cp === 92) {
+				if (!hasEscapes) {
+					hasEscapes = true;
+					this.reconsume();
+					result = this.slice(startPos, this.getPosition());
+					this.consume();
+				}
+				if (this.cp === -1) ; else if (this.isNewline(this.cp)) this.consume();
+				else result += String.fromCodePoint(this.consumeEscapedCodePoint());
+			} else if (hasEscapes) result += String.fromCodePoint(cp);
+		}
+	}
+	consumeUrlToken() {
+		let value = "";
+		while (this.isWhitespace(this.cp)) this.consume();
+		while (true) {
+			const cp = this.consume();
+			if (cp === 41 || cp === -1) {
+				if (cp === -1) this.parseError("EOF reached before URL was closed");
+				return {
+					type: "url",
+					value
+				};
+			}
+			if (this.isWhitespace(cp)) {
+				while (this.isWhitespace(this.cp)) this.consume();
+				if (this.cp === 41 || this.cp === -1) {
+					if (this.cp === -1) this.parseError("EOF reached before URL was closed");
+					this.consume();
+					return {
+						type: "url",
+						value
+					};
+				}
+				this.consumeRemnantsOfBadUrl();
+				return {
+					type: "bad-url",
+					value
+				};
+			}
+			if (cp === 34 || cp === 39 || cp === 40 || this.isNonPrintable(cp)) {
+				this.parseError("Invalid character in URL");
+				this.consumeRemnantsOfBadUrl();
+				return {
+					type: "bad-url",
+					value
+				};
+			}
+			if (cp === 92) {
+				if (this.isValidEscape(cp, this.cp)) value += String.fromCodePoint(this.consumeEscapedCodePoint());
+				else {
+					this.parseError("Invalid escape sequence in URL");
+					this.consumeRemnantsOfBadUrl();
+					return {
+						type: "bad-url",
+						value
+					};
+				}
+			} else value += String.fromCodePoint(cp);
+		}
+	}
+	consumeEscapedCodePoint() {
+		const cp = this.consume();
+		if (this.isHexDigit(cp)) {
+			let hex = String.fromCodePoint(cp);
+			let count = 1;
+			while (count < 6 && this.isHexDigit(this.cp)) {
+				hex += String.fromCodePoint(this.consume());
+				count++;
+			}
+			if (this.isWhitespace(this.cp)) this.consume();
+			const value = parseInt(hex, 16);
+			if (value === 0 || value >= 55296 && value <= 57343 || value > 1114111) return 65533;
+			return value;
+		}
+		if (cp === -1) {
+			this.parseError("EOF reached in escape sequence");
+			return 65533;
+		}
+		return cp;
+	}
+	isValidEscape(cp1, cp2) {
+		if (cp1 !== 92) return false;
+		if (this.isNewline(cp2)) return false;
+		return true;
+	}
+	wouldStartIdentSequence(cp1, cp2, cp3) {
+		if (cp1 === 45) {
+			if (this.isIdentStartCodePoint(cp2) || cp2 === 45) return true;
+			if (this.isValidEscape(cp2, cp3)) return true;
+			return false;
+		}
+		if (this.isIdentStartCodePoint(cp1)) return true;
+		if (cp1 === 92) {
+			if (this.isValidEscape(cp1, cp2)) return true;
+			return false;
+		}
+		return false;
+	}
+	wouldStartNumber(cp1, cp2, cp3) {
+		if (cp1 === 43 || cp1 === 45) {
+			if (this.isDigit(cp2)) return true;
+			if (cp2 === 46 && this.isDigit(cp3)) return true;
+			return false;
+		}
+		if (cp1 === 46) {
+			if (this.isDigit(cp2)) return true;
+			return false;
+		}
+		if (this.isDigit(cp1)) return true;
+		return false;
+	}
+	consumeIdentSequence() {
+		const startPos = this.getPosition();
+		let hasEscapes = false;
+		let result = "";
+		while (true) {
+			const cp = this.consume();
+			if (this.isIdentCodePoint(cp)) {
+				if (hasEscapes) result += String.fromCodePoint(cp);
+			} else if (this.isValidEscape(cp, this.cp)) {
+				if (!hasEscapes) {
+					hasEscapes = true;
+					this.reconsume();
+					result = this.slice(startPos, this.getPosition());
+					this.consume();
+				}
+				result += String.fromCodePoint(this.consumeEscapedCodePoint());
+			} else {
+				if (cp !== -1) this.reconsume();
+				break;
+			}
+		}
+		if (!hasEscapes) return this.slice(startPos, this.getPosition());
+		return result;
+	}
+	consumeNumber() {
+		let type = "integer";
+		let sign = null;
+		if (this.cp === 43) {
+			sign = "+";
+			this.consume();
+		} else if (this.cp === 45) {
+			sign = "-";
+			this.consume();
+		}
+		let value = 0;
+		let power = 0;
+		while (this.isDigit(this.cp)) {
+			value = value * 10 + (this.cp - 48);
+			this.consume();
+		}
+		if (this.cp === 46 && this.isDigit(this.peek(1))) {
+			this.consume();
+			type = "number";
+			while (this.isDigit(this.cp)) {
+				value = value * 10 + (this.cp - 48);
+				power--;
+				this.consume();
+			}
+		}
+		let exp = 0;
+		let expSign = 1;
+		const currentCp = this.cp;
+		if ((currentCp === 69 || currentCp === 101) && (this.isDigit(this.peek(1)) || (this.peek(1) === 43 || this.peek(1) === 45) && this.isDigit(this.peek(2)))) {
+			this.consume();
+			const nextCp = this.cp;
+			if (nextCp === 43) this.consume();
+			else if (nextCp === 45) {
+				expSign = -1;
+				this.consume();
+			}
+			while (this.isDigit(this.cp)) {
+				exp = exp * 10 + (this.cp - 48);
+				this.consume();
+			}
+			type = "number";
+		}
+		value = value * Math.pow(10, power + expSign * exp);
+		if (sign === "-") value = -value;
+		return {
+			value,
+			type,
+			sign
+		};
+	}
+	consumeRemnantsOfBadUrl() {
+		while (true) {
+			const cp = this.consume();
+			if (cp === 41 || cp === -1) break;
+			if (this.isValidEscape(cp, this.cp)) this.consumeEscapedCodePoint();
+		}
+	}
+	wouldStartUnicodeRange(cp1, cp2, cp3) {
+		if (cp1 !== 85 && cp1 !== 117) return false;
+		if (cp2 !== 43) return false;
+		if (cp3 === 63 || this.isHexDigit(cp3)) return true;
+		return false;
+	}
+	consumeUnicodeRangeToken() {
+		let hex = "";
+		let hasQuestionMarks = false;
+		while (hex.length < 6 && this.isHexDigit(this.cp)) hex += String.fromCodePoint(this.consume());
+		let questionMarks = "";
+		while (hex.length + questionMarks.length < 6 && this.cp === 63) {
+			questionMarks += String.fromCodePoint(this.consume());
+			hasQuestionMarks = true;
+		}
+		if (hasQuestionMarks) {
+			const startStr = hex + questionMarks.replace(/\?/g, "0");
+			const endStr = hex + questionMarks.replace(/\?/g, "F");
+			const start = parseInt(startStr, 16);
+			const end = parseInt(endStr, 16);
+			return {
+				type: "unicode-range",
+				value: `U+${start.toString(16).toUpperCase()}-${end.toString(16).toUpperCase()}`,
+				unicodeRangeStart: start,
+				unicodeRangeEnd: end
+			};
+		}
+		const start = parseInt(hex, 16);
+		if (this.cp === 45 && this.isHexDigit(this.peek(1))) {
+			this.consume();
+			let endHex = "";
+			while (endHex.length < 6 && this.isHexDigit(this.cp)) endHex += String.fromCodePoint(this.consume());
+			const end = parseInt(endHex, 16);
+			return {
+				type: "unicode-range",
+				value: `U+${start.toString(16).toUpperCase()}-${end.toString(16).toUpperCase()}`,
+				unicodeRangeStart: start,
+				unicodeRangeEnd: end
+			};
+		}
+		return {
+			type: "unicode-range",
+			value: `U+${start.toString(16).toUpperCase()}`,
+			unicodeRangeStart: start,
+			unicodeRangeEnd: start
+		};
+	}
+	startsComment() {
+		return this.cp === 47 && this.peek(1) === 42;
+	}
+	isWhitespace(cp) {
+		return cp === 10 || cp === 9 || cp === 32;
+	}
+	isNewline(cp) {
+		return cp === 10;
+	}
+	isDigit(cp) {
+		return cp >= 48 && cp <= 57;
+	}
+	isHexDigit(cp) {
+		return this.isDigit(cp) || cp >= 65 && cp <= 70 || cp >= 97 && cp <= 102;
+	}
+	isIdentStartCodePoint(cp) {
+		return cp >= 65 && cp <= 90 || cp >= 97 && cp <= 122 || cp === 95 || this.isNonAsciiIdentCodePoint(cp);
+	}
+	isIdentCodePoint(cp) {
+		return this.isIdentStartCodePoint(cp) || this.isDigit(cp) || cp === 45;
+	}
+	isNonAsciiIdentCodePoint(cp) {
+		return cp === 183 || cp >= 192 && cp <= 214 || cp >= 216 && cp <= 246 || cp >= 248 && cp <= 893 || cp >= 895 && cp <= 8191 || cp === 8204 || cp === 8205 || cp === 8255 || cp === 8256 || cp >= 8304 && cp <= 8591 || cp >= 11264 && cp <= 12271 || cp >= 12289 && cp <= 55295 || cp >= 63744 && cp <= 64975 || cp >= 65008 && cp <= 65533 || cp >= 65536;
+	}
+	isNonPrintable(cp) {
+		return cp >= 0 && cp <= 8 || cp === 11 || cp >= 14 && cp <= 31 || cp === 127;
+	}
+};
+// src/tokenizer.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Tokenizes a CSS input string into an array of CSS Syntax Level 3 tokens (ending with an `EOF` token).
+*/
+function tokenize(input, unicodeRangesAllowed = false, errors) {
+	const tokenizer = new Tokenizer(input);
+	tokenizer.unicodeRangesAllowed = unicodeRangesAllowed;
+	const tokens = tokenizer.tokenize();
+	if (errors) errors.push(...tokenizer.errors);
+	return tokens;
+}
+var Tokenizer = class extends AbstractTokenizer {
+	input;
+	pos = 0;
+	constructor(input) {
+		super();
+		this.input = this.preprocess(input);
+	}
+	preprocess(input) {
+		return input.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\f/g, "\n").replace(/\0/g, "�").replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "�");
+	}
+	tokenize() {
+		const tokens = [];
+		while (true) {
+			const start = this.getPosition();
+			const token = this.consumeToken();
+			token.startIndex = start;
+			token.endIndex = this.getPosition();
+			token.originalText = this.input.slice(start, token.endIndex);
+			tokens.push(token);
+			if (token.type === "EOF") break;
+		}
+		return tokens;
+	}
+	get cp() {
+		return this.pos < this.input.length ? this.input.codePointAt(this.pos) : -1;
+	}
+	peek(offset) {
+		let index = this.pos;
+		for (let i = 0; i < offset; i++) {
+			if (index >= this.input.length) return -1;
+			const cp = this.input.codePointAt(index);
+			index += cp > 65535 ? 2 : 1;
+		}
+		return index < this.input.length ? this.input.codePointAt(index) : -1;
+	}
+	consume() {
+		const cp = this.cp;
+		if (cp !== -1) this.pos += cp > 65535 ? 2 : 1;
+		return cp;
+	}
+	reconsume() {
+		if (this.pos > 0) {
+			this.pos--;
+			const codeUnit = this.input.charCodeAt(this.pos);
+			if (codeUnit >= 56320 && codeUnit <= 57343 && this.pos > 0) {
+				const prevCodeUnit = this.input.charCodeAt(this.pos - 1);
+				if (prevCodeUnit >= 55296 && prevCodeUnit <= 56319) this.pos--;
+			}
+		}
+	}
+	slice(start, end) {
+		return this.input.slice(start, end);
+	}
+	getPosition() {
+		return this.pos;
+	}
+};
+// src/data/gen/properties.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var CSSStyleProperties = class {};
+Object.defineProperty(CSSStyleProperties.prototype, "cssFloat", {
+	get() {
+		const target = this;
+		return typeof target.getPropertyValue === "function" ? target.getPropertyValue("float") : target._float ?? "";
+	},
+	set(val) {
+		const target = this;
+		const strVal = val === null || val === void 0 ? "" : String(val);
+		if (typeof target.setProperty === "function") target.setProperty("float", strVal);
+		else target._float = strVal;
+	},
+	enumerable: true,
+	configurable: true
+});
+// src/CSSOM.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var StyleSheet = class {
+	/** @internal */
+	_type = "text/css";
+	/** @internal */
+	_href = null;
+	/** @internal */
+	_ownerNode = null;
+	/** @internal */
+	_parentStyleSheet = null;
+	/** @internal */
+	_titleVal = null;
+	/** @internal */
+	_media;
+	/** @internal */
+	_disabledFlag = false;
+	get type() {
+		return this._type;
+	}
+	get href() {
+		return this._href;
+	}
+	get ownerNode() {
+		return this._ownerNode;
+	}
+	get parentStyleSheet() {
+		return this._parentStyleSheet;
+	}
+	get title() {
+		if (this.ownerNode && "getAttribute" in this.ownerNode && typeof this.ownerNode.getAttribute === "function") {
+			const t = this.ownerNode.getAttribute("title");
+			return t === null || t === "" ? null : t;
+		}
+		return this._titleVal ?? null;
+	}
+	constructor(mediaText = "") {
+		this._media = new MediaList(mediaText);
+		hideInternalFields(this);
+	}
+	get media() {
+		return this._media;
+	}
+	set media(value) {
+		if (value === null) this._media.mediaText = "";
+		else if (typeof value === "string") this._media.mediaText = value;
+		else this._media.mediaText = value.mediaText;
+	}
+	get disabled() {
+		return this._disabledFlag;
+	}
+	set disabled(value) {
+		this._disabledFlag = value;
+	}
+};
+var CSSStyleSheet = class CSSStyleSheet extends StyleSheet {
+	/** @internal */
+	_ownerRule = null;
+	/** @internal */
+	_cssRules;
+	/** @internal */
+	_rules = [];
+	/** @internal */
+	_registeredProperties = [];
+	/** @internal */
+	_originCleanFlag = true;
+	/** @internal */
+	_constructed = false;
+	/** @internal */
+	get _constructedFlag() {
+		return this._constructed;
+	}
+	/** @internal */
+	set _constructedFlag(val) {
+		this._constructed = val;
+	}
+	/** @internal */
+	_disallowModificationFlag = false;
+	/** @internal */
+	_baseURL = null;
+	get ownerRule() {
+		return this._ownerRule;
+	}
+	/** @internal */
+	_initImportedSheet(ownerRule, parentStyleSheet, href) {
+		this._ownerRule = ownerRule;
+		this._parentStyleSheet = parentStyleSheet;
+		this._href = href;
+	}
+	get parentStyleSheet() {
+		if (this._ownerRule) return this._ownerRule.parentStyleSheet;
+		return super.parentStyleSheet;
+	}
+	get cssRules() {
+		if (!this._originCleanFlag) throw new DOMException("The stylesheet is not origin-clean", "SecurityError");
+		return this._cssRules;
+	}
+	_registerRuleProperties(rule) {
+		if (rule instanceof CSSPropertyRule) {
+			if (ParseHooks.registerPropertyRule({
+				name: rule.name,
+				syntax: rule.syntax,
+				inherits: rule.inherits,
+				initialValue: rule.initialValue ?? void 0
+			})) ;
+		} else if (rule instanceof CSSGroupingRule || rule && typeof rule === "object" && "cssRules" in rule) {
+			const childRules = rule.cssRules;
+			if (childRules) for (let i = 0; i < childRules.length; i++) this._registerRuleProperties(childRules[i]);
+		}
+	}
+	_unregisterProperties() {
+		for (const name of this._registeredProperties) ParseHooks.unregisterPropertyRule(name);
+		this._registeredProperties = [];
+	}
+	constructor(options = {}) {
+		const mediaText = options.media instanceof MediaList ? options.media.mediaText : options.media || "";
+		super(mediaText);
+		this._rules = [];
+		this._constructed = true;
+		this._originCleanFlag = true;
+		this.disabled = !!options.disabled;
+		if (options.baseURL !== void 0 && options.baseURL !== null) {
+			const baseURI = typeof globalThis.document !== "undefined" && globalThis.document.baseURI || typeof globalThis.location !== "undefined" && globalThis.location.href || "about:blank";
+			try {
+				const url = new URL(options.baseURL, baseURI);
+				this._baseURL = url.href;
+			} catch {
+				throw new DOMException("Invalid baseURL", "NotAllowedError");
+			}
+		} else this._baseURL = null;
+		this._cssRules = new CSSRuleList(() => this._rules);
+		hideInternalFields(this);
+	}
+	/** @internal */
+	static createInternal(rules, _parseRule, originClean = true) {
+		const sheet = new CSSStyleSheet();
+		sheet._rules.push(...rules);
+		sheet._constructed = false;
+		sheet._originCleanFlag = originClean;
+		for (const rule of rules) {
+			if (rule instanceof CSSRule) rule._parentStyleSheet = sheet;
+			sheet._registerRuleProperties(rule);
+		}
+		return sheet;
+	}
+	_replaceRulesFromText(text) {
+		const filteredRules = consumeListOfRules(tokenize(text), true, { source: text }).filter((rule) => {
+			if (isImportRule(rule)) {
+				console.warn("CSS Parse Error: @import rules are not allowed in constructed stylesheets and were removed.");
+				return false;
+			}
+			return true;
+		});
+		for (const rule of this._rules) if (rule instanceof CSSRule) {
+			rule._parentRule = null;
+			rule._parentStyleSheet = null;
+		}
+		this._unregisterProperties();
+		this._rules = filteredRules;
+		for (const rule of this._rules) {
+			if (rule instanceof CSSRule) {
+				rule._parentStyleSheet = this;
+				rule._parentRule = null;
+			}
+			this._registerRuleProperties(rule);
+		}
+	}
+	replace(text) {
+		if (!this._constructed || this._disallowModificationFlag) return Promise.reject(new DOMException("Can't call replace or replaceSync on non-constructed stylesheets.", "NotAllowedError"));
+		this._disallowModificationFlag = true;
+		return new Promise((resolve, reject) => {
+			queueMicrotask(() => {
+				try {
+					this._replaceRulesFromText(text);
+					this._disallowModificationFlag = false;
+					resolve(this);
+				} catch (e) {
+					this._disallowModificationFlag = false;
+					reject(e);
+				}
 			});
 		});
-	};
-
-	/**
-	 * Synchronously replaces the rules of a {@link CSSStyleSheet}
-	 * 
-	 * @see https://www.w3.org/TR/cssom-1/#dom-cssstylesheet-replacesync
-	 */
-	CSSOM.CSSStyleSheet.prototype.replaceSync = function(text) {
-		var sheet = this;
-		// If the constructed flag is not set, or the disallow modification flag is set, throw a NotAllowedError DOMException.
-		if (!sheet.__constructed || sheet.__disallowModification) {
-			errorUtils.throwError(sheet, 'DOMException',
-				"Failed to execute 'replaceSync' on '" + sheet.constructor.name + "': Not allowed.",
-				'NotAllowedError');
+	}
+	replaceSync(text) {
+		if (!this._constructed) throw new DOMException("Can't call replace or replaceSync on non-constructed stylesheets.", "NotAllowedError");
+		if (this._disallowModificationFlag) throw new DOMException("Modification is disallowed", "NotAllowedError");
+		this._replaceRulesFromText(text);
+	}
+	insertRule(rule, index = 0) {
+		if (this._disallowModificationFlag) throw new DOMException("Modification is disallowed", "NotAllowedError");
+		if (!this._originCleanFlag) throw new DOMException("The style sheet is not origin-clean.", "SecurityError");
+		if (index < 0 || index > this._rules.length) throw new DOMException("Index size error", "IndexSizeError");
+		const parsedRule = parseRule(rule);
+		if (!parsedRule) throw new DOMException("Syntax error", "SyntaxError");
+		const isImport = isImportRule(parsedRule);
+		const isNamespace = isNamespaceRule(parsedRule);
+		if (isImport && this._constructed) throw new DOMException("HierarchyRequestError: @import rules are not allowed in constructed stylesheets", "SyntaxError");
+		if (isImport) {
+			for (let i = 0; i < index; i++) if (!isImportRule(this._rules[i])) throw new DOMException("HierarchyRequestError: @import rules must precede all other rules", "HierarchyRequestError");
+		} else if (isNamespace) {
+			if (this._rules.some((r) => isRegularRule(r))) throw new DOMException("InvalidStateError: @namespace rules must precede all regular rules", "InvalidStateError");
+			for (let i = index; i < this._rules.length; i++) if (isImportRule(this._rules[i])) throw new DOMException("HierarchyRequestError: @namespace rules must follow all @import rules", "HierarchyRequestError");
+		} else for (let i = index; i < this._rules.length; i++) if (isImportRule(this._rules[i]) || isNamespaceRule(this._rules[i])) throw new DOMException("HierarchyRequestError: Regular rules must follow all @import and @namespace rules", "HierarchyRequestError");
+		if (parsedRule instanceof CSSRule) {
+			parsedRule._parentStyleSheet = this;
+			parsedRule._parentRule = null;
 		}
-		// Let rules be the result of running parse a stylesheet's contents from text.
-		var rules = new CSSOM.CSSRuleList();
-		CSSOM.parse(text, { styleSheet: sheet, cssRules: rules });
-		// If rules contains one or more @import rules, remove those rules from rules.
-		var i = 0;
-		while (i < rules.length) {
-			if (rules[i].constructor.name === 'CSSImportRule') {
-				rules.splice(i, 1);
+		this._rules.splice(index, 0, parsedRule);
+		this._registerRuleProperties(parsedRule);
+		return index;
+	}
+	deleteRule(index) {
+		if (this._disallowModificationFlag) throw new DOMException("Modification is disallowed", "NotAllowedError");
+		if (!this._originCleanFlag) throw new DOMException("The style sheet is not origin-clean.", "SecurityError");
+		if (index < 0 || index >= this._rules.length) throw new DOMException("Index size error", "IndexSizeError");
+		const rule = this._rules[index];
+		if (isNamespaceRule(rule) && this._rules.some((r) => isRegularRule(r))) throw new DOMException("InvalidStateError: Cannot remove @namespace rule when regular rules exist", "InvalidStateError");
+		deleteRuleFromArray(this._rules, index);
+		if (rule instanceof CSSPropertyRule) {
+			ParseHooks.unregisterPropertyRule(rule.name);
+			const idx = this._registeredProperties.indexOf(rule.name);
+			if (idx !== -1) this._registeredProperties.splice(idx, 1);
+		}
+	}
+	get rules() {
+		return this.cssRules;
+	}
+	addRule(selector = "undefined", style = "undefined", optionalIndex) {
+		let rule = "";
+		rule += selector;
+		rule += " { ";
+		if (style !== "") rule += style + " ";
+		rule += "}";
+		const index = optionalIndex !== void 0 ? optionalIndex : this._rules.length;
+		this.insertRule(rule, index);
+		return -1;
+	}
+	removeRule(index = 0) {
+		this.deleteRule(index);
+	}
+};
+var CSSStyleRule = class CSSStyleRule extends CSSGroupingRule {
+	/** @internal */ _selectorText;
+	/** @internal */ _selectorAST = null;
+	/** @internal */ _style;
+	/** @internal */ _styleMap = null;
+	constructor(selectorText, styleDeclarations, rules, parseRuleInBlock, selectorAST = null) {
+		super(rules, parseRuleInBlock);
+		this._selectorText = selectorText;
+		this._selectorAST = selectorAST;
+		this._style = new CSSStyleDeclaration(styleDeclarations);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get styleMap() {
+		if (!this || !(this instanceof CSSStyleRule)) throw new TypeError("Value of 'this' is not a CSSStyleRule");
+		if (!this._styleMap) this._styleMap = ParseHooks.createStylePropertyMap(this._style);
+		return this._styleMap;
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	_getNamespaceContext() {
+		let hasDefaultNamespace = false;
+		const defaultNamespacePrefixes = /* @__PURE__ */ new Set();
+		const sheet = this.parentStyleSheet || (this.parentRule ? findParentStyleSheet(this.parentRule) : null);
+		if (sheet) {
+			const nsRules = Array.from(sheet.cssRules).filter((r) => r.type === 10);
+			const defaultNs = nsRules.find((ns) => ns.prefix === "");
+			if (defaultNs) {
+				hasDefaultNamespace = true;
+				for (const ns of nsRules) if (ns.namespaceURI === defaultNs.namespaceURI && ns.prefix !== "") defaultNamespacePrefixes.add(ns.prefix);
+			}
+		}
+		return {
+			hasDefaultNamespace,
+			defaultNamespacePrefixes
+		};
+	}
+	get selectorText() {
+		if (this._selectorAST) {
+			const nsContext = this._getNamespaceContext();
+			return serializeSelectorList(this._selectorAST, nsContext);
+		}
+		return this._selectorText;
+	}
+	set selectorText(value) {
+		const sheet = this.parentStyleSheet || (this.parentRule ? findParentStyleSheet(this.parentRule) : null);
+		const declaredNamespaces = new Set(sheet ? Array.from(sheet.cssRules).filter((r) => r.type === 10).map((r) => r.prefix) : []);
+		const nsContext = this._getNamespaceContext();
+		let isNested = false;
+		let allowRelative = false;
+		let currParent = this.parentRule;
+		while (currParent !== null) {
+			if (currParent.type === 1 || currParent[Symbol.toStringTag] === "CSSStyleRule") {
+				isNested = true;
+				allowRelative = true;
+			}
+			if (currParent[Symbol.toStringTag] === "CSSScopeRule") {
+				allowRelative = true;
+				break;
+			}
+			currParent = currParent.parentRule;
+		}
+		let selectorAST = null;
+		try {
+			selectorAST = parseSelectorAST(value, declaredNamespaces, allowRelative);
+		} catch {
+			return;
+		}
+		if (selectorAST !== null) {
+			if (isNested) {
+				for (const selector of selectorAST.selectors) if (selector.type === "complex-selector") {
+					if (selector.items.length > 0 && selector.items[0].type === "combinator") selector.items.unshift({
+						type: "compound-selector",
+						selectors: [{ type: "nesting-selector" }]
+					});
+					else if (!selector.items.some((item) => {
+						if (item.type === "compound-selector") return item.selectors.some((s) => s.type === "nesting-selector");
+						return false;
+					})) selector.items.unshift({
+						type: "compound-selector",
+						selectors: [{ type: "nesting-selector" }]
+					}, {
+						type: "combinator",
+						value: " "
+					});
+				}
+			}
+			this._selectorAST = selectorAST;
+			this._selectorText = serializeSelectorList(selectorAST, nsContext);
+		}
+	}
+	get type() {
+		return 1;
+	}
+	get cssText() {
+		const declsStr = serializeDeclarations(this.style._declarations);
+		if (this._rules.length > 0) {
+			const bodyParts = [];
+			if (declsStr) bodyParts.push("  " + declsStr);
+			for (const r of this._rules) {
+				const text = r.cssText;
+				if (text !== "") bodyParts.push("  " + text);
+			}
+			if (bodyParts.length === 0) return `${this.selectorText} { }`;
+			return `${this.selectorText} {\n${bodyParts.join("\n")}\n}`;
+		} else {
+			const bodyText = declsStr.trim();
+			return `${this.selectorText} {${bodyText ? " " + bodyText + " " : " "}}`;
+		}
+	}
+	set cssText(_value) {}
+};
+Object.defineProperty(CSSStyleRule.prototype, "styleMap", { enumerable: true });
+const cssomClasses = [
+	StyleSheet,
+	CSSStyleSheet,
+	CSSRule,
+	CSSGroupingRule,
+	MediaList,
+	StyleSheetList,
+	CSSRuleList,
+	CSSStyleRule,
+	CSSStyleProperties
+];
+for (const ctor of cssomClasses) if (ctor === CSSStyleSheet) applyWebIDLInterface(ctor, { rejectOperations: ["replace"] });
+else if (ctor === CSSRule) applyWebIDLInterface(ctor, { exclude: ["location"] });
+else applyWebIDLInterface(ctor);
+// src/internal-token.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const INTERNAL_RULE_TOKEN = Symbol("CSSRule.internal");
+// src/rules/at-rules.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var CSSConditionRule = class extends CSSGroupingRule {
+	get conditionText() {
+		return "";
+	}
+};
+var CSSMediaRule = class extends CSSConditionRule {
+	/** @internal */ _media;
+	constructor(mediaText, rules, parseRuleInBlock) {
+		super(rules, parseRuleInBlock);
+		this._media = new MediaList(mediaText);
+		hideInternalFields(this);
+	}
+	get media() {
+		return this._media;
+	}
+	set media(val) {
+		this._media.mediaText = val === null ? "" : String(val);
+	}
+	get conditionText() {
+		return this._media.mediaText;
+	}
+	get type() {
+		return 4;
+	}
+	get cssText() {
+		return serializeGroupingRule("media", this._media.mediaText, this._rules);
+	}
+	set cssText(_value) {}
+};
+var CSSCustomMediaRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _query;
+	constructor(name, query) {
+		super();
+		this._name = name;
+		this._query = query;
+		hideInternalFields(this);
+	}
+	get name() {
+		return this._name;
+	}
+	get query() {
+		return this._query;
+	}
+	get cssText() {
+		const queryStr = typeof this._query === "boolean" ? String(this._query) : this._query.mediaText;
+		return `@custom-media ${this._name}${queryStr ? " " + queryStr : ""};`;
+	}
+	set cssText(_value) {}
+};
+var CSSSupportsRule = class extends CSSConditionRule {
+	/** @internal */ _conditionText;
+	constructor(conditionText, rules, parseRuleInBlock) {
+		super(rules, parseRuleInBlock);
+		this._conditionText = conditionText;
+		hideInternalFields(this);
+	}
+	get conditionText() {
+		return this._conditionText;
+	}
+	get matches() {
+		return ParseHooks.supports(this._conditionText);
+	}
+	get type() {
+		return 12;
+	}
+	get cssText() {
+		return serializeGroupingRule("supports", this._conditionText, this._rules);
+	}
+	set cssText(_value) {}
+};
+const CONTAINER_KEYWORDS = /* @__PURE__ */ new Set("not,and,or,none".split(","));
+function parseContainerPrelude(containerQuery, containerName) {
+	if (containerName || !containerQuery) return {
+		name: containerName,
+		query: containerQuery
+	};
+	const trimmed = containerQuery.trim();
+	const firstSpace = trimmed.indexOf(" ");
+	if (firstSpace > 0) {
+		const potentialName = trimmed.slice(0, firstSpace);
+		if (!CONTAINER_KEYWORDS.has(potentialName.toLowerCase()) && !potentialName.startsWith("(")) return {
+			name: potentialName,
+			query: trimmed.slice(firstSpace + 1).trim()
+		};
+	} else if (!CONTAINER_KEYWORDS.has(trimmed.toLowerCase()) && !trimmed.startsWith("(")) return {
+		name: trimmed,
+		query: ""
+	};
+	return {
+		name: "",
+		query: trimmed
+	};
+}
+var CSSContainerRule = class extends CSSConditionRule {
+	/** @internal */ _containerName;
+	/** @internal */ _containerQuery;
+	constructor(containerQuery, rules, parseRuleInBlock, containerName = "") {
+		super(rules, parseRuleInBlock);
+		const parsed = parseContainerPrelude(containerQuery, containerName);
+		this._containerName = parsed.name;
+		this._containerQuery = parsed.query;
+		hideInternalFields(this);
+	}
+	get containerName() {
+		return this._containerName;
+	}
+	get containerQuery() {
+		return this._containerQuery;
+	}
+	get conditionText() {
+		if (this._containerName) return this._containerQuery ? `${this._containerName} ${this._containerQuery}` : this._containerName;
+		return this._containerQuery;
+	}
+	get cssText() {
+		return serializeGroupingRule("container", this.conditionText, this._rules);
+	}
+	set cssText(_value) {}
+};
+function serializeLayerName(name) {
+	return name ? name.split(".").map((p) => serializeIdentifier(p)).join(".") : "";
+}
+function formatInlineStyleBlock(prefix, style) {
+	const body = style.cssText.trim();
+	return `${prefix} {${body ? " " + body + " " : ""}}`;
+}
+var CSSLayerBlockRule = class extends CSSGroupingRule {
+	/** @internal */ _name;
+	constructor(name, rules, parseRuleInBlock) {
+		super(rules, parseRuleInBlock);
+		this._name = name;
+		hideInternalFields(this);
+	}
+	get name() {
+		return this._name;
+	}
+	get cssText() {
+		return serializeGroupingRule("layer", serializeLayerName(this._name), this._rules);
+	}
+	set cssText(_value) {}
+};
+var CSSLayerStatementRule = class extends CSSRule {
+	/** @internal */ _nameList;
+	constructor(nameList) {
+		if (!nameList || arguments.length === 0) throw new TypeError("Illegal constructor");
+		super();
+		this._nameList = Object.freeze([...nameList]);
+		hideInternalFields(this);
+	}
+	get nameList() {
+		return this._nameList;
+	}
+	get cssText() {
+		return `@layer ${this._nameList.map(serializeLayerName).join(", ")};`;
+	}
+	set cssText(_value) {}
+};
+var CSSStartingStyleRule = class extends CSSGroupingRule {
+	constructor(_prelude, rules, parseRuleInBlock) {
+		super(rules, parseRuleInBlock);
+	}
+	get cssText() {
+		return serializeGroupingRule("starting-style", "", this._rules);
+	}
+	set cssText(_value) {}
+};
+var CSSScopeRule = class extends CSSGroupingRule {
+	/** @internal */ _startSelector;
+	/** @internal */ _endSelector;
+	constructor(startSelector, endSelector, rules, parseRuleInBlock) {
+		super(rules, parseRuleInBlock);
+		this._startSelector = startSelector;
+		this._endSelector = endSelector;
+		hideInternalFields(this);
+	}
+	get start() {
+		return this._startSelector ? this._startSelector.replace(/^\(/, "").replace(/\)$/, "").trim() || null : null;
+	}
+	get end() {
+		return this._endSelector ? this._endSelector.replace(/^\(/, "").replace(/\)$/, "").trim() || null : null;
+	}
+	get cssText() {
+		let prelude = this._startSelector || "";
+		if (this._endSelector) prelude += `${prelude ? " " : ""}to ${this._endSelector}`;
+		return serializeGroupingRule("scope", prelude, this._rules);
+	}
+	set cssText(_value) {}
+};
+var CSSViewTransitionRule = class extends CSSRule {
+	/** @internal */ _navigation;
+	constructor(declarations) {
+		super();
+		const navDecl = declarations.findLast((d) => d.name === "navigation");
+		this._navigation = navDecl ? serialize(navDecl.value).trim() : "none";
+		hideInternalFields(this);
+	}
+	get navigation() {
+		return this._navigation;
+	}
+	get cssText() {
+		return `@view-transition { navigation: ${this._navigation}; }`;
+	}
+	set cssText(_value) {}
+};
+function normalizeKeyframeSelector(selector) {
+	const normalized = [];
+	for (const part of selector.split(",")) {
+		const trimmed = part.trim().toLowerCase();
+		if (trimmed === "from") normalized.push("0%");
+		else if (trimmed === "to") normalized.push("100%");
+		else {
+			if (!trimmed.endsWith("%")) throw new DOMException("Invalid keyframe selector", "SyntaxError");
+			const valStr = trimmed.slice(0, -1).trim();
+			const val = Number(valStr);
+			if (Number.isNaN(val) || valStr === "" || val < 0 || val > 100) throw new DOMException("Invalid keyframe selector", "SyntaxError");
+			normalized.push(`${val}%`);
+		}
+	}
+	if (normalized.length === 0) throw new DOMException("Invalid keyframe selector", "SyntaxError");
+	return normalized.join(", ");
+}
+const DISALLOWED_KEYFRAME_NAMES = /* @__PURE__ */ new Set("none,initial,inherit,unset,revert,default".split(","));
+var CSSKeyframesRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _rules;
+	/** @internal */ _cssRules;
+	constructor(name, rules) {
+		super();
+		this._name = name;
+		this._rules = rules;
+		this._cssRules = new CSSRuleList(() => this._rules);
+		const proxy = createIndexedProxy(this, (t) => t._rules);
+		for (const rule of rules) if (rule instanceof CSSRule) rule._parentRule = proxy;
+		return proxy;
+	}
+	get name() {
+		return this._name;
+	}
+	set name(val) {
+		this._name = val;
+	}
+	get cssRules() {
+		return this._cssRules;
+	}
+	get type() {
+		return 7;
+	}
+	get length() {
+		return this._rules.length;
+	}
+	get cssText() {
+		return serializeGroupingRule("keyframes", DISALLOWED_KEYFRAME_NAMES.has(this._name.toLowerCase()) ? JSON.stringify(this._name) : serializeIdentifier(this._name), this._rules);
+	}
+	set cssText(_value) {}
+	_findRuleIndex(select) {
+		let normalized;
+		try {
+			normalized = normalizeKeyframeSelector(select);
+		} catch {
+			return -1;
+		}
+		for (let i = this._rules.length - 1; i >= 0; i--) if (this._rules[i].keyText === normalized) return i;
+		return -1;
+	}
+	findRule(select) {
+		const idx = this._findRuleIndex(select);
+		return idx !== -1 ? this._rules[idx] : null;
+	}
+	appendRule(ruleText) {
+		const tokens = tokenize(ruleText);
+		let openIdx = -1;
+		let closeIdx = -1;
+		let depth = 0;
+		for (let i = 0; i < tokens.length; i++) {
+			const tok = tokens[i];
+			if (tok.type === "{") {
+				if (openIdx === -1) openIdx = i;
+				depth++;
+			} else if (tok.type === "}") {
+				depth--;
+				if (depth === 0 && openIdx !== -1) {
+					closeIdx = i;
+					break;
+				}
+			}
+		}
+		if (openIdx === -1 || closeIdx === -1) return;
+		const preludeText = serialize(tokens.slice(0, openIdx)).trim();
+		let keyText;
+		try {
+			keyText = normalizeKeyframeSelector(preludeText);
+		} catch {
+			return;
+		}
+		const styleDecl = parseStyleAttribute(tokens.slice(openIdx + 1, closeIdx));
+		const keyframe = new CSSKeyframeRule(keyText, styleDecl._declarations);
+		keyframe._parentRule = this;
+		this._rules.push(keyframe);
+	}
+	deleteRule(select) {
+		const idx = this._findRuleIndex(select);
+		if (idx !== -1) deleteRuleFromArray(this._rules, idx);
+	}
+};
+var CSSKeyframeRule = class extends CSSRule {
+	/** @internal */ _keyText;
+	/** @internal */ _style;
+	constructor(keyText, styleDeclarations) {
+		super();
+		this.keyText = keyText;
+		this._style = new CSSKeyframeStyleDeclaration(styleDeclarations);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get keyText() {
+		return this._keyText;
+	}
+	set keyText(value) {
+		this._keyText = normalizeKeyframeSelector(value);
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get type() {
+		return 8;
+	}
+	get cssText() {
+		return formatInlineStyleBlock(this.keyText, this._style);
+	}
+	set cssText(_value) {}
+};
+var CSSNestedDeclarations = class extends CSSRule {
+	/** @internal */ _style;
+	constructor(styleDeclarations) {
+		super();
+		this._style = new CSSStyleDeclaration(styleDeclarations);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get cssText() {
+		return this._style.cssText;
+	}
+	set cssText(_value) {}
+};
+var CSSFontFaceRule = class extends CSSRule {
+	/** @internal */ _style;
+	constructor(styleDeclarations) {
+		super();
+		this._style = new CSSFontFaceDescriptors(styleDeclarations);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get type() {
+		return 5;
+	}
+	get cssText() {
+		return formatInlineStyleBlock("@font-face", this._style);
+	}
+	set cssText(_value) {}
+};
+var CSSMarginRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _style;
+	constructor(name, declarations, internalToken) {
+		if (internalToken !== INTERNAL_RULE_TOKEN) throw new TypeError("Illegal constructor");
+		super();
+		this._name = name;
+		this._style = new CSSMarginDescriptors(declarations);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get name() {
+		return this._name;
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get type() {
+		return 9;
+	}
+	get cssText() {
+		return formatInlineStyleBlock(`@${this.name}`, this.style);
+	}
+	set cssText(_value) {}
+};
+function parseDataUrlRules(href) {
+	if (!href || !href.startsWith("data:")) return [];
+	const commaIdx = href.indexOf(",");
+	if (commaIdx === -1) return [];
+	const meta = href.slice(5, commaIdx).toLowerCase();
+	const content = href.slice(commaIdx + 1);
+	try {
+		return consumeListOfRules(tokenize(meta.includes(";base64") ? typeof atob === "function" ? atob(content) : Buffer.from(content, "base64").toString("utf-8") : decodeURIComponent(content)), true);
+	} catch {
+		return [];
+	}
+}
+var CSSImportRule = class extends CSSRule {
+	/** @internal */ _href;
+	/** @internal */ _media;
+	/** @internal */ _styleSheet = null;
+	/** @internal */ _layerName;
+	/** @internal */ _supportsText;
+	/** @internal */ _scopeStart;
+	/** @internal */ _scopeEnd;
+	/** @internal */ _isScoped;
+	constructor(href, mediaText = "", layerName = null, supportsText = null, scopeStart = null, scopeEnd = null, isScoped = false, internalToken) {
+		if (internalToken !== INTERNAL_RULE_TOKEN) throw new TypeError("Illegal constructor");
+		super();
+		this._href = href;
+		this._media = new MediaList(mediaText);
+		this._layerName = layerName;
+		this._supportsText = supportsText;
+		this._scopeStart = scopeStart;
+		this._scopeEnd = scopeEnd;
+		this._isScoped = isScoped || Boolean(scopeStart || scopeEnd);
+		hideInternalFields(this);
+	}
+	get href() {
+		return this._href;
+	}
+	get media() {
+		return this._media;
+	}
+	set media(val) {
+		this._media.mediaText = val === null ? "" : String(val);
+	}
+	get styleSheet() {
+		if (!this._styleSheet) {
+			this._styleSheet = CSSStyleSheet.createInternal(parseDataUrlRules(this._href), (text) => consumeRule(tokenize(text)));
+			this._styleSheet._initImportedSheet(this, this.parentStyleSheet, this._href);
+		}
+		return this._styleSheet;
+	}
+	get layerName() {
+		return this._layerName;
+	}
+	get supportsText() {
+		return this._supportsText;
+	}
+	get type() {
+		return 3;
+	}
+	get cssText() {
+		let text = `@import url(${serializeString(this.href)})`;
+		if (this.layerName !== null) text += this.layerName ? ` layer(${this.layerName})` : ` layer`;
+		if (this.supportsText !== null) text += ` supports(${this.supportsText})`;
+		if (this._isScoped) {
+			if (this._scopeStart || this._scopeEnd) {
+				const startPart = this._scopeStart ? `(${this._scopeStart})` : "";
+				const endPart = this._scopeEnd ? ` to (${this._scopeEnd})` : "";
+				text += ` scope(${(startPart + endPart).trim()})`;
+			} else text += ` scope`;
+		}
+		const mediaStr = this.media.mediaText;
+		if (mediaStr) text += ` ${mediaStr}`;
+		return text + `;`;
+	}
+	set cssText(_value) {}
+};
+var CSSNamespaceRule = class extends CSSRule {
+	/** @internal */ _namespaceURI;
+	/** @internal */ _prefix;
+	constructor(prefix, namespaceURI, internalToken) {
+		if (internalToken !== INTERNAL_RULE_TOKEN) throw new TypeError("Illegal constructor");
+		super();
+		this._prefix = prefix;
+		this._namespaceURI = namespaceURI;
+		hideInternalFields(this);
+	}
+	get namespaceURI() {
+		return this._namespaceURI;
+	}
+	get prefix() {
+		return this._prefix;
+	}
+	get type() {
+		return 10;
+	}
+	get cssText() {
+		return `@namespace ${this._prefix ? `${serializeIdentifier(this._prefix)} ` : ""}url("${this._namespaceURI}");`;
+	}
+	set cssText(_value) {}
+};
+const VALID_PAGE_PSEUDOS = /* @__PURE__ */ new Set("left,right,first,blank".split(","));
+function parsePageSelectorList(text) {
+	if (text.trim() === "") return [""];
+	const values = parseComponentValues(tokenize(text));
+	const selectorTokensList = [[]];
+	for (const v of values) if (v.type === "comma") selectorTokensList.push([]);
+	else selectorTokensList[selectorTokensList.length - 1].push(v);
+	const results = [];
+	for (const selTokens of selectorTokensList) {
+		let start = 0;
+		let end = selTokens.length;
+		while (start < end && (selTokens[start].type === "whitespace" || selTokens[start].type === "comment")) start++;
+		while (end > start && (selTokens[end - 1].type === "whitespace" || selTokens[end - 1].type === "comment")) end--;
+		const trimmed = selTokens.slice(start, end);
+		if (trimmed.length === 0 || trimmed.some((t) => t.type === "whitespace" || t.type === "comment")) return null;
+		let pos = 0;
+		let serialized = "";
+		if (trimmed[0].type === "ident") {
+			serialized += serializeIdentifier(trimmed[0].value);
+			pos = 1;
+		}
+		while (pos < trimmed.length) {
+			const colon = trimmed[pos];
+			const ident = trimmed[pos + 1];
+			if (colon?.type !== "colon" || ident?.type !== "ident") return null;
+			const pseudoName = ident.value.toLowerCase();
+			if (!VALID_PAGE_PSEUDOS.has(pseudoName)) return null;
+			serialized += ":" + serializeIdentifier(pseudoName);
+			pos += 2;
+		}
+		results.push(serialized);
+	}
+	return results;
+}
+function formatPageSelectorText(text) {
+	const parsed = parsePageSelectorList(text);
+	if (parsed === null) return null;
+	return parsed.length === 1 && parsed[0] === "" ? "" : parsed.join(", ");
+}
+var CSSPageRule = class extends CSSGroupingRule {
+	/** @internal */ _selectorText;
+	/** @internal */ _style;
+	constructor(selectorText, declarations, rules, parseRuleInBlock) {
+		super(rules, parseRuleInBlock);
+		this._selectorText = formatPageSelectorText(selectorText) ?? selectorText;
+		this._style = new CSSPageDescriptors(declarations, PAGE_DESCRIPTORS_INTERNAL);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get selectorText() {
+		return this._selectorText;
+	}
+	set selectorText(value) {
+		const formatted = formatPageSelectorText(value);
+		if (formatted !== null) this._selectorText = formatted;
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get type() {
+		return 6;
+	}
+	get cssText() {
+		const sel = this.selectorText ? this.selectorText + " " : "";
+		const declsStr = this.style.cssText.trim();
+		const rulesStr = this._rules.map((r) => r.cssText).join("\n").trim();
+		const bodyText = declsStr && rulesStr ? `${declsStr}\n${rulesStr}` : declsStr || rulesStr;
+		if (!bodyText) return `@page ${sel}{ }`;
+		return `@page ${sel}{\n${bodyText.split("\n").map((line) => "  " + line).join("\n")}\n}`;
+	}
+	set cssText(_value) {}
+};
+var CSSPropertyRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _syntax;
+	/** @internal */ _inherits;
+	/** @internal */ _initialValue;
+	constructor(name, syntax, inherits, initialValue) {
+		super();
+		this._name = name;
+		this._syntax = syntax;
+		this._inherits = inherits;
+		this._initialValue = initialValue;
+		hideInternalFields(this);
+	}
+	get name() {
+		return this._name;
+	}
+	get syntax() {
+		return this._syntax;
+	}
+	get inherits() {
+		return this._inherits;
+	}
+	get initialValue() {
+		return this._initialValue;
+	}
+	get cssText() {
+		let body = `syntax: ${serializeString(this._syntax)}; inherits: ${this._inherits};`;
+		if (this._initialValue !== null) body += `initial-value: ${this._initialValue};`;
+		return `@property ${serializeIdentifier(this._name)} {${body}}`;
+	}
+	set cssText(_value) {}
+};
+const AT_RULE_TYPE_MAP = {
+	import: CSSRule.IMPORT_RULE,
+	charset: CSSRule.CHARSET_RULE,
+	namespace: CSSRule.NAMESPACE_RULE,
+	page: CSSRule.PAGE_RULE,
+	"font-face": CSSRule.FONT_FACE_RULE,
+	supports: 12
+};
+var CSSAtRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _prelude;
+	/** @internal */ _block;
+	/** @internal */ _childRules;
+	/** @internal */ _declarations;
+	constructor(name, prelude, block, childRules, declarations) {
+		super();
+		this._name = name;
+		this._prelude = prelude;
+		this._block = block;
+		this._childRules = childRules;
+		this._declarations = declarations;
+		if (childRules) {
+			for (const rule of childRules) if (rule instanceof CSSRule) rule._parentRule = this;
+		}
+		hideInternalFields(this);
+	}
+	get name() {
+		return this._name;
+	}
+	set name(val) {
+		this._name = val;
+	}
+	get prelude() {
+		return this._prelude;
+	}
+	set prelude(val) {
+		this._prelude = val;
+	}
+	get block() {
+		return this._block;
+	}
+	set block(val) {
+		this._block = val;
+	}
+	get childRules() {
+		return this._childRules;
+	}
+	set childRules(val) {
+		this._childRules = val;
+	}
+	get declarations() {
+		return this._declarations;
+	}
+	set declarations(val) {
+		this._declarations = val;
+	}
+	get type() {
+		return AT_RULE_TYPE_MAP[this._name] ?? 0;
+	}
+	get cssText() {
+		const serializedPrelude = serialize(this._prelude).trim();
+		const cond = serializedPrelude.length > 0 ? " " + serializedPrelude : "";
+		if (!this._block) return `@${this._name}${cond};`;
+		const childRules = this._childRules || [];
+		if (childRules.length > 0) return serializeGroupingRule(this._name, cond.trim(), childRules);
+		const blockContentText = serialize(this._block.value).trim();
+		if (!blockContentText) return `@${this._name}${cond} { }`;
+		const indentedBody = blockContentText.split("\n").map((line) => "  " + line).join("\n");
+		return `@${this._name}${cond} {\n${indentedBody}\n}`;
+	}
+};
+var CSSCounterStyleRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _declarations = [];
+	/** @internal */ _descriptors = {
+		system: "",
+		symbols: "",
+		additiveSymbols: "",
+		negative: "",
+		prefix: "",
+		suffix: "",
+		range: "",
+		pad: "",
+		speakAs: "",
+		fallback: ""
+	};
+	constructor(name, declarations = []) {
+		super();
+		this._name = name;
+		this._declarations = declarations;
+		for (const d of declarations) {
+			const prop = COUNTER_STYLE_PROP_BY_DESCRIPTOR.get(d.name);
+			if (prop) this._descriptors[prop] = Array.isArray(d.value) ? serialize(d.value).trim() : typeof d.value === "string" ? d.value : "";
+		}
+		hideInternalFields(this);
+	}
+	get name() {
+		return this._name;
+	}
+	set name(value) {
+		this._name = value;
+	}
+	get type() {
+		return 11;
+	}
+	get cssText() {
+		const decls = this._declarations.map((d) => {
+			const valStr = Array.isArray(d.value) ? serialize(d.value).trim() : typeof d.value === "string" ? d.value : "";
+			return `${d.name}: ${valStr};`;
+		}).join(" ");
+		return decls.length > 0 ? `@counter-style ${this._name} { ${decls} }` : `@counter-style ${this._name} {}`;
+	}
+	set cssText(_value) {}
+};
+for (const prop of COUNTER_STYLE_PROP_BY_DESCRIPTOR.values()) Object.defineProperty(CSSCounterStyleRule.prototype, prop, {
+	get() {
+		return this._descriptors[prop];
+	},
+	set(value) {
+		this._descriptors[prop] = value;
+	},
+	enumerable: true,
+	configurable: true
+});
+var CSSFontFeatureValuesMap = class {
+	/** @internal */
+	_map = /* @__PURE__ */ new Map();
+	constructor() {
+		hideInternalFields(this);
+	}
+	get size() {
+		return this._map.size;
+	}
+	get(featureValueName) {
+		return this._map.get(featureValueName);
+	}
+	set(featureValueName, values) {
+		this._map.set(featureValueName, Array.isArray(values) ? values.map(Number) : [Number(values)]);
+	}
+	has(featureValueName) {
+		return this._map.has(featureValueName);
+	}
+	delete(featureValueName) {
+		return this._map.delete(featureValueName);
+	}
+	clear() {
+		this._map.clear();
+	}
+	entries() {
+		return this._map.entries();
+	}
+	keys() {
+		return this._map.keys();
+	}
+	values() {
+		return this._map.values();
+	}
+	forEach(callbackfn, thisArg) {
+		this._map.forEach((value, key) => callbackfn.call(thisArg, value, key, this));
+	}
+	[Symbol.iterator]() {
+		return this._map[Symbol.iterator]();
+	}
+};
+var CSSFontFeatureValuesRule = class extends CSSRule {
+	/** @internal */ _fontFamily;
+	constructor(fontFamily) {
+		super();
+		this._fontFamily = fontFamily;
+		for (const [, prop] of FONT_FEATURE_VALUE_MAP_DEFS) this[`_${prop}`] = new CSSFontFeatureValuesMap();
+		hideInternalFields(this);
+	}
+	get fontFamily() {
+		return this._fontFamily;
+	}
+	set fontFamily(value) {
+		this._fontFamily = value;
+	}
+	get type() {
+		return 14;
+	}
+	get cssText() {
+		const blocks = [];
+		for (const [atName, prop] of FONT_FEATURE_VALUE_MAP_DEFS) {
+			const map = this[prop];
+			if (map && map.size > 0) {
+				const entries = Array.from(map.entries(), ([k, v]) => `${k}: ${v.join(" ")};`).join(" ");
+				blocks.push(`@${atName} { ${entries} }`);
+			}
+		}
+		const body = blocks.length > 0 ? ` { ${blocks.join(" ")} }` : " {}";
+		return `@font-feature-values ${this._fontFamily}${body}`;
+	}
+	set cssText(_value) {}
+};
+for (const [, prop] of FONT_FEATURE_VALUE_MAP_DEFS) Object.defineProperty(CSSFontFeatureValuesRule.prototype, prop, {
+	get() {
+		return this[`_${prop}`];
+	},
+	enumerable: true,
+	configurable: true
+});
+var CSSPositionTryRule = class extends CSSRule {
+	/** @internal */ _name;
+	/** @internal */ _style;
+	constructor(name, declarations, internalToken) {
+		if (internalToken !== INTERNAL_RULE_TOKEN) throw new TypeError("Illegal constructor");
+		super();
+		this._name = name;
+		this._style = new CSSPositionTryDescriptors(declarations, PAGE_DESCRIPTORS_INTERNAL);
+		this._style._parentRule = this;
+		hideInternalFields(this);
+	}
+	get name() {
+		return serializeIdentifier(this._name);
+	}
+	get style() {
+		return this._style;
+	}
+	set style(value) {
+		this._style.cssText = value;
+	}
+	get cssText() {
+		const body = this._style.cssText.trim();
+		return `@position-try ${this.name} { ${body ? body + " " : ""}}`;
+	}
+	set cssText(_value) {}
+};
+for (const ctor of [
+	CSSAtRule,
+	CSSConditionRule,
+	CSSFontFeatureValuesMap,
+	CSSMediaRule,
+	CSSSupportsRule,
+	CSSContainerRule,
+	CSSLayerBlockRule,
+	CSSLayerStatementRule,
+	CSSStartingStyleRule,
+	CSSViewTransitionRule,
+	CSSKeyframesRule,
+	CSSKeyframeRule,
+	CSSNestedDeclarations,
+	CSSMarginRule,
+	CSSImportRule,
+	CSSNamespaceRule,
+	CSSPropertyRule,
+	CSSScopeRule,
+	CSSCounterStyleRule,
+	CSSFontFeatureValuesRule,
+	CSSCustomMediaRule,
+	CSSFontFaceRule,
+	CSSPageRule,
+	CSSPositionTryRule
+]) applyWebIDLInterface(ctor);
+// src/TokenStream.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var ArrayTokenStream = class {
+	tokens;
+	index = 0;
+	constructor(tokens) {
+		this.tokens = tokens;
+	}
+	next() {
+		const token = this.peek();
+		if (token.type !== "EOF") this.index++;
+		return token;
+	}
+	peek() {
+		return this.tokens[this.index] || {
+			type: "EOF",
+			value: ""
+		};
+	}
+};
+var ArrayComponentValueStream = class {
+	values;
+	index = 0;
+	constructor(values) {
+		this.values = values;
+	}
+	next() {
+		const val = this.peek();
+		if (val.type !== "EOF") this.index++;
+		return val;
+	}
+	peek() {
+		return this.values[this.index] || {
+			type: "EOF",
+			value: ""
+		};
+	}
+	get position() {
+		return this.index;
+	}
+	set position(pos) {
+		this.index = pos;
+	}
+	slice(start, end) {
+		return this.values.slice(start, end);
+	}
+};
+var LazyComponentValueStream = class {
+	fetchNext;
+	mirrorToken;
+	buffer = [];
+	index = 0;
+	done = false;
+	terminator = null;
+	constructor(fetchNext, mirrorToken) {
+		this.fetchNext = fetchNext;
+		this.mirrorToken = mirrorToken;
+	}
+	next() {
+		const val = this.peek();
+		if (val.type !== "EOF") this.index++;
+		return val;
+	}
+	peek() {
+		if (this.index < this.buffer.length) return this.buffer[this.index];
+		if (this.done) return {
+			type: "EOF",
+			value: ""
+		};
+		const val = this.fetchNext();
+		if (val.type === this.mirrorToken) {
+			this.terminator = val;
+			this.done = true;
+			return {
+				type: "EOF",
+				value: ""
+			};
+		}
+		if (val.type === "EOF") {
+			this.done = true;
+			return val;
+		}
+		this.buffer.push(val);
+		return val;
+	}
+	get position() {
+		return this.index;
+	}
+	set position(pos) {
+		if (pos > this.buffer.length) throw new Error("Cannot seek past buffered content in LazyComponentValueStream");
+		this.index = pos;
+	}
+	slice(start, end) {
+		return this.buffer.slice(start, end);
+	}
+};
+// src/parser.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function getComponentValueStartIndex(item) {
+	if (!item) return void 0;
+	return item.type === "simple-block" ? item.associatedToken?.startIndex : "startIndex" in item && typeof item.startIndex === "number" ? item.startIndex : void 0;
+}
+function getComponentValueEndIndex(item) {
+	if (!item) return void 0;
+	return item.type === "simple-block" ? item.endIndex ?? item.associatedToken?.endIndex : "endIndex" in item && typeof item.endIndex === "number" ? item.endIndex : void 0;
+}
+function trimComponentValues(values, trimEof = false) {
+	let start = 0;
+	while (start < values.length && (values[start].type === "whitespace" || values[start].type === "comment")) start++;
+	let end = values.length - 1;
+	while (end >= start && (values[end].type === "whitespace" || values[end].type === "comment" || trimEof && values[end].type === "EOF")) end--;
+	return start > end ? [] : values.slice(start, end + 1);
+}
+function splitComponentValuesByComma(values, allowDelimComma = false) {
+	const result = [[]];
+	for (const v of values) if (v.type === "comma" || allowDelimComma && v.type === "delim" && v.value === ",") result.push([]);
+	else result[result.length - 1].push(v);
+	return result;
+}
+function extractUriFromComponentValue(token) {
+	if (token.type === "string") return token.value;
+	if (token.type === "url") return token.value;
+	if (token.type === "function" && token.name === "url") {
+		const fn = token;
+		const urlArg = fn.value.find((v) => v.type === "string");
+		if (urlArg) return urlArg.value;
+		return fn.value.map((v) => serialize([v])).join("").trim();
+	}
+	return null;
+}
+function splitLeadingDeclarations(blockContents) {
+	const declarations = [];
+	const nestedRules = [];
+	for (let i = 0; i < blockContents.length; i++) {
+		const item = blockContents[i];
+		if (i === 0 && item instanceof CSSNestedDeclarations) declarations.push(...item.style._rawDeclarations);
+		else nestedRules.push(item);
+	}
+	return {
+		declarations,
+		nestedRules
+	};
+}
+const CSS_WIDE_KEYWORDS$1 = /* @__PURE__ */ new Set("initial,inherit,unset,revert,revert-layer,default".split(","));
+const KEYFRAMES_DISALLOWED_NAMES = /* @__PURE__ */ new Set("none,initial,inherit,unset,revert,default".split(","));
+function isValidDashedIdent(name) {
+	return typeof name === "string" && name.startsWith("--") && name !== "--" && !/\s/.test(name);
+}
+function isCustomPropertyDeclaration(prelude) {
+	let idx = 0;
+	while (idx < prelude.length && prelude[idx].type === "whitespace") idx++;
+	if (idx >= prelude.length) return false;
+	const firstNonWs = prelude[idx++];
+	while (idx < prelude.length && prelude[idx].type === "whitespace") idx++;
+	if (idx >= prelude.length) return false;
+	const secondNonWs = prelude[idx++];
+	return firstNonWs.type === "ident" && firstNonWs.value.startsWith("--") && secondNonWs.type === "colon";
+}
+/**
+* Skeleton Parser for CSSOM.
+* Implements top-level parsing algorithms from css-syntax-3.
+* // css-syntax-3 #parsing
+* 
+* @note We recommend a more ergonomic entry point like `CSS.parseStylesheet` 
+* or `CSS.parseStylesheetSync` for standard usage.
+*/
+var Parser = class Parser {
+	tokens;
+	errors = [];
+	declaredNamespaces = /* @__PURE__ */ new Set();
+	static AT_RULE_HANDLERS = {
+		media: (parser, rule, block, nested) => parser.handleGroupingAtRule(rule, block, nested || false, CSSMediaRule),
+		"font-face": (parser, rule, block) => block ? parser.handleFontFaceRule(rule, block) : null,
+		page: (parser, rule, block) => block ? parser.handlePageRule(rule, block) : null,
+		property: (parser, rule, block) => block ? parser.handlePropertyRule(rule, block) : null,
+		supports: (parser, rule, block, nested) => {
+			if (!isGrammaticallyValidSupportsCondition(rule.prelude)) return null;
+			return parser.handleGroupingAtRule(rule, block, nested || false, CSSSupportsRule);
+		},
+		container: (parser, rule, block, nested) => parser.handleGroupingAtRule(rule, block, nested || false, CSSContainerRule),
+		layer: (parser, rule, block, nested) => parser.handleLayerRule(rule, block, nested || false),
+		"starting-style": (parser, rule, block, nested) => parser.handleGroupingAtRule(rule, block, nested || false, CSSStartingStyleRule),
+		scope: (parser, rule, block, nested) => parser.handleScopeRule(rule, block, nested || false),
+		"view-transition": (parser, rule, block) => block ? parser.handleViewTransitionRule(rule, block) : null,
+		import: (parser, rule) => parser.handleImportRule(rule),
+		namespace: (parser, rule) => parser.handleNamespaceRule(rule),
+		"counter-style": (parser, rule, block) => block ? parser.handleCounterStyleRule(rule, block) : null,
+		"font-feature-values": (parser, rule, block) => block ? parser.handleFontFeatureValuesRule(rule, block) : null,
+		"custom-media": (parser, rule) => parser.handleCustomMediaRule(rule),
+		"position-try": (parser, rule, block) => block ? parser.handlePositionTryRule(rule, block) : null
+	};
+	getAtRuleHandler(name) {
+		if (MARGIN_RULE_NAMES.has(name)) return (parser, rule, block) => block ? parser.handleMarginRule(rule, block) : null;
+		if (name === "keyframes" || name.endsWith("-keyframes")) return (parser, rule, block) => block ? parser.handleKeyframesRule(rule, block) : null;
+		return Parser.AT_RULE_HANDLERS[name];
+	}
+	static NESTED_GROUP_AT_RULES = /* @__PURE__ */ new Set("media,supports,container,layer,scope,starting-style,keyframes,property,counter-style,font-feature-values,view-transition,position-try".split(","));
+	isSupportedAtRule(name, nested = false) {
+		const lower = name.toLowerCase();
+		if (lower === "charset") return false;
+		if (lower === "mediaall") return false;
+		if (lower.startsWith("--")) return false;
+		if (MARGIN_RULE_NAMES.has(lower)) return true;
+		if (nested) {
+			if (lower.endsWith("-keyframes")) return true;
+			return Parser.NESTED_GROUP_AT_RULES.has(lower);
+		}
+		return true;
+	}
+	options;
+	lineStarts;
+	constructor(tokens, options = {}) {
+		this.options = options;
+		this.tokens = Array.isArray(tokens) ? new ArrayTokenStream(tokens) : tokens;
+	}
+	getLineStarts() {
+		if (this.lineStarts) return this.lineStarts;
+		const starts = [0];
+		if (this.options.source) {
+			const s = this.options.source.replace(/\r\n|\r|\f/g, "\n");
+			let pos = 0;
+			while ((pos = s.indexOf("\n", pos)) !== -1) starts.push(++pos);
+		}
+		return this.lineStarts = starts;
+	}
+	getLineColumn(start) {
+		if (start <= 0) return {
+			line: 1,
+			column: 1
+		};
+		const starts = this.getLineStarts();
+		let low = 0;
+		let high = starts.length - 1;
+		while (low <= high) {
+			const mid = low + high >> 1;
+			if (starts[mid] <= start) low = mid + 1;
+			else high = mid - 1;
+		}
+		const lineIdx = high >= 0 ? high : 0;
+		return {
+			line: lineIdx + 1,
+			column: start - starts[lineIdx] + 1
+		};
+	}
+	makeLocation(start, end, bodyStart, bodyEnd) {
+		const getLineCol = (offset) => this.getLineColumn(offset);
+		return {
+			start,
+			end,
+			bodyStart,
+			bodyEnd,
+			get line() {
+				return getLineCol(start).line;
+			},
+			get column() {
+				return getLineCol(start).column;
+			}
+		};
+	}
+	createBlockLocation(start, block) {
+		const end = block.endIndex ?? block.associatedToken.startIndex ?? start;
+		const bodyStart = block.associatedToken.endIndex;
+		const bodyEnd = block.endIndex !== void 0 ? block.isClosed ? block.endIndex - 1 : block.endIndex : void 0;
+		return this.makeLocation(start, end, bodyStart, bodyEnd);
+	}
+	reportError(message, token) {
+		this.errors.push({
+			message,
+			token
+		});
+	}
+	get nextToken() {
+		return this.tokens.peek();
+	}
+	/** @internal */
+	consumeToken() {
+		return this.tokens.next();
+	}
+	discardToken() {
+		this.tokens.next();
+	}
+	skipWhitespace() {
+		while (this.nextToken.type === "whitespace") this.discardToken();
+	}
+	parseComponentValues() {
+		const values = [];
+		while (this.nextToken.type !== "EOF") values.push(this.consumeComponentValue());
+		return values;
+	}
+	parseCommaSeparatedListOfComponentValues() {
+		return splitComponentValuesByComma(this.parseComponentValues());
+	}
+	parseStyleSheet() {
+		const rules = this.consumeListOfRules(true);
+		return CSSStyleSheet.createInternal(rules, (text) => this.parseRule(text));
+	}
+	parseRule(ruleString) {
+		const errors = [];
+		const tokens = tokenize(ruleString, false, errors);
+		const parser = new Parser(tokens, this.options);
+		parser.errors.push(...errors);
+		const rule = parser.consumeRule();
+		parser.ensureEOF();
+		return rule;
+	}
+	parseStyleAttribute() {
+		return new CSSStyleDeclaration(this.consumeDeclarationsFromBlockContents(this.parseComponentValues()));
+	}
+	parseStyleSheetContents() {
+		return this.consumeListOfRules(true);
+	}
+	parseBlockContents() {
+		return this.consumeBlockContents(new ArrayComponentValueStream(this.parseComponentValues()), true, false);
+	}
+	parseDeclaration() {
+		this.skipWhitespace();
+		if (this.nextToken.type !== "ident") return null;
+		const stream = new LazyComponentValueStream(() => this.consumeComponentValue(), "EOF");
+		const decl = this.consumeDeclarationFromStream(stream);
+		if (!decl) return null;
+		this.skipWhitespace();
+		return this.nextToken.type === "EOF" ? decl : null;
+	}
+	parseComponentValue() {
+		this.skipWhitespace();
+		if (this.nextToken.type === "EOF") return null;
+		const value = this.consumeComponentValue();
+		this.skipWhitespace();
+		return this.nextToken.type === "EOF" ? value : null;
+	}
+	consumeListOfRules(topLevel) {
+		const rules = [];
+		while (true) {
+			const token = this.nextToken;
+			if (token.type === "whitespace") this.discardToken();
+			else if (token.type === "EOF") return rules;
+			else if ((token.type === "CDO" || token.type === "CDC") && topLevel) this.discardToken();
+			else {
+				const rule = this.consumeRule();
+				if (rule) rules.push(rule);
+			}
+		}
+	}
+	consumeRule(nested = false) {
+		this.skipWhitespace();
+		if (this.nextToken.type === "EOF") return null;
+		return this.nextToken.type === "at-keyword" ? this.consumeAtRule(nested) : this.consumeQualifiedRule(nested);
+	}
+	finalizeAtRule(rule, block, nested, location, isTopLevelTokenStream) {
+		if (!this.isSupportedAtRule(rule.name, nested)) return null;
+		const handler = this.getAtRuleHandler(rule.name);
+		if (handler) {
+			const res = handler(this, rule, block, nested);
+			if (res instanceof CSSRule && !res.location) res._location = location;
+			return res;
+		}
+		if (nested) return null;
+		if (block && isTopLevelTokenStream && this.options?.atRules?.[rule.name]) {
+			const type = this.options.atRules[rule.name];
+			if (type === "declaration") {
+				const decls = this.consumeDeclarationsFromBlockContents(block.value);
+				const atRule = new CSSAtRule(rule.name, rule.prelude, block, void 0, decls);
+				atRule._location = location;
+				return atRule;
+			}
+			if (type === "rule") {
+				const childRules = this.consumeNestedRules(block, false);
+				const atRule = new CSSAtRule(rule.name, rule.prelude, block, childRules);
+				atRule._location = location;
+				return atRule;
+			}
+		}
+		let cssRules;
+		if (block && !isTopLevelTokenStream) {
+			rule.childRules = this.consumeBlockContents(new ArrayComponentValueStream(block.value), nested);
+			cssRules = rule.childRules;
+		}
+		const atRule = new CSSAtRule(rule.name, rule.prelude, block, cssRules);
+		atRule._location = location;
+		return atRule;
+	}
+	consumeAtRule(nested = false) {
+		const token = this.consumeToken();
+		if (token.type !== "at-keyword") return null;
+		const rule = {
+			type: "at-rule",
+			name: token.value,
+			prelude: [],
+			childRules: []
+		};
+		const start = token.startIndex ?? 0;
+		while (true) {
+			const next = this.nextToken;
+			if (next.type === "semicolon" || next.type === "EOF") {
+				const end = next.endIndex ?? next.startIndex ?? start;
+				this.discardToken();
+				return this.finalizeAtRule(rule, void 0, nested, this.makeLocation(start, end), true);
+			} else if (next.type === "}") {
+				if (nested) return null;
+				this.consumeToken();
+				rule.prelude.push(next);
+			} else if (next.type === "{") {
+				const block = this.consumeBlock(this.consumeToken());
+				return this.finalizeAtRule(rule, block, nested, this.createBlockLocation(start, block), true);
+			} else rule.prelude.push(this.consumeComponentValue());
+		}
+	}
+	/** @internal */
+	scopeContextDepth = 0;
+	consumeNestedRules(block, isNestedStyleRule) {
+		const allowRelative = !isNestedStyleRule && this.scopeContextDepth > 0;
+		return this.consumeBlockContents(new ArrayComponentValueStream(block.value), isNestedStyleRule || allowRelative, isNestedStyleRule, allowRelative);
+	}
+	handleGroupingAtRule(rule, block, nested, ctor) {
+		if (!block) return null;
+		const childRules = this.consumeNestedRules(block, nested);
+		return new ctor(serialize(rule.prelude).trim(), childRules, parseRuleInBlock);
+	}
+	parseLayerNameFromTokens(tokens, forbidCssWide = false) {
+		const trimmed = trimComponentValues(tokens, true);
+		if (trimmed.length === 0 || trimmed.length % 2 === 0) return null;
+		const parts = [];
+		for (let i = 0; i < trimmed.length; i++) {
+			const t = trimmed[i];
+			if (i % 2 === 0) {
+				if (t.type !== "ident" || forbidCssWide && CSS_WIDE_KEYWORDS$1.has(t.value.toLowerCase())) return null;
+				parts.push(t.value);
 			} else {
+				if (t.type !== "delim" || t.value !== ".") return null;
+				parts.push(".");
+			}
+		}
+		return parts.join("");
+	}
+	handleLayerRule(rule, block, nested = false) {
+		if (block) {
+			const trimmed = trimComponentValues(rule.prelude, true);
+			let layerName = "";
+			if (trimmed.length > 0) {
+				const parsed = this.parseLayerNameFromTokens(trimmed);
+				if (parsed === null) return null;
+				layerName = parsed;
+			}
+			return new CSSLayerBlockRule(layerName, this.consumeNestedRules(block, nested), parseRuleInBlock);
+		}
+		const segments = splitComponentValuesByComma(rule.prelude);
+		const nameList = [];
+		for (const seg of segments) {
+			const name = this.parseLayerNameFromTokens(seg);
+			if (name === null) return null;
+			nameList.push(name);
+		}
+		return nameList.length > 0 ? new CSSLayerStatementRule(nameList) : null;
+	}
+	parseScopeSelectorBlock(block) {
+		try {
+			new SelectorParser(block.value, {
+				allowRelative: true,
+				forbidPseudo: true,
+				declaredNamespaces: this.declaredNamespaces
+			}).parse();
+			const text = serialize(block.value).trim();
+			return text ? `(${text})` : "";
+		} catch {
+			return null;
+		}
+	}
+	handleScopeRule(rule, block, _nested = false) {
+		if (!block) return null;
+		this.scopeContextDepth++;
+		let childRules;
+		try {
+			childRules = this.consumeBlockContents(new ArrayComponentValueStream(block.value), true, false, true);
+		} finally {
+			this.scopeContextDepth--;
+		}
+		let startSelector = null;
+		let endSelector = null;
+		const prelude = rule.prelude;
+		let i = 0;
+		while (i < prelude.length && prelude[i].type === "whitespace") i++;
+		if (i < prelude.length && prelude[i].type === "simple-block" && prelude[i].associatedToken.type === "(") {
+			startSelector = this.parseScopeSelectorBlock(prelude[i]);
+			if (startSelector === null) return null;
+			i++;
+		}
+		while (i < prelude.length && prelude[i].type === "whitespace") i++;
+		if (i < prelude.length && prelude[i].type === "ident" && String(prelude[i].value).toLowerCase() === "to") {
+			i++;
+			while (i < prelude.length && prelude[i].type === "whitespace") i++;
+			if (i < prelude.length && prelude[i].type === "simple-block" && prelude[i].associatedToken.type === "(") {
+				endSelector = this.parseScopeSelectorBlock(prelude[i]);
+				if (endSelector === null) return null;
+				i++;
+			} else return null;
+		}
+		while (i < prelude.length && prelude[i].type === "whitespace") i++;
+		if (i < prelude.length) return null;
+		return new CSSScopeRule(startSelector, endSelector, childRules, parseRuleInScopeBlock);
+	}
+	handleViewTransitionRule(_rule, block) {
+		return new CSSViewTransitionRule(this.consumeDeclarationsFromBlockContents(block.value));
+	}
+	parseKeyframeSelector(prelude) {
+		const lists = splitComponentValuesByComma(prelude);
+		const normalizedParts = [];
+		for (const list of lists) {
+			const trimmed = trimComponentValues(list);
+			if (trimmed.length !== 1) return null;
+			const v = trimmed[0];
+			if (v.type === "ident") {
+				const valStr = v.value.toLowerCase();
+				if (valStr === "from") normalizedParts.push("0%");
+				else if (valStr === "to") normalizedParts.push("100%");
+				else return null;
+			} else if (v.type === "percentage") {
+				const val = v.value;
+				if (val < 0 || val > 100) return null;
+				normalizedParts.push(`${val}%`);
+			} else return null;
+		}
+		return normalizedParts.length > 0 ? normalizedParts.join(", ") : null;
+	}
+	handleKeyframesRule(rule, block) {
+		const preludeClean = rule.prelude.filter((v) => v.type !== "whitespace" && v.type !== "comment");
+		if (preludeClean.length !== 1) return null;
+		const first = preludeClean[0];
+		let keyframesName = "";
+		if (first.type === "ident") {
+			if (KEYFRAMES_DISALLOWED_NAMES.has(first.value.toLowerCase())) return null;
+			keyframesName = first.value;
+		} else if (first.type === "string" && first.value !== "") keyframesName = first.value;
+		else return null;
+		const keyframeRules = [];
+		const stream = new ArrayComponentValueStream(block.value);
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "whitespace" || val.type === "semicolon") {
+				stream.next();
+				continue;
+			}
+			if (val.type === "EOF") break;
+			const prelude = [];
+			let blockVal = null;
+			while (true) {
+				const next = stream.peek();
+				if (next.type === "EOF") break;
+				if (next.type === "simple-block" && next.associatedToken.type === "{") {
+					blockVal = stream.next();
+					break;
+				}
+				prelude.push(stream.next());
+			}
+			if (!blockVal) break;
+			const selectorText = this.parseKeyframeSelector(prelude);
+			if (selectorText) {
+				const keyframeRule = new CSSKeyframeRule(selectorText, this.consumeDeclarationsFromBlockContents(blockVal.value));
+				const kfStart = getComponentValueStartIndex(prelude[0]) ?? blockVal.associatedToken.startIndex ?? 0;
+				keyframeRule._location = this.createBlockLocation(kfStart, blockVal);
+				keyframeRules.push(keyframeRule);
+			}
+		}
+		return new CSSKeyframesRule(keyframesName, keyframeRules);
+	}
+	handleFontFaceRule(_rule, block) {
+		return new CSSFontFaceRule(this.consumeDeclarationsFromBlockContents(block.value));
+	}
+	handlePageRule(rule, block) {
+		const { declarations, nestedRules } = splitLeadingDeclarations(this.consumeBlockContents(new ArrayComponentValueStream(block.value), true));
+		return new CSSPageRule(serialize(rule.prelude).trim(), declarations, nestedRules, parseRule);
+	}
+	handleMarginRule(rule, block) {
+		return new CSSMarginRule(rule.name, this.consumeDeclarationsFromBlockContents(block.value), INTERNAL_RULE_TOKEN);
+	}
+	handleCounterStyleRule(rule, block) {
+		return new CSSCounterStyleRule(serialize(rule.prelude).trim(), this.consumeDeclarationsFromBlockContents(block.value));
+	}
+	handleFontFeatureValuesRule(rule, block) {
+		const fontFeatureRule = new CSSFontFeatureValuesRule(serialize(rule.prelude).trim());
+		const stream = new ArrayComponentValueStream(block.value);
+		while (stream.peek().type !== "EOF") {
+			const token = stream.peek();
+			if (token.type === "whitespace" || token.type === "comment") {
+				stream.next();
+				continue;
+			}
+			if (token.type === "at-keyword") {
+				const atToken = stream.next();
+				const target = FONT_FEATURE_VALUE_BLOCKS[atToken.value.toLowerCase()];
+				while (stream.peek().type === "whitespace" || stream.peek().type === "comment") stream.next();
+				const next = stream.peek();
+				if (next.type === "simple-block" && next.associatedToken.type === "{") {
+					const childBlock = stream.next();
+					if (target) for (const d of this.consumeDeclarationsFromBlockContents(childBlock.value)) {
+						const values = d.value.filter((v) => v.type === "number").map((v) => v.value);
+						fontFeatureRule[target].set(d.name, values);
+					}
+				}
+			} else stream.next();
+		}
+		return fontFeatureRule;
+	}
+	handlePropertyRule(rule, block) {
+		const nonWsPrelude = trimComponentValues(rule.prelude, true);
+		if (nonWsPrelude.length !== 1 || nonWsPrelude[0].type !== "ident") return null;
+		const name = nonWsPrelude[0].value;
+		if (!name.startsWith("--") || name === "--") return null;
+		const declarations = this.consumeDeclarationsFromBlockContents(block.value);
+		let syntax = null;
+		let inherits = null;
+		let initialValue = null;
+		for (const d of declarations) {
+			const val = serialize(d.value).trim();
+			const descName = d.name.toLowerCase();
+			if (descName === "syntax") {
+				const nonWsTokens = trimComponentValues(d.value, true);
+				if (nonWsTokens.length === 1 && nonWsTokens[0].type === "string") syntax = nonWsTokens[0].value;
+			} else if (descName === "inherits") {
+				if (val === "true") inherits = true;
+				else if (val === "false") inherits = false;
+			} else if (descName === "initial-value") initialValue = val;
+		}
+		if (syntax === null || inherits === null) return null;
+		if (ParseHooks.validatePropertyRuleDescriptor) ; else if (!isValidDashedIdent(name) || typeof syntax !== "string" || syntax.length === 0 || typeof inherits !== "boolean") return null;
+		return new CSSPropertyRule(name, syntax, inherits, initialValue);
+	}
+	handlePositionTryRule(rule, block) {
+		const nonWsPrelude = trimComponentValues(rule.prelude, true);
+		if (nonWsPrelude.length !== 1 || nonWsPrelude[0].type !== "ident") return null;
+		const name = nonWsPrelude[0].value;
+		if (!isValidDashedIdent(name)) return null;
+		return new CSSPositionTryRule(name, this.consumeDeclarationsFromBlockContents(block.value), INTERNAL_RULE_TOKEN);
+	}
+	parseImportScopeArgs(scopeArgs) {
+		let scopeStart = null;
+		let scopeEnd = null;
+		let k = 0;
+		while (k < scopeArgs.length && scopeArgs[k].type === "whitespace") k++;
+		if (k < scopeArgs.length && scopeArgs[k].type === "simple-block" && scopeArgs[k].associatedToken.type === "(") {
+			scopeStart = serialize(scopeArgs[k].value).trim();
+			k++;
+		} else {
+			const startTokens = [];
+			while (k < scopeArgs.length) {
+				const tok = scopeArgs[k];
+				if (tok.type === "ident" && String(tok.value).toLowerCase() === "to") break;
+				startTokens.push(tok);
+				k++;
+			}
+			const s = serialize(startTokens).trim();
+			if (s) scopeStart = s;
+		}
+		while (k < scopeArgs.length && scopeArgs[k].type === "whitespace") k++;
+		if (k < scopeArgs.length && scopeArgs[k].type === "ident" && String(scopeArgs[k].value).toLowerCase() === "to") {
+			k++;
+			while (k < scopeArgs.length && scopeArgs[k].type === "whitespace") k++;
+			if (k < scopeArgs.length && scopeArgs[k].type === "simple-block" && scopeArgs[k].associatedToken.type === "(") scopeEnd = serialize(scopeArgs[k].value).trim();
+			else {
+				const e = serialize(scopeArgs.slice(k)).trim();
+				if (e) scopeEnd = e;
+			}
+		}
+		if (scopeStart) scopeStart = scopeStart.replace(/^\(/, "").replace(/\)$/, "").trim();
+		if (scopeEnd) scopeEnd = scopeEnd.replace(/^\(/, "").replace(/\)$/, "").trim();
+		return {
+			scopeStart,
+			scopeEnd
+		};
+	}
+	handleImportRule(rule) {
+		let href = "";
+		let layerName = null;
+		let supportsText = null;
+		let isScoped = false;
+		let scopeStart = null;
+		let scopeEnd = null;
+		const prelude = rule.prelude;
+		let i = 0;
+		while (i < prelude.length && prelude[i].type === "whitespace") i++;
+		if (i < prelude.length) {
+			const extracted = extractUriFromComponentValue(prelude[i]);
+			if (extracted !== null) {
+				href = extracted;
 				i++;
 			}
 		}
-		// Set sheet's CSS rules to rules.
-		sheet.__cssRules.splice.apply(sheet.__cssRules, [0, sheet.__cssRules.length].concat(rules));
-	};
-
-	/**
-	 * NON-STANDARD
-	 * @return {string} serialize stylesheet
-	 */
-	CSSOM.CSSStyleSheet.prototype.toString = function() {
-		var result = "";
-		var rules = this.cssRules;
-		for (var i=0; i<rules.length; i++) {
-			result += rules[i].cssText + "\n";
+		while (i < prelude.length) {
+			while (i < prelude.length && prelude[i].type === "whitespace") i++;
+			if (i >= prelude.length) break;
+			const val = prelude[i];
+			if (layerName === null && val.type === "ident" && val.value.toLowerCase() === "layer") {
+				layerName = "";
+				i++;
+			} else if (layerName === null && val.type === "function" && val.name.toLowerCase() === "layer") {
+				const fnTokens = val.value;
+				if (fnTokens.some((t) => t.type === "whitespace")) break;
+				const parsed = this.parseLayerNameFromTokens(fnTokens, true);
+				if (parsed === null) break;
+				layerName = parsed;
+				i++;
+			} else if (supportsText === null && val.type === "function" && val.name.toLowerCase() === "supports") {
+				supportsText = serialize(val.value).trim();
+				i++;
+			} else if (!isScoped && val.type === "ident" && val.value.toLowerCase() === "scope") {
+				isScoped = true;
+				i++;
+			} else if (!isScoped && val.type === "function" && val.name.toLowerCase() === "scope") {
+				isScoped = true;
+				({scopeStart, scopeEnd} = this.parseImportScopeArgs(val.value));
+				i++;
+			} else break;
 		}
-		return result;
-	};
-
-
-	//.CommonJS
-	CSSStyleSheet.CSSStyleSheet = CSSOM.CSSStyleSheet;
-	CSSOM.parse = requireParse().parse; // Cannot be included sooner due to the mutual dependency between parse.js and CSSStyleSheet.js
-	///CommonJS
-	return CSSStyleSheet;
-}
-
-var CSSNestedDeclarations = {};
-
-var hasRequiredCSSNestedDeclarations;
-
-function requireCSSNestedDeclarations () {
-	if (hasRequiredCSSNestedDeclarations) return CSSNestedDeclarations;
-	hasRequiredCSSNestedDeclarations = 1;
-	//.CommonJS
-	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	  CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration
-	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
+		const mediaText = serialize(prelude.slice(i)).trim();
+		return new CSSImportRule(href, mediaText, layerName, supportsText, scopeStart, scopeEnd, isScoped, INTERNAL_RULE_TOKEN);
 	}
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-nesting-1/
-	 */
-	CSSOM.CSSNestedDeclarations = function CSSNestedDeclarations() {
-	  CSSOM.CSSRule.call(this);
-	  this.__style = new CSSOM.CSSStyleDeclaration();
-	  this.__style.parentRule = this;
-	};
-
-	CSSOM.CSSNestedDeclarations.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSNestedDeclarations.prototype.constructor = CSSOM.CSSNestedDeclarations;
-
-	Object.setPrototypeOf(CSSOM.CSSNestedDeclarations, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSNestedDeclarations.prototype, "type", {
-	  value: 0,
-	  writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSNestedDeclarations.prototype, "style", {
-		get: function() {
-			return this.__style;	
-		},
-		set: function(value) {
-			if (typeof value === "string") {
-				this.__style.cssText = value;
-			} else {
-				this.__style = value;
-			}
+	handleNamespaceRule(rule) {
+		const tokens = rule.prelude.filter((t) => t.type !== "whitespace" && t.type !== "comment" && t.type !== "EOF");
+		let prefix = "";
+		let namespaceURI = "";
+		if (tokens.length === 1) namespaceURI = extractUriFromComponentValue(tokens[0]) ?? "";
+		else if (tokens.length >= 2) {
+			if (tokens[0].type === "ident") {
+				prefix = tokens[0].value;
+				namespaceURI = extractUriFromComponentValue(tokens[1]) ?? "";
+			} else namespaceURI = extractUriFromComponentValue(tokens[0]) ?? "";
 		}
-	});
-
-	Object.defineProperty(CSSOM.CSSNestedDeclarations.prototype, "cssText", {
-	  get: function () {
-	    return this.style.cssText;
-	  }
-	});
-
-	//.CommonJS
-	CSSNestedDeclarations.CSSNestedDeclarations = CSSOM.CSSNestedDeclarations;
-	///CommonJS
-	return CSSNestedDeclarations;
-}
-
-var CSSImportRule = {};
-
-var hasRequiredCSSImportRule;
-
-function requireCSSImportRule () {
-	if (hasRequiredCSSImportRule) return CSSImportRule;
-	hasRequiredCSSImportRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSStyleSheet: requireCSSStyleSheet().CSSStyleSheet,
-		MediaList: requireMediaList().MediaList
-	};
-	var regexPatterns = requireRegexPatterns().regexPatterns;
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#cssimportrule
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSImportRule
-	 */
-	CSSOM.CSSImportRule = function CSSImportRule() {
-		CSSOM.CSSRule.call(this);
-		this.__href = "";
-		this.__media = new CSSOM.MediaList();
-	  this.__layerName = null;
-	  this.__supportsText = null;
-		this.__styleSheet = new CSSOM.CSSStyleSheet();
-	};
-
-	CSSOM.CSSImportRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSImportRule.prototype.constructor = CSSOM.CSSImportRule;
-
-	Object.setPrototypeOf(CSSOM.CSSImportRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "type", {
-		value: 3,
-		writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "cssText", {
-	  get: function() {
-	    var mediaText = this.media.mediaText;
-	    return "@import url(\"" + this.href.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + "\")" + (this.layerName !== null ? " layer" + (this.layerName && "(" + this.layerName + ")") : "" ) + (this.supportsText ? " supports(" + this.supportsText + ")" : "" ) + (mediaText ? " " + mediaText : "") + ";";
-	  }
-	});
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "href", {
-	  get: function() {
-	    return this.__href;
-	  }
-	});
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "media", {
-	  get: function() {
-	    return this.__media;
-	  },
-		set: function(value) {
-			if (typeof value === "string") {
-				this.__media.mediaText = value;
-			} else {
-				this.__media = value;
-			}
+		const nsRule = new CSSNamespaceRule(prefix, namespaceURI, INTERNAL_RULE_TOKEN);
+		this.declaredNamespaces.add(nsRule.prefix);
+		return nsRule;
+	}
+	handleCustomMediaRule(rule) {
+		const prelude = rule.prelude;
+		let i = 0;
+		while (i < prelude.length && prelude[i].type === "whitespace") i++;
+		if (i >= prelude.length) return null;
+		const nameToken = prelude[i];
+		if (nameToken.type !== "ident" || !nameToken.value.startsWith("--")) return null;
+		const name = nameToken.value;
+		i++;
+		const remainingTokens = prelude.slice(i).filter((v) => v.type !== "whitespace" && v.type !== "comment");
+		let query;
+		if (remainingTokens.length === 0) query = new MediaList("");
+		else if (remainingTokens.length === 1 && remainingTokens[0].type === "ident" && remainingTokens[0].value.toLowerCase() === "true") query = true;
+		else if (remainingTokens.length === 1 && remainingTokens[0].type === "ident" && remainingTokens[0].value.toLowerCase() === "false") query = false;
+		else {
+			const mediaText = serialize(prelude.slice(i)).trim();
+			const parsed = ParseHooks.parseMediaQueryList(mediaText);
+			if (parsed.length === 0 || parsed.some((q) => q.invalid)) return null;
+			query = new MediaList(mediaText);
 		}
-	});
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "layerName", {
-	  get: function() {
-	    return this.__layerName;
-	  }
-	});
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "supportsText", {
-	  get: function() {
-	    return this.__supportsText;
-	  }
-	});
-
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "styleSheet", {
-	  get: function() {
-	    return this.__styleSheet;
-	  }
-	});
-
-	/**
-	 * NON-STANDARD
-	 * Rule text parser.
-	 * @param {string} cssText
-	 */
-	Object.defineProperty(CSSOM.CSSImportRule.prototype, "parse", {
-	  value: function(cssText) {
-	    var i = 0;
-
-	    /**
-	     * @import url(partial.css) screen, handheld;
-	     *        ||               |
-	     *        after-import     media
-	     *         |
-	     *         url
-	     */
-	    var state = '';
-
-	    var buffer = '';
-	    var index;
-
-	    var layerRegExp = regexPatterns.layerRegExp;
-	    var layerRuleNameRegExp = regexPatterns.layerRuleNameRegExp;
-	    var doubleOrMoreSpacesRegExp = regexPatterns.doubleOrMoreSpacesRegExp;
-	    
-	    /**
-	     * Extracts the content inside supports() handling nested parentheses.
-	     * @param {string} text - The text to parse
-	     * @returns {object|null} - {content: string, endIndex: number} or null if not found
-	     */
-	    function extractSupportsContent(text) {
-	      var supportsIndex = text.indexOf('supports(');
-	      if (supportsIndex !== 0) {
-	        return null;
-	      }
-	      
-	      var depth = 0;
-	      var start = supportsIndex + 'supports('.length;
-	      var i = start;
-	      
-	      for (; i < text.length; i++) {
-	        if (text[i] === '(') {
-	          depth++;
-	        } else if (text[i] === ')') {
-	          if (depth === 0) {
-	            // Found the closing parenthesis for supports()
-	            return {
-	              content: text.slice(start, i),
-	              endIndex: i
-	            };
-	          }
-	          depth--;
-	        }
-	      }
-	      
-	      return null; // Unbalanced parentheses
-	    }
-
-	    for (var character; (character = cssText.charAt(i)); i++) {
-
-	      switch (character) {
-	        case ' ':
-	        case '\t':
-	        case '\r':
-	        case '\n':
-	        case '\f':
-	          if (state === 'after-import') {
-	            state = 'url';
-	          } else {
-	            buffer += character;
-	          }
-	          break;
-
-	        case '@':
-	          if (!state && cssText.indexOf('@import', i) === i) {
-	            state = 'after-import';
-	            i += 'import'.length;
-	            buffer = '';
-	          }
-	          break;
-
-	        case 'u':
-	          if (state === 'media') {
-	            buffer += character;
-	          }
-	          if (state === 'url' && cssText.indexOf('url(', i) === i) {
-	            index = cssText.indexOf(')', i + 1);
-	            if (index === -1) {
-	              throw i + ': ")" not found';
-	            }
-	            i += 'url('.length;
-	            var url = cssText.slice(i, index);
-	            if (url[0] === url[url.length - 1]) {
-	              if (url[0] === '"' || url[0] === "'") {
-	                url = url.slice(1, -1);
-	              }
-	            }
-	            this.__href = url;
-	            i = index;
-	            state = 'media';
-	          }
-	          break;
-
-	        case '"':
-	          if (state === 'after-import' || state === 'url') {
-	            index = cssText.indexOf('"', i + 1);
-	            if (!index) {
-	              throw i + ": '\"' not found";
-	            }
-	            this.__href = cssText.slice(i + 1, index);
-	            i = index;
-	            state = 'media';
-	          }
-	          break;
-
-	        case "'":
-	          if (state === 'after-import' || state === 'url') {
-	            index = cssText.indexOf("'", i + 1);
-	            if (!index) {
-	              throw i + ': "\'" not found';
-	            }
-	            this.__href = cssText.slice(i + 1, index);
-	            i = index;
-	            state = 'media';
-	          }
-	          break;
-
-	        case ';':
-	          if (state === 'media') {
-	            if (buffer) {
-	              var bufferTrimmed = buffer.trim();
-	              
-	              if (bufferTrimmed.indexOf('layer') === 0) {
-	                var layerMatch =  bufferTrimmed.match(layerRegExp);
-
-	                if (layerMatch) {
-	                  var layerName = layerMatch[1].trim();
-
-	                  if (layerName.match(layerRuleNameRegExp) !== null) {
-	                    this.__layerName = layerMatch[1].trim();
-	                    bufferTrimmed = bufferTrimmed.replace(layerRegExp, '')
-	                      .replace(doubleOrMoreSpacesRegExp, ' ') // Replace double or more spaces with single space
-	                      .trim();
-	                  } else {
-	                    // REVIEW: In the browser, an empty layer() is not processed as a unamed layer
-	                    // and treats the rest of the string as mediaText, ignoring the parse of supports()
-	                    if (bufferTrimmed) {
-	                      this.media.mediaText = bufferTrimmed;
-	                      return;
-	                    }
-	                  }
-	                } else {
-	                  this.__layerName = "";
-	                  bufferTrimmed = bufferTrimmed.substring('layer'.length).trim();
-	                }
-	              }
-
-	              var supportsResult = extractSupportsContent(bufferTrimmed);
-
-	              if (supportsResult) {
-	                // REVIEW: In the browser, an empty supports() invalidates and ignores the entire @import rule
-	                this.__supportsText = supportsResult.content.trim();
-	                // Remove the entire supports(...) from the buffer
-	                bufferTrimmed = bufferTrimmed.slice(0, 0) + bufferTrimmed.slice(supportsResult.endIndex + 1);
-	                bufferTrimmed = bufferTrimmed.replace(doubleOrMoreSpacesRegExp, ' ').trim();
-	              }
-
-	              // REVIEW: In the browser, any invalid media is replaced with 'not all'
-	              if (bufferTrimmed) {
-	                this.media.mediaText = bufferTrimmed;
-	              }
-	            }
-	          }
-	          break;
-
-	        default:
-	          if (state === 'media') {
-	            buffer += character;
-	          }
-	          break;
-	      }
-	    }
-	  }
-	});
-
-
-	//.CommonJS
-	CSSImportRule.CSSImportRule = CSSOM.CSSImportRule;
-	///CommonJS
-	return CSSImportRule;
-}
-
-var CSSNamespaceRule = {};
-
-var hasRequiredCSSNamespaceRule;
-
-function requireCSSNamespaceRule () {
-	if (hasRequiredCSSNamespaceRule) return CSSNamespaceRule;
-	hasRequiredCSSNamespaceRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSStyleSheet: requireCSSStyleSheet().CSSStyleSheet
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/cssom/#the-cssnamespacerule-interface
-	 */
-	CSSOM.CSSNamespaceRule = function CSSNamespaceRule() {
-		CSSOM.CSSRule.call(this);
-		this.__prefix = "";
-		this.__namespaceURI = "";
-	};
-
-	CSSOM.CSSNamespaceRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSNamespaceRule.prototype.constructor = CSSOM.CSSNamespaceRule;
-
-	Object.setPrototypeOf(CSSOM.CSSNamespaceRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSNamespaceRule.prototype, "type", {
-	  value: 10,
-	  writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSNamespaceRule.prototype, "cssText", {
-	  get: function() {
-	    return "@namespace" + (this.prefix && " " + this.prefix) + " url(\"" + this.namespaceURI + "\");";
-	  }
-	});
-
-	Object.defineProperty(CSSOM.CSSNamespaceRule.prototype, "prefix", {
-	  get: function() {
-	    return this.__prefix;
-	  }
-	});
-
-	Object.defineProperty(CSSOM.CSSNamespaceRule.prototype, "namespaceURI", {
-	  get: function() {
-	    return this.__namespaceURI;
-	  }
-	});
-
-
-	/**
-	 * NON-STANDARD
-	 * Rule text parser.
-	 * @param {string} cssText
-	 */
-	Object.defineProperty(CSSOM.CSSNamespaceRule.prototype, "parse", {
-	  value: function(cssText) {
-	    var newPrefix = "";
-	    var newNamespaceURI = "";
-
-	    // Remove @namespace and trim
-	    var text = cssText.trim();
-	    if (text.indexOf('@namespace') === 0) {
-	      text = text.slice('@namespace'.length).trim();
-	    }
-
-	    // Remove trailing semicolon if present
-	    if (text.charAt(text.length - 1) === ';') {
-	      text = text.slice(0, -1).trim();
-	    }
-
-	    // Regex to match valid namespace syntax:
-	    // 1. [optional prefix] url("...") or [optional prefix] url('...') or [optional prefix] url() or [optional prefix] url(unquoted)
-	    // 2. [optional prefix] "..." or [optional prefix] '...'
-	    // The prefix must be a valid CSS identifier (letters, digits, hyphens, underscores, starting with letter or underscore)
-	    var re = /^(?:([a-zA-Z_][a-zA-Z0-9_-]*)\s+)?(?:url\(\s*(?:(['"])(.*?)\2\s*|([^)]*?))\s*\)|(['"])(.*?)\5)$/;
-	    var match = text.match(re);
-
-	    if (match) {
-	      // If prefix is present
-	      if (match[1]) {
-	        newPrefix = match[1];
-	      }
-	      // If url(...) form with quotes
-	      if (typeof match[3] !== "undefined") {
-	        newNamespaceURI = match[3];
-	      }
-	      // If url(...) form without quotes
-	      else if (typeof match[4] !== "undefined") {
-	        newNamespaceURI = match[4].trim();
-	      }
-	      // If quoted string form
-	      else if (typeof match[6] !== "undefined") {
-	        newNamespaceURI = match[6];
-	      }
-
-	      this.__prefix = newPrefix;
-	      this.__namespaceURI = newNamespaceURI;
-	    } else {
-	      throw new DOMException("Invalid @namespace rule", "InvalidStateError");
-	    }
-	  }
-	});
-	//.CommonJS
-	CSSNamespaceRule.CSSNamespaceRule = CSSOM.CSSNamespaceRule;
-	///CommonJS
-	return CSSNamespaceRule;
-}
-
-var CSSMediaRule = {};
-
-var CSSConditionRule = {};
-
-var hasRequiredCSSConditionRule;
-
-function requireCSSConditionRule () {
-	if (hasRequiredCSSConditionRule) return CSSConditionRule;
-	hasRequiredCSSConditionRule = 1;
-	//.CommonJS
-	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	  CSSRuleList: requireCSSRuleList().CSSRuleList,
-	  CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://www.w3.org/TR/css-conditional-3/#the-cssconditionrule-interface
-	 */
-	CSSOM.CSSConditionRule = function CSSConditionRule() {
-	  CSSOM.CSSGroupingRule.call(this);
-	  this.__conditionText = '';
-	};
-
-	CSSOM.CSSConditionRule.prototype = Object.create(CSSOM.CSSGroupingRule.prototype);
-	CSSOM.CSSConditionRule.prototype.constructor = CSSOM.CSSConditionRule;
-
-	Object.setPrototypeOf(CSSOM.CSSConditionRule, CSSOM.CSSGroupingRule);
-
-	Object.defineProperty(CSSOM.CSSConditionRule.prototype, "conditionText", {
-	  get: function () {
-	    return this.__conditionText;
-	  }
-	});
-
-	//.CommonJS
-	CSSConditionRule.CSSConditionRule = CSSOM.CSSConditionRule;
-	///CommonJS
-	return CSSConditionRule;
-}
-
-var hasRequiredCSSMediaRule;
-
-function requireCSSMediaRule () {
-	if (hasRequiredCSSMediaRule) return CSSMediaRule;
-	hasRequiredCSSMediaRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-	  CSSRuleList: requireCSSRuleList().CSSRuleList,
-		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-		CSSConditionRule: requireCSSConditionRule().CSSConditionRule,
-		MediaList: requireMediaList().MediaList
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#cssmediarule
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSMediaRule
-	 */
-	CSSOM.CSSMediaRule = function CSSMediaRule() {
-		CSSOM.CSSConditionRule.call(this);
-		this.__media = new CSSOM.MediaList();
-	};
-
-	CSSOM.CSSMediaRule.prototype = Object.create(CSSOM.CSSConditionRule.prototype);
-	CSSOM.CSSMediaRule.prototype.constructor = CSSOM.CSSMediaRule;
-
-	Object.setPrototypeOf(CSSOM.CSSMediaRule, CSSOM.CSSConditionRule);
-
-	Object.defineProperty(CSSOM.CSSMediaRule.prototype, "type", {
-		value: 4,
-		writable: false
-	});
-
-	// https://opensource.apple.com/source/WebCore/WebCore-7611.1.21.161.3/css/CSSMediaRule.cpp
-	Object.defineProperties(CSSOM.CSSMediaRule.prototype, {
-	  "media": {
-	    get: function() {
-	      return this.__media;
-	    },
-	    set: function(value) {
-	      if (typeof value === "string") {
-	        this.__media.mediaText = value;
-	      } else {
-	        this.__media = value;
-	      }
-	    },
-	    configurable: true,
-	    enumerable: true
-	  },
-	  "conditionText": {
-	    get: function() {
-	      return this.media.mediaText;
-	    }
-	  },
-	  "cssText": {
-	    get: function() {
-				var values = "";
-				var valuesArr = [" {"];
-	      if (this.cssRules.length) {
-	        valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-	          if (rule.cssText !== "") {
-	            acc.push(rule.cssText);
-	          }
-	          return acc;
-	        }, []).join("\n  "));
-	      }
-	      values = valuesArr.join("\n  ") + "\n}";
-	      return "@media " + this.media.mediaText + values;
-	    }
-	  }
-	});
-
-
-	//.CommonJS
-	CSSMediaRule.CSSMediaRule = CSSOM.CSSMediaRule;
-	///CommonJS
-	return CSSMediaRule;
-}
-
-var CSSCounterStyleRule = {};
-
-var hasRequiredCSSCounterStyleRule;
-
-function requireCSSCounterStyleRule () {
-	if (hasRequiredCSSCounterStyleRule) return CSSCounterStyleRule;
-	hasRequiredCSSCounterStyleRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-counter-styles/#the-csscounterstylerule-interface
-	 */
-	CSSOM.CSSCounterStyleRule = function CSSCounterStyleRule() {
-		CSSOM.CSSRule.call(this);
-	    this.name = "";
-		this.__props = "";
-	};
-
-	CSSOM.CSSCounterStyleRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSCounterStyleRule.prototype.constructor = CSSOM.CSSCounterStyleRule;
-
-	Object.setPrototypeOf(CSSOM.CSSCounterStyleRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSCounterStyleRule.prototype, "type", {
-		value: 11,
-		writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSCounterStyleRule.prototype, "cssText", {
-		get: function() {
-			// FIXME : Implement real cssText generation based on properties
-			return "@counter-style " + this.name + " { " + this.__props + " }";
+		return new CSSCustomMediaRule(name, query);
+	}
+	consumeQualifiedRule(nested = false) {
+		const prelude = [];
+		while (true) {
+			const next = this.nextToken;
+			if (next.type === "EOF") {
+				this.reportError("Unexpected EOF in qualified rule", next);
+				return null;
+			} else if (next.type === "}") {
+				this.reportError("Unexpected } in qualified rule", next);
+				if (nested) return null;
+				this.consumeToken();
+				prelude.push(next);
+			} else if (next.type === "{") {
+				if (isCustomPropertyDeclaration(prelude)) {
+					this.reportError("Qualified rule prelude looks like a custom property", next);
+					const blockToken = this.consumeToken();
+					this.consumeBlock(blockToken);
+					return null;
+				}
+				const blockToken = this.consumeToken();
+				const start = getComponentValueStartIndex(prelude[0]) ?? blockToken.startIndex ?? 0;
+				const stream = new LazyComponentValueStream(() => this.consumeComponentValue(), "}");
+				const blockContents = this.consumeBlockContents(stream, true);
+				const term = stream.terminator;
+				let end;
+				if (term) end = term.endIndex ?? (term.startIndex !== void 0 ? term.startIndex + 1 : start);
+				else {
+					const eofPos = this.nextToken.startIndex ?? this.nextToken.endIndex;
+					if (eofPos !== void 0) end = eofPos;
+					else {
+						const buffered = stream.slice(0, stream.position);
+						end = (buffered.length > 0 ? getComponentValueEndIndex(buffered[buffered.length - 1]) : void 0) ?? blockToken.endIndex ?? blockToken.startIndex ?? start;
+					}
+				}
+				const bodyStart = blockToken.endIndex;
+				const bodyEnd = term ? term.startIndex ?? end : end;
+				const location = this.makeLocation(start, end, bodyStart, bodyEnd);
+				return this.createStyleRule(prelude, blockContents, nested, nested, location);
+			} else prelude.push(this.consumeComponentValue());
 		}
-	});
-
-	/**
-	 * NON-STANDARD
-	 * Rule text parser.
-	 * @param {string} cssText
-	 */
-	Object.defineProperty(CSSOM.CSSCounterStyleRule.prototype, "parse", {
-		value: function(cssText) {
-			// Extract the name from "@counter-style <name> { ... }"
-			var match = cssText.match(/@counter-style\s+([^\s{]+)\s*\{([^]*)\}/);
-			if (match) {
-				this.name = match[1];
-				// Get the text inside the brackets and clean it up
-				var propsText = match[2];
-				this.__props = propsText.trim().replace(/\n/g, " ").replace(/(['"])(?:\\.|[^\\])*?\1|(\s{2,})/g, function (match, quote) {
-					return quote ? match : ' ';
-				});
-			}
-		}
-	});
-
-	//.CommonJS
-	CSSCounterStyleRule.CSSCounterStyleRule = CSSOM.CSSCounterStyleRule;
-	///CommonJS
-	return CSSCounterStyleRule;
-}
-
-var CSSPropertyRule = {};
-
-var hasRequiredCSSPropertyRule;
-
-function requireCSSPropertyRule () {
-	if (hasRequiredCSSPropertyRule) return CSSPropertyRule;
-	hasRequiredCSSPropertyRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.css-houdini.org/css-properties-values-api/#the-css-property-rule-interface
-	 */
-	CSSOM.CSSPropertyRule = function CSSPropertyRule() {
-		CSSOM.CSSRule.call(this);
-		this.__name = "";
-		this.__syntax = "";
-		this.__inherits = false;
-		this.__initialValue = null;
-	};
-
-	CSSOM.CSSPropertyRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSPropertyRule.prototype.constructor = CSSOM.CSSPropertyRule;
-
-	Object.setPrototypeOf(CSSOM.CSSPropertyRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "type", {
-		value: 0,
-		writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "cssText", {
-		get: function() {
-			var text = "@property " + this.name + " {";
-			if (this.syntax !== "") {
-				text += " syntax: \"" + this.syntax.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + "\";";
-			}
-			text += " inherits: " + (this.inherits ? "true" : "false") + ";";
-			if (this.initialValue !== null) {
-				text += " initial-value: " + this.initialValue + ";";
-			}
-			text += " }";
-			return text;
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "name", {
-		get: function() {
-			return this.__name;
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "syntax", {
-		get: function() {
-			return this.__syntax;
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "inherits", {
-		get: function() {
-			return this.__inherits;
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "initialValue", {
-		get: function() {
-			return this.__initialValue;
-		}
-	});
-
-	/**
-	 * NON-STANDARD
-	 * Rule text parser.
-	 * @param {string} cssText
-	 * @returns {boolean} True if the rule is valid and was parsed successfully
-	 */
-	Object.defineProperty(CSSOM.CSSPropertyRule.prototype, "parse", {
-		value: function(cssText) {
-			// Extract the name from "@property <name> { ... }"
-			var match = cssText.match(/@property\s+(--[^\s{]+)\s*\{([^]*)\}/);
-			if (!match) {
-				return false;
-			}
-			
-			this.__name = match[1];
-			var bodyText = match[2];
-			
-			// Parse syntax descriptor (REQUIRED)
-			var syntaxMatch = bodyText.match(/syntax\s*:\s*(['"])([^]*?)\1\s*;/);
-			if (!syntaxMatch) {
-				return false; // syntax is required
-			}
-			this.__syntax = syntaxMatch[2];
-			
-			// Syntax cannot be empty
-			if (this.__syntax === "") {
-				return false;
-			}
-			
-			// Parse inherits descriptor (REQUIRED)
-			var inheritsMatch = bodyText.match(/inherits\s*:\s*(true|false)\s*;/);
-			if (!inheritsMatch) {
-				return false; // inherits is required
-			}
-			this.__inherits = inheritsMatch[1] === "true";
-			
-			// Parse initial-value descriptor (OPTIONAL, but required if syntax is not "*")
-			var initialValueMatch = bodyText.match(/initial-value\s*:\s*([^;]+);/);
-			if (initialValueMatch) {
-				this.__initialValue = initialValueMatch[1].trim();
-			} else {
-				// If syntax is not "*", initial-value is required
-				if (this.__syntax !== "*") {
-					return false;
+	}
+	consumeDeclarationsFromBlockContents(values) {
+		const stream = new ArrayComponentValueStream(values);
+		const decls = [];
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "whitespace" || val.type === "semicolon") stream.next();
+			else if (val.type === "EOF" || val.type === "}") break;
+			else if (val.type === "at-keyword") this.consumeAtRuleFromStream(stream);
+			else {
+				const decl = this.consumeDeclarationFromStream(stream);
+				if (decl) decls.push(decl);
+				else while (true) {
+					const next = stream.peek();
+					if (next.type === "EOF" || next.type === "semicolon" || next.type === "}") break;
+					stream.next();
 				}
 			}
-			
-			return true; // Successfully parsed
 		}
-	});
-
-	//.CommonJS
-	CSSPropertyRule.CSSPropertyRule = CSSOM.CSSPropertyRule;
-	///CommonJS
-	return CSSPropertyRule;
-}
-
-var CSSContainerRule = {};
-
-var hasRequiredCSSContainerRule;
-
-function requireCSSContainerRule () {
-	if (hasRequiredCSSContainerRule) return CSSContainerRule;
-	hasRequiredCSSContainerRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-	  CSSRuleList: requireCSSRuleList().CSSRuleList,
-		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-		CSSConditionRule: requireCSSConditionRule().CSSConditionRule,
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-contain-3/
-	 * @see https://www.w3.org/TR/css-contain-3/
-	 */
-	CSSOM.CSSContainerRule = function CSSContainerRule() {
-		CSSOM.CSSConditionRule.call(this);
-	};
-
-	CSSOM.CSSContainerRule.prototype = Object.create(CSSOM.CSSConditionRule.prototype);
-	CSSOM.CSSContainerRule.prototype.constructor = CSSOM.CSSContainerRule;
-
-	Object.setPrototypeOf(CSSOM.CSSContainerRule, CSSOM.CSSConditionRule);
-
-	Object.defineProperty(CSSOM.CSSContainerRule.prototype, "type", {
-		value: 17,
-		writable: false
-	});
-
-	Object.defineProperties(CSSOM.CSSContainerRule.prototype, {
-	  "cssText": {
-	    get: function() {
-				var values = "";
-				var valuesArr = [" {"];
-	      if (this.cssRules.length) {
-	        valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-	          if (rule.cssText !== "") {
-	            acc.push(rule.cssText);
-	          }
-	          return acc;
-	        }, []).join("\n  "));
-	      }
-	      values = valuesArr.join("\n  ") + "\n}";
-	      return "@container " + this.conditionText + values;
-	    }
-	  },
-	  "containerName": {
-	      get: function() {
-	        var parts = this.conditionText.trim().split(/\s+/);
-	        if (parts.length > 1 && parts[0] !== '(' && !parts[0].startsWith('(')) {
-	          return parts[0];
-	        }
-	        return "";
-	      }
-	    },
-	  "containerQuery": {
-	      get: function() {
-	        var parts = this.conditionText.trim().split(/\s+/);
-	        if (parts.length > 1 && parts[0] !== '(' && !parts[0].startsWith('(')) {
-	          return parts.slice(1).join(' ');
-	        }
-	        return this.conditionText;
-	      }
-	    },
-	});
-
-
-	//.CommonJS
-	CSSContainerRule.CSSContainerRule = CSSOM.CSSContainerRule;
-	///CommonJS
-	return CSSContainerRule;
-}
-
-var CSSSupportsRule = {};
-
-var hasRequiredCSSSupportsRule;
-
-function requireCSSSupportsRule () {
-	if (hasRequiredCSSSupportsRule) return CSSSupportsRule;
-	hasRequiredCSSSupportsRule = 1;
-	//.CommonJS
-	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	  CSSRuleList: requireCSSRuleList().CSSRuleList,
-	  CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-	  CSSConditionRule: requireCSSConditionRule().CSSConditionRule
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-conditional-3/#the-csssupportsrule-interface
-	 */
-	CSSOM.CSSSupportsRule = function CSSSupportsRule() {
-	  CSSOM.CSSConditionRule.call(this);
-	};
-
-	CSSOM.CSSSupportsRule.prototype = Object.create(CSSOM.CSSConditionRule.prototype);
-	CSSOM.CSSSupportsRule.prototype.constructor = CSSOM.CSSSupportsRule;
-	  
-	Object.setPrototypeOf(CSSOM.CSSSupportsRule, CSSOM.CSSConditionRule);
-
-	Object.defineProperty(CSSOM.CSSSupportsRule.prototype, "type", {
-		value: 12,
-		writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSSupportsRule.prototype, "cssText", {
-	  get: function() {
-	    var values = "";
-	    var valuesArr = [" {"];
-	    if (this.cssRules.length) {
-	      valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-	        if (rule.cssText !== "") {
-	          acc.push(rule.cssText);
-	        }
-	        return acc;
-	      }, []).join("\n  "));
-	    }
-	    values = valuesArr.join("\n  ") + "\n}";
-	    return "@supports " + this.conditionText + values;
-	  }
-	});
-
-	//.CommonJS
-	CSSSupportsRule.CSSSupportsRule = CSSOM.CSSSupportsRule;
-	///CommonJS
-	return CSSSupportsRule;
-}
-
-var CSSFontFaceRule = {};
-
-var hasRequiredCSSFontFaceRule;
-
-function requireCSSFontFaceRule () {
-	if (hasRequiredCSSFontFaceRule) return CSSFontFaceRule;
-	hasRequiredCSSFontFaceRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
-		CSSRule: requireCSSRule().CSSRule
-	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
+		return decls;
 	}
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://dev.w3.org/csswg/cssom/#css-font-face-rule
-	 */
-	CSSOM.CSSFontFaceRule = function CSSFontFaceRule() {
-		CSSOM.CSSRule.call(this);
-		this.__style = new CSSOM.CSSStyleDeclaration();
-		this.__style.parentRule = this;
-	};
-
-	CSSOM.CSSFontFaceRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSFontFaceRule.prototype.constructor = CSSOM.CSSFontFaceRule;
-
-	Object.setPrototypeOf(CSSOM.CSSFontFaceRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSFontFaceRule.prototype, "type", {
-		value: 5,
-		writable: false
-	});
-
-	//FIXME
-	//CSSOM.CSSFontFaceRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
-	//CSSOM.CSSFontFaceRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
-
-	Object.defineProperty(CSSOM.CSSFontFaceRule.prototype, "style", {
-		get: function() {
-			return this.__style;	
-		},
-		set: function(value) {
-			if (typeof value === "string") {
-				this.__style.cssText = value;
+	/** @internal */
+	consumeBlockContents(stream, nested = false, isNestedStyleRule = nested, allowRelative = false) {
+		const rules = [];
+		let decls = [];
+		const flushDecls = () => {
+			if (decls.length > 0) {
+				const nestedDecl = new CSSNestedDeclarations(decls);
+				const start = decls[0].startIndex ?? 0;
+				const end = decls[decls.length - 1].endIndex ?? start;
+				nestedDecl._location = this.makeLocation(start, end, start, end);
+				rules.push(nestedDecl);
+				decls = [];
+			}
+		};
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "whitespace" || val.type === "semicolon") stream.next();
+			else if (val.type === "EOF" || val.type === "}") break;
+			else if (val.type === "at-keyword") {
+				const atRule = this.consumeAtRuleFromStream(stream, isNestedStyleRule);
+				if (atRule) {
+					flushDecls();
+					rules.push(atRule);
+				}
 			} else {
-				this.__style = value;
-			}
-		}
-	});
-
-	// http://www.opensource.apple.com/source/WebCore/WebCore-955.66.1/css/WebKitCSSFontFaceRule.cpp
-	Object.defineProperty(CSSOM.CSSFontFaceRule.prototype, "cssText", {
-	  get: function() {
-	    return "@font-face {" + (this.style.cssText ? " " + this.style.cssText : "") + " }";
-	  }
-	});
-
-
-	//.CommonJS
-	CSSFontFaceRule.CSSFontFaceRule = CSSOM.CSSFontFaceRule;
-	///CommonJS
-	return CSSFontFaceRule;
-}
-
-var CSSHostRule = {};
-
-var hasRequiredCSSHostRule;
-
-function requireCSSHostRule () {
-	if (hasRequiredCSSHostRule) return CSSHostRule;
-	hasRequiredCSSHostRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSRuleList: requireCSSRuleList().CSSRuleList
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://www.w3.org/TR/shadow-dom/#host-at-rule
-	 * @see http://html5index.org/Shadow%20DOM%20-%20CSSHostRule.html
-	 * @deprecated This rule was part of early Shadow DOM drafts but was removed in favor of the more flexible :host and :host-context() pseudo-classes in modern CSS for Web Components.
-	 */
-	CSSOM.CSSHostRule = function CSSHostRule() {
-		CSSOM.CSSRule.call(this);
-		this.cssRules = new CSSOM.CSSRuleList();
-	};
-
-	CSSOM.CSSHostRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSHostRule.prototype.constructor = CSSOM.CSSHostRule;
-
-	Object.setPrototypeOf(CSSOM.CSSHostRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSHostRule.prototype, "type", {
-		value: 1001,
-		writable: false
-	});
-
-	//FIXME
-	//CSSOM.CSSHostRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
-	//CSSOM.CSSHostRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
-
-	Object.defineProperty(CSSOM.CSSHostRule.prototype, "cssText", {
-		get: function() {
-			var values = "";
-			var valuesArr = [" {"];
-			if (this.cssRules.length) {
-				valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-				if (rule.cssText !== "") {
-					acc.push(rule.cssText);
+				const pos = stream.position;
+				if (nested && this.isNestedDeclarationAhead(stream)) {
+					const decl = this.consumeDeclarationFromStream(stream);
+					if (decl) {
+						if (stream.peek().type === "semicolon") {
+							const semi = stream.next();
+							if (semi.endIndex !== void 0) decl.endIndex = semi.endIndex;
+						}
+						decls.push(decl);
+					}
+				} else {
+					stream.position = pos;
+					const rule = this.consumeNestedQualifiedRuleFromStream(stream, isNestedStyleRule, "semicolon", allowRelative);
+					flushDecls();
+					if (rule) rules.push(rule);
 				}
-				return acc;
-				}, []).join("\n  "));
 			}
-			values = valuesArr.join("\n  ") + "\n}";
-			return "@host" + values;
 		}
-	});
-
-
-	//.CommonJS
-	CSSHostRule.CSSHostRule = CSSOM.CSSHostRule;
-	///CommonJS
-	return CSSHostRule;
-}
-
-var CSSStartingStyleRule = {};
-
-var hasRequiredCSSStartingStyleRule;
-
-function requireCSSStartingStyleRule () {
-	if (hasRequiredCSSStartingStyleRule) return CSSStartingStyleRule;
-	hasRequiredCSSStartingStyleRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSRuleList: requireCSSRuleList().CSSRuleList,
-		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://www.w3.org/TR/shadow-dom/#host-at-rule
-	 */
-	CSSOM.CSSStartingStyleRule = function CSSStartingStyleRule() {
-		CSSOM.CSSGroupingRule.call(this);
-	};
-
-	CSSOM.CSSStartingStyleRule.prototype = Object.create(CSSOM.CSSGroupingRule.prototype);
-	CSSOM.CSSStartingStyleRule.prototype.constructor = CSSOM.CSSStartingStyleRule;
-
-	Object.setPrototypeOf(CSSOM.CSSStartingStyleRule, CSSOM.CSSGroupingRule);
-
-	Object.defineProperty(CSSOM.CSSStartingStyleRule.prototype, "type", {
-		value: 1002,
-		writable: false
-	});
-
-	//FIXME
-	//CSSOM.CSSStartingStyleRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
-	//CSSOM.CSSStartingStyleRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
-
-	Object.defineProperty(CSSOM.CSSStartingStyleRule.prototype, "cssText", {
-		get: function() {
-			var values = "";
-			var valuesArr = [" {"];
-			if (this.cssRules.length) {
-				valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-				if (rule.cssText !== "") {
-					acc.push(rule.cssText);
-				}
-				return acc;
-				}, []).join("\n  "));
-			}
-			values = valuesArr.join("\n  ") + "\n}";
-			return "@starting-style" + values;
-		}
-	});
-
-
-	//.CommonJS
-	CSSStartingStyleRule.CSSStartingStyleRule = CSSOM.CSSStartingStyleRule;
-	///CommonJS
-	return CSSStartingStyleRule;
-}
-
-var CSSKeyframeRule = {};
-
-var hasRequiredCSSKeyframeRule;
-
-function requireCSSKeyframeRule () {
-	if (hasRequiredCSSKeyframeRule) return CSSKeyframeRule;
-	hasRequiredCSSKeyframeRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration
-	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
+		flushDecls();
+		return rules;
 	}
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://www.w3.org/TR/css3-animations/#DOM-CSSKeyframeRule
-	 */
-	CSSOM.CSSKeyframeRule = function CSSKeyframeRule() {
-		CSSOM.CSSRule.call(this);
-		this.keyText = '';
-		this.__style = new CSSOM.CSSStyleDeclaration();
-		this.__style.parentRule = this;
-	};
-
-	CSSOM.CSSKeyframeRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSKeyframeRule.prototype.constructor = CSSOM.CSSKeyframeRule;
-
-	Object.setPrototypeOf(CSSOM.CSSKeyframeRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSKeyframeRule.prototype, "type", {
-		value: 8,
-		writable: false
-	});
-
-	//FIXME
-	//CSSOM.CSSKeyframeRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
-	//CSSOM.CSSKeyframeRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
-
-	Object.defineProperty(CSSOM.CSSKeyframeRule.prototype, "style", {
-		get: function() {
-			return this.__style;	
-		},
-		set: function(value) {
-			if (typeof value === "string") {
-				this.__style.cssText = value;
-			} else {
-				this.__style = value;
-			}
-		}
-	});
-
-	// http://www.opensource.apple.com/source/WebCore/WebCore-955.66.1/css/WebKitCSSKeyframeRule.cpp
-	Object.defineProperty(CSSOM.CSSKeyframeRule.prototype, "cssText", {
-	  get: function() {
-	    return this.keyText + " {" + (this.style.cssText ? " " + this.style.cssText : "") + " }";
-	  }
-	});
-
-
-	//.CommonJS
-	CSSKeyframeRule.CSSKeyframeRule = CSSOM.CSSKeyframeRule;
-	///CommonJS
-	return CSSKeyframeRule;
-}
-
-var CSSKeyframesRule = {};
-
-var hasRequiredCSSKeyframesRule;
-
-function requireCSSKeyframesRule () {
-	if (hasRequiredCSSKeyframesRule) return CSSKeyframesRule;
-	hasRequiredCSSKeyframesRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSRule: requireCSSRule().CSSRule,
-		CSSRuleList: requireCSSRuleList().CSSRuleList,
-		parse: requireParse().parse
-	};
-	var errorUtils = requireErrorUtils().errorUtils;
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://www.w3.org/TR/css3-animations/#DOM-CSSKeyframesRule
-	 */
-	CSSOM.CSSKeyframesRule = function CSSKeyframesRule() {
-		CSSOM.CSSRule.call(this);
-		this.name = '';
-		this.cssRules = new CSSOM.CSSRuleList();
-		
-		// Set up initial indexed access
-		this._setupIndexedAccess();
-		
-		// Override cssRules methods after initial setup, store references as non-enumerable properties
-		var self = this;
-		var originalPush = this.cssRules.push;
-		var originalSplice = this.cssRules.splice;
-		
-		// Create non-enumerable method overrides
-		Object.defineProperty(this.cssRules, 'push', {
-			value: function() {
-				var result = originalPush.apply(this, arguments);
-				self._setupIndexedAccess();
-				return result;
-			},
-			writable: true,
-			enumerable: false,
-			configurable: true
-		});
-		
-		Object.defineProperty(this.cssRules, 'splice', {
-			value: function() {
-				var result = originalSplice.apply(this, arguments);
-				self._setupIndexedAccess();
-				return result;
-			},
-			writable: true,
-			enumerable: false,
-			configurable: true
-		});
-	};
-
-	CSSOM.CSSKeyframesRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSKeyframesRule.prototype.constructor = CSSOM.CSSKeyframesRule;
-
-	Object.setPrototypeOf(CSSOM.CSSKeyframesRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSKeyframesRule.prototype, "type", {
-		value: 7,
-		writable: false
-	});
-
-	// http://www.opensource.apple.com/source/WebCore/WebCore-955.66.1/css/WebKitCSSKeyframesRule.cpp
-	Object.defineProperty(CSSOM.CSSKeyframesRule.prototype, "cssText", {
-	  get: function() {
-	    var values = "";
-		var valuesArr = [" {"];
-		if (this.cssRules.length) {
-		valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-			if (rule.cssText !== "") {
-			acc.push(rule.cssText);
-			}
-			return acc;
-		}, []).join("\n  "));
-		}
-		values = valuesArr.join("\n  ") + "\n}";
-	    var cssWideKeywords = ['initial', 'inherit', 'revert', 'revert-layer', 'unset', 'none'];
-	    var processedName = cssWideKeywords.includes(this.name) ? '"' + this.name + '"' : this.name;
-	    return "@" + (this._vendorPrefix || '') + "keyframes " + processedName + values;
-	  }
-	});
-
-	/**
-	 * Appends a new keyframe rule to the list of keyframes.
-	 * 
-	 * @param {string} rule - The keyframe rule string to append (e.g., "50% { opacity: 0.5; }")
-	 * @see https://www.w3.org/TR/css-animations-1/#dom-csskeyframesrule-appendrule
-	 */
-	CSSOM.CSSKeyframesRule.prototype.appendRule = function appendRule(rule) {
-		if (arguments.length === 0) {
-			errorUtils.throwMissingArguments(this, 'appendRule', 'CSSKeyframesRule');
-		}
-		
-		var parsedRule;
+	isNestedDeclarationAhead(stream) {
+		const first = stream.peek();
+		if (first.type !== "ident" || first.value === "--") return false;
+		if (first.value.startsWith("--")) return true;
+		const lookaheadPos = stream.position;
 		try {
-			// Parse the rule string as a keyframe rule
-			var tempStyleSheet = CSSOM.parse("@keyframes temp { " + rule + " }");
-			if (tempStyleSheet.cssRules.length > 0 && tempStyleSheet.cssRules[0].cssRules.length > 0) {
-				parsedRule = tempStyleSheet.cssRules[0].cssRules[0];
-			} else {
-				throw new Error("Failed to parse keyframe rule");
-			}
-		} catch (e) {
-			errorUtils.throwParseError(this, 'appendRule', 'CSSKeyframesRule', rule);
-		}
-		
-		parsedRule.__parentRule = this;
-		this.cssRules.push(parsedRule);
-	};
-
-	/**
-	 * Deletes a keyframe rule that matches the specified key.
-	 * 
-	 * @param {string} select - The keyframe selector to delete (e.g., "50%", "from", "to")
-	 * @see https://www.w3.org/TR/css-animations-1/#dom-csskeyframesrule-deleterule
-	 */
-	CSSOM.CSSKeyframesRule.prototype.deleteRule = function deleteRule(select) {
-		if (arguments.length === 0) {
-			errorUtils.throwMissingArguments(this, 'deleteRule', 'CSSKeyframesRule');
-		}
-		
-		var normalizedSelect = this._normalizeKeyText(select);
-		
-		for (var i = 0; i < this.cssRules.length; i++) {
-			var rule = this.cssRules[i];
-			if (this._normalizeKeyText(rule.keyText) === normalizedSelect) {
-				rule.__parentRule = null;
-				this.cssRules.splice(i, 1);
-				return;
-			}
-		}
-	};
-
-	/**
-	 * Finds and returns the keyframe rule that matches the specified key.
-	 * When multiple rules have the same key, returns the last one.
-	 * 
-	 * @param {string} select - The keyframe selector to find (e.g., "50%", "from", "to")
-	 * @return {CSSKeyframeRule|null} The matching keyframe rule, or null if not found
-	 * @see https://www.w3.org/TR/css-animations-1/#dom-csskeyframesrule-findrule
-	 */
-	CSSOM.CSSKeyframesRule.prototype.findRule = function findRule(select) {
-		if (arguments.length === 0) {
-			errorUtils.throwMissingArguments(this, 'findRule', 'CSSKeyframesRule');
-		}
-		
-		var normalizedSelect = this._normalizeKeyText(select);
-		
-		// Iterate backwards to find the last matching rule
-		for (var i = this.cssRules.length - 1; i >= 0; i--) {
-			var rule = this.cssRules[i];
-			if (this._normalizeKeyText(rule.keyText) === normalizedSelect) {
-				return rule;
-			}
-		}
-		
-		return null;
-	};
-
-	/**
-	 * Normalizes keyframe selector text for comparison.
-	 * Handles "from" -> "0%" and "to" -> "100%" conversions and trims whitespace.
-	 * 
-	 * @private
-	 * @param {string} keyText - The keyframe selector text to normalize
-	 * @return {string} The normalized keyframe selector text
-	 */
-	CSSOM.CSSKeyframesRule.prototype._normalizeKeyText = function _normalizeKeyText(keyText) {
-		if (!keyText) return '';
-		
-		var normalized = keyText.toString().trim().toLowerCase();
-		
-		// Convert keywords to percentages for comparison
-		if (normalized === 'from') {
-			return '0%';
-		} else if (normalized === 'to') {
-			return '100%';
-		}
-		
-		return normalized;
-	};
-
-	/**
-	 * Makes CSSKeyframesRule iterable over its cssRules.
-	 * Allows for...of loops and other iterable methods.
-	 */
-	if (typeof Symbol !== 'undefined' && Symbol.iterator) {
-		CSSOM.CSSKeyframesRule.prototype[Symbol.iterator] = function() {
-			var index = 0;
-			var cssRules = this.cssRules;
-			
-			return {
-				next: function() {
-					if (index < cssRules.length) {
-						return { value: cssRules[index++], done: false };
-					} else {
-						return { done: true };
-					}
+			stream.next();
+			while (stream.peek().type === "whitespace") stream.next();
+			if (stream.peek().type !== "colon") return false;
+			stream.next();
+			const lookaheadTokens = [first, {
+				type: "colon",
+				value: ":"
+			}];
+			while (true) {
+				const next = stream.peek();
+				if (next.type === "EOF" || next.type === "}" || next.type === "semicolon") return true;
+				if (next.type === "simple-block" && next.associatedToken?.type === "{") {
+					const selectorCandidate = serialize(lookaheadTokens).trim();
+					return Parser.parseSelectorAST(selectorCandidate, {
+						allowVendorPseudos: Boolean(this.options.allowVendorPseudos),
+						allowUnknownPseudos: Boolean(this.options.allowUnknownPseudos)
+					}) === null;
 				}
-			};
-		};
+				lookaheadTokens.push(stream.next());
+			}
+		} finally {
+			stream.position = lookaheadPos;
+		}
 	}
-
-	/**
-	 * Adds indexed getters for direct access to cssRules by index.
-	 * This enables rule[0], rule[1], etc. access patterns.
-	 * Works in environments where Proxy is not available (like jsdom).
-	 */
-	CSSOM.CSSKeyframesRule.prototype._setupIndexedAccess = function() {
-		// Remove any existing indexed properties
-		for (var i = 0; i < 1000; i++) { // reasonable upper limit
-			if (this.hasOwnProperty(i)) {
-				delete this[i];
-			} else {
+	consumeDeclarationFromStream(stream) {
+		const firstValue = stream.peek();
+		if (firstValue.type !== "ident") return null;
+		const startIndex = getComponentValueStartIndex(firstValue) ?? firstValue.startIndex;
+		stream.next();
+		const name = firstValue.value;
+		if (name === "--") return null;
+		while (stream.peek().type === "whitespace") stream.next();
+		if (stream.peek().type !== "colon") return null;
+		stream.next();
+		while (stream.peek().type === "whitespace") stream.next();
+		const declValue = [];
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "EOF" || val.type === "semicolon") break;
+			if (!name.startsWith("--") && val.type === "simple-block" && val.associatedToken?.type === "{" && declValue.some((v) => v.type !== "whitespace")) {
+				declValue.push(stream.next());
 				break;
 			}
+			declValue.push(stream.next());
 		}
-		
-		// Add indexed getters for current cssRules
-		for (var i = 0; i < this.cssRules.length; i++) {
-			(function(index) {
-				Object.defineProperty(this, index, {
-					get: function() {
-						return this.cssRules[index];
-					},
-					enumerable: false,
-					configurable: true
+		let important = false;
+		const lastNonWsIndex = (end) => {
+			let j = end;
+			while (j >= 0 && declValue[j].type === "whitespace") j--;
+			return j;
+		};
+		const lastNonWs = declValue[lastNonWsIndex(declValue.length - 1)];
+		const endIndex = (lastNonWs && (getComponentValueEndIndex(lastNonWs) ?? lastNonWs.endIndex)) ?? firstValue.endIndex;
+		const i1 = lastNonWsIndex(declValue.length - 1);
+		const t1 = declValue[i1];
+		if (i1 >= 0 && t1?.type === "ident" && t1.value.toLowerCase() === "important") {
+			const i2 = lastNonWsIndex(i1 - 1);
+			const t2 = declValue[i2];
+			if (i2 >= 0 && t2?.type === "delim" && t2.value === "!") {
+				important = true;
+				declValue.splice(i2);
+			}
+		}
+		while (declValue.length > 0 && declValue[declValue.length - 1].type === "whitespace") declValue.pop();
+		if (name.startsWith("--")) {
+			if (!validateDeclarationValue(declValue, true, true)) return null;
+		} else {
+			if (declValue.some((v) => v.type === "simple-block" && v.associatedToken.type === "{") && declValue.reduce((count, v) => v.type !== "whitespace" ? count + 1 : count, 0) > 1) return null;
+			if (!validateDeclarationValue(declValue, true, false)) return null;
+		}
+		if (name.toLowerCase() === "unicode-range") {
+			const text = getOriginalText(declValue);
+			const errors = [];
+			const reParser = new Parser(tokenize(text, true, errors));
+			reParser.errors.push(...errors);
+			const reParsed = reParser.parseComponentValues();
+			if (!isValidUnicodeRangeValue(reParsed)) return null;
+			this.errors.push(...reParser.errors);
+			declValue.splice(0, declValue.length, ...reParsed);
+		}
+		return {
+			type: "declaration",
+			name,
+			value: declValue,
+			important,
+			raw: name.startsWith("--") ? getOriginalText(declValue) : void 0,
+			startIndex,
+			endIndex
+		};
+	}
+	consumeNestedQualifiedRuleFromStream(stream, nested = true, stopToken, allowRelative = nested) {
+		const prelude = [];
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "EOF" || val.type === "}" || stopToken && val.type === stopToken) return null;
+			if (val.type === "simple-block" && val.associatedToken.type === "{") {
+				stream.next();
+				if (isCustomPropertyDeclaration(prelude)) {
+					this.consumeRemnantsOfABadDeclaration(stream, nested);
+					return null;
+				}
+				const block = val;
+				const blockContents = this.consumeBlockContents(new ArrayComponentValueStream(block.value), true);
+				const start = getComponentValueStartIndex(prelude[0]) ?? block.associatedToken.startIndex ?? 0;
+				return this.createStyleRule(prelude, blockContents, nested, allowRelative, this.createBlockLocation(start, block));
+			}
+			prelude.push(stream.next());
+		}
+	}
+	consumeAtRuleFromStream(stream, nested = false) {
+		const token = stream.next();
+		if (token.type !== "at-keyword") return null;
+		const rule = {
+			type: "at-rule",
+			name: token.value,
+			prelude: [],
+			childRules: []
+		};
+		const start = token.startIndex ?? 0;
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "semicolon") {
+				const semiToken = stream.next();
+				const end = semiToken.endIndex ?? semiToken.startIndex ?? start;
+				return this.finalizeAtRule(rule, void 0, nested, this.makeLocation(start, end), false);
+			} else if (val.type === "EOF" || val.type === "}") {
+				const end = val.startIndex ?? start;
+				return this.finalizeAtRule(rule, void 0, nested, this.makeLocation(start, end), false);
+			} else if (val.type === "simple-block" && val.associatedToken.type === "{") {
+				const block = stream.next();
+				return this.finalizeAtRule(rule, block, nested, this.createBlockLocation(start, block), false);
+			} else rule.prelude.push(stream.next());
+		}
+	}
+	consumeRemnantsOfABadDeclaration(stream, nested = false) {
+		while (true) {
+			const val = stream.peek();
+			if (val.type === "EOF" || val.type === "semicolon") {
+				stream.next();
+				break;
+			} else if (val.type === "}" && nested) break;
+			else stream.next();
+		}
+	}
+	isValidSelector(prelude) {
+		const trimmed = trimComponentValues(prelude);
+		if (trimmed.length === 0) return false;
+		const lastToken = trimmed[trimmed.length - 1];
+		if (lastToken.type === "delim" && (lastToken.value === "." || lastToken.value === "#") || lastToken.type === "colon") return false;
+		for (let i = 0; i < trimmed.length; i++) {
+			const val = trimmed[i];
+			if (val.type === "number" || val.type === "dimension") return false;
+			if (val.type === "delim") {
+				if (val.value === "#") return false;
+				if (val.value === "." && (i + 1 >= trimmed.length || trimmed[i + 1].type !== "ident")) return false;
+			}
+			if (val.type === "colon" && i + 1 < trimmed.length) {
+				const nextVal = trimmed[i + 1];
+				if (nextVal.type !== "ident" && nextVal.type !== "function" && nextVal.type !== "colon") return false;
+			}
+		}
+		return true;
+	}
+	createStyleRule(prelude, blockContents, isNested = false, allowRelative = isNested, location) {
+		const { declarations, nestedRules } = splitLeadingDeclarations(blockContents);
+		let selectorText = "";
+		let selectorAST = null;
+		if (isNested) {
+			selectorText = this.normalizeNestedSelector(prelude);
+			if (selectorText === "") return null;
+			selectorAST = Parser.parseSelectorAST(selectorText, {
+				declaredNamespaces: this.declaredNamespaces,
+				allowRelative: true,
+				allowVendorPseudos: Boolean(this.options.allowVendorPseudos),
+				allowUnknownPseudos: Boolean(this.options.allowUnknownPseudos)
+			});
+			if (selectorAST === null) return null;
+		} else {
+			if (!this.isValidSelector(prelude)) return null;
+			try {
+				selectorAST = new SelectorParser(prelude, {
+					declaredNamespaces: this.declaredNamespaces,
+					allowRelative,
+					allowVendorPseudos: Boolean(this.options.allowVendorPseudos),
+					allowUnknownPseudos: Boolean(this.options.allowUnknownPseudos)
+				}).parse();
+			} catch {
+				return null;
+			}
+			selectorText = serialize(prelude).trim();
+		}
+		const rule = new CSSStyleRule(selectorText, declarations, nestedRules, parseRuleInBlock, selectorAST);
+		if (location) rule._location = location;
+		return rule;
+	}
+	static #consumeSelectorTokens(parser) {
+		const prelude = [];
+		while (true) {
+			const next = parser.nextToken;
+			if (next.type === "EOF") break;
+			if (next.type === "{" || next.type === "}" || next.type === "at-keyword") return null;
+			prelude.push(parser.consumeComponentValue());
+		}
+		return prelude;
+	}
+	static parseSelectorAST(text, declaredNamespacesOrOptions, allowRelative = false, allowVendorPseudos = false) {
+		const isOptionsObj = declaredNamespacesOrOptions && !(declaredNamespacesOrOptions instanceof Set);
+		const declaredNamespaces = isOptionsObj ? declaredNamespacesOrOptions.declaredNamespaces : declaredNamespacesOrOptions;
+		const isRelative = isOptionsObj ? declaredNamespacesOrOptions.allowRelative ?? false : allowRelative;
+		const vendorPseudos = isOptionsObj ? declaredNamespacesOrOptions.allowVendorPseudos ?? false : allowVendorPseudos;
+		const unknownPseudos = isOptionsObj ? declaredNamespacesOrOptions.allowUnknownPseudos ?? false : false;
+		const parser = new Parser(tokenize(text), {
+			allowVendorPseudos: vendorPseudos,
+			allowUnknownPseudos: unknownPseudos
+		});
+		const prelude = Parser.#consumeSelectorTokens(parser);
+		if (prelude === null) return null;
+		try {
+			return new SelectorParser(prelude, {
+				allowRelative: isRelative,
+				declaredNamespaces,
+				allowVendorPseudos: vendorPseudos,
+				allowUnknownPseudos: unknownPseudos
+			}).parse();
+		} catch {
+			return null;
+		}
+	}
+	normalizeNestedSelector(prelude) {
+		const segments = splitComponentValuesByComma(prelude, true);
+		if (segments.length === 1 && segments[0].length === 0) return "";
+		const hasAmpersand = (values) => values.some((val) => val.type === "delim" && val.value === "&" || val.type === "simple-block" && hasAmpersand(val.value) || val.type === "function" && hasAmpersand(val.value));
+		const normalizedSegments = [];
+		for (const segment of segments) {
+			const trimmed = trimComponentValues(segment);
+			if (trimmed.length === 0) return "";
+			const firstNode = trimmed[0];
+			const secondNode = trimmed[1];
+			const startsWithCombinator = firstNode.type === "delim" && [
+				">",
+				"+",
+				"~"
+			].includes(firstNode.value) || firstNode.type === "delim" && firstNode.value === "|" && secondNode?.type === "delim" && secondNode.value === "|";
+			const serialized = serialize(trimmed);
+			normalizedSegments.push(startsWithCombinator || !hasAmpersand(trimmed) ? `& ${serialized}` : serialized);
+		}
+		return normalizedSegments.join(", ");
+	}
+	/** @internal */
+	consumeBlock(startToken) {
+		const block = {
+			type: "simple-block",
+			associatedToken: startToken,
+			value: []
+		};
+		const mirror = getMirrorToken(startToken.type);
+		while (true) {
+			const next = this.nextToken;
+			if (next.type === mirror) {
+				block.endIndex = next.endIndex ?? next.startIndex;
+				block.isClosed = true;
+				this.discardToken();
+				return block;
+			} else if (next.type === "EOF") {
+				block.endIndex = next.startIndex;
+				block.isClosed = false;
+				this.reportError("Unexpected EOF in block", next);
+				return block;
+			} else block.value.push(this.consumeComponentValue());
+		}
+	}
+	consumeFunction(nameToken) {
+		const func = {
+			type: "function",
+			name: nameToken.value,
+			value: []
+		};
+		while (true) {
+			const next = this.nextToken;
+			if (next.type === ")") {
+				this.discardToken();
+				return func;
+			} else if (next.type === "EOF") {
+				this.reportError("Unexpected EOF in function", next);
+				return func;
+			} else func.value.push(this.consumeComponentValue());
+		}
+	}
+	consumeComponentValue() {
+		const token = this.consumeToken();
+		if (token.type === "{" || token.type === "[" || token.type === "(") return this.consumeBlock(token);
+		if (token.type === "function") return this.consumeFunction(token);
+		return token;
+	}
+	ensureEOF() {
+		this.skipWhitespace();
+		if (this.nextToken.type !== "EOF") throw new DOMException("Syntax error", "SyntaxError");
+	}
+	static parseSelector(text) {
+		const prelude = Parser.#consumeSelectorTokens(new Parser(tokenize(text)));
+		if (prelude === null) return null;
+		return serialize(prelude).trim() || null;
+	}
+	static parseRuleText(text) {
+		const parser = new Parser(tokenize(text), { source: text });
+		const rule = parser.consumeRule();
+		if (!rule) throw new DOMException("Syntax error", "SyntaxError");
+		parser.ensureEOF();
+		return rule;
+	}
+	static parseStyleSheetText(text) {
+		return new Parser(tokenize(text), { source: text }).consumeListOfRules(true);
+	}
+};
+function parseRuleInBlockText(text, nested = true, inScope = false) {
+	const parser = new Parser(tokenize(`{ ${text} }`));
+	if (inScope) parser.scopeContextDepth = 1;
+	const block = parser.consumeBlock(parser.consumeToken());
+	const contents = parser.consumeBlockContents(new ArrayComponentValueStream(block.value), inScope ? true : nested, inScope ? false : nested, inScope);
+	if (contents.length !== 1) throw new DOMException("Syntax error", "SyntaxError");
+	return contents[0];
+}
+function parseRuleInScopeBlockText(text) {
+	return parseRuleInBlockText(text, true, true);
+}
+function isValidVarArg(func) {
+	if ((func.name || ("value" in func && typeof func.value === "string" ? func.value : "")).toLowerCase() !== "var" || !Array.isArray(func.value)) return true;
+	const args = func.value;
+	const commaIndex = args.findIndex((t) => t.type === "comma");
+	const nameTokens = (commaIndex !== -1 ? args.slice(0, commaIndex) : args).filter((t) => t.type !== "whitespace" && t.type !== "comment");
+	if (nameTokens.length === 0) return false;
+	if (nameTokens.length === 1 && nameTokens[0].type === "simple-block" && nameTokens[0].associatedToken?.type === "{") return nameTokens[0].value.some((t) => t.type !== "whitespace" && t.type !== "comment");
+	return !nameTokens.some((t) => t.type === "simple-block" && t.associatedToken?.type === "{");
+}
+function validateDeclarationValue(values, isTopLevel = true, isCustomProperty = false) {
+	for (const v of values) {
+		if (v.type === "bad-string" || v.type === "bad-url" || v.type === ")" || v.type === "]" || v.type === "}") return false;
+		if (isTopLevel && (v.type === "semicolon" || v.type === "delim" && v.value === "!")) return false;
+		if (v.type === "simple-block") {
+			if (!validateDeclarationValue(v.value, false, isCustomProperty)) return false;
+		} else if (v.type === "function") {
+			const func = v;
+			if (!isCustomProperty && !isValidVarArg(func)) return false;
+			if (Array.isArray(func.value) && !validateDeclarationValue(func.value, false, isCustomProperty)) return false;
+		}
+	}
+	return true;
+}
+/**
+* Parses a single rule from a string.
+* 
+* @note We recommend a more ergonomic entry point like `CSS.parseRule` 
+* or `CSS.parseRuleSync` for standard usage.
+*/
+function parseRule(text) {
+	return Parser.parseRuleText(text);
+}
+function parseRuleInBlock(text, nested = true) {
+	return parseRuleInBlockText(text, nested);
+}
+function parseRuleInScopeBlock(text) {
+	return parseRuleInScopeBlockText(text);
+}
+function assembleUnicodeRanges(values) {
+	const result = [];
+	let i = 0;
+	while (i < values.length && (values[i].type === "whitespace" || values[i].type === "comment")) i++;
+	if (i >= values.length) return null;
+	while (i < values.length) {
+		const v = values[i];
+		if (v.type === "unicode-range") {
+			const tok = v;
+			const start = tok.unicodeRangeStart ?? parseInt(tok.value.slice(2).split("-")[0], 16);
+			const end = tok.unicodeRangeEnd ?? (tok.value.includes("-") ? parseInt(tok.value.split("-")[1], 16) : start);
+			if (start > 1114111 || end > 1114111 || start > end) return null;
+			result.push(v);
+			i++;
+		} else if (v.type === "ident" && (v.value.toLowerCase() === "u" || v.value.toLowerCase().startsWith("u+"))) {
+			let text = "";
+			if (v.value.toLowerCase() === "u") {
+				i++;
+				while (i < values.length && values[i].type === "comment") i++;
+				let hasPlus = false;
+				if (i < values.length && values[i].type === "delim" && values[i].value === "+") {
+					hasPlus = true;
+					i++;
+					while (i < values.length && values[i].type === "comment") i++;
+				} else if (i < values.length && (values[i].type === "number" || values[i].type === "dimension") && values[i].sign === "+") hasPlus = true;
+				if (hasPlus) {
+					let hexPart = "";
+					while (i < values.length) {
+						const t = values[i];
+						if (t.type === "dimension") {
+							const signStr = t.sign === "-" ? "-" : "";
+							hexPart += signStr + Math.abs(t.value).toString(16) + (t.unit || "");
+							i++;
+						} else if (t.type === "number") {
+							const signStr = t.sign === "-" ? "-" : "";
+							hexPart += signStr + Math.abs(t.value).toString(16);
+							i++;
+						} else if (t.type === "ident" || t.type === "delim" && ["?", "-"].includes(String(t.value))) {
+							hexPart += String(t.value);
+							i++;
+						} else if (t.type === "comment") i++;
+						else break;
+					}
+					text = `u+${hexPart}`;
+				} else return null;
+			} else {
+				text = v.value;
+				i++;
+				while (i < values.length && values[i].type === "delim" && values[i].value === "?") {
+					text += "?";
+					i++;
+				}
+			}
+			const match1 = /^u\+([0-9a-f]{1,6})(-([0-9a-f]{1,6}))?$/i.exec(text);
+			if (match1) {
+				const startHex = match1[1];
+				const endHex = match1[3];
+				const startNum = parseInt(startHex, 16);
+				if (startNum > 1114111) return null;
+				if (endHex !== void 0) {
+					const endNum = parseInt(endHex, 16);
+					if (endNum > 1114111 || endNum < startNum) return null;
+					result.push({
+						type: "unicode-range",
+						value: `U+${startNum.toString(16).toUpperCase()}-${endNum.toString(16).toUpperCase()}`
+					});
+				} else result.push({
+					type: "unicode-range",
+					value: `U+${startNum.toString(16).toUpperCase()}`
 				});
-			}.call(this, i));
-		}
-		
-		// Update length property
-		Object.defineProperty(this, 'length', {
-			get: function() {
-				return this.cssRules.length;
-			},
-			enumerable: false,
-			configurable: true
-		});
-	};
-
-
-
-
-
-	//.CommonJS
-	CSSKeyframesRule.CSSKeyframesRule = CSSOM.CSSKeyframesRule;
-	///CommonJS
-	return CSSKeyframesRule;
-}
-
-var CSSValueExpression = {};
-
-var CSSValue = {};
-
-var hasRequiredCSSValue;
-
-function requireCSSValue () {
-	if (hasRequiredCSSValue) return CSSValue;
-	hasRequiredCSSValue = 1;
-	//.CommonJS
-	var CSSOM = {};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSValue
-	 *
-	 * TODO: add if needed
-	 */
-	CSSOM.CSSValue = function CSSValue() {
-	};
-
-	CSSOM.CSSValue.prototype = {
-		constructor: CSSOM.CSSValue,
-
-		// @see: http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSValue
-		set cssText(text) {
-			var name = this._getConstructorName();
-
-			throw new Error('DOMException: property "cssText" of "' + name + '" is readonly and can not be replaced with "' + text + '"!');
-		},
-
-		get cssText() {
-			var name = this._getConstructorName();
-
-			throw new Error('getter "cssText" of "' + name + '" is not implemented!');
-		},
-
-		_getConstructorName: function() {
-			var s = this.constructor.toString(),
-					c = s.match(/function\s([^\(]+)/),
-					name = c[1];
-
-			return name;
-		}
-	};
-
-
-	//.CommonJS
-	CSSValue.CSSValue = CSSOM.CSSValue;
-	///CommonJS
-	return CSSValue;
-}
-
-var hasRequiredCSSValueExpression;
-
-function requireCSSValueExpression () {
-	if (hasRequiredCSSValueExpression) return CSSValueExpression;
-	hasRequiredCSSValueExpression = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSValue: requireCSSValue().CSSValue
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see http://msdn.microsoft.com/en-us/library/ms537634(v=vs.85).aspx
-	 *
-	 */
-	CSSOM.CSSValueExpression = function CSSValueExpression(token, idx) {
-		this._token = token;
-		this._idx = idx;
-	};
-
-	CSSOM.CSSValueExpression.prototype = Object.create(CSSOM.CSSValue.prototype);
-	CSSOM.CSSValueExpression.prototype.constructor = CSSOM.CSSValueExpression;
-
-	Object.setPrototypeOf(CSSOM.CSSValueExpression, CSSOM.CSSValue);
-
-	/**
-	 * parse css expression() value
-	 *
-	 * @return {Object}
-	 *         - error:
-	 *         or
-	 *         - idx:
-	 *         - expression:
-	 *
-	 * Example:
-	 *
-	 * .selector {
-	 *		zoom: expression(documentElement.clientWidth > 1000 ? '1000px' : 'auto');
-	 * }
-	 */
-	CSSOM.CSSValueExpression.prototype.parse = function() {
-		var token = this._token,
-				idx = this._idx;
-
-		var character = '',
-				expression = '',
-				error = '',
-				info,
-				paren = [];
-
-
-		for (; ; ++idx) {
-			character = token.charAt(idx);
-
-			// end of token
-			if (character === '') {
-				error = 'css expression error: unfinished expression!';
-				break;
-			}
-
-			switch(character) {
-				case '(':
-					paren.push(character);
-					expression += character;
-					break;
-
-				case ')':
-					paren.pop(character);
-					expression += character;
-					break;
-
-				case '/':
-					if ((info = this._parseJSComment(token, idx))) { // comment?
-						if (info.error) {
-							error = 'css expression error: unfinished comment in expression!';
-						} else {
-							idx = info.idx;
-							// ignore the comment
-						}
-					} else if ((info = this._parseJSRexExp(token, idx))) { // regexp
-						idx = info.idx;
-						expression += info.text;
-					} else { // other
-						expression += character;
-					}
-					break;
-
-				case "'":
-				case '"':
-					info = this._parseJSString(token, idx, character);
-					if (info) { // string
-						idx = info.idx;
-						expression += info.text;
-					} else {
-						expression += character;
-					}
-					break;
-
-				default:
-					expression += character;
-					break;
-			}
-
-			if (error) {
-				break;
-			}
-
-			// end of expression
-			if (paren.length === 0) {
-				break;
-			}
-		}
-
-		var ret;
-		if (error) {
-			ret = {
-				error: error
-			};
-		} else {
-			ret = {
-				idx: idx,
-				expression: expression
-			};
-		}
-
-		return ret;
-	};
-
-
-	/**
-	 *
-	 * @return {Object|false}
-	 *          - idx:
-	 *          - text:
-	 *          or
-	 *          - error:
-	 *          or
-	 *          false
-	 *
-	 */
-	CSSOM.CSSValueExpression.prototype._parseJSComment = function(token, idx) {
-		var nextChar = token.charAt(idx + 1),
-				text;
-
-		if (nextChar === '/' || nextChar === '*') {
-			var startIdx = idx,
-					endIdx,
-					commentEndChar;
-
-			if (nextChar === '/') { // line comment
-				commentEndChar = '\n';
-			} else if (nextChar === '*') { // block comment
-				commentEndChar = '*/';
-			}
-
-			endIdx = token.indexOf(commentEndChar, startIdx + 1 + 1);
-			if (endIdx !== -1) {
-				endIdx = endIdx + commentEndChar.length - 1;
-				text = token.substring(idx, endIdx + 1);
-				return {
-					idx: endIdx,
-					text: text
-				};
 			} else {
-				var error = 'css expression error: unfinished comment in expression!';
-				return {
-					error: error
-				};
+				const match2 = /^u\+([0-9a-f]{0,5})(\?{1,6})$/i.exec(text);
+				if (match2 && match2[1].length + match2[2].length <= 6) {
+					const prefix = match2[1];
+					const q = match2[2];
+					const startHex = prefix + "0".repeat(q.length);
+					const endHex = prefix + "F".repeat(q.length);
+					const startNum = parseInt(startHex, 16);
+					const endNum = parseInt(endHex, 16);
+					if (startNum > 1114111 || endNum > 1114111) return null;
+					result.push({
+						type: "unicode-range",
+						value: `U+${startNum.toString(16).toUpperCase()}-${endNum.toString(16).toUpperCase()}`
+					});
+				} else return null;
 			}
-		} else {
-			return false;
-		}
-	};
-
-
-	/**
-	 *
-	 * @return {Object|false}
-	 *					- idx:
-	 *					- text:
-	 *					or 
-	 *					false
-	 *
-	 */
-	CSSOM.CSSValueExpression.prototype._parseJSString = function(token, idx, sep) {
-		var endIdx = this._findMatchedIdx(token, idx, sep),
-				text;
-
-		if (endIdx === -1) {
-			return false;
-		} else {
-			text = token.substring(idx, endIdx + sep.length);
-
-			return {
-				idx: endIdx,
-				text: text
-			};
-		}
-	};
-
-
-	/**
-	 * parse regexp in css expression
-	 *
-	 * @return {Object|false}
-	 *				- idx:
-	 *				- regExp:
-	 *				or 
-	 *				false
-	 */
-
-	/*
-
-	all legal RegExp
-	 
-	/a/
-	(/a/)
-	[/a/]
-	[12, /a/]
-
-	!/a/
-
-	+/a/
-	-/a/
-	* /a/
-	/ /a/
-	%/a/
-
-	===/a/
-	!==/a/
-	==/a/
-	!=/a/
-	>/a/
-	>=/a/
-	</a/
-	<=/a/
-
-	&/a/
-	|/a/
-	^/a/
-	~/a/
-	<</a/
-	>>/a/
-	>>>/a/
-
-	&&/a/
-	||/a/
-	?/a/
-	=/a/
-	,/a/
-
-			delete /a/
-					in /a/
-	instanceof /a/
-					new /a/
-			typeof /a/
-				void /a/
-
-	*/
-	CSSOM.CSSValueExpression.prototype._parseJSRexExp = function(token, idx) {
-		var before = token.substring(0, idx).replace(/\s+$/, ""),
-				legalRegx = [
-					/^$/,
-					/\($/,
-					/\[$/,
-					/\!$/,
-					/\+$/,
-					/\-$/,
-					/\*$/,
-					/\/\s+/,
-					/\%$/,
-					/\=$/,
-					/\>$/,
-					/<$/,
-					/\&$/,
-					/\|$/,
-					/\^$/,
-					/\~$/,
-					/\?$/,
-					/\,$/,
-					/delete$/,
-					/in$/,
-					/instanceof$/,
-					/new$/,
-					/typeof$/,
-					/void$/
-				];
-
-		var isLegal = legalRegx.some(function(reg) {
-			return reg.test(before);
-		});
-
-		if (!isLegal) {
-			return false;
-		} else {
-			var sep = '/';
-
-			// same logic as string
-			return this._parseJSString(token, idx, sep);
-		}
-	};
-
-
-	/**
-	 *
-	 * find next sep(same line) index in `token`
-	 *
-	 * @return {Number}
-	 *
-	 */
-	CSSOM.CSSValueExpression.prototype._findMatchedIdx = function(token, idx, sep) {
-		var startIdx = idx,
-				endIdx;
-
-		var NOT_FOUND = -1;
-
-		while(true) {
-			endIdx = token.indexOf(sep, startIdx + 1);
-
-			if (endIdx === -1) { // not found
-				endIdx = NOT_FOUND;
-				break;
-			} else {
-				var text = token.substring(idx + 1, endIdx),
-						matched = text.match(/\\+$/);
-				if (!matched || matched[0] % 2 === 0) { // not escaped
-					break;
-				} else {
-					startIdx = endIdx;
-				}
-			}
-		}
-
-		// boundary must be in the same line(js sting or regexp)
-		var nextNewLineIdx = token.indexOf('\n', idx + 1);
-		if (nextNewLineIdx < endIdx) {
-			endIdx = NOT_FOUND;
-		}
-
-
-		return endIdx;
-	};
-
-
-
-
-	//.CommonJS
-	CSSValueExpression.CSSValueExpression = CSSOM.CSSValueExpression;
-	///CommonJS
-	return CSSValueExpression;
-}
-
-var CSSDocumentRule = {};
-
-var MatcherList = {};
-
-var hasRequiredMatcherList;
-
-function requireMatcherList () {
-	if (hasRequiredMatcherList) return MatcherList;
-	hasRequiredMatcherList = 1;
-	//.CommonJS
-	var CSSOM = {};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://developer.mozilla.org/en/CSS/@-moz-document
-	 */
-	CSSOM.MatcherList = function MatcherList(){
-	    this.length = 0;
-	};
-
-	CSSOM.MatcherList.prototype = {
-
-	    constructor: CSSOM.MatcherList,
-
-	    /**
-	     * @return {string}
-	     */
-	    get matcherText() {
-	        return Array.prototype.join.call(this, ", ");
-	    },
-
-	    /**
-	     * @param {string} value
-	     */
-	    set matcherText(value) {
-	        // just a temporary solution, actually it may be wrong by just split the value with ',', because a url can include ','.
-	        var values = value.split(",");
-	        var length = this.length = values.length;
-	        for (var i=0; i<length; i++) {
-	            this[i] = values[i].trim();
-	        }
-	    },
-
-	    /**
-	     * @param {string} matcher
-	     */
-	    appendMatcher: function(matcher) {
-	        if (Array.prototype.indexOf.call(this, matcher) === -1) {
-	            this[this.length] = matcher;
-	            this.length++;
-	        }
-	    },
-
-	    /**
-	     * @param {string} matcher
-	     */
-	    deleteMatcher: function(matcher) {
-	        var index = Array.prototype.indexOf.call(this, matcher);
-	        if (index !== -1) {
-	            Array.prototype.splice.call(this, index, 1);
-	        }
-	    }
-
-	};
-
-
-	//.CommonJS
-	MatcherList.MatcherList = CSSOM.MatcherList;
-	///CommonJS
-	return MatcherList;
-}
-
-var hasRequiredCSSDocumentRule;
-
-function requireCSSDocumentRule () {
-	if (hasRequiredCSSDocumentRule) return CSSDocumentRule;
-	hasRequiredCSSDocumentRule = 1;
-	//.CommonJS
-	var CSSOM = {
-	    CSSRule: requireCSSRule().CSSRule,
-	    CSSRuleList: requireCSSRuleList().CSSRuleList,
-	    MatcherList: requireMatcherList().MatcherList
-	};
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://developer.mozilla.org/en/CSS/@-moz-document
-	 * @deprecated This rule is a non-standard Mozilla-specific extension and is not part of any official CSS specification.
-	 */
-	CSSOM.CSSDocumentRule = function CSSDocumentRule() {
-	    CSSOM.CSSRule.call(this);
-	    this.matcher = new CSSOM.MatcherList();
-	    this.cssRules = new CSSOM.CSSRuleList();
-	};
-
-	CSSOM.CSSDocumentRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSDocumentRule.prototype.constructor = CSSOM.CSSDocumentRule;
-
-	Object.setPrototypeOf(CSSOM.CSSDocumentRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSDocumentRule.prototype, "type", {
-		value: 10,
-		writable: false
-	});
-
-	//FIXME
-	//CSSOM.CSSDocumentRule.prototype.insertRule = CSSStyleSheet.prototype.insertRule;
-	//CSSOM.CSSDocumentRule.prototype.deleteRule = CSSStyleSheet.prototype.deleteRule;
-
-	Object.defineProperty(CSSOM.CSSDocumentRule.prototype, "cssText", {
-	  get: function() {
-	    var cssTexts = [];
-	    for (var i=0, length=this.cssRules.length; i < length; i++) {
-	        cssTexts.push(this.cssRules[i].cssText);
-	    }
-	    return "@-moz-document " + this.matcher.matcherText + " {" + (cssTexts.length ? "\n  " + cssTexts.join("\n  ") : "") + "\n}";
-	  }
-	});
-
-
-	//.CommonJS
-	CSSDocumentRule.CSSDocumentRule = CSSOM.CSSDocumentRule;
-	///CommonJS
-	return CSSDocumentRule;
-}
-
-var CSSScopeRule = {};
-
-var hasRequiredCSSScopeRule;
-
-function requireCSSScopeRule () {
-	if (hasRequiredCSSScopeRule) return CSSScopeRule;
-	hasRequiredCSSScopeRule = 1;
-	//.CommonJS
-	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	  CSSRuleList: requireCSSRuleList().CSSRuleList,
-	  CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-	};
-	///CommonJS
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-cascade-6/#cssscoperule
-	 */
-	CSSOM.CSSScopeRule = function CSSScopeRule() {
-	  CSSOM.CSSGroupingRule.call(this);
-	  this.__start = null;
-	  this.__end = null;
-	};
-
-	CSSOM.CSSScopeRule.prototype = Object.create(CSSOM.CSSGroupingRule.prototype);
-	CSSOM.CSSScopeRule.prototype.constructor = CSSOM.CSSScopeRule;
-
-	Object.setPrototypeOf(CSSOM.CSSScopeRule, CSSOM.CSSGroupingRule);
-
-	Object.defineProperties(CSSOM.CSSScopeRule.prototype, {
-	  type: {
-	    value: 0,
-	    writable: false,
-	  },
-	  cssText: {
-	    get: function () {
-				var values = "";
-				var valuesArr = [" {"];
-	      if (this.cssRules.length) {
-	        valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-	          if (rule.cssText !== "") {
-	            acc.push(rule.cssText);
-	          }
-	          return acc;
-	        }, []).join("\n  "));
-	      }
-	      values = valuesArr.join("\n  ") + "\n}";
-	      return "@scope" + (this.start ? " (" + this.start + ")" : "") + (this.end ? " to (" + this.end + ")" : "") + values;
-	    },
-	    configurable: true,
-	    enumerable: true,
-	  },
-	  start: {
-	    get: function () {
-	      return this.__start;
-	    }
-	  },
-	  end: {
-	    get: function () {
-	      return this.__end;
-	    }
-	  }
-	});
-
-	//.CommonJS
-	CSSScopeRule.CSSScopeRule = CSSOM.CSSScopeRule;
-	///CommonJS
-	return CSSScopeRule;
-}
-
-var CSSLayerBlockRule = {};
-
-var hasRequiredCSSLayerBlockRule;
-
-function requireCSSLayerBlockRule () {
-	if (hasRequiredCSSLayerBlockRule) return CSSLayerBlockRule;
-	hasRequiredCSSLayerBlockRule = 1;
-	//.CommonJS
-	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	  CSSRuleList: requireCSSRuleList().CSSRuleList,
-	  CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-	};
-	///CommonJS
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-cascade-5/#csslayerblockrule
-	 */
-	CSSOM.CSSLayerBlockRule = function CSSLayerBlockRule() {
-	  CSSOM.CSSGroupingRule.call(this);
-	  this.name = "";
-	};
-
-	CSSOM.CSSLayerBlockRule.prototype = Object.create(CSSOM.CSSGroupingRule.prototype);
-	CSSOM.CSSLayerBlockRule.prototype.constructor = CSSOM.CSSLayerBlockRule;
-
-	Object.setPrototypeOf(CSSOM.CSSLayerBlockRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSLayerBlockRule.prototype, "type", {
-		value: 18,
-		writable: false
-	});
-
-	Object.defineProperties(CSSOM.CSSLayerBlockRule.prototype, {
-	  cssText: {
-	    get: function () {
-				var values = "";
-				var valuesArr = [" {"];
-	      if (this.cssRules.length) {
-	        valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-	          if (rule.cssText !== "") {
-	            acc.push(rule.cssText);
-	          }
-	          return acc;
-	        }, []).join("\n  "));
-	      }
-	      values = valuesArr.join("\n  ") + "\n}";
-	      return "@layer" + (this.name ? " " + this.name : "") + values;
-	    }
-	  },
-	});
-
-	//.CommonJS
-	CSSLayerBlockRule.CSSLayerBlockRule = CSSOM.CSSLayerBlockRule;
-	///CommonJS
-	return CSSLayerBlockRule;
-}
-
-var CSSLayerStatementRule = {};
-
-var hasRequiredCSSLayerStatementRule;
-
-function requireCSSLayerStatementRule () {
-	if (hasRequiredCSSLayerStatementRule) return CSSLayerStatementRule;
-	hasRequiredCSSLayerStatementRule = 1;
-	//.CommonJS
-	var CSSOM = {
-	  CSSRule: requireCSSRule().CSSRule,
-	};
-	///CommonJS
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/css-cascade-5/#csslayerstatementrule
-	 */
-	CSSOM.CSSLayerStatementRule = function CSSLayerStatementRule() {
-	  CSSOM.CSSRule.call(this);
-	  this.nameList = [];
-	};
-
-	CSSOM.CSSLayerStatementRule.prototype = Object.create(CSSOM.CSSRule.prototype);
-	CSSOM.CSSLayerStatementRule.prototype.constructor = CSSOM.CSSLayerStatementRule;
-
-	Object.setPrototypeOf(CSSOM.CSSLayerStatementRule, CSSOM.CSSRule);
-
-	Object.defineProperty(CSSOM.CSSLayerStatementRule.prototype, "type", {
-		value: 0,
-		writable: false
-	});
-
-	Object.defineProperties(CSSOM.CSSLayerStatementRule.prototype, {
-	  cssText: {
-	    get: function () {
-	      return "@layer " + this.nameList.join(", ") + ";";
-	    }
-	  },
-	});
-
-	//.CommonJS
-	CSSLayerStatementRule.CSSLayerStatementRule = CSSOM.CSSLayerStatementRule;
-	///CommonJS
-	return CSSLayerStatementRule;
-}
-
-var CSSPageRule = {};
-
-var hasRequiredCSSPageRule;
-
-function requireCSSPageRule () {
-	if (hasRequiredCSSPageRule) return CSSPageRule;
-	hasRequiredCSSPageRule = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
-		CSSRule: requireCSSRule().CSSRule,
-		CSSRuleList: requireCSSRuleList().CSSRuleList,
-		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-	};
-	var regexPatterns = requireRegexPatterns().regexPatterns;
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
+		} else return null;
+		while (i < values.length && (values[i].type === "whitespace" || values[i].type === "comment")) i++;
+		if (i >= values.length || values[i].type === "EOF") break;
+		if (values[i].type === "comma" || values[i].type === "delim" && values[i].value === ",") {
+			result.push({
+				type: "comma",
+				value: ","
+			});
+			i++;
+			while (i < values.length && (values[i].type === "whitespace" || values[i].type === "comment")) i++;
+			if (i >= values.length) return null;
+		} else return null;
 	}
-	///CommonJS
-
-
-	/**
-	 * @constructor
-	 * @see https://drafts.csswg.org/cssom/#the-csspagerule-interface
-	 */
-	CSSOM.CSSPageRule = function CSSPageRule() {
-		CSSOM.CSSGroupingRule.call(this);
-		this.__style = new CSSOM.CSSStyleDeclaration();
-		this.__style.parentRule = this;
-	};
-
-	CSSOM.CSSPageRule.prototype = Object.create(CSSOM.CSSGroupingRule.prototype);
-	CSSOM.CSSPageRule.prototype.constructor = CSSOM.CSSPageRule;
-
-	Object.setPrototypeOf(CSSOM.CSSPageRule, CSSOM.CSSGroupingRule);
-
-	Object.defineProperty(CSSOM.CSSPageRule.prototype, "type", {
-		value: 6,
-		writable: false
-	});
-
-	Object.defineProperty(CSSOM.CSSPageRule.prototype, "selectorText", {
-	    get: function() {
-	        return this.__selectorText;	
-	    },
-	    set: function(value) {
-	        if (typeof value === "string") {
-	            var trimmedValue = value.trim();
-	            
-	            // Empty selector is valid for @page
-	            if (trimmedValue === '') {
-	                this.__selectorText = '';
-	                return;
-	            }
-	            
-				var atPageRuleSelectorRegExp = regexPatterns.atPageRuleSelectorRegExp;
-				var cssCustomIdentifierRegExp = regexPatterns.cssCustomIdentifierRegExp;
-	            var match = trimmedValue.match(atPageRuleSelectorRegExp);
-	            if (match) {
-					var pageName = match[1] || '';
-	                var pseudoPages = match[2] || '';
-
-					// Validate page name if present
-					if (pageName) {
-						// Page name can be an identifier or a string
-						if (!cssCustomIdentifierRegExp.test(pageName)) {
-							return;
-						}
-					}
-	                
-	                // Validate pseudo-pages if present
-	                if (pseudoPages) {
-	                    var pseudos = pseudoPages.split(':').filter(function(p) { return p; });
-	                    var validPseudos = ['left', 'right', 'first', 'blank'];
-	                    var allValid = true;
-	                    for (var j = 0; j < pseudos.length; j++) {
-	                        if (validPseudos.indexOf(pseudos[j].toLowerCase()) === -1) {
-	                            allValid = false;
-	                            break;
-	                        }
-	                    }
-	                    
-	                    if (!allValid) {
-	                        return; // Invalid pseudo-page, do nothing
-	                    }
-	                }
-	                
-					this.__selectorText = pageName + pseudoPages.toLowerCase();
-	            }
-	        }
-	    }
-	});
-
-	Object.defineProperty(CSSOM.CSSPageRule.prototype, "style", {
-		get: function() {
-			return this.__style;	
+	return result;
+}
+function isValidUnicodeRangeValue(values) {
+	return assembleUnicodeRanges(values) !== null;
+}
+function parseStyleAttribute(tokens) {
+	return new Parser(tokens).parseStyleAttribute();
+}
+function consumeRule(tokens) {
+	return new Parser(tokens).consumeRule();
+}
+function consumeListOfRules(tokens, topLevel, options) {
+	return new Parser(tokens, options).consumeListOfRules(topLevel);
+}
+function parseComponentValues(tokens, errors) {
+	const p = new Parser(tokens);
+	const res = p.parseComponentValues();
+	return res;
+}
+Parser.parseSelector;
+const parseSelectorAST = Parser.parseSelectorAST;
+function validateCustomPropertyValue(values) {
+	return validateDeclarationValue(values, true, true);
+}
+/**
+* Parses a CSS stylesheet string into a standard `CSSStyleSheet` instance,
+* populating 1-based `rule.location` offsets on all parsed rules.
+*/
+function parse$1(css, options) {
+	return new Parser(tokenize(css), {
+		source: css,
+		...options
+	}).parseStyleSheet();
+}
+CSSGroupingRule._parser = {
+	parseRule,
+	parseRuleInBlock,
+	parseRuleInScopeBlock
+};
+// src/CSSStyleDeclaration.ts
+/**
+* @license
+* Copyright 2026 Google LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const CSS_WIDE_KEYWORDS = /* @__PURE__ */ new Set("inherit,initial,unset,revert,revert-layer".split(","));
+const LOGICAL_SHORTHANDS = /* @__PURE__ */ new Set("margin,padding,inset,scroll-margin,scroll-padding,border-width,border-style,border-color".split(","));
+function createStyleProxy(target) {
+	return new Proxy(target, {
+		get(t, prop) {
+			if (typeof prop === "string") {
+				if (!isNaN(Number(prop))) {
+					const index = Number(prop);
+					const decl = t._declarations[index];
+					return decl ? decl.name : void 0;
+				}
+				if (prop in t && (typeof t[prop] !== "undefined" || prop.startsWith("_"))) return t[prop];
+				if (prop.startsWith("--")) return t._allowCustomProperties ? t.getPropertyValue(prop) : void 0;
+				const isCustomProp = prop.startsWith("--");
+				let cssProp = prop;
+				if (!isCustomProp) {
+					if (prop === "cssFloat") cssProp = "float";
+					else cssProp = camelToDashed(prop);
+				}
+				if (t._isPropertySupported(cssProp)) return t.getPropertyValue(cssProp);
+			}
+			return t[prop];
 		},
-		set: function(value) {
-			if (typeof value === "string") {
-				this.__style.cssText = value;
-			} else {
-				this.__style = value;
-			}
-		}
-	});
-
-	Object.defineProperty(CSSOM.CSSPageRule.prototype, "cssText", {
-		get: function() {
-	        var values = "";
-	        if (this.cssRules.length) {
-	            var valuesArr = [" {"];
-	            this.style.cssText && valuesArr.push(this.style.cssText);
-	            valuesArr.push(this.cssRules.reduce(function(acc, rule){ 
-					if (rule.cssText !== "") {
-						acc.push(rule.cssText);
-					}
-					return acc;
-				}, []).join("\n  "));
-	            values = valuesArr.join("\n  ") + "\n}";
-	        } else {
-	            values = " {" + (this.style.cssText ? " " + this.style.cssText : "") + " }";
-	        }
-			return "@page" + (this.selectorText ? " " + this.selectorText : "") + values;
-		}
-	});
-
-	//.CommonJS
-	CSSPageRule.CSSPageRule = CSSOM.CSSPageRule;
-	///CommonJS
-	return CSSPageRule;
-}
-
-var cssstyleTryCatchBlock = {};
-
-var hasRequiredCssstyleTryCatchBlock;
-
-function requireCssstyleTryCatchBlock () {
-	if (hasRequiredCssstyleTryCatchBlock) return cssstyleTryCatchBlock;
-	hasRequiredCssstyleTryCatchBlock = 1;
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
-	}
-	return cssstyleTryCatchBlock;
-}
-
-var hasRequiredParse;
-
-function requireParse () {
-	if (hasRequiredParse) return parse$1;
-	hasRequiredParse = 1;
-	//.CommonJS
-	var CSSOM = {};
-	var regexPatterns = requireRegexPatterns().regexPatterns;
-	///CommonJS
-
-	/**
-	 * Parses a CSS string and returns a `CSSStyleSheet` object representing the parsed stylesheet.
-	 *
-	 * @param {string} token - The CSS string to parse.
-	 * @param {object} [opts] - Optional parsing options.
-	 * @param {object} [opts.globalObject] - An optional global object to prioritize over the window object. Useful on jsdom webplatform tests.
-	 * @param {Element | ProcessingInstruction} [opts.ownerNode] - The owner node of the stylesheet.
-	 * @param {CSSRule} [opts.ownerRule] - The owner rule of the stylesheet.
-	 * @param {CSSOM.CSSStyleSheet} [opts.styleSheet] - Reuse a style sheet instead of creating a new one (e.g. as `parentStyleSheet`)
-	 * @param {CSSOM.CSSRuleList} [opts.cssRules] - Prepare all rules in this list instead of mutating the style sheet continually
-	 * @param {function|boolean} [errorHandler] - Optional error handler function or `true` to use `console.error`.
-	 * @returns {CSSOM.CSSStyleSheet} The parsed `CSSStyleSheet` object.
-	 */
-	CSSOM.parse = function parse(token, opts, errorHandler) {
-		errorHandler = errorHandler === true ? (console && console.error) : errorHandler;
-
-		var i = 0;
-
-		/**
-			"before-selector" or
-			"selector" or
-			"atRule" or
-			"atBlock" or
-			"conditionBlock" or
-			"before-name" or
-			"name" or
-			"before-value" or
-			"value"
-		*/
-		var state = "before-selector";
-
-		var index;
-		var buffer = "";
-		var valueParenthesisDepth = 0;
-		var hasUnmatchedQuoteInSelector = false; // Track if current selector has unmatched quote
-
-		var SIGNIFICANT_WHITESPACE = {
-			"name": true,
-			"before-name": true,
-			"selector": true,
-			"value": true,
-			"value-parenthesis": true,
-			"atRule": true,
-			"importRule-begin": true,
-			"importRule": true,
-			"namespaceRule-begin": true,
-			"namespaceRule": true,
-			"atBlock": true,
-			"containerBlock": true,
-			"conditionBlock": true,
-			"counterStyleBlock": true,
-			"propertyBlock": true,
-			'documentRule-begin': true,
-			"scopeBlock": true,
-			"layerBlock": true,
-			"pageBlock": true
-		};
-
-		var styleSheet;
-		if (opts && opts.styleSheet) {
-			styleSheet = opts.styleSheet;
-		} else {
-			if (opts && opts.globalObject && opts.globalObject.CSSStyleSheet) {
-				styleSheet = new opts.globalObject.CSSStyleSheet();
-			} else {
-				styleSheet = new CSSOM.CSSStyleSheet();
-			}
-			styleSheet.__constructed = false;
-		}
-
-		var topScope;
-		if (opts && opts.cssRules) {
-			topScope = { cssRules: opts.cssRules };
-		} else {
-			topScope = styleSheet;
-		}
-
-		if (opts && opts.ownerNode) {
-			styleSheet.__ownerNode = opts.ownerNode;
-			var ownerNodeMedia = opts.ownerNode.media || (opts.ownerNode.getAttribute && opts.ownerNode.getAttribute("media"));
-			if (ownerNodeMedia) {
-				styleSheet.media.mediaText = ownerNodeMedia;
-			}
-			var ownerNodeTitle = opts.ownerNode.title || (opts.ownerNode.getAttribute && opts.ownerNode.getAttribute("title"));
-			if (ownerNodeTitle) {
-				styleSheet.__title = ownerNodeTitle;
-			}
-		}
-
-		if (opts && opts.ownerRule) {
-			styleSheet.__ownerRule = opts.ownerRule;
-		}
-
-		// @type CSSStyleSheet|CSSMediaRule|CSSContainerRule|CSSSupportsRule|CSSFontFaceRule|CSSKeyframesRule|CSSDocumentRule
-		var currentScope = topScope;
-
-		// @type CSSMediaRule|CSSContainerRule|CSSSupportsRule|CSSKeyframesRule|CSSDocumentRule
-		var parentRule;
-
-		var ancestorRules = [];
-		var prevScope;
-
-		var name, priority = "", styleRule, mediaRule, containerRule, counterStyleRule, propertyRule, supportsRule, importRule, fontFaceRule, keyframesRule, documentRule, hostRule, startingStyleRule, scopeRule, pageRule, layerBlockRule, layerStatementRule, nestedSelectorRule, namespaceRule;
-
-		// Track defined namespace prefixes for validation
-		var definedNamespacePrefixes = {};
-
-		// Track which rules have been added
-		var ruleIdCounter = 0;
-		var addedToParent = {};
-		var addedToTopScope = {};
-		var addedToCurrentScope = {};
-
-		// Helper to get unique ID for tracking rules
-		function getRuleId(rule) {
-			if (!rule.__parseId) {
-				rule.__parseId = ++ruleIdCounter;
-			}
-			return rule.__parseId;
-		}
-
-		// Cache last validation boundary position
-		// to avoid rescanning the entire token string for each at-rule
-		var lastValidationBoundary = 0;
-
-		// Pre-compile validation regexes for common at-rules
-		var validationRegexCache = {};
-		function getValidationRegex(atRuleKey) {
-			if (!validationRegexCache[atRuleKey]) {
-				var sourceRuleRegExp = atRuleKey === "@import" ? forwardImportRuleValidationRegExp : forwardRuleValidationRegExp;
-				validationRegexCache[atRuleKey] = new RegExp(atRuleKey + sourceRuleRegExp.source, sourceRuleRegExp.flags);
-			}
-			return validationRegexCache[atRuleKey];
-		}
-
-		// Import regex patterns from shared module
-		var atKeyframesRegExp = regexPatterns.atKeyframesRegExp;
-		var beforeRulePortionRegExp = regexPatterns.beforeRulePortionRegExp;
-		var beforeRuleValidationRegExp = regexPatterns.beforeRuleValidationRegExp;
-		var forwardRuleValidationRegExp = regexPatterns.forwardRuleValidationRegExp;
-		var forwardImportRuleValidationRegExp = regexPatterns.forwardImportRuleValidationRegExp;
-
-		// Pre-compile regexBefore to avoid creating it on every validateAtRule call
-		var regexBefore = new RegExp(beforeRulePortionRegExp.source, beforeRulePortionRegExp.flags);
-		var forwardRuleClosingBraceRegExp = regexPatterns.forwardRuleClosingBraceRegExp;
-		var forwardRuleSemicolonAndOpeningBraceRegExp = regexPatterns.forwardRuleSemicolonAndOpeningBraceRegExp;
-		var cssCustomIdentifierRegExp = regexPatterns.cssCustomIdentifierRegExp;
-		var startsWithCombinatorRegExp = regexPatterns.startsWithCombinatorRegExp;
-		var atPageRuleSelectorRegExp = regexPatterns.atPageRuleSelectorRegExp;
-		var startsWithHexEscapeRegExp = regexPatterns.startsWithHexEscapeRegExp;
-		var identStartCharRegExp = regexPatterns.identStartCharRegExp;
-		var identCharRegExp = regexPatterns.identCharRegExp;
-		var specialCharsNeedEscapeRegExp = regexPatterns.specialCharsNeedEscapeRegExp;
-		var combinatorOrSeparatorRegExp = regexPatterns.combinatorOrSeparatorRegExp;
-		var afterHexEscapeSeparatorRegExp = regexPatterns.afterHexEscapeSeparatorRegExp;
-		var trailingSpaceSeparatorRegExp = regexPatterns.trailingSpaceSeparatorRegExp;
-		var endsWithHexEscapeRegExp = regexPatterns.endsWithHexEscapeRegExp;
-		var attributeSelectorContentRegExp = regexPatterns.attributeSelectorContentRegExp;
-		var pseudoElementRegExp = regexPatterns.pseudoElementRegExp;
-		var invalidCombinatorLtGtRegExp = regexPatterns.invalidCombinatorLtGtRegExp;
-		var invalidCombinatorDoubleGtRegExp = regexPatterns.invalidCombinatorDoubleGtRegExp;
-		var consecutiveCombinatorsRegExp = regexPatterns.consecutiveCombinatorsRegExp;
-		var invalidSlottedRegExp = regexPatterns.invalidSlottedRegExp;
-		var invalidPartRegExp = regexPatterns.invalidPartRegExp;
-		var invalidCueRegExp = regexPatterns.invalidCueRegExp;
-		var invalidCueRegionRegExp = regexPatterns.invalidCueRegionRegExp;
-		var invalidNestingPattern = regexPatterns.invalidNestingPattern;
-		var emptyPseudoClassRegExp = regexPatterns.emptyPseudoClassRegExp;
-		var whitespaceNormalizationRegExp = regexPatterns.whitespaceNormalizationRegExp;
-		var newlineRemovalRegExp = regexPatterns.newlineRemovalRegExp;
-		var whitespaceAndDotRegExp = regexPatterns.whitespaceAndDotRegExp;
-		var declarationOrOpenBraceRegExp = regexPatterns.declarationOrOpenBraceRegExp;
-		var ampersandRegExp = regexPatterns.ampersandRegExp;
-		var hexEscapeSequenceRegExp = regexPatterns.hexEscapeSequenceRegExp;
-		var attributeCaseFlagRegExp = regexPatterns.attributeCaseFlagRegExp;
-		var prependedAmpersandRegExp = regexPatterns.prependedAmpersandRegExp;
-		var openBraceGlobalRegExp = regexPatterns.openBraceGlobalRegExp;
-		var closeBraceGlobalRegExp = regexPatterns.closeBraceGlobalRegExp;
-		var scopePreludeSplitRegExp = regexPatterns.scopePreludeSplitRegExp;
-		var leadingWhitespaceRegExp = regexPatterns.leadingWhitespaceRegExp;
-		var doubleQuoteRegExp = regexPatterns.doubleQuoteRegExp;
-		var backslashRegExp = regexPatterns.backslashRegExp;
-
-		// Media query validation patterns
-		var invalidMediaOperatorWithoutSpaceRegExp = regexPatterns.invalidMediaOperatorWithoutSpaceRegExp;
-		var invalidMediaNotAfterOperatorRegExp = regexPatterns.invalidMediaNotAfterOperatorRegExp;
-		var invalidMediaNotIdentifierRegExp = regexPatterns.invalidMediaNotIdentifierRegExp;
-		var invalidMediaNotAfterFeatureRegExp = regexPatterns.invalidMediaNotAfterFeatureRegExp;
-		var invalidMediaOperatorBetweenParensRegExp = regexPatterns.invalidMediaOperatorBetweenParensRegExp;
-		var invalidMediaNotWithMediaTypeRegExp = regexPatterns.invalidMediaNotWithMediaTypeRegExp;
-		
-		// Media query normalization patterns
-		var mediaFeatureColonRegExp = regexPatterns.mediaFeatureColonRegExp;
-		var identifierBeforeParenRegExp = regexPatterns.identifierBeforeParenRegExp;
-		var mediaAndOperatorRegExp = regexPatterns.mediaAndOperatorRegExp;
-		var mediaOrOperatorRegExp = regexPatterns.mediaOrOperatorRegExp;
-		var mediaNotOperatorStartRegExp = regexPatterns.mediaNotOperatorStartRegExp;
-		var mediaNotOperatorRegExp = regexPatterns.mediaNotOperatorRegExp;
-
-		/**
-		 * Searches for the first occurrence of a CSS at-rule statement terminator (`;` or `}`) 
-		 * that is not inside a brace block within the given string. Mimics the behavior of a 
-		 * regular expression match for such terminators, including any trailing whitespace.
-		 * @param {string} str - The string to search for at-rule statement terminators.
-		 * @returns {object | null} {0: string, index: number} or null if no match is found.
-		 */
-		function atRulesStatemenRegExpES5Alternative(ruleSlice) {
-			for (var i = 0; i < ruleSlice.length; i++) {
-				var char = ruleSlice[i];
-
-				if (char === ';' || char === '}') {
-					// Simulate negative lookbehind: check if there is a { before this position
-					var sliceBefore = ruleSlice.substring(0, i);
-					var openBraceIndex = sliceBefore.indexOf('{');
-
-					if (openBraceIndex === -1) {
-						// No { found before, so we treat it as a valid match
-						var match = char;
-						var j = i + 1;
-
-						while (j < ruleSlice.length && /\s/.test(ruleSlice[j])) {
-							match += ruleSlice[j];
-							j++;
-						}
-
-						var matchObj = [match];
-						matchObj.index = i;
-						matchObj.input = ruleSlice;
-						return matchObj;
-					}
+		set(t, prop, value) {
+			if (typeof prop === "string") {
+				if (!isNaN(Number(prop))) return false;
+				if (prop in t && (typeof t[prop] !== "undefined" || prop.startsWith("_"))) {
+					t[prop] = value;
+					return true;
 				}
-			}
-
-			return null;
-		}
-
-		/**
-		 * Finds the first balanced block (including nested braces) in the string, starting from fromIndex.
-		 * Returns an object similar to RegExp.prototype.match output.
-		 * @param {string} str - The string to search.
-		 * @param {number} [fromIndex=0] - The index to start searching from.
-		 * @returns {object|null} - { 0: matchedString, index: startIndex, input: str } or null if not found.
-		 */
-		function matchBalancedBlock(str, fromIndex) {
-			fromIndex = fromIndex || 0;
-			var openIndex = str.indexOf('{', fromIndex);
-			if (openIndex === -1) return null;
-			var depth = 0;
-			for (var i = openIndex; i < str.length; i++) {
-				if (str[i] === '{') {
-					depth++;
-				} else if (str[i] === '}') {
-					depth--;
-					if (depth === 0) {
-						var matchedString = str.slice(openIndex, i + 1);
-						return {
-							0: matchedString,
-							index: openIndex,
-							input: str
-						};
-					}
+				if (prop.startsWith("--")) {
+					if (t._allowCustomProperties) t.setProperty(prop, value);
+					return true;
 				}
-			}
-			return null;
-		}
-
-		/**
-		 * Advances the index `i` to skip over a balanced block of curly braces in the given string.
-		 * This is typically used to ignore the contents of a CSS rule block.
-		 *
-		 * @param {number} i - The current index in the string to start searching from.
-		 * @param {string} str - The string containing the CSS code.
-		 * @param {number} fromIndex - The index in the string where the balanced block search should begin.
-		 * @returns {number} The updated index after skipping the balanced block.
-		 */
-		function ignoreBalancedBlock(i, str, fromIndex) {
-			var ruleClosingMatch = matchBalancedBlock(str, fromIndex);
-			if (ruleClosingMatch) {
-				var ignoreRange = ruleClosingMatch.index + ruleClosingMatch[0].length;
-				i += ignoreRange;
-				if (token.charAt(i) === '}') {
-					i -= 1;
-				}
-			} else {
-				i += str.length;
-			}
-			return i;
-		}
-
-		/**
-		 * Parses the scope prelude and extracts start and end selectors.
-		 * @param {string} preludeContent - The scope prelude content (without @scope keyword)
-		 * @returns {object} Object with startSelector and endSelector properties
-		 */
-		function parseScopePrelude(preludeContent) {
-			var parts = preludeContent.split(scopePreludeSplitRegExp);
-
-			// Restore the parentheses that were consumed by the split
-			if (parts.length === 2) {
-				parts[0] = parts[0] + ')';
-				parts[1] = '(' + parts[1];
-			}
-
-			var hasStart = parts[0] &&
-				parts[0].charAt(0) === '(' &&
-				parts[0].charAt(parts[0].length - 1) === ')';
-			var hasEnd = parts[1] &&
-				parts[1].charAt(0) === '(' &&
-				parts[1].charAt(parts[1].length - 1) === ')';
-
-			// Handle case: @scope to (<end>)
-			var hasOnlyEnd = !hasStart &&
-				!hasEnd &&
-				parts[0].indexOf('to (') === 0 &&
-				parts[0].charAt(parts[0].length - 1) === ')';
-
-			var startSelector = '';
-			var endSelector = '';
-
-			if (hasStart) {
-				startSelector = parts[0].slice(1, -1).trim();
-			}
-			if (hasEnd) {
-				endSelector = parts[1].slice(1, -1).trim();
-			}
-			if (hasOnlyEnd) {
-				endSelector = parts[0].slice(4, -1).trim();
-			}
-
-			return {
-				startSelector: startSelector,
-				endSelector: endSelector,
-				hasStart: hasStart,
-				hasEnd: hasEnd,
-				hasOnlyEnd: hasOnlyEnd
-			};
-		}
-		/**
-		 * Checks if a selector contains pseudo-elements.
-		 * @param {string} selector - The CSS selector to check
-		 * @returns {boolean} True if the selector contains pseudo-elements
-		 */
-		function hasPseudoElement(selector) {
-			// Match only double-colon (::) pseudo-elements
-			// Also match legacy single-colon pseudo-elements: :before, :after, :first-line, :first-letter
-			// These must NOT be followed by alphanumeric characters (to avoid matching :before-x or similar)
-			return pseudoElementRegExp.test(selector);
-		}
-		/**
-		 * Validates balanced parentheses, brackets, and quotes in a selector.
-		 * 
-		 * @param {string} selector - The CSS selector to validate
-		 * @param {boolean} trackAttributes - Whether to track attribute selector context
-		 * @param {boolean} useStack - Whether to use a stack for parentheses (needed for nested validation)
-		 * @returns {boolean} True if the syntax is valid (all brackets, parentheses, and quotes are balanced)
-		 */
-		function validateBalancedSyntax(selector, trackAttributes, useStack) {
-			var parenDepth = 0;
-			var bracketDepth = 0;
-			var inSingleQuote = false;
-			var inDoubleQuote = false;
-			var inAttr = false;
-			var stack = useStack ? [] : null;
-
-			for (var i = 0; i < selector.length; i++) {
-				var char = selector[i];
-
-				// Handle escape sequences - skip hex escapes or simple escapes
-				if (char === '\\') {
-					var escapeLen = getEscapeSequenceLength(selector, i);
-					if (escapeLen > 0) {
-						i += escapeLen - 1; // -1 because loop will increment
-						continue;
-					}
-				}
-
-				if (inSingleQuote) {
-					if (char === "'") {
-						inSingleQuote = false;
-					}
-				} else if (inDoubleQuote) {
-					if (char === '"') {
-						inDoubleQuote = false;
-					}
-				} else if (trackAttributes && inAttr) {
-					if (char === "]") {
-						inAttr = false;
-					} else if (char === "'") {
-						inSingleQuote = true;
-					} else if (char === '"') {
-						inDoubleQuote = true;
-					}
-				} else {
-					if (trackAttributes && char === "[") {
-						inAttr = true;
-					} else if (char === "'") {
-						inSingleQuote = true;
-					} else if (char === '"') {
-						inDoubleQuote = true;
-					} else if (char === '(') {
-						if (useStack) {
-							stack.push("(");
-						} else {
-							parenDepth++;
-						}
-					} else if (char === ')') {
-						if (useStack) {
-							if (!stack.length || stack.pop() !== "(") {
-								return false;
-							}
-						} else {
-							parenDepth--;
-							if (parenDepth < 0) {
-								return false;
-							}
-						}
-					} else if (char === '[') {
-						bracketDepth++;
-					} else if (char === ']') {
-						bracketDepth--;
-						if (bracketDepth < 0) {
-							return false;
-						}
-					}
-				}
-			}
-
-			// Check if everything is balanced
-			if (useStack) {
-				return stack.length === 0 && bracketDepth === 0 && !inSingleQuote && !inDoubleQuote && !inAttr;
-			} else {
-				return parenDepth === 0 && bracketDepth === 0 && !inSingleQuote && !inDoubleQuote;
-			}
-		}
-		/**
-		 * Checks for basic syntax errors in selectors (mismatched parentheses, brackets, quotes).
-		 * @param {string} selector - The CSS selector to check
-		 * @returns {boolean} True if there are syntax errors
-		 */
-		function hasBasicSyntaxError(selector) {
-			return !validateBalancedSyntax(selector, false, false);
-		}
-		/**
-		 * Checks for invalid combinator patterns in selectors.
-		 * @param {string} selector - The CSS selector to check
-		 * @returns {boolean} True if the selector contains invalid combinators
-		 */
-		function hasInvalidCombinators(selector) {
-			// Check for invalid combinator patterns:
-			// - <> (not a valid combinator)
-			// - >> (deep descendant combinator, deprecated and invalid)
-			// - Multiple consecutive combinators like >>, >~, etc.
-			if (invalidCombinatorLtGtRegExp.test(selector)) return true;
-			if (invalidCombinatorDoubleGtRegExp.test(selector)) return true;
-			// Check for other invalid consecutive combinator patterns
-			if (consecutiveCombinatorsRegExp.test(selector)) return true;
-			return false;
-		}
-		/**
-		 * Checks for invalid pseudo-like syntax (function calls without proper pseudo prefix).
-		 * @param {string} selector - The CSS selector to check
-		 * @returns {boolean} True if the selector contains invalid pseudo-like syntax
-		 */
-		function hasInvalidPseudoSyntax(selector) {
-			// Check for specific known pseudo-elements used without : or :: prefix
-			// Examples: slotted(div), part(name), cue(selector)
-			// These are ONLY valid as ::slotted(), ::part(), ::cue()
-			var invalidPatterns = [
-				invalidSlottedRegExp,
-				invalidPartRegExp,
-				invalidCueRegExp,
-				invalidCueRegionRegExp
-			];
-
-			for (var i = 0; i < invalidPatterns.length; i++) {
-				if (invalidPatterns[i].test(selector)) {
+				let cssProp = prop;
+				if (prop === "cssFloat") cssProp = "float";
+				else cssProp = camelToDashed(prop);
+				if (t._isPropertySupported(cssProp)) {
+					t.setProperty(cssProp, value);
 					return true;
 				}
 			}
-			return false;
+			t[prop] = value;
+			return true;
+		},
+		has(t, prop) {
+			if (typeof prop === "string") {
+				if (!isNaN(Number(prop))) {
+					const index = Number(prop);
+					return index >= 0 && index < t._declarations.length;
+				}
+				if (prop in t) return true;
+				if (prop.startsWith("--")) return true;
+				const dashed = camelToDashed(prop);
+				if (t._isPropertySupported(dashed)) return true;
+				if (prop in SHORTHANDS) return true;
+				for (const s of Object.values(SHORTHANDS)) if (s.longhands.includes(prop)) return true;
+			}
+			return Reflect.has(t, prop);
+		},
+		ownKeys(t) {
+			return Array.from({ length: t.length }, (_, i) => String(i));
+		},
+		getOwnPropertyDescriptor(t, prop) {
+			const i = typeof prop === "string" ? Number(prop) : NaN;
+			if (Number.isInteger(i) && i >= 0 && i < t.length && String(i) === prop) return {
+				value: t.item(i),
+				writable: false,
+				enumerable: true,
+				configurable: true
+			};
+			const desc = Reflect.getOwnPropertyDescriptor(t, prop);
+			return desc ? {
+				...desc,
+				enumerable: false
+			} : void 0;
 		}
-		/**
-		 * Checks for invalid nesting selector (&) usage.
-		 * The & selector cannot be directly followed by a type selector without a delimiter.
-		 * Valid: &.class, &#id, &[attr], &:hover, &::before, & div, &>div
-		 * Invalid: &div, &span
-		 * @param {string} selector - The CSS selector to check
-		 * @returns {boolean} True if the selector contains invalid & usage
-		 */
-		function hasInvalidNestingSelector(selector) {
-			// Check for & followed directly by a letter (type selector) without any delimiter
-			// This regex matches & followed by a letter (start of type selector) that's not preceded by an escape
-			// We need to exclude valid cases like &.class, &#id, &[attr], &:pseudo, &::pseudo, & (with space), &>
-			return invalidNestingPattern.test(selector);
+	});
+}
+var CSSStyleDeclaration = class extends CSSStyleProperties {
+	/** @internal */ _declarations;
+	/** @internal */ _rawDeclarations;
+	/** @internal */ _declMap;
+	/** @internal */ _readonly = false;
+	/** @internal */ _parentRule = null;
+	/** @internal */ _onChange = null;
+	get parentRule() {
+		return this._parentRule;
+	}
+	get onChange() {
+		return this._onChange;
+	}
+	set onChange(fn) {
+		this._onChange = fn ?? null;
+	}
+	/** @internal */
+	get _filterDeclarationsInConstructor() {
+		return false;
+	}
+	/** @internal */
+	get _allowCustomProperties() {
+		return true;
+	}
+	/** @internal */
+	get _allowImportant() {
+		return true;
+	}
+	constructor(parentRuleOrDeclarations, onChangeOrReadonly) {
+		super();
+		this._declarations = [];
+		this._rawDeclarations = [];
+		this._declMap = /* @__PURE__ */ new Map();
+		let declarations = [];
+		if (Array.isArray(parentRuleOrDeclarations)) {
+			declarations = parentRuleOrDeclarations;
+			this._readonly = typeof onChangeOrReadonly === "boolean" ? onChangeOrReadonly : false;
+			if (typeof onChangeOrReadonly === "function") this._onChange = onChangeOrReadonly;
+		} else {
+			this._parentRule = parentRuleOrDeclarations ?? null;
+			this._readonly = typeof onChangeOrReadonly === "boolean" ? onChangeOrReadonly : false;
+			if (typeof onChangeOrReadonly === "function") this._onChange = onChangeOrReadonly;
 		}
-		/**
-		 * Checks if an at-rule can be nested based on parent chain validation.
-		 * Used for at-rules like `@counter-style`, `@property` and `@font-face` rules that can only be nested inside
-		 * `CSSScopeRule` or `CSSConditionRule` without `CSSStyleRule` in parent chain.
-		 * @returns {boolean} `true` if nesting is allowed, `false` otherwise
-		 */
-		function canAtRuleBeNested() {
-			if (currentScope === topScope) {
-				return true; // Top-level is always allowed
-			}
-
-			var hasStyleRuleInChain = false;
-			var hasValidParent = false;
-
-			// Check currentScope
-			if (currentScope.constructor.name === 'CSSStyleRule') {
-				hasStyleRuleInChain = true;
-			} else if (currentScope instanceof CSSOM.CSSScopeRule || currentScope instanceof CSSOM.CSSConditionRule) {
-				hasValidParent = true;
-			}
-
-			// Check ancestorRules for CSSStyleRule
-			if (!hasStyleRuleInChain) {
-				for (var j = 0; j < ancestorRules.length; j++) {
-					if (ancestorRules[j].constructor.name === 'CSSStyleRule') {
-						hasStyleRuleInChain = true;
-						break;
-					}
-					if (ancestorRules[j] instanceof CSSOM.CSSScopeRule || ancestorRules[j] instanceof CSSOM.CSSConditionRule) {
-						hasValidParent = true;
-					}
-				}
-			}
-
-			// Allow nesting if we have a valid parent and no style rule in the chain
-			return hasValidParent && !hasStyleRuleInChain;
-		}
-
-		function validateAtRule(atRuleKey, validCallback, cannotBeNested) {
-			var isValid = false;
-			// Use cached regex instead of creating new one each time
-			var ruleRegExp = getValidationRegex(atRuleKey);
-			//  Only slice what we need for validation (max 100 chars)
-			// since we only check match at position 0
-			var lookAheadLength = Math.min(100, token.length - i);
-			var ruleSlice = token.slice(i, i + lookAheadLength);
-			// Not all rules can be nested, if the rule cannot be nested and is in the root scope, do not perform the check
-			var shouldPerformCheck = cannotBeNested && currentScope !== topScope ? false : true;
-			// First, check if there is no invalid characters just after the at-rule
-			if (shouldPerformCheck && ruleSlice.search(ruleRegExp) === 0) {
-				// Only scan from the last known validation boundary
-				var searchStart = Math.max(0, lastValidationBoundary);
-				var beforeSlice = token.slice(searchStart, i);
-				
-				// Use pre-compiled regex instead of creating new one each time
-				var matches = beforeSlice.match(regexBefore);
-				var lastI = matches ? searchStart + beforeSlice.lastIndexOf(matches[matches.length - 1]) : searchStart;
-				var toCheckSlice = token.slice(lastI, i);
-				// Check if we don't have any invalid in the portion before the `at-rule` and the closest allowed character
-				var checkedSlice = toCheckSlice.search(beforeRuleValidationRegExp);
-				if (checkedSlice === 0) {
-					isValid = true;
-					// Update the validation boundary cache to this position
-					lastValidationBoundary = lastI;
-				}
-			}
-
-			// Additional validation for @scope rule
-			if (isValid && atRuleKey === "@scope") {
-				var openBraceIndex = ruleSlice.indexOf('{');
-				if (openBraceIndex !== -1) {
-					// Extract the rule prelude (everything between the at-rule and {)
-					var rulePrelude = ruleSlice.slice(0, openBraceIndex).trim();
-
-					// Skip past at-rule keyword and whitespace
-					var preludeContent = rulePrelude.slice("@scope".length).trim();
-
-					if (preludeContent.length > 0) {
-						// Parse the scope prelude
-						var parsedScopePrelude = parseScopePrelude(preludeContent);
-						var startSelector = parsedScopePrelude.startSelector;
-						var endSelector = parsedScopePrelude.endSelector;
-						var hasStart = parsedScopePrelude.hasStart;
-						var hasEnd = parsedScopePrelude.hasEnd;
-						var hasOnlyEnd = parsedScopePrelude.hasOnlyEnd;
-
-						// Validation rules for @scope:
-						// 1. Empty selectors in parentheses are invalid: @scope () {} or @scope (.a) to () {}
-						if ((hasStart && startSelector === '') || (hasEnd && endSelector === '') || (hasOnlyEnd && endSelector === '')) {
-							isValid = false;
-						}
-						// 2. Pseudo-elements are invalid in scope selectors
-						else if ((startSelector && hasPseudoElement(startSelector)) || (endSelector && hasPseudoElement(endSelector))) {
-							isValid = false;
-						}
-						// 3. Basic syntax errors (mismatched parens, brackets, quotes)
-						else if ((startSelector && hasBasicSyntaxError(startSelector)) || (endSelector && hasBasicSyntaxError(endSelector))) {
-							isValid = false;
-						}
-						// 4. Invalid combinator patterns
-						else if ((startSelector && hasInvalidCombinators(startSelector)) || (endSelector && hasInvalidCombinators(endSelector))) {
-							isValid = false;
-						}
-						// 5. Invalid pseudo-like syntax (function without : or :: prefix)
-						else if ((startSelector && hasInvalidPseudoSyntax(startSelector)) || (endSelector && hasInvalidPseudoSyntax(endSelector))) {
-							isValid = false;
-						}
-						// 6. Invalid structure (no proper parentheses found when prelude is not empty)
-						else if (!hasStart && !hasOnlyEnd) {
-							isValid = false;
-						}
-					}
-					// Empty prelude (@scope {}) is valid
-				}
-			}
-
-			if (isValid && atRuleKey === "@page") {
-				var openBraceIndex = ruleSlice.indexOf('{');
-				if (openBraceIndex !== -1) {
-					// Extract the rule prelude (everything between the at-rule and {)
-					var rulePrelude = ruleSlice.slice(0, openBraceIndex).trim();
-
-					// Skip past at-rule keyword and whitespace
-					var preludeContent = rulePrelude.slice("@page".length).trim();
-
-					if (preludeContent.length > 0) {
-						var trimmedValue = preludeContent.trim();
-
-						// Empty selector is valid for @page
-						if (trimmedValue !== '') {
-							// Parse @page selectorText for page name and pseudo-pages
-							// Valid formats:
-							// - (empty - no name, no pseudo-page)
-							// - :left, :right, :first, :blank (pseudo-page only)
-							// - named (named page only)
-							// - named:first (named page with single pseudo-page)
-							// - named:first:left (named page with multiple pseudo-pages)
-							var match = trimmedValue.match(atPageRuleSelectorRegExp);
-							if (match) {
-								var pageName = match[1] || '';
-								var pseudoPages = match[2] || '';
-
-								// Validate page name if present
-								if (pageName) {
-									if (!cssCustomIdentifierRegExp.test(pageName)) {
-										isValid = false;
-									}
-								}
-
-								// Validate pseudo-pages if present
-								if (pseudoPages) {
-									var pseudos = pseudoPages.split(':').filter(function (p) { return p; });
-									var validPseudos = ['left', 'right', 'first', 'blank'];
-									var allValid = true;
-									for (var j = 0; j < pseudos.length; j++) {
-										if (validPseudos.indexOf(pseudos[j].toLowerCase()) === -1) {
-											allValid = false;
-											break;
-										}
-									}
-
-									if (!allValid) {
-										isValid = false;
-									}
-								}
-							} else {
-								isValid = false;
-							}
-						}
-
-					}
-				}
-			}
-
-			if (!isValid) {
-				// If it's invalid the browser will simply ignore the entire invalid block
-				// Use regex to find the closing brace of the invalid rule
-
-				// Regex used above is not ES5 compliant. Using alternative.
-				// var ruleStatementMatch = ruleSlice.match(atRulesStatemenRegExp); //
-				var ruleStatementMatch = atRulesStatemenRegExpES5Alternative(ruleSlice);
-
-				// If it's a statement inside a nested rule, ignore only the statement
-				if (ruleStatementMatch && currentScope !== topScope) {
-					var ignoreEnd = ruleStatementMatch[0].indexOf(";");
-					i += ruleStatementMatch.index + ignoreEnd;
-					return;
-				}
-
-				// Check if there's a semicolon before the invalid at-rule and the first opening brace
-				if (atRuleKey === "@layer") {
-					var ruleSemicolonAndOpeningBraceMatch = ruleSlice.match(forwardRuleSemicolonAndOpeningBraceRegExp);
-					if (ruleSemicolonAndOpeningBraceMatch && ruleSemicolonAndOpeningBraceMatch[1] === ";") {
-						// Ignore the rule block until the semicolon
-						i += ruleSemicolonAndOpeningBraceMatch.index + ruleSemicolonAndOpeningBraceMatch[0].length;
-						state = "before-selector";
+		const addDeclarationRecursive = (decl, isTopLevel = false) => {
+			if (decl.name === "--") return;
+			if (decl.important && !this._allowImportant) return;
+			const normalizedName = decl.name.startsWith("--") ? decl.name : decl.name.toLowerCase();
+			if (normalizedName.startsWith("--") && !this._allowCustomProperties) return;
+			if (this._filterDeclarationsInConstructor && !normalizedName.startsWith("--") && !this._isPropertySupported(normalizedName)) return;
+			decl.name = normalizedName;
+			if (isTopLevel) this._rawDeclarations.push(decl);
+			const shorthand = SHORTHANDS[decl.name];
+			if (shorthand) {
+				if (!(serialize(decl.value).includes("var(") || serialize(decl.value).includes("env("))) {
+					const expanded = shorthand.expand(decl.value);
+					if (expanded) {
+						for (const [lh, val] of Object.entries(expanded)) addDeclarationRecursive({
+							type: "declaration",
+							name: lh,
+							value: val,
+							important: decl.important,
+							fromAll: decl.name === "all" || decl.fromAll
+						});
 						return;
 					}
 				}
-
-				// Ignore the entire rule block (if it's a statement it should ignore the statement plus the next block)
-				i = ignoreBalancedBlock(i, ruleSlice);
-				state = "before-selector";
-			} else {
-				validCallback.call(this);
 			}
-		}
-
-		// Helper functions for looseSelectorValidator
-		// Defined outside to avoid recreation on every validation call
-
-		/**
-		 * Check if character is a valid identifier start
-		 * @param {string} c - Character to check
-		 * @returns {boolean}
-		 */
-		function isIdentStart(c) {
-			return /[a-zA-Z_\u00A0-\uFFFF]/.test(c);
-		}
-
-		/**
-		 * Check if character is a valid identifier character
-		 * @param {string} c - Character to check
-		 * @returns {boolean}
-		 */
-		function isIdentChar(c) {
-			return /[a-zA-Z0-9_\u00A0-\uFFFF\-]/.test(c);
-		}
-
-		/**
-		 * Helper function to validate CSS selector syntax without regex backtracking.
-		 * Iteratively parses the selector string to identify valid components.
-		 * 
-		 * Supports:
-		 * - Escaped characters (e.g., .class\!, #id\@name)
-		 * - Namespace selectors (ns|element, *|element, |element)
-		 * - All standard CSS selectors (class, ID, type, attribute, pseudo, etc.)
-		 * - Combinators (>, +, ~, whitespace)
-		 * - Nesting selector (&)
-		 * 
-		 * This approach eliminates exponential backtracking by using explicit character-by-character
-		 * parsing instead of nested quantifiers in regex.
-		 * 
-		 * @param {string} selector - The selector to validate
-		 * @returns {boolean} - True if valid selector syntax
-		 */
-		function looseSelectorValidator(selector) {
-			if (!selector || selector.length === 0) {
-				return false;
-			}
-
-			var i = 0;
-			var len = selector.length;
-			var hasMatchedComponent = false;
-
-			// Helper: Skip escaped character (backslash + hex escape or any char)
-			function skipEscape() {
-				if (i < len && selector[i] === '\\') {
-					var escapeLen = getEscapeSequenceLength(selector, i);
-					if (escapeLen > 0) {
-						i += escapeLen; // Skip entire escape sequence
-						return true;
-					}
-				}
-				return false;
-			}
-
-			// Helper: Parse identifier (with possible escapes)
-			function parseIdentifier() {
-				var start = i;
-				while (i < len) {
-					if (skipEscape()) {
-						continue;
-					} else if (isIdentChar(selector[i])) {
-						i++;
-					} else {
-						break;
-					}
-				}
-				return i > start;
-			}
-
-			// Helper: Parse namespace prefix (optional)
-			function parseNamespace() {
-				var start = i;
-
-				// Match: *| or identifier| or |
-				if (i < len && selector[i] === '*') {
-					i++;
-				} else if (i < len && (isIdentStart(selector[i]) || selector[i] === '\\')) {
-					parseIdentifier();
-				}
-
-				if (i < len && selector[i] === '|') {
-					i++;
-					return true;
-				}
-
-				// Rollback if no pipe found
-				i = start;
-				return false;
-			}
-
-			// Helper: Parse pseudo-class/element arguments (with balanced parens)
-			function parsePseudoArgs() {
-				if (i >= len || selector[i] !== '(') {
-					return false;
-				}
-
-				i++; // Skip opening paren
-				var depth = 1;
-				var inString = false;
-				var stringChar = '';
-
-				while (i < len && depth > 0) {
-					var c = selector[i];
-
-					if (c === '\\' && i + 1 < len) {
-						i += 2; // Skip escaped character
-					} else if (!inString && (c === '"' || c === '\'')) {
-						inString = true;
-						stringChar = c;
-						i++;
-					} else if (inString && c === stringChar) {
-						inString = false;
-						i++;
-					} else if (!inString && c === '(') {
-						depth++;
-						i++;
-					} else if (!inString && c === ')') {
-						depth--;
-						i++;
-					} else {
-						i++;
-					}
-				}
-
-				return depth === 0;
-			}
-
-			// Main parsing loop
-			while (i < len) {
-				var matched = false;
-				var start = i;
-
-				// Skip whitespace
-				while (i < len && /\s/.test(selector[i])) {
-					i++;
-				}
-				if (i > start) {
-					hasMatchedComponent = true;
-					continue;
-				}
-
-				// Match combinators: >, +, ~
-				if (i < len && /[>+~]/.test(selector[i])) {
-					i++;
-					hasMatchedComponent = true;
-					// Skip trailing whitespace
-					while (i < len && /\s/.test(selector[i])) {
-						i++;
-					}
-					continue;
-				}
-
-				// Match nesting selector: &
-				if (i < len && selector[i] === '&') {
-					i++;
-					hasMatchedComponent = true;
-					matched = true;
-				}
-				// Match class selector: .identifier
-				else if (i < len && selector[i] === '.') {
-					i++;
-					if (parseIdentifier()) {
-						hasMatchedComponent = true;
-						matched = true;
-					}
-				}
-				// Match ID selector: #identifier
-				else if (i < len && selector[i] === '#') {
-					i++;
-					if (parseIdentifier()) {
-						hasMatchedComponent = true;
-						matched = true;
-					}
-				}
-				// Match pseudo-class/element: :identifier or ::identifier
-				else if (i < len && selector[i] === ':') {
-					i++;
-					if (i < len && selector[i] === ':') {
-						i++; // Pseudo-element
-					}
-					if (parseIdentifier()) {
-						parsePseudoArgs(); // Optional arguments
-						hasMatchedComponent = true;
-						matched = true;
-					}
-				}
-				// Match attribute selector: [...]
-				else if (i < len && selector[i] === '[') {
-					i++;
-					var depth = 1;
-					while (i < len && depth > 0) {
-						if (selector[i] === '\\') {
-							i += 2;
-						} else if (selector[i] === '\'') {
-							i++;
-							while (i < len && selector[i] !== '\'') {
-								if (selector[i] === '\\') i += 2;
-								else i++;
-							}
-							if (i < len) i++; // Skip closing quote
-						} else if (selector[i] === '"') {
-							i++;
-							while (i < len && selector[i] !== '"') {
-								if (selector[i] === '\\') i += 2;
-								else i++;
-							}
-							if (i < len) i++; // Skip closing quote
-						} else if (selector[i] === '[') {
-							depth++;
-							i++;
-						} else if (selector[i] === ']') {
-							depth--;
-							i++;
-						} else {
-							i++;
-						}
-					}
-					if (depth === 0) {
-						hasMatchedComponent = true;
-						matched = true;
-					}
-				}
-				// Match type selector with optional namespace: [namespace|]identifier
-				else if (i < len && (isIdentStart(selector[i]) || selector[i] === '\\' || selector[i] === '*' || selector[i] === '|' || selector[i] === '-')) {
-					parseNamespace(); // Optional namespace prefix
-
-					if (i < len && selector[i] === '*') {
-						i++; // Universal selector
-						hasMatchedComponent = true;
-						matched = true;
-					} else if (i < len && (isIdentStart(selector[i]) || selector[i] === '\\' || selector[i] === '-')) {
-						if (parseIdentifier()) {
-							hasMatchedComponent = true;
-							matched = true;
-						}
-					}
-				}
-
-				// If no match found, invalid selector
-				if (!matched && i === start) {
-					return false;
-				}
-			}
-
-			return hasMatchedComponent;
-		}
-
-		/**
-		 * Validates a basic CSS selector, allowing for deeply nested balanced parentheses in pseudo-classes.
-		 * This function replaces the previous basicSelectorRegExp.
-		 * 
-		 * This function matches:
-		 * - Type selectors (e.g., `div`, `span`)
-		 * - Universal selector (`*`)
-		 * - Namespace selectors (e.g., `*|div`, `custom|div`, `|div`)
-		 * - ID selectors (e.g., `#header`, `#a\ b`, `#åèiöú`)
-		 * - Class selectors (e.g., `.container`, `.a\ b`, `.åèiöú`)
-		 * - Attribute selectors (e.g., `[type="text"]`)
-		 * - Pseudo-classes and pseudo-elements (e.g., `:hover`, `::before`, `:nth-child(2)`)
-		 * - Pseudo-classes with nested parentheses, including cases where parentheses are nested inside arguments,
-		 *   such as `:has(.sel:nth-child(3n))`
-		 * - The parent selector (`&`)
-		 * - Combinators (`>`, `+`, `~`) with optional whitespace
-		 * - Whitespace (descendant combinator)
-		 *
-		 * Unicode and escape sequences are allowed in identifiers.
-		 *
-		 * @param {string} selector
-		 * @returns {boolean}
-		 */
-		function basicSelectorValidator(selector) {
-			// Guard against extremely long selectors to prevent potential regex performance issues
-			// Reasonable selectors are typically under 1000 characters
-			if (selector.length > 10000) {
-				return false;
-			}
-
-			// Validate balanced syntax with attribute tracking and stack-based parentheses matching
-			if (!validateBalancedSyntax(selector, true, true)) {
-				return false;
-			}
-
-			// Check for invalid combinator patterns
-			if (hasInvalidCombinators(selector)) {
-				return false;
-			}
-
-			// Check for invalid pseudo-like syntax
-			if (hasInvalidPseudoSyntax(selector)) {
-				return false;
-			}
-
-			// Check for invalid nesting selector (&) usage
-			if (hasInvalidNestingSelector(selector)) {
-				return false;
-			}
-
-			// Check for invalid pseudo-class usage with quoted strings
-			// Pseudo-classes like :lang(), :dir(), :nth-*() should not accept quoted strings
-			// Using iterative parsing instead of regex to avoid exponential backtracking
-			var noQuotesPseudos = ['lang', 'dir', 'nth-child', 'nth-last-child', 'nth-of-type', 'nth-last-of-type'];
-
-			for (var idx = 0; idx < selector.length; idx++) {
-				// Look for pseudo-class/element start
-				if (selector[idx] === ':') {
-					idx++;
-
-					// Skip second colon for pseudo-elements
-					if (idx < selector.length && selector[idx] === ':') {
-						idx++;
-					}
-
-					// Extract pseudo name
-					var nameStart = idx;
-					while (idx < selector.length && /[a-zA-Z0-9\-]/.test(selector[idx])) {
-						idx++;
-					}
-
-					if (idx === nameStart) {
-						continue; // No name found
-					}
-
-					var pseudoName = selector.substring(nameStart, idx).toLowerCase();
-
-					// Check if this pseudo has arguments
-					if (idx < selector.length && selector[idx] === '(') {
-						idx++;
-						var contentStart = idx;
-						var depth = 1;
-
-						// Find matching closing paren (handle nesting)
-						while (idx < selector.length && depth > 0) {
-							if (selector[idx] === '\\') {
-								idx += 2; // Skip escaped character
-							} else if (selector[idx] === '(') {
-								depth++;
-								idx++;
-							} else if (selector[idx] === ')') {
-								depth--;
-								idx++;
-							} else {
-								idx++;
-							}
-						}
-
-						if (depth === 0) {
-							var pseudoContent = selector.substring(contentStart, idx - 1);
-
-							// Check if this pseudo should not have quoted strings
-							for (var j = 0; j < noQuotesPseudos.length; j++) {
-								if (pseudoName === noQuotesPseudos[j] && /['"]/.test(pseudoContent)) {
-									return false;
-								}
-							}
-						}
-					}
-				}
-			}
-
-			// Use the iterative validator to avoid regex backtracking issues
-			return looseSelectorValidator(selector);
-		}
-
-		/**
-		 * Regular expression to match CSS pseudo-classes with arguments.
-		 *
-		 * Matches patterns like `:pseudo-class(argument)`, capturing the pseudo-class name and its argument.
-		 *
-		 * Capture groups:
-		 *   1. The pseudo-class name (letters and hyphens).
-		 *   2. The argument inside the parentheses (can contain nested parentheses, quoted strings, and other characters.).
-		 *
-		 * Global flag (`g`) is used to find all matches in the input string.
-		 *
-		 * Example matches:
-		 *   - :nth-child(2n+1)
-		 *   - :has(.sel:nth-child(3n))
-		 *   - :not(".foo, .bar")
-		 *
-		 * REPLACED WITH FUNCTION to avoid exponential backtracking.
-		 */
-
-		/**
-		 * Extract pseudo-classes with arguments from a selector using iterative parsing.
-		 * Replaces the previous globalPseudoClassRegExp to avoid exponential backtracking.
-		 * 
-		 * Handles:
-		 * - Regular content without parentheses or quotes
-		 * - Single-quoted strings
-		 * - Double-quoted strings  
-		 * - Nested parentheses (arbitrary depth)
-		 * 
-		 * @param {string} selector - The CSS selector to parse
-		 * @returns {Array} Array of matches, each with: [fullMatch, pseudoName, pseudoArgs, startIndex]
-		 */
-		function extractPseudoClasses(selector) {
-			var matches = [];
-
-			for (var i = 0; i < selector.length; i++) {
-				// Look for pseudo-class start (single or double colon)
-				if (selector[i] === ':') {
-					var pseudoStart = i;
-					i++;
-
-					// Skip second colon for pseudo-elements (::)
-					if (i < selector.length && selector[i] === ':') {
-						i++;
-					}
-
-					// Extract pseudo name
-					var nameStart = i;
-					while (i < selector.length && /[a-zA-Z\-]/.test(selector[i])) {
-						i++;
-					}
-
-					if (i === nameStart) {
-						continue; // No name found
-					}
-
-					var pseudoName = selector.substring(nameStart, i);
-
-					// Check if this pseudo has arguments
-					if (i < selector.length && selector[i] === '(') {
-						i++;
-						var argsStart = i;
-						var depth = 1;
-						var inSingleQuote = false;
-						var inDoubleQuote = false;
-
-						// Find matching closing paren (handle nesting and strings)
-						while (i < selector.length && depth > 0) {
-							var ch = selector[i];
-
-							if (ch === '\\') {
-								i += 2; // Skip escaped character
-							} else if (ch === "'" && !inDoubleQuote) {
-								inSingleQuote = !inSingleQuote;
-								i++;
-							} else if (ch === '"' && !inSingleQuote) {
-								inDoubleQuote = !inDoubleQuote;
-								i++;
-							} else if (ch === '(' && !inSingleQuote && !inDoubleQuote) {
-								depth++;
-								i++;
-							} else if (ch === ')' && !inSingleQuote && !inDoubleQuote) {
-								depth--;
-								i++;
-							} else {
-								i++;
-							}
-						}
-
-						if (depth === 0) {
-							var pseudoArgs = selector.substring(argsStart, i - 1);
-							var fullMatch = selector.substring(pseudoStart, i);
-
-							// Store match in same format as regex: [fullMatch, pseudoName, pseudoArgs, startIndex]
-							matches.push([fullMatch, pseudoName, pseudoArgs, pseudoStart]);
-						}
-
-						// Move back one since loop will increment
-						i--;
-					}
-				}
-			}
-
-			return matches;
-		}
-
-		/**
-		 * Parses a CSS selector string and splits it into parts, handling nested parentheses.
-		 *
-		 * This function is useful for splitting selectors that may contain nested function-like
-		 * syntax (e.g., :not(.foo, .bar)), ensuring that commas inside parentheses do not split
-		 * the selector.
-		 *
-		 * @param {string} selector - The CSS selector string to parse.
-		 * @returns {string[]} An array of selector parts, split by top-level commas, with whitespace trimmed.
-		 */
-		function parseAndSplitNestedSelectors(selector) {
-			var depth = 0;           // Track parenthesis nesting depth
-			var buffer = "";         // Accumulate characters for current selector part
-			var parts = [];          // Array of split selector parts
-			var inSingleQuote = false; // Track if we're inside single quotes
-			var inDoubleQuote = false; // Track if we're inside double quotes
-			var i, char;
-
-			for (i = 0; i < selector.length; i++) {
-				char = selector.charAt(i);
-
-				// Handle escape sequences - skip them entirely
-				if (char === '\\' && i + 1 < selector.length) {
-					buffer += char;
-					i++;
-					buffer += selector.charAt(i);
-					continue;
-				}
-
-				// Handle single quote strings
-				if (char === "'" && !inDoubleQuote) {
-					inSingleQuote = !inSingleQuote;
-					buffer += char;
-				}
-				// Handle double quote strings
-				else if (char === '"' && !inSingleQuote) {
-					inDoubleQuote = !inDoubleQuote;
-					buffer += char;
-				}
-				// Process characters outside of quoted strings
-				else if (!inSingleQuote && !inDoubleQuote) {
-					if (char === '(') {
-						// Entering a nested level (e.g., :is(...))
-						depth++;
-						buffer += char;
-					} else if (char === ')') {
-						// Exiting a nested level
-						depth--;
-						buffer += char;
-					} else if (char === ',' && depth === 0) {
-						// Found a top-level comma separator - split here
-						// Note: escaped commas (\,) are already handled above
-						if (buffer.trim()) {
-							parts.push(buffer.trim());
-						}
-						buffer = "";
-					} else {
-						// Regular character - add to buffer
-						buffer += char;
-					}
-				}
-				// Characters inside quoted strings - add to buffer
-				else {
-					buffer += char;
-				}
-			}
-
-			// Add any remaining content in buffer as the last part
-			var trimmed = buffer.trim();
-			if (trimmed) {
-				// Preserve trailing space if selector ends with hex escape
-				var endsWithHexEscape = endsWithHexEscapeRegExp.test(buffer);
-				parts.push(endsWithHexEscape ? buffer.replace(leadingWhitespaceRegExp, '') : trimmed);
-			}
-
-			return parts;
-		}
-
-		/**
-		 * Validates a CSS selector string, including handling of nested selectors within certain pseudo-classes.
-		 *
-		 * This function checks if the provided selector is valid according to the rules defined by
-		 * `basicSelectorValidator`. For pseudo-classes that accept selector lists (such as :not, :is, :has, :where),
-		 * it recursively validates each nested selector using the same validation logic.
-		 *
-		 * @param {string} selector - The CSS selector string to validate.
-		 * @returns {boolean} Returns `true` if the selector is valid, otherwise `false`.
-		 */
-
-		// Cache to store validated selectors (previously a ES6 Map, now an ES5-compliant object)
-		var validatedSelectorsCache = {};
-
-		// Only pseudo-classes that accept selector lists should recurse
-		var selectorListPseudoClasses = {
-			'not': true,
-			'is': true,
-			'has': true,
-			'where': true
+			this._addDeclaration(decl);
 		};
-
-		function validateSelector(selector) {
-			if (validatedSelectorsCache.hasOwnProperty(selector)) {
-				return validatedSelectorsCache[selector];
-			}
-
-			// Use function-based parsing to extract pseudo-classes (avoids backtracking)
-			var pseudoClassMatches = extractPseudoClasses(selector);
-
-			for (var j = 0; j < pseudoClassMatches.length; j++) {
-				var pseudoClass = pseudoClassMatches[j][1];
-				if (selectorListPseudoClasses.hasOwnProperty(pseudoClass)) {
-					var nestedSelectors = parseAndSplitNestedSelectors(pseudoClassMatches[j][2]);
-
-					// Check if ANY selector in the list contains & (nesting selector)
-					// If so, skip validation for the entire selector list since & will be replaced at runtime
-					var hasAmpersand = false;
-					for (var k = 0; k < nestedSelectors.length; k++) {
-						if (ampersandRegExp.test(nestedSelectors[k])) {
-							hasAmpersand = true;
-							break;
-						}
-					}
-
-					// If any selector has &, skip validation for this entire pseudo-class
-					if (hasAmpersand) {
-						continue;
-					}
-
-					// Otherwise, validate each selector normally
-					for (var i = 0; i < nestedSelectors.length; i++) {
-						var nestedSelector = nestedSelectors[i];
-						if (!validatedSelectorsCache.hasOwnProperty(nestedSelector)) {
-							var nestedSelectorValidation = validateSelector(nestedSelector);
-							validatedSelectorsCache[nestedSelector] = nestedSelectorValidation;
-							if (!nestedSelectorValidation) {
-								validatedSelectorsCache[selector] = false;
-								return false;
-							}
-						} else if (!validatedSelectorsCache[nestedSelector]) {
-							validatedSelectorsCache[selector] = false;
-							return false;
-						}
-					}
-				}
-			}
-
-			var basicSelectorValidation = basicSelectorValidator(selector);
-			validatedSelectorsCache[selector] = basicSelectorValidation;
-
-			return basicSelectorValidation;
-		}
-
-		/**
-		 * Validates namespace selectors by checking if the namespace prefix is defined.
-		 * 
-		 * @param {string} selector - The CSS selector to validate
-		 * @returns {boolean} Returns true if the namespace is valid, false otherwise
-		 */
-		function validateNamespaceSelector(selector) {
-			// Check if selector contains a namespace prefix
-			// We need to ignore pipes inside attribute selectors
-			var pipeIndex = -1;
-			var inAttr = false;
-			var inSingleQuote = false;
-			var inDoubleQuote = false;
-
-			for (var i = 0; i < selector.length; i++) {
-				var char = selector[i];
-
-				// Handle escape sequences - skip hex escapes or simple escapes
-				if (char === '\\') {
-					var escapeLen = getEscapeSequenceLength(selector, i);
-					if (escapeLen > 0) {
-						i += escapeLen - 1; // -1 because loop will increment
-						continue;
-					}
-				}
-
-				if (inSingleQuote) {
-					if (char === "'") {
-						inSingleQuote = false;
-					}
-				} else if (inDoubleQuote) {
-					if (char === '"') {
-						inDoubleQuote = false;
-					}
-				} else if (inAttr) {
-					if (char === "]") {
-						inAttr = false;
-					} else if (char === "'") {
-						inSingleQuote = true;
-					} else if (char === '"') {
-						inDoubleQuote = true;
-					}
-				} else {
-					if (char === "[") {
-						inAttr = true;
-					} else if (char === "|" && !inAttr) {
-						// This is a namespace separator, not an attribute operator
-						pipeIndex = i;
-						break;
-					}
-				}
-			}
-
-			if (pipeIndex === -1) {
-				return true; // No namespace, always valid
-			}
-
-			var namespacePrefix = selector.substring(0, pipeIndex);
-
-			// Universal namespace (*|) and default namespace (|) are always valid
-			if (namespacePrefix === '*' || namespacePrefix === '') {
-				return true;
-			}
-
-			// Check if the custom namespace prefix is defined
-			return definedNamespacePrefixes.hasOwnProperty(namespacePrefix);
-		}
-
-		/**
-		 * Normalizes escape sequences in a selector to match browser behavior.
-		 * Decodes escape sequences and re-encodes them in canonical form.
-		 * 
-		 * @param {string} selector - The selector to normalize
-		 * @returns {string} Normalized selector
-		 */
-		function normalizeSelectorEscapes(selector) {
-			var result = '';
-			var i = 0;
-			var nextChar = '';
-			var inAttribute = false;
-			var attributeDepth = 0;
-			var needsEscapeForIdent = false;
-			var lastWasHexEscape = false;
-			
-			while (i < selector.length) {
-				var char = selector[i];
-				
-				// Track attribute selector context
-				if (char === '[' && !inAttribute) {
-					inAttribute = true;
-					attributeDepth = 1;
-					result += char;
-					i++;
-					needsEscapeForIdent = false;
-					lastWasHexEscape = false;
-					continue;
-				}
-				
-				if (inAttribute) {
-					if (char === '[') attributeDepth++;
-					if (char === ']') {
-						attributeDepth--;
-						if (attributeDepth === 0) inAttribute = false;
-					}
-					// Don't normalize escapes inside attribute selectors
-					if (char === '\\' && i + 1 < selector.length) {
-						var escapeLen = getEscapeSequenceLength(selector, i);
-						result += selector.substr(i, escapeLen);
-						i += escapeLen;
-					} else {
-						result += char;
-						i++;
-					}
-					lastWasHexEscape = false;
-					continue;
-				}
-				
-				// Handle escape sequences
-				if (char === '\\') {
-					var escapeLen = getEscapeSequenceLength(selector, i);
-					if (escapeLen > 0) {
-						var escapeSeq = selector.substr(i, escapeLen);
-						var decoded = decodeEscapeSequence(escapeSeq);
-						var wasHexEscape = startsWithHexEscapeRegExp.test(escapeSeq);
-						var hadTerminatingSpace = wasHexEscape && escapeSeq[escapeLen - 1] === ' ';
-						nextChar = selector[i + escapeLen] || '';
-						
-						// Check if this character needs escaping
-						var needsEscape = false;
-						var useHexEscape = false;
-						
-						if (needsEscapeForIdent) {
-							// At start of identifier (after . # or -)
-							// Digits must be escaped, letters/underscore/_/- don't need escaping
-							if (isDigit(decoded)) {
-								needsEscape = true;
-								useHexEscape = true;
-							} else if (decoded === '-') {
-								// Dash at identifier start: keep escaped if it's the only character,
-								// otherwise it can be decoded
-								var remainingSelector = selector.substring(i + escapeLen);
-								var hasMoreIdentChars = remainingSelector && identCharRegExp.test(remainingSelector[0]);
-								needsEscape = !hasMoreIdentChars;
-							} else if (!identStartCharRegExp.test(decoded)) {
-								needsEscape = true;
-							}
-						} else {
-							if (specialCharsNeedEscapeRegExp.test(decoded)) {
-								needsEscape = true;
-							}
-						}
-						
-						if (needsEscape) {
-							if (useHexEscape) {
-								// Use normalized hex escape
-								var codePoint = decoded.charCodeAt(0);
-								var hex = codePoint.toString(16);
-								result += '\\' + hex;
-								// Add space if next char could continue the hex sequence, 
-								// or if at end of selector (to disambiguate the escape)
-								if (isHexDigit(nextChar) || !nextChar || afterHexEscapeSeparatorRegExp.test(nextChar)) {
-									result += ' ';
-									lastWasHexEscape = false;
-								} else {
-									lastWasHexEscape = true;
-								}
-							} else {
-								// Use simple character escape
-								result += '\\' + decoded;
-								lastWasHexEscape = false;
-							}
-						} else {
-							// No escape needed, use the character directly
-							// But if previous was hex escape (without terminating space) and this is alphanumeric, add space
-							if (lastWasHexEscape && !hadTerminatingSpace && isAlphanumeric(decoded)) {
-								result += ' ';
-							}
-							result += decoded;
-							// Preserve terminating space at end of selector (when followed by non-ident char)
-							if (hadTerminatingSpace && (!nextChar || afterHexEscapeSeparatorRegExp.test(nextChar))) {
-								result += ' ';
-							}
-							lastWasHexEscape = false;
-						}
-						
-						i += escapeLen;
-						// After processing escape, check if we're still needing ident validation
-						// Only stay in needsEscapeForIdent state if decoded was '-'
-						needsEscapeForIdent = needsEscapeForIdent && decoded === '-';
-						continue;
-					}
-				}
-				
-				// Handle regular characters
-				if (char === '.' || char === '#') {
-					result += char;
-					needsEscapeForIdent = true;
-					lastWasHexEscape = false;
-					i++;
-				} else if (char === '-' && needsEscapeForIdent) {
-					// Dash after . or # - next char must be valid ident start or digit (which needs escaping)
-					result += char;
-					needsEscapeForIdent = true;
-					lastWasHexEscape = false;
-					i++;
-				} else if (isDigit(char) && needsEscapeForIdent) {
-					// Digit at identifier start must be hex escaped
-					var codePoint = char.charCodeAt(0);
-					var hex = codePoint.toString(16);
-					result += '\\' + hex;
-					nextChar = selector[i + 1] || '';
-					// Add space if next char could continue the hex sequence,
-					// or if at end of selector (to disambiguate the escape)
-					if (isHexDigit(nextChar) || !nextChar || afterHexEscapeSeparatorRegExp.test(nextChar)) {
-						result += ' ';
-						lastWasHexEscape = false;
-					} else {
-						lastWasHexEscape = true;
-					}
-					needsEscapeForIdent = false;
-					i++;
-				} else if (char === ':' || combinatorOrSeparatorRegExp.test(char)) {
-					// Combinators, separators, and pseudo-class markers reset identifier state
-					// Preserve trailing space from hex escape
-					if (!(char === ' ' && lastWasHexEscape && result[result.length - 1] === ' ')) {
-						result += char;
-					}
-					needsEscapeForIdent = false;
-					lastWasHexEscape = false;
-					i++;
-				} else if (isLetter(char) && lastWasHexEscape) {
-					// Letter after hex escape needs a space separator
-					result += ' ' + char;
-					needsEscapeForIdent = false;
-					lastWasHexEscape = false;
-					i++;
-				} else if (char === ' ' && lastWasHexEscape) {
-					// Trailing space - keep it if at end or before non-ident char
-					nextChar = selector[i + 1] || '';
-					if (!nextChar || trailingSpaceSeparatorRegExp.test(nextChar)) {
-						result += char;
-					}
-					needsEscapeForIdent = false;
-					lastWasHexEscape = false;
-					i++;
-				} else {
-					result += char;
-					needsEscapeForIdent = false;
-					lastWasHexEscape = false;
-					i++;
-				}
-			}
-			
-			return result;
-		}
-
-		/**
-		 * Helper function to decode all escape sequences in a string.
-		 * 
-		 * @param {string} str - The string to decode
-		 * @returns {string} The decoded string
-		 */
-		function decodeEscapeSequencesInString(str) {
-			var result = '';
-			for (var i = 0; i < str.length; i++) {
-				if (str[i] === '\\' && i + 1 < str.length) {
-					// Get the escape sequence length
-					var escapeLen = getEscapeSequenceLength(str, i);
-					if (escapeLen > 0) {
-						var escapeSeq = str.substr(i, escapeLen);
-						var decoded = decodeEscapeSequence(escapeSeq);
-						result += decoded;
-						i += escapeLen - 1; // -1 because loop will increment
-						continue;
-					}
-				}
-				result += str[i];
-			}
-			return result;
-		}
-
-		/**
-		 * Decodes a CSS escape sequence to its character value.
-		 * 
-		 * @param {string} escapeSeq - The escape sequence (including backslash)
-		 * @returns {string} The decoded character
-		 */
-		function decodeEscapeSequence(escapeSeq) {
-			if (escapeSeq.length < 2 || escapeSeq[0] !== '\\') {
-				return escapeSeq;
-			}
-			
-			var content = escapeSeq.substring(1);
-			
-			// Check if it's a hex escape
-			var hexMatch = content.match(hexEscapeSequenceRegExp);
-			if (hexMatch) {
-				var codePoint = parseInt(hexMatch[1], 16);
-				// Handle surrogate pairs for code points > 0xFFFF
-				if (codePoint > 0xFFFF) {
-					// Convert to surrogate pair
-					codePoint -= 0x10000;
-					var high = 0xD800 + (codePoint >> 10);
-					var low = 0xDC00 + (codePoint & 0x3FF);
-					return String.fromCharCode(high, low);
-				}
-				return String.fromCharCode(codePoint);
-			}
-			
-			// Simple escape - return the character after backslash
-			return content[0] || '';
-		}
-
-		/**
-		 * Normalizes attribute selectors by ensuring values are properly quoted with double quotes.
-		 * Examples:
-		 *   [attr=value] -> [attr="value"]
-		 *   [attr="value"] -> [attr="value"] (unchanged)
-		 *   [attr='value'] -> [attr="value"] (converted to double quotes)
-		 * 
-		 * @param {string} selector - The selector to normalize
-		 * @returns {string|null} Normalized selector, or null if invalid
-		 */
-		function normalizeAttributeSelectors(selector) {
-			var result = '';
-			var i = 0;
-			
-			while (i < selector.length) {
-				// Look for attribute selector start
-				if (selector[i] === '[') {
-					result += '[';
-					i++;
-					
-					var attrContent = '';
-					var depth = 1;
-					
-					// Find the closing bracket, handling nested brackets and escapes
-					while (i < selector.length && depth > 0) {
-						if (selector[i] === '\\' && i + 1 < selector.length) {
-							attrContent += selector.substring(i, i + 2);
-							i += 2;
-							continue;
-						}
-						if (selector[i] === '[') depth++;
-						if (selector[i] === ']') {
-							depth--;
-							if (depth === 0) break;
-						}
-						attrContent += selector[i];
-						i++;
-					}
-					
-					// Normalize the attribute content
-					var normalized = normalizeAttributeContent(attrContent);
-					if (normalized === null) {
-						// Invalid attribute selector (e.g., unclosed quote)
-						return null;
-					}
-					result += normalized;
-					if (i < selector.length && selector[i] === ']') {
-						result += ']';
-						i++;
-					}
-				} else {
-					result += selector[i];
-					i++;
-				}
-			}
-			
-			return result;
-		}
-
-		/**
-		 * Processes a quoted attribute value by checking for proper closure and decoding escape sequences.
-		 * @param {string} trimmedValue - The quoted value (with quotes)
-		 * @param {string} quoteChar - The quote character ('"' or "'")
-		 * @param {string} attrName - The attribute name
-		 * @param {string} operator - The attribute operator
-		 * @param {string} flag - Optional case-sensitivity flag
-		 * @returns {string|null} Normalized attribute content, or null if invalid
-		 */
-		function processQuotedAttributeValue(trimmedValue, quoteChar, attrName, operator, flag) {
-			// Check if the closing quote is properly closed (not escaped)
-			if (trimmedValue.length < 2) {
-				return null; // Too short
-			}
-			// Find the actual closing quote (not escaped)
-			var i = 1;
-			var foundClose = false;
-			while (i < trimmedValue.length) {
-				if (trimmedValue[i] === '\\' && i + 1 < trimmedValue.length) {
-					// Skip escape sequence
-					var escapeLen = getEscapeSequenceLength(trimmedValue, i);
-					i += escapeLen;
-					continue;
-				}
-				if (trimmedValue[i] === quoteChar) {
-					// Found closing quote
-					foundClose = (i === trimmedValue.length - 1);
-					break;
-				}
-				i++;
-			}
-			if (!foundClose) {
-				return null; // Unclosed quote - invalid
-			}
-			// Extract inner value and decode escape sequences
-			var innerValue = trimmedValue.slice(1, -1);
-			var decodedValue = decodeEscapeSequencesInString(innerValue);
-			// If decoded value contains quotes, we need to escape them
-			var escapedValue = decodedValue.replace(doubleQuoteRegExp, '\\"');
-			return attrName + operator + '"' + escapedValue + '"' + (flag ? ' ' + flag : '');
-		}
-
-		/**
-		 * Normalizes the content inside an attribute selector.
-		 * @param {string} content - The content between [ and ]
-		 * @returns {string} Normalized content, or null if invalid
-		 */
-		function normalizeAttributeContent(content) {
-			// Match: attribute-name [operator] [value] [flag]
-			var match = content.match(attributeSelectorContentRegExp);
-			
-			if (!match) {
-				// No operator (e.g., [disabled]) or malformed - return as is
-				return content;
-			}
-			
-			var attrName = match[1];
-			var operator = match[2];
-			var valueAndFlag = match[3].trim(); // Trim here instead of in regex
-			
-			// Check if there's a case-sensitivity flag (i or s) at the end
-			var flagMatch = valueAndFlag.match(attributeCaseFlagRegExp);
-			var value = flagMatch ? flagMatch[1] : valueAndFlag;
-			var flag = flagMatch ? flagMatch[2] : '';
-			
-			// Check for unclosed quotes - this makes the selector invalid
-			var trimmedValue = value.trim();
-			var firstChar = trimmedValue[0];
-			
-			if (firstChar === '"') {
-				return processQuotedAttributeValue(trimmedValue, '"', attrName, operator, flag);
-			}
-			
-			if (firstChar === "'") {
-				return processQuotedAttributeValue(trimmedValue, "'", attrName, operator, flag);
-			}
-			
-			// Check for unescaped special characters in unquoted values
-			// Escaped special characters are valid (e.g., \` is valid, but ` is not)
-			var hasUnescapedSpecialChar = false;
-			for (var i = 0; i < trimmedValue.length; i++) {
-				var char = trimmedValue[i];
-				if (char === '\\' && i + 1 < trimmedValue.length) {
-					// Skip the entire escape sequence
-					var escapeLen = getEscapeSequenceLength(trimmedValue, i);
-					if (escapeLen > 0) {
-						i += escapeLen - 1; // -1 because loop will increment
-						continue;
-					}
-				}
-				// Check if this is an unescaped special character
-				if (specialCharsNeedEscapeRegExp.test(char)) {
-					hasUnescapedSpecialChar = true;
-					break;
-				}
-			}
-			
-			if (hasUnescapedSpecialChar) {
-				return null; // Unescaped special characters not allowed in unquoted attribute values
-			}
-			
-			// Decode escape sequences in the value before quoting
-			// Inside quotes, special characters don't need escaping
-			var decodedValue = decodeEscapeSequencesInString(trimmedValue);
-			
-			// If the decoded value contains double quotes, escape them for the output
-			// (since we're using double quotes as delimiters)
-			var escapedValue = decodedValue.replace(backslashRegExp, '\\\\').replace(doubleQuoteRegExp, '\\"');
-			
-			// Unquoted value - add double quotes with decoded and re-escaped content
-			return attrName + operator + '"' + escapedValue + '"' + (flag ? ' ' + flag : '');
-		}
-
-		/**
-		 * Processes a CSS selector text 
-		 * 
-		 * @param {string} selectorText - The CSS selector text to process
-		 * @returns {string} The processed selector text with normalized whitespace and invalid selectors removed
-		 */
-		function processSelectorText(selectorText) {
-			// Normalize whitespace first
-			var normalized = selectorText.replace(whitespaceNormalizationRegExp, function (match, _, newline) {
-				if (newline) return " ";
-				return match;
-			});
-
-			// Normalize escape sequences to match browser behavior
-			normalized = normalizeSelectorEscapes(normalized);
-
-			// Normalize attribute selectors (add quotes to unquoted values)
-			// Returns null if invalid (e.g., unclosed quotes)
-			normalized = normalizeAttributeSelectors(normalized);
-			if (normalized === null) {
-				return ''; // Invalid selector - return empty to trigger validation failure
-			}
-
-			// Recursively process pseudo-classes to handle nesting
-			return processNestedPseudoClasses(normalized);
-		}
-
-		/**
-		 * Recursively processes pseudo-classes to filter invalid selectors
-		 * 
-		 * @param {string} selectorText - The CSS selector text to process
-		 * @param {number} depth - Current recursion depth (to prevent infinite loops)
-		 * @returns {string} The processed selector text with invalid selectors removed
-		 */
-		function processNestedPseudoClasses(selectorText, depth) {
-			// Prevent infinite recursion
-			if (typeof depth === 'undefined') {
-				depth = 0;
-			}
-			if (depth > 10) {
-				return selectorText;
-			}
-
-			var pseudoClassMatches = extractPseudoClasses(selectorText);
-
-			// If no pseudo-classes found, return as-is
-			if (pseudoClassMatches.length === 0) {
-				return selectorText;
-			}
-
-			// Build result by processing matches from right to left (to preserve positions)
-			var result = selectorText;
-
-			for (var j = pseudoClassMatches.length - 1; j >= 0; j--) {
-				var pseudoClass = pseudoClassMatches[j][1];
-				if (selectorListPseudoClasses.hasOwnProperty(pseudoClass)) {
-					var fullMatch = pseudoClassMatches[j][0];
-					var pseudoArgs = pseudoClassMatches[j][2];
-					var matchStart = pseudoClassMatches[j][3];
-
-					// Check if ANY selector contains & BEFORE processing
-					var nestedSelectorsRaw = parseAndSplitNestedSelectors(pseudoArgs);
-					var hasAmpersand = false;
-					for (var k = 0; k < nestedSelectorsRaw.length; k++) {
-						if (ampersandRegExp.test(nestedSelectorsRaw[k])) {
-							hasAmpersand = true;
-							break;
-						}
-					}
-
-					// If & is present, skip all processing (keep everything unchanged)
-					if (hasAmpersand) {
-						continue;
-					}
-
-					// Recursively process the arguments
-					var processedArgs = processNestedPseudoClasses(pseudoArgs, depth + 1);
-					var nestedSelectors = parseAndSplitNestedSelectors(processedArgs);
-
-					// Filter out invalid selectors
-					var validSelectors = [];
-					for (var i = 0; i < nestedSelectors.length; i++) {
-						var nestedSelector = nestedSelectors[i];
-						if (basicSelectorValidator(nestedSelector)) {
-							validSelectors.push(nestedSelector);
-						}
-					}
-
-					// Reconstruct the pseudo-class with only valid selectors
-					var newArgs = validSelectors.join(', ');
-					var newPseudoClass = ':' + pseudoClass + '(' + newArgs + ')';
-
-					// Replace in the result string using position (processing right to left preserves positions)
-					result = result.substring(0, matchStart) + newPseudoClass + result.substring(matchStart + fullMatch.length);
-				}
-			}
-
-			return result;
-		}
-
-		/**
-		 * Checks if a selector contains newlines inside quoted strings.
-		 * Uses iterative parsing to avoid regex backtracking issues.
-		 * @param {string} selectorText - The selector to check
-		 * @returns {boolean} True if newlines found inside quotes
-		 */
-		function hasNewlineInQuotedString(selectorText) {
-			for (var i = 0; i < selectorText.length; i++) {
-				var char = selectorText[i];
-				
-				// Start of single-quoted string
-				if (char === "'") {
-					i++;
-					while (i < selectorText.length) {
-						if (selectorText[i] === '\\' && i + 1 < selectorText.length) {
-							// Skip escape sequence
-							i += 2;
-							continue;
-						}
-						if (selectorText[i] === "'") {
-							// End of string
-							break;
-						}
-						if (selectorText[i] === '\r' || selectorText[i] === '\n') {
-							return true;
-						}
-						i++;
-					}
-				}
-				// Start of double-quoted string
-				else if (char === '"') {
-					i++;
-					while (i < selectorText.length) {
-						if (selectorText[i] === '\\' && i + 1 < selectorText.length) {
-							// Skip escape sequence
-							i += 2;
-							continue;
-						}
-						if (selectorText[i] === '"') {
-							// End of string
-							break;
-						}
-						if (selectorText[i] === '\r' || selectorText[i] === '\n') {
-							return true;
-						}
-						i++;
-					}
-				}
-			}
-			return false;
-		}
-
-		/**
-		 * Checks if a given CSS selector text is valid by splitting it by commas
-		 * and validating each individual selector using the `validateSelector` function.
-		 *
-		 * @param {string} selectorText - The CSS selector text to validate. Can contain multiple selectors separated by commas.
-		 * @returns {boolean} Returns true if all selectors are valid, otherwise false.
-		 */
-		function isValidSelectorText(selectorText) {
-			// TODO: The same validations here needs to be reused in CSSStyleRule.selectorText setter
-			// TODO: Move these validation logic to a shared function to be reused in CSSStyleRule.selectorText setter
-
-			// Check for empty or whitespace-only selector
-			if (!selectorText || selectorText.trim() === '') {
-				return false;
-			}
-
-			// Check for empty selector lists in pseudo-classes (e.g., :is(), :not(), :where(), :has())
-			// These are invalid after filtering out invalid selectors
-			if (emptyPseudoClassRegExp.test(selectorText)) {
-				return false;
-			}
-
-			// Check for newlines inside single or double quotes
-			// Uses helper function to avoid regex security issues
-			if (hasNewlineInQuotedString(selectorText)) {
-				return false;
-			}
-
-			// Split selectorText by commas and validate each part
-			var selectors = parseAndSplitNestedSelectors(selectorText);
-			for (var i = 0; i < selectors.length; i++) {
-				var selector = selectors[i].trim();
-				if (!validateSelector(selector) || !validateNamespaceSelector(selector)) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		function pushToAncestorRules(rule) {
-			ancestorRules.push(rule);
-		}
-
-		function parseError(message, isNested) {
-			var lines = token.substring(0, i).split('\n');
-			var lineCount = lines.length;
-			var charCount = lines.pop().length + 1;
-			var error = new Error(message + ' (line ' + lineCount + ', char ' + charCount + ')');
-			error.line = lineCount;
-			/* jshint sub : true */
-			error['char'] = charCount;
-			error.styleSheet = styleSheet;
-			error.isNested = !!isNested;
-			// Print the error but continue parsing the sheet
-			try {
-				throw error;
-			} catch (e) {
-				errorHandler && errorHandler(e);
-			}
-		}
-		/**
-		 * Handles invalid selectors with unmatched quotes by skipping the entire rule block.
-		 * @param {string} nextState - The parser state to transition to after skipping
-		 */
-		function handleUnmatchedQuoteInSelector(nextState) {
-			// parseError('Invalid selector with unmatched quote: ' + buffer.trim());
-			// Skip this entire invalid rule including its block
-			var ruleClosingMatch = token.slice(i).match(forwardRuleClosingBraceRegExp);
-			if (ruleClosingMatch) {
-				i += ruleClosingMatch.index + ruleClosingMatch[0].length - 1;
-			}
-			styleRule = null;
-			buffer = "";
-			hasUnmatchedQuoteInSelector = false; // Reset flag
-			state = nextState;
-		}
-
-		// Helper functions to check character types
-		function isSelectorStartChar(char) {
-			return '.:#&*[\\'.indexOf(char) !== -1;
-		}
-
-		function isWhitespaceChar(char) {
-			return ' \t\n\r'.indexOf(char) !== -1;
-		}
-
-		// Helper functions for character type checking (faster than regex for single chars)
-		function isDigit(char) {
-			var code = char.charCodeAt(0);
-			return code >= 0x0030 && code <= 0x0039; // 0-9
-		}
-
-		function isHexDigit(char) {
-			if (!char) return false;
-			var code = char.charCodeAt(0);
-			return (code >= 0x0030 && code <= 0x0039) || // 0-9
-			       (code >= 0x0041 && code <= 0x0046) || // A-F
-			       (code >= 0x0061 && code <= 0x0066);   // a-f
-		}
-
-		function isLetter(char) {
-			if (!char) return false;
-			var code = char.charCodeAt(0);
-			return (code >= 0x0041 && code <= 0x005A) || // A-Z
-			       (code >= 0x0061 && code <= 0x007A);   // a-z
-		}
-
-		function isAlphanumeric(char) {
-			var code = char.charCodeAt(0);
-			return (code >= 0x0030 && code <= 0x0039) || // 0-9
-			       (code >= 0x0041 && code <= 0x005A) || // A-Z
-			       (code >= 0x0061 && code <= 0x007A);   // a-z
-		}
-
-		/**
-		 * Get the length of an escape sequence starting at the given position.
-		 * CSS escape sequences are:
-		 * - Backslash followed by 1-6 hex digits, optionally followed by a whitespace (consumed)
-		 * - Backslash followed by any non-hex character
-		 * @param {string} str - The string to check
-		 * @param {number} pos - Position of the backslash
-		 * @returns {number} Number of characters in the escape sequence (including backslash)
-		 */
-		function getEscapeSequenceLength(str, pos) {
-			if (str[pos] !== '\\' || pos + 1 >= str.length) {
-				return 0;
-			}
-			
-			var nextChar = str[pos + 1];
-			
-			// Check if it's a hex escape
-			if (isHexDigit(nextChar)) {
-				var hexLength = 1;
-				// Count up to 6 hex digits
-				while (hexLength < 6 && pos + 1 + hexLength < str.length && isHexDigit(str[pos + 1 + hexLength])) {
-					hexLength++;
-				}
-				// Check if followed by optional whitespace (which gets consumed)
-				if (pos + 1 + hexLength < str.length && isWhitespaceChar(str[pos + 1 + hexLength])) {
-					return 1 + hexLength + 1; // backslash + hex digits + whitespace
-				}
-				return 1 + hexLength; // backslash + hex digits
-			}
-			
-			// Simple escape: backslash + any character
-			return 2;
-		}
-
-		/**
-		 * Check if a string contains an unescaped occurrence of a specific character
-		 * @param {string} str - The string to search
-		 * @param {string} char - The character to look for
-		 * @returns {boolean} True if the character appears unescaped
-		 */
-		function containsUnescaped(str, char) {
-			for (var i = 0; i < str.length; i++) {
-				if (str[i] === '\\') {
-					var escapeLen = getEscapeSequenceLength(str, i);
-					if (escapeLen > 0) {
-						i += escapeLen - 1; // -1 because loop will increment
-						continue;
-					}
-				}
-				if (str[i] === char) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		/**
-		 * Validates media query syntax for invalid patterns.
-		 * 
-		 * @param {string} text - The media/condition text to validate
-		 * @returns {boolean} True if invalid, false if valid
-		 */
-		function isInvalidConditionText(text) {
-			return invalidMediaOperatorWithoutSpaceRegExp.test(text) ||
-				   invalidMediaNotAfterOperatorRegExp.test(text) ||
-				   invalidMediaNotIdentifierRegExp.test(text) ||
-				   invalidMediaNotAfterFeatureRegExp.test(text) ||
-				   invalidMediaOperatorBetweenParensRegExp.test(text) ||
-				   invalidMediaNotWithMediaTypeRegExp.test(text);
-		}
-
-		/**
-		 * Normalizes media query or condition text to match browser serialization.
-		 * Ensures spaces after colons in media features and around logical operators.
-		 * Returns "not all" for invalid syntax (e.g., missing spaces after operators).
-		 * 
-		 * @param {string} text - The media/condition text to normalize
-		 * @returns {string} Normalized text or "not all" if invalid
-		 */
-		function normalizeConditionText(text) {
-			if (isInvalidConditionText(text)) {
-				return 'not all';
-			}
-
-			var result = text;
-
-			// Normalize colons only in media features, not in function calls
-			// Function syntax: identifier( - should be preserved as-is
-			// Media feature: (name: value) - should normalize colon spacing
-			// Strategy: only normalize colons that come after '(' without an identifier before it
-			result = result.replace(mediaFeatureColonRegExp, function(match, openParen, name, spaces, rest) {
-				// Check if there's an identifier immediately before the opening paren
-				var beforeMatch = result.lastIndexOf(match);
-				var beforeParen = beforeMatch > 0 ? result.charAt(beforeMatch - 1) : '';
-				
-				// If character before '(' is alphanumeric, it's a function call - keep as-is
-				if (identifierBeforeParenRegExp.test(beforeParen)) {
-					return match;
-				}
-				
-				// Otherwise it's a media feature - normalize colon
-				return openParen + name + ': ' + rest;
-			});
-
-			// Normalize 'and' operator with word boundaries: ensure exactly one space before and after
-			result = result.replace(mediaAndOperatorRegExp, ' and ');
-
-			// Normalize 'or' operator with word boundaries: ensure exactly one space before and after  
-			result = result.replace(mediaOrOperatorRegExp, ' or ');
-
-			// Normalize 'not' operator only when followed by space (not when followed by '(')
-			// 'not(' is a valid identifier/function, 'not ' is the operator
-			// At start: ensure exactly one space after
-			result = result.replace(mediaNotOperatorStartRegExp, 'not ');
-			
-			// After space: ensure exactly one space before and after (but not 'not(')
-			result = result.replace(mediaNotOperatorRegExp, ' not ');
-
-			return result.trim();
-		}
-
-		var endingIndex = token.length - 1;
-		var initialEndingIndex = endingIndex;
-
-		for (var character; (character = token.charAt(i)); i++) {
-			if (i === endingIndex) {
-				switch (state) {
-					case "importRule":
-					case "namespaceRule":
-					case "layerBlock":
-						if (character !== ";") {
-							token += ";";
-							endingIndex += 1;
-						}
-						break;
-					case "value":
-						if (character !== "}") {
-							if (character === ";") {
-								token += "}";
-							} else {
-								token += ";";
-							}
-							endingIndex += 1;
-							break;
-						}
-					case "name":
-					case "before-name":
-						if (character === "}") {
-							token += " ";
-						} else {
-							token += "}";
-						}
-						endingIndex += 1;
-						break;
-					case "before-selector":
-						if (character !== "}" && currentScope !== styleSheet) {
-							token += "}";
-							endingIndex += 1;
-							break;
-						}
-				}
-			}
-
-			// Handle escape sequences before processing special characters
-			// CSS escape sequences: \HHHHHH (1-6 hex digits) optionally followed by whitespace, or \ + any char
-			if (character === '\\' && i + 1 < token.length) {
-				var escapeLen = getEscapeSequenceLength(token, i);
-				if (escapeLen > 0) {
-					buffer += token.substr(i, escapeLen);
-					i += escapeLen - 1; // -1 because loop will increment
-					continue;
-				}
-			}
-
-			switch (character) {
-
-				case " ":
-				case "\t":
-				case "\r":
-				case "\n":
-				case "\f":
-					if (SIGNIFICANT_WHITESPACE[state]) {
-						buffer += character;
-					}
-					break;
-
-				// String
-				case '"':
-					index = i + 1;
-					do {
-						index = token.indexOf('"', index) + 1;
-						if (!index) {
-							parseError('Unmatched "');
-							// If we're parsing a selector, flag it as invalid
-							if (state === "selector" || state === "atRule") {
-								hasUnmatchedQuoteInSelector = true;
-							}
-						}
-					} while (token[index - 2] === '\\');
-					if (index === 0) {
-						break;
-					}
-					buffer += token.slice(i, index);
-					i = index - 1;
-					switch (state) {
-						case 'before-value':
-							state = 'value';
-							break;
-						case 'importRule-begin':
-							state = 'importRule';
-							if (i === endingIndex) {
-								token += ';';
-							}
-							break;
-						case 'namespaceRule-begin':
-							state = 'namespaceRule';
-							if (i === endingIndex) {
-								token += ';';
-							}
-							break;
-					}
-					break;
-
-				case "'":
-					index = i + 1;
-					do {
-						index = token.indexOf("'", index) + 1;
-						if (!index) {
-							parseError("Unmatched '");
-							// If we're parsing a selector, flag it as invalid
-							if (state === "selector" || state === "atRule") {
-								hasUnmatchedQuoteInSelector = true;
-							}
-						}
-					} while (token[index - 2] === '\\');
-					if (index === 0) {
-						break;
-					}
-					buffer += token.slice(i, index);
-					i = index - 1;
-					switch (state) {
-						case 'before-value':
-							state = 'value';
-							break;
-						case 'importRule-begin':
-							state = 'importRule';
-							break;
-						case 'namespaceRule-begin':
-							state = 'namespaceRule';
-							break;
-					}
-					break;
-
-				// Comment
-				case "/":
-					if (token.charAt(i + 1) === "*") {
-						i += 2;
-						index = token.indexOf("*/", i);
-						if (index === -1) {
-							i = token.length - 1;
-							buffer = "";
-						} else {
-							i = index + 1;
-						}
-					} else {
-						buffer += character;
-					}
-					if (state === "importRule-begin") {
-						buffer += " ";
-						state = "importRule";
-					}
-					if (state === "namespaceRule-begin") {
-						buffer += " ";
-						state = "namespaceRule";
-					}
-					break;
-
-				// At-rule
-				case "@":
-					if (nestedSelectorRule) {
-						if (styleRule && styleRule.constructor.name === "CSSNestedDeclarations") {
-							currentScope.cssRules.push(styleRule);
-						}
-						// Only reset styleRule to parent if styleRule is not the nestedSelectorRule itself
-						// This preserves nested selectors when followed immediately by @-rules
-						if (styleRule !== nestedSelectorRule && nestedSelectorRule.parentRule && nestedSelectorRule.parentRule.constructor.name === "CSSStyleRule") {
-							styleRule = nestedSelectorRule.parentRule;
-						}
-						// Don't reset nestedSelectorRule here - preserve it through @-rules
-					}
-					if (token.indexOf("@-moz-document", i) === i) {
-						validateAtRule("@-moz-document", function () {
-							state = "documentRule-begin";
-							documentRule = new CSSOM.CSSDocumentRule();
-							documentRule.__starts = i;
-							i += "-moz-document".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@media", i) === i) {
-						validateAtRule("@media", function () {
-							state = "atBlock";
-							mediaRule = new CSSOM.CSSMediaRule();
-							mediaRule.__starts = i;
-							i += "media".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@container", i) === i) {
-						validateAtRule("@container", function () {
-							state = "containerBlock";
-							containerRule = new CSSOM.CSSContainerRule();
-							containerRule.__starts = i;
-							i += "container".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@counter-style", i) === i) {
-						buffer = "";
-						// @counter-style can be nested only inside CSSScopeRule or CSSConditionRule
-						// and only if there's no CSSStyleRule in the parent chain
-						var cannotBeNested = !canAtRuleBeNested();
-						validateAtRule("@counter-style", function () {
-							state = "counterStyleBlock";
-							counterStyleRule = new CSSOM.CSSCounterStyleRule();
-							counterStyleRule.__starts = i;
-							i += "counter-style".length;
-						}, cannotBeNested);
-						break;
-					} else if (token.indexOf("@property", i) === i) {
-						buffer = "";
-						// @property can be nested only inside CSSScopeRule or CSSConditionRule
-						// and only if there's no CSSStyleRule in the parent chain
-						var cannotBeNested = !canAtRuleBeNested();
-						validateAtRule("@property", function () {
-							state = "propertyBlock";
-							propertyRule = new CSSOM.CSSPropertyRule();
-							propertyRule.__starts = i;
-							i += "property".length;
-						}, cannotBeNested);
-						break;
-					} else if (token.indexOf("@scope", i) === i) {
-						validateAtRule("@scope", function () {
-							state = "scopeBlock";
-							scopeRule = new CSSOM.CSSScopeRule();
-							scopeRule.__starts = i;
-							i += "scope".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@layer", i) === i) {
-						validateAtRule("@layer", function () {
-							state = "layerBlock";
-							layerBlockRule = new CSSOM.CSSLayerBlockRule();
-							layerBlockRule.__starts = i;
-							i += "layer".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@page", i) === i) {
-						validateAtRule("@page", function () {
-							state = "pageBlock";
-							pageRule = new CSSOM.CSSPageRule();
-							pageRule.__starts = i;
-							i += "page".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@supports", i) === i) {
-						validateAtRule("@supports", function () {
-							state = "conditionBlock";
-							supportsRule = new CSSOM.CSSSupportsRule();
-							supportsRule.__starts = i;
-							i += "supports".length;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@host", i) === i) {
-						validateAtRule("@host", function () {
-							state = "hostRule-begin";
-							i += "host".length;
-							hostRule = new CSSOM.CSSHostRule();
-							hostRule.__starts = i;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@starting-style", i) === i) {
-						validateAtRule("@starting-style", function () {
-							state = "startingStyleRule-begin";
-							i += "starting-style".length;
-							startingStyleRule = new CSSOM.CSSStartingStyleRule();
-							startingStyleRule.__starts = i;
-						});
-						buffer = "";
-						break;
-					} else if (token.indexOf("@import", i) === i) {
-						buffer = "";
-						validateAtRule("@import", function () {
-							state = "importRule-begin";
-							i += "import".length;
-							buffer += "@import";
-						}, true);
-						break;
-					} else if (token.indexOf("@namespace", i) === i) {
-						buffer = "";
-						validateAtRule("@namespace", function () {
-							state = "namespaceRule-begin";
-							i += "namespace".length;
-							buffer += "@namespace";
-						}, true);
-						break;
-					} else if (token.indexOf("@font-face", i) === i) {
-						buffer = "";
-						// @font-face can be nested only inside CSSScopeRule or CSSConditionRule
-						// and only if there's no CSSStyleRule in the parent chain
-						var cannotBeNested = !canAtRuleBeNested();
-						validateAtRule("@font-face", function () {
-							state = "fontFaceRule-begin";
-							i += "font-face".length;
-							fontFaceRule = new CSSOM.CSSFontFaceRule();
-							fontFaceRule.__starts = i;
-						}, cannotBeNested);
-						break;
-					} else {
-						// Reset lastIndex before using global regex (shared instance)
-						atKeyframesRegExp.lastIndex = i;
-						var matchKeyframes = atKeyframesRegExp.exec(token);
-						if (matchKeyframes && matchKeyframes.index === i) {
-							state = "keyframesRule-begin";
-							keyframesRule = new CSSOM.CSSKeyframesRule();
-							keyframesRule.__starts = i;
-							keyframesRule._vendorPrefix = matchKeyframes[1]; // Will come out as undefined if no prefix was found
-							i += matchKeyframes[0].length - 1;
-							buffer = "";
-							break;
-						} else if (state === "selector") {
-							state = "atRule";
-						}
-					}
-					buffer += character;
-					break;
-
-				case "{":
-					if (currentScope === topScope) {
-						nestedSelectorRule = null;
-					}
-					if (state === 'before-selector') {
-						parseError("Unexpected {");
-						i = ignoreBalancedBlock(i, token.slice(i));
-						break;
-					}
-					if (state === "selector" || state === "atRule") {
-						if (!nestedSelectorRule && containsUnescaped(buffer, ";")) {
-							var ruleClosingMatch = token.slice(i).match(forwardRuleClosingBraceRegExp);
-							if (ruleClosingMatch) {
-								styleRule = null;
-								buffer = "";
-								state = "before-selector";
-								i += ruleClosingMatch.index + ruleClosingMatch[0].length;
-								break;
-							}
-						}
-
-						// Ensure styleRule exists before trying to set properties on it
-						if (!styleRule) {
-							styleRule = new CSSOM.CSSStyleRule();
-							styleRule.__starts = i;
-						}
-
-						// Check if tokenizer detected an unmatched quote BEFORE setting up the rule
-						if (hasUnmatchedQuoteInSelector) {
-							handleUnmatchedQuoteInSelector("before-selector");
-							break;
-						}
-
-						var originalParentRule = parentRule;
-
-						if (parentRule) {
-							styleRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-						}
-
-						currentScope = parentRule = styleRule;
-						
-						var processedSelectorText = processSelectorText(buffer.trim());
-						// In a nested selector, ensure each selector contains '&' at the beginning, except for selectors that already have '&' somewhere
-						if (originalParentRule && originalParentRule.constructor.name === "CSSStyleRule") {
-							styleRule.selectorText = parseAndSplitNestedSelectors(processedSelectorText).map(function (sel) {
-								// Add & at the beginning if there's no & in the selector, or if it starts with a combinator
-								return (sel.indexOf('&') === -1 || startsWithCombinatorRegExp.test(sel)) ? '& ' + sel : sel;
-							}).join(', ');
-						} else {
-							// Normalize comma spacing: split by commas and rejoin with ", "
-							styleRule.selectorText = parseAndSplitNestedSelectors(processedSelectorText).join(', ');
-						}
-						styleRule.style.__starts = i;
-						styleRule.__parentStyleSheet = styleSheet;
-						buffer = "";
-						state = "before-name";
-					} else if (state === "atBlock") {
-						mediaRule.media.mediaText = normalizeConditionText(buffer.trim());
-
-						if (parentRule) {
-							mediaRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-							// If entering @media from within a CSSStyleRule, set nestedSelectorRule
-							// so that & selectors and declarations work correctly inside
-							if (parentRule.constructor.name === "CSSStyleRule" && !nestedSelectorRule) {
-								nestedSelectorRule = parentRule;
-							}
-						}
-
-						currentScope = parentRule = mediaRule;
-						pushToAncestorRules(mediaRule);
-						mediaRule.__parentStyleSheet = styleSheet;
-						
-						// Don't reset styleRule to null if it's a nested CSSStyleRule that will contain this @-rule
-						if (!styleRule || styleRule.constructor.name !== "CSSStyleRule" || !styleRule.__parentRule) {
-							styleRule = null; // Reset styleRule when entering @-rule
-						}
-						
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "containerBlock") {
-						containerRule.__conditionText = normalizeConditionText(buffer.trim());
-
-						if (parentRule) {
-							containerRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-							if (parentRule.constructor.name === "CSSStyleRule" && !nestedSelectorRule) {
-								nestedSelectorRule = parentRule;
-							}
-						}
-						currentScope = parentRule = containerRule;
-						pushToAncestorRules(containerRule);
-						containerRule.__parentStyleSheet = styleSheet;
-						styleRule = null; // Reset styleRule when entering @-rule
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "counterStyleBlock") {
-						var counterStyleName = buffer.trim().replace(newlineRemovalRegExp, "");
-						// Validate: name cannot be empty, contain whitespace, or contain dots
-						var isValidCounterStyleName = counterStyleName.length > 0 && !whitespaceAndDotRegExp.test(counterStyleName);
-
-						if (isValidCounterStyleName) {
-							counterStyleRule.name = counterStyleName;
-							if (parentRule) {
-								counterStyleRule.__parentRule = parentRule;
-							}
-							counterStyleRule.__parentStyleSheet = styleSheet;
-							styleRule = counterStyleRule;
-						}
-						buffer = "";
-					} else if (state === "propertyBlock") {
-						var propertyName = buffer.trim().replace(newlineRemovalRegExp, "");
-						// Validate: name must start with -- (custom property)
-						var isValidPropertyName = propertyName.indexOf("--") === 0;
-
-						if (isValidPropertyName) {
-							propertyRule.__name = propertyName;
-							if (parentRule) {
-								propertyRule.__parentRule = parentRule;
-							}
-							propertyRule.__parentStyleSheet = styleSheet;
-							styleRule = propertyRule;
-						}
-						buffer = "";
-					} else if (state === "conditionBlock") {
-						supportsRule.__conditionText = normalizeConditionText(buffer.trim());
-
-						if (parentRule) {
-							supportsRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-							if (parentRule.constructor.name === "CSSStyleRule" && !nestedSelectorRule) {
-								nestedSelectorRule = parentRule;
-							}
-						}
-
-						currentScope = parentRule = supportsRule;
-						pushToAncestorRules(supportsRule);
-						supportsRule.__parentStyleSheet = styleSheet;
-						styleRule = null; // Reset styleRule when entering @-rule
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "scopeBlock") {
-						var parsedScopePrelude = parseScopePrelude(buffer.trim());
-
-						if (parsedScopePrelude.hasStart) {
-							scopeRule.__start = parsedScopePrelude.startSelector;
-						}
-						if (parsedScopePrelude.hasEnd) {
-							scopeRule.__end = parsedScopePrelude.endSelector;
-						}
-						if (parsedScopePrelude.hasOnlyEnd) {
-							scopeRule.__end = parsedScopePrelude.endSelector;
-						}
-
-						if (parentRule) {
-							scopeRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-							if (parentRule.constructor.name === "CSSStyleRule" && !nestedSelectorRule) {
-								nestedSelectorRule = parentRule;
-							}
-						}
-						currentScope = parentRule = scopeRule;
-						pushToAncestorRules(scopeRule);
-						scopeRule.__parentStyleSheet = styleSheet;
-						styleRule = null; // Reset styleRule when entering @-rule
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "layerBlock") {
-						layerBlockRule.name = buffer.trim();
-
-						var isValidName = layerBlockRule.name.length === 0 || layerBlockRule.name.match(cssCustomIdentifierRegExp) !== null;
-
-						if (isValidName) {
-							if (parentRule) {
-								layerBlockRule.__parentRule = parentRule;
-								pushToAncestorRules(parentRule);
-								if (parentRule.constructor.name === "CSSStyleRule" && !nestedSelectorRule) {
-									nestedSelectorRule = parentRule;
-								}
-							}
-
-							currentScope = parentRule = layerBlockRule;
-							pushToAncestorRules(layerBlockRule);
-							layerBlockRule.__parentStyleSheet = styleSheet;
-						}
-						styleRule = null; // Reset styleRule when entering @-rule
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "pageBlock") {
-						pageRule.selectorText = buffer.trim();
-
-						if (parentRule) {
-							pageRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-						}
-
-						currentScope = parentRule = pageRule;
-						pageRule.__parentStyleSheet = styleSheet;
-						styleRule = pageRule;
-						buffer = "";
-						state = "before-name";
-					} else if (state === "hostRule-begin") {
-						if (parentRule) {
-							pushToAncestorRules(parentRule);
-						}
-
-						currentScope = parentRule = hostRule;
-						pushToAncestorRules(hostRule);
-						hostRule.__parentStyleSheet = styleSheet;
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "startingStyleRule-begin") {
-						if (parentRule) {
-							startingStyleRule.__parentRule = parentRule;
-							pushToAncestorRules(parentRule);
-							if (parentRule.constructor.name === "CSSStyleRule" && !nestedSelectorRule) {
-								nestedSelectorRule = parentRule;
-							}
-						}
-
-						currentScope = parentRule = startingStyleRule;
-						pushToAncestorRules(startingStyleRule);
-						startingStyleRule.__parentStyleSheet = styleSheet;
-						styleRule = null; // Reset styleRule when entering @-rule
-						buffer = "";
-						state = "before-selector";
-
-					} else if (state === "fontFaceRule-begin") {
-						if (parentRule) {
-							fontFaceRule.__parentRule = parentRule;
-						}
-						fontFaceRule.__parentStyleSheet = styleSheet;
-						styleRule = fontFaceRule;
-						buffer = "";
-						state = "before-name";
-					} else if (state === "keyframesRule-begin") {
-						keyframesRule.name = buffer.trim();
-						if (parentRule) {
-							pushToAncestorRules(parentRule);
-							keyframesRule.__parentRule = parentRule;
-						}
-						keyframesRule.__parentStyleSheet = styleSheet;
-						currentScope = parentRule = keyframesRule;
-						buffer = "";
-						state = "keyframeRule-begin";
-					} else if (state === "keyframeRule-begin") {
-						styleRule = new CSSOM.CSSKeyframeRule();
-						styleRule.keyText = buffer.trim();
-						styleRule.__starts = i;
-						buffer = "";
-						state = "before-name";
-					} else if (state === "documentRule-begin") {
-						// FIXME: what if this '{' is in the url text of the match function?
-						documentRule.matcher.matcherText = buffer.trim();
-						if (parentRule) {
-							pushToAncestorRules(parentRule);
-							documentRule.__parentRule = parentRule;
-						}
-						currentScope = parentRule = documentRule;
-						pushToAncestorRules(documentRule);
-						documentRule.__parentStyleSheet = styleSheet;
-						buffer = "";
-						state = "before-selector";
-					} else if (state === "before-name" || state === "name") {
-						// @font-face and similar rules don't support nested selectors
-						// If we encounter a nested selector block inside them, skip it
-						if (styleRule.constructor.name === "CSSFontFaceRule" ||
-							styleRule.constructor.name === "CSSKeyframeRule" ||
-							(styleRule.constructor.name === "CSSPageRule" && parentRule === styleRule)) {
-							// Skip the nested block
-							var ruleClosingMatch = token.slice(i).match(forwardRuleClosingBraceRegExp);
-							if (ruleClosingMatch) {
-								i += ruleClosingMatch.index + ruleClosingMatch[0].length - 1;
-								buffer = "";
-								state = "before-name";
-								break;
-							}
-						}
-
-						if (styleRule.constructor.name === "CSSNestedDeclarations") {
-							if (styleRule.style.length) {
-								parentRule.cssRules.push(styleRule);
-								styleRule.__parentRule = parentRule;
-								styleRule.__parentStyleSheet = styleSheet;
-								pushToAncestorRules(parentRule);
-							} else {
-								// If the styleRule is empty, we can assume that it's a nested selector
-								pushToAncestorRules(parentRule);
-							}
-						} else {
-							currentScope = parentRule = styleRule;
-							pushToAncestorRules(parentRule);
-							styleRule.__parentStyleSheet = styleSheet;
-						}
-
-						styleRule = new CSSOM.CSSStyleRule();
-						
-						// Check if tokenizer detected an unmatched quote BEFORE setting up the rule
-						if (hasUnmatchedQuoteInSelector) {
-							handleUnmatchedQuoteInSelector("before-name");
-							break;
-						}
-						
-						var processedSelectorText = processSelectorText(buffer.trim());
-						// In a nested selector, ensure each selector contains '&' at the beginning, except for selectors that already have '&' somewhere
-						if (parentRule.constructor.name === "CSSScopeRule" || (parentRule.constructor.name !== "CSSStyleRule" && parentRule.parentRule === null)) {
-							// Normalize comma spacing: split by commas and rejoin with ", "
-							styleRule.selectorText = parseAndSplitNestedSelectors(processedSelectorText).join(', ');
-						} else {
-							styleRule.selectorText = parseAndSplitNestedSelectors(processedSelectorText).map(function (sel) {
-								// Add & at the beginning if there's no & in the selector, or if it starts with a combinator
-								return (sel.indexOf('&') === -1 || startsWithCombinatorRegExp.test(sel)) ? '& ' + sel : sel;
-							}).join(', ');
-						}
-						styleRule.style.__starts = i - buffer.length;
-						styleRule.__parentRule = parentRule;
-						// Only set nestedSelectorRule if we're directly inside a CSSStyleRule or CSSScopeRule,
-						// not inside other grouping rules like @media/@supports
-						if (parentRule.constructor.name === "CSSStyleRule" || parentRule.constructor.name === "CSSScopeRule") {
-							nestedSelectorRule = styleRule;
-						}
-						
-						// Set __parentStyleSheet for the new nested styleRule
-						styleRule.__parentStyleSheet = styleSheet;
-						
-						// Update currentScope and parentRule to the new nested styleRule
-						// so that subsequent content (like @-rules) will be children of this rule
-						currentScope = parentRule = styleRule;
-
-						buffer = "";
-						state = "before-name";
-					}
-					break;
-
-				case ":":
-					if (state === "name") {
-						// It can be a nested selector, let's check
-						var openBraceBeforeMatch = token.slice(i).match(declarationOrOpenBraceRegExp);
-						var hasOpenBraceBefore = openBraceBeforeMatch && openBraceBeforeMatch[0] === '{';
-						if (hasOpenBraceBefore) {
-							// Is a selector
-							buffer += character;
-						} else {
-							// Is a declaration
-							name = buffer.trim();
-							buffer = "";
-							state = "before-value";
-						}
-					} else {
-						buffer += character;
-					}
-					break;
-
-				case "(":
-					if (state === 'value') {
-						// ie css expression mode
-						if (buffer.trim() === 'expression') {
-							var info = (new CSSOM.CSSValueExpression(token, i)).parse();
-
-							if (info.error) {
-								parseError(info.error);
-							} else {
-								buffer += info.expression;
-								i = info.idx;
-							}
-						} else {
-							state = 'value-parenthesis';
-							//always ensure this is reset to 1 on transition
-							//from value to value-parenthesis
-							valueParenthesisDepth = 1;
-							buffer += character;
-						}
-					} else if (state === 'value-parenthesis') {
-						valueParenthesisDepth++;
-						buffer += character;
-					} else {
-						buffer += character;
-					}
-					break;
-
-				case ")":
-					if (state === 'value-parenthesis') {
-						valueParenthesisDepth--;
-						if (valueParenthesisDepth === 0) state = 'value';
-					}
-					buffer += character;
-					break;
-
-				case "!":
-					if (state === "value" && token.indexOf("!important", i) === i) {
-						priority = "important";
-						i += "important".length;
-					} else {
-						buffer += character;
-					}
-					break;
-
-				case ";":
-					switch (state) {
-						case "before-value":
-						case "before-name":
-							parseError("Unexpected ;");
-							buffer = "";
-							state = "before-name";
-							break;
-						case "value":
-							styleRule.style.setProperty(name, buffer.trim(), priority, parseError);
-							priority = "";
-							buffer = "";
-							state = "before-name";
-							break;
-						case "atRule":
-							buffer = "";
-							state = "before-selector";
-							break;
-						case "importRule":
-							var isValid = topScope.cssRules.length === 0 || topScope.cssRules.some(function (rule) {
-								return ['CSSImportRule', 'CSSLayerStatementRule'].indexOf(rule.constructor.name) !== -1
-							});
-							if (isValid) {
-								importRule = new CSSOM.CSSImportRule();
-								if (opts && opts.globalObject && opts.globalObject.CSSStyleSheet) {
-									importRule.__styleSheet = new opts.globalObject.CSSStyleSheet();
-								}
-								importRule.styleSheet.__constructed = false;
-								importRule.__parentStyleSheet = importRule.styleSheet.__parentStyleSheet = styleSheet;
-								importRule.parse(buffer + character);
-								topScope.cssRules.push(importRule);
-							}
-							buffer = "";
-							state = "before-selector";
-							break;
-						case "namespaceRule":
-							var isValid = topScope.cssRules.length === 0 || topScope.cssRules.every(function (rule) {
-								return ['CSSImportRule', 'CSSLayerStatementRule', 'CSSNamespaceRule'].indexOf(rule.constructor.name) !== -1
-							});
-							if (isValid) {
-								try {
-									// Validate namespace syntax before creating the rule
-									var testNamespaceRule = new CSSOM.CSSNamespaceRule();
-									testNamespaceRule.parse(buffer + character);
-
-									namespaceRule = testNamespaceRule;
-									namespaceRule.__parentStyleSheet = styleSheet;
-									topScope.cssRules.push(namespaceRule);
-
-									// Track the namespace prefix for validation
-									if (namespaceRule.prefix) {
-										definedNamespacePrefixes[namespaceRule.prefix] = namespaceRule.namespaceURI;
-									}
-								} catch (e) {
-									parseError(e.message);
-								}
-							}
-							buffer = "";
-							state = "before-selector";
-							break;
-						case "layerBlock":
-							var nameListStr = buffer.trim().split(",").map(function (name) {
-								return name.trim();
-							});
-							var isInvalid = nameListStr.some(function (name) {
-								return name.trim().match(cssCustomIdentifierRegExp) === null;
-							});
-
-							// Check if there's a CSSStyleRule in the parent chain
-							var hasStyleRuleParent = false;
-							if (parentRule) {
-								var checkParent = parentRule;
-								while (checkParent) {
-									if (checkParent.constructor.name === "CSSStyleRule") {
-										hasStyleRuleParent = true;
-										break;
-									}
-									checkParent = checkParent.__parentRule;
-								}
-							}
-
-							if (!isInvalid && !hasStyleRuleParent) {
-								layerStatementRule = new CSSOM.CSSLayerStatementRule();
-								layerStatementRule.__parentStyleSheet = styleSheet;
-								layerStatementRule.__starts = layerBlockRule.__starts;
-								layerStatementRule.__ends = i;
-								layerStatementRule.nameList = nameListStr;
-
-								// Add to parent rule if nested, otherwise to top scope
-								if (parentRule) {
-									layerStatementRule.__parentRule = parentRule;
-									parentRule.cssRules.push(layerStatementRule);
-								} else {
-									topScope.cssRules.push(layerStatementRule);
-								}
-							}
-							buffer = "";
-							state = "before-selector";
-							break;
-						default:
-							buffer += character;
-							break;
-					}
-					break;
-
-				case "}":
-					if (state === "counterStyleBlock") {
-						// FIXME : Implement missing properties on CSSCounterStyleRule interface and update parse method
-						// For now it's just assigning entire rule text
-						if (counterStyleRule.name) {
-							// Only process if name was set (valid)
-							counterStyleRule.parse("@counter-style " + counterStyleRule.name + " { " + buffer + " }");
-							counterStyleRule.__ends = i + 1;
-							// Add to parent's cssRules
-							if (counterStyleRule.__parentRule) {
-								counterStyleRule.__parentRule.cssRules.push(counterStyleRule);
-							} else {
-								topScope.cssRules.push(counterStyleRule);
-							}
-						}
-						// Restore currentScope to parent after closing this rule
-						if (counterStyleRule.__parentRule) {
-							currentScope = counterStyleRule.__parentRule;
-						}
-						styleRule = null;
-						buffer = "";
-						state = "before-selector";
-						break;
-					}
-					if (state === "propertyBlock") {
-						// Only process if name was set (valid)
-						if (propertyRule.__name) {
-							var parseSuccess = propertyRule.parse("@property " + propertyRule.__name + " { " + buffer + " }");
-							// Only add the rule if parse was successful (syntax, inherits, and initial-value validation passed)
-							if (parseSuccess) {
-								propertyRule.__ends = i + 1;
-								// Add to parent's cssRules
-								if (propertyRule.__parentRule) {
-									propertyRule.__parentRule.cssRules.push(propertyRule);
-								} else {
-									topScope.cssRules.push(propertyRule);
-								}
-							}
-						}
-						// Restore currentScope to parent after closing this rule
-						if (propertyRule.__parentRule) {
-							currentScope = propertyRule.__parentRule;
-						}
-						styleRule = null;
-						buffer = "";
-						state = "before-selector";
-						break;
-					}
-					switch (state) {
-						case "value":
-							styleRule.style.setProperty(name, buffer.trim(), priority, parseError);
-							priority = "";
-						/* falls through */
-						case "before-value":
-						case "before-name":
-						case "name":
-							styleRule.__ends = i + 1;
-
-							if (parentRule === styleRule) {
-								parentRule = ancestorRules.pop();
-							}
-
-							if (parentRule) {
-								styleRule.__parentRule = parentRule;
-							}
-							styleRule.__parentStyleSheet = styleSheet;
-
-							if (currentScope === styleRule) {
-								currentScope = parentRule || topScope;
-							}
-
-							if (styleRule.constructor.name === "CSSStyleRule" && !isValidSelectorText(styleRule.selectorText)) {
-								if (styleRule === nestedSelectorRule) {
-									nestedSelectorRule = null;
-								}
-								parseError('Invalid CSSStyleRule (selectorText = "' + styleRule.selectorText + '")', styleRule.parentRule !== null);
-							} else {
-								if (styleRule.parentRule) {
-									styleRule.parentRule.cssRules.push(styleRule);
-								} else {
-									currentScope.cssRules.push(styleRule);
-								}
-							}
-							buffer = "";
-							if (currentScope.constructor === CSSOM.CSSKeyframesRule) {
-								state = "keyframeRule-begin";
-							} else {
-								state = "before-selector";
-							}
-
-							if (styleRule.constructor.name === "CSSNestedDeclarations") {
-								if (currentScope !== topScope) {
-									// Only set nestedSelectorRule if currentScope is CSSStyleRule or CSSScopeRule
-									// Not for other grouping rules like @media/@supports
-									if (currentScope.constructor.name === "CSSStyleRule" || currentScope.constructor.name === "CSSScopeRule") {
-										nestedSelectorRule = currentScope;
-									}
-								}
-								styleRule = null;
-							} else {
-								// Update nestedSelectorRule when closing a CSSStyleRule
-								if (styleRule === nestedSelectorRule) {
-									var selector = styleRule.selectorText && styleRule.selectorText.trim();
-									// Check if this is proper nesting (&.class, &:pseudo) vs prepended & (& :is, & .class with space)
-									// Prepended & has pattern "& X" where X starts with : or .
-									var isPrependedAmpersand = selector && selector.match(prependedAmpersandRegExp);
-
-									// Check if parent is a grouping rule that can contain nested selectors
-									var isGroupingRule = currentScope && currentScope instanceof CSSOM.CSSGroupingRule;
-
-									if (!isPrependedAmpersand && isGroupingRule) {
-										// Proper nesting - set nestedSelectorRule to parent for more nested selectors
-										// But only if it's a CSSStyleRule or CSSScopeRule, not other grouping rules like @media
-										if (currentScope.constructor.name === "CSSStyleRule" || currentScope.constructor.name === "CSSScopeRule") {
-											nestedSelectorRule = currentScope;
-										}
-										// If currentScope is another type of grouping rule (like @media), keep nestedSelectorRule unchanged
-									} else {
-										// Prepended & or not nested in grouping rule - reset to prevent CSSNestedDeclarations
-										nestedSelectorRule = null;
-									}
-								}
-								styleRule = null;
-								break;
-							}
-						case "keyframeRule-begin":
-						case "before-selector":
-						case "selector":
-							// End of media/supports/document rule.
-							if (!parentRule) {
-								parseError("Unexpected }");
-
-								var hasPreviousStyleRule = currentScope.cssRules.length && currentScope.cssRules[currentScope.cssRules.length - 1].constructor.name === "CSSStyleRule";
-								if (hasPreviousStyleRule) {
-									i = ignoreBalancedBlock(i, token.slice(i), 1);
-								}
-
-								break;
-							}
-
-							// Find the actual parent rule by popping from ancestor stack
-							while (ancestorRules.length > 0) {
-								parentRule = ancestorRules.pop();
-
-								// Skip if we popped the current scope itself (happens because we push both rule and parent)
-								if (parentRule === currentScope) {
-									continue;
-								}
-
-								// Only process valid grouping rules
-								if (!(parentRule instanceof CSSOM.CSSGroupingRule && (parentRule.constructor.name !== 'CSSStyleRule' || parentRule.__parentRule))) {
-									continue;
-								}
-
-								// Determine if we're closing a special nested selector context
-								var isClosingNestedSelectorContext = nestedSelectorRule && 
-									(currentScope === nestedSelectorRule || nestedSelectorRule.__parentRule === currentScope);
-
-								if (isClosingNestedSelectorContext) {
-									// Closing the nestedSelectorRule or its direct container
-									if (nestedSelectorRule.parentRule) {
-										// Add nestedSelectorRule to its parent and update scope
-										prevScope = nestedSelectorRule;
-										currentScope = nestedSelectorRule.parentRule;
-										// Use object lookup instead of O(n) indexOf
-										var scopeId = getRuleId(prevScope);
-										if (!addedToCurrentScope[scopeId]) {
-											currentScope.cssRules.push(prevScope);
-											addedToCurrentScope[scopeId] = true;
-										}
-										nestedSelectorRule = currentScope;
-										// Stop here to preserve context for sibling selectors
-										break;
-									} else {
-										// Top-level CSSStyleRule with nested grouping rule
-										prevScope = currentScope;
-										var actualParent = ancestorRules.length > 0 ? ancestorRules[ancestorRules.length - 1] : nestedSelectorRule;
-										if (actualParent !== prevScope) {
-											actualParent.cssRules.push(prevScope);
-										}
-										currentScope = actualParent;
-										parentRule = actualParent;
-										break;
-									}
-								} else {
-									// Regular case: add currentScope to parentRule
-									prevScope = currentScope;
-									if (parentRule !== prevScope) {
-										parentRule.cssRules.push(prevScope);
-									}
-									break;
-								}
-							}
-
-							// If currentScope has a __parentRule and wasn't added yet, add it
-							if (ancestorRules.length === 0 && currentScope.__parentRule && currentScope.__parentRule.cssRules) {
-								// Use object lookup instead of O(n) findIndex
-								var parentId = getRuleId(currentScope);
-								if (!addedToParent[parentId]) {
-									currentScope.__parentRule.cssRules.push(currentScope);
-									addedToParent[parentId] = true;
-								}
-							}
-
-							// Only handle top-level rule closing if we processed all ancestors
-							if (ancestorRules.length === 0 && currentScope.parentRule == null) {
-								currentScope.__ends = i + 1;
-								// Use object lookup instead of O(n) findIndex
-								var topId = getRuleId(currentScope);
-								if (currentScope !== topScope && !addedToTopScope[topId]) {
-									topScope.cssRules.push(currentScope);
-									addedToTopScope[topId] = true;
-								}
-								currentScope = topScope;
-								if (nestedSelectorRule === parentRule) {
-									// Check if this selector is really starting inside another selector
-									var nestedSelectorTokenToCurrentSelectorToken = token.slice(nestedSelectorRule.__starts, i + 1);
-									var openingBraceMatch = nestedSelectorTokenToCurrentSelectorToken.match(openBraceGlobalRegExp);
-									var closingBraceMatch = nestedSelectorTokenToCurrentSelectorToken.match(closeBraceGlobalRegExp);
-									var openingBraceLen = openingBraceMatch && openingBraceMatch.length;
-									var closingBraceLen = closingBraceMatch && closingBraceMatch.length;
-
-									if (openingBraceLen === closingBraceLen) {
-										// If the number of opening and closing braces are equal, we can assume that the new selector is starting outside the nestedSelectorRule
-										nestedSelectorRule.__ends = i + 1;
-										nestedSelectorRule = null;
-										parentRule = null;
-									}
-								} else {
-									parentRule = null;
-								}
-							} else {
-								currentScope = parentRule;
-							}
-
-							buffer = "";
-							state = "before-selector";
-							break;
-					}
-					break;
-
-				default:
-					switch (state) {
-						case "before-selector":
-							state = "selector";
-							if ((styleRule || scopeRule) && parentRule) {
-								// Assuming it's a declaration inside Nested Selector OR a Nested Declaration
-								// If Declaration inside Nested Selector let's keep the same styleRule
-								if (!isSelectorStartChar(character) && !isWhitespaceChar(character) && parentRule instanceof CSSOM.CSSGroupingRule) {
-									// parentRule.__parentRule = styleRule;
-									state = "before-name";
-									if (styleRule !== parentRule) {
-										styleRule = new CSSOM.CSSNestedDeclarations();
-										styleRule.__starts = i;
-									}
-								}
-
-							} else if (nestedSelectorRule && parentRule && parentRule instanceof CSSOM.CSSGroupingRule) {
-								if (isSelectorStartChar(character)) {
-									// If starting with a selector character, create CSSStyleRule instead of CSSNestedDeclarations
-									styleRule = new CSSOM.CSSStyleRule();
-									styleRule.__starts = i;
-								} else if (!isWhitespaceChar(character)) {
-									// Starting a declaration (not whitespace, not a selector)
-									state = "before-name";
-									// Check if we should create CSSNestedDeclarations
-									// This happens if: parent has cssRules OR nestedSelectorRule exists (indicating CSSStyleRule in hierarchy)
-									if (parentRule.cssRules.length || nestedSelectorRule) {
-										currentScope = parentRule;
-										// Only set nestedSelectorRule if parentRule is CSSStyleRule or CSSScopeRule
-										if (parentRule.constructor.name === "CSSStyleRule" || parentRule.constructor.name === "CSSScopeRule") {
-											nestedSelectorRule = parentRule;
-										}
-										styleRule = new CSSOM.CSSNestedDeclarations();
-										styleRule.__starts = i;
-									} else {
-										if (parentRule.constructor.name === "CSSStyleRule") {
-											styleRule = parentRule;
-										} else {
-											styleRule = new CSSOM.CSSStyleRule();
-											styleRule.__starts = i;
-										}
-									}
-								}
-							}
-							break;
-						case "before-name":
-							state = "name";
-							break;
-						case "before-value":
-							state = "value";
-							break;
-						case "importRule-begin":
-							state = "importRule";
-							break;
-						case "namespaceRule-begin":
-							state = "namespaceRule";
-							break;
-					}
-					buffer += character;
-					break;
-			}
-
-			// Auto-close all unclosed nested structures
-			// Check AFTER processing the character, at the ORIGINAL ending index
-			// Only add closing braces if CSS is incomplete (not at top scope)
-			if (i === initialEndingIndex && (currentScope !== topScope || ancestorRules.length > 0)) {
-				var needsClosing = ancestorRules.length;
-				if (currentScope !== topScope && ancestorRules.indexOf(currentScope) === -1) {
-					needsClosing += 1;
-				}
-				// Add closing braces for all unclosed structures
-				for (var closeIdx = 0; closeIdx < needsClosing; closeIdx++) {
-					token += "}";
-					endingIndex += 1;
-				}
-			}
-		}
-
-		if (buffer.trim() !== "") {
-			parseError("Unexpected end of input");
-		}
-
-		return styleSheet;
-	};
-
-
-	//.CommonJS
-	parse$1.parse = CSSOM.parse;
-	// The following modules cannot be included sooner due to the mutual dependency with parse.js
-	CSSOM.CSSStyleSheet = requireCSSStyleSheet().CSSStyleSheet;
-	CSSOM.CSSStyleRule = requireCSSStyleRule().CSSStyleRule;
-	CSSOM.CSSNestedDeclarations = requireCSSNestedDeclarations().CSSNestedDeclarations;
-	CSSOM.CSSImportRule = requireCSSImportRule().CSSImportRule;
-	CSSOM.CSSNamespaceRule = requireCSSNamespaceRule().CSSNamespaceRule;
-	CSSOM.CSSGroupingRule = requireCSSGroupingRule().CSSGroupingRule;
-	CSSOM.CSSMediaRule = requireCSSMediaRule().CSSMediaRule;
-	CSSOM.CSSCounterStyleRule = requireCSSCounterStyleRule().CSSCounterStyleRule;
-	CSSOM.CSSPropertyRule = requireCSSPropertyRule().CSSPropertyRule;
-	CSSOM.CSSContainerRule = requireCSSContainerRule().CSSContainerRule;
-	CSSOM.CSSConditionRule = requireCSSConditionRule().CSSConditionRule;
-	CSSOM.CSSSupportsRule = requireCSSSupportsRule().CSSSupportsRule;
-	CSSOM.CSSFontFaceRule = requireCSSFontFaceRule().CSSFontFaceRule;
-	CSSOM.CSSHostRule = requireCSSHostRule().CSSHostRule;
-	CSSOM.CSSStartingStyleRule = requireCSSStartingStyleRule().CSSStartingStyleRule;
-	CSSOM.CSSStyleDeclaration = requireCSSStyleDeclaration().CSSStyleDeclaration;
-	CSSOM.CSSKeyframeRule = requireCSSKeyframeRule().CSSKeyframeRule;
-	CSSOM.CSSKeyframesRule = requireCSSKeyframesRule().CSSKeyframesRule;
-	CSSOM.CSSValueExpression = requireCSSValueExpression().CSSValueExpression;
-	CSSOM.CSSDocumentRule = requireCSSDocumentRule().CSSDocumentRule;
-	CSSOM.CSSScopeRule = requireCSSScopeRule().CSSScopeRule;
-	CSSOM.CSSLayerBlockRule = requireCSSLayerBlockRule().CSSLayerBlockRule;
-	CSSOM.CSSLayerStatementRule = requireCSSLayerStatementRule().CSSLayerStatementRule;
-	CSSOM.CSSPageRule = requireCSSPageRule().CSSPageRule;
-	// Use cssstyle if available
-	requireCssstyleTryCatchBlock();
-	///CommonJS
-	return parse$1;
-}
-
-var hasRequiredCSSStyleDeclaration;
-
-function requireCSSStyleDeclaration () {
-	if (hasRequiredCSSStyleDeclaration) return CSSStyleDeclaration;
-	hasRequiredCSSStyleDeclaration = 1;
-	//.CommonJS
-	var CSSOM = {};
-	var regexPatterns = requireRegexPatterns().regexPatterns;
-	///CommonJS
-
-	// Internal-use regular expression for indexed property names like '0', '1', '2', etc.
-	var indexedPropertyNameRegExp = /^(0|[1-9][0-9]*)$/;
-
-	/**
-	 * @constructor
-	 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleDeclaration
-	 */
-	CSSOM.CSSStyleDeclaration = function CSSStyleDeclaration(){
-		this.length = 0;
-		this.parentRule = null;
-
-		// NON-STANDARD
-		this._importants = {};
-	};
-
-
-	CSSOM.CSSStyleDeclaration.prototype = {
-
-		constructor: CSSOM.CSSStyleDeclaration,
-
-		/**
-		 *
-		 * @param {string} name
-		 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleDeclaration-getPropertyValue
-		 * @return {string} the value of the property if it has been explicitly set for this declaration block.
-		 * Returns the empty string if the property has not been set.
-		 */
-		getPropertyValue: function(name) {
-			return this[name] || "";
-		},
-
-		/**
-		 *
-		 * @param {string} name
-		 * @param {string} value
-		 * @param {string} [priority=null] "important" or null
-		 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleDeclaration-setProperty
-		 */
-		setProperty: function(name, value, priority, parseErrorHandler) 
-		{
-			// Because values are stored directly on this object, we must ignore CSS declaration
-			// names that would otherwise replace the object's length, parser fields, or methods.
-			// Numeric names would also overwrite entries like this[0], which hold a property name.
-			if (name === "length" ||
-				name === "parentRule" ||
-				name === "_importants" ||
-				name === "__starts" ||
-				name in CSSOM.CSSStyleDeclaration.prototype ||
-				indexedPropertyNameRegExp.test(name)
-			) {
-				return;
-			}
-			// NOTE: Check viability to add a validation for css values or use a dependency like csstree-validator
-			var basicStylePropertyValueValidationRegExp = regexPatterns.basicStylePropertyValueValidationRegExp;
-			if (basicStylePropertyValueValidationRegExp.test(value)) {
-				parseErrorHandler && parseErrorHandler('Invalid CSSStyleDeclaration property (name = "' + name + '", value = "' + value + '")');
-			} else if (this[name]) {
-				// Property already exist. Overwrite it.
-				var index = Array.prototype.indexOf.call(this, name);
-				if (index < 0) {
-					this[this.length] = name;
-					this.length++;
-				}
-		
-				// If the priority value of the incoming property is "important",
-				// or the value of the existing property is not "important", 
-				// then remove the existing property and rewrite it.
-				if (priority || !this._importants[name]) {
-					this.removeProperty(name);
-					this[this.length] = name;
-					this.length++;
-					this[name] = value + '';
-					this._importants[name] = priority;
-				}
-			} else {
-				// New property.
-				this[this.length] = name;
-				this.length++;
-				this[name] = value + '';
-				this._importants[name] = priority;
-			}
-		},
-
-		/**
-		 *
-		 * @param {string} name
-		 * @see http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleDeclaration-removeProperty
-		 * @return {string} the value of the property if it has been explicitly set for this declaration block.
-		 * Returns the empty string if the property has not been set or the property name does not correspond to a known CSS property.
-		 */
-		removeProperty: function(name) {
-			if (!(name in this)) {
-				return "";
-			}
-			var index = Array.prototype.indexOf.call(this, name);
-			if (index < 0) {
-				return "";
-			}
-			var prevValue = this[name];
-			this[name] = "";
-
-			// That's what WebKit and Opera do
-			Array.prototype.splice.call(this, index, 1);
-
-			// That's what Firefox does
-			//this[index] = ""
-
-			return prevValue;
-		},
-
-		getPropertyCSSValue: function() {
-			//FIXME
-		},
-
-		/**
-		 *
-		 * @param {String} name
-		 */
-		getPropertyPriority: function(name) {
-			return this._importants[name] || "";
-		},
-
-
-		/**
-		 *   element.style.overflow = "auto"
-		 *   element.style.getPropertyShorthand("overflow-x")
-		 *   -> "overflow"
-		 */
-		getPropertyShorthand: function() {
-			//FIXME
-		},
-
-		isPropertyImplicit: function() {
-			//FIXME
-		},
-
-		// Doesn't work in IE < 9
-		get cssText(){
-			var properties = [];
-			for (var i=0, length=this.length; i < length; ++i) {
-				var name = this[i];
-				var value = this.getPropertyValue(name);
-				var priority = this.getPropertyPriority(name);
-				if (priority) {
-					priority = " !" + priority;
-				}
-				properties[i] = name + ": " + value + priority + ";";
-			}
-			return properties.join(" ");
-		},
-
-		set cssText(text){
-			var i, name;
-			for (i = this.length; i--;) {
-				name = this[i];
-				this[name] = "";
-			}
-			Array.prototype.splice.call(this, 0, this.length);
-			this._importants = {};
-
-			var dummyRule = CSSOM.parse('#bogus{' + text + '}').cssRules[0].style;
-			var length = dummyRule.length;
-			for (i = 0; i < length; ++i) {
-				name = dummyRule[i];
-				this.setProperty(dummyRule[i], dummyRule.getPropertyValue(name), dummyRule.getPropertyPriority(name));
-			}
-		}
-	};
-
-
-	//.CommonJS
-	CSSStyleDeclaration.CSSStyleDeclaration = CSSOM.CSSStyleDeclaration;
-	CSSOM.parse = requireParse().parse; // Cannot be included sooner due to the mutual dependency between parse.js and CSSStyleDeclaration.js
-	///CommonJS
-	return CSSStyleDeclaration;
-}
-
-var clone = {};
-
-var hasRequiredClone;
-
-function requireClone () {
-	if (hasRequiredClone) return clone;
-	hasRequiredClone = 1;
-	//.CommonJS
-	var CSSOM = {
-		CSSStyleSheet: requireCSSStyleSheet().CSSStyleSheet,
-		CSSRule: requireCSSRule().CSSRule,
-		CSSNestedDeclarations: requireCSSNestedDeclarations().CSSNestedDeclarations,
-		CSSStyleRule: requireCSSStyleRule().CSSStyleRule,
-		CSSGroupingRule: requireCSSGroupingRule().CSSGroupingRule,
-		CSSConditionRule: requireCSSConditionRule().CSSConditionRule,
-		CSSMediaRule: requireCSSMediaRule().CSSMediaRule,
-		CSSContainerRule: requireCSSContainerRule().CSSContainerRule,
-		CSSSupportsRule: requireCSSSupportsRule().CSSSupportsRule,
-		CSSStyleDeclaration: requireCSSStyleDeclaration().CSSStyleDeclaration,
-		CSSKeyframeRule: requireCSSKeyframeRule().CSSKeyframeRule,
-		CSSKeyframesRule: requireCSSKeyframesRule().CSSKeyframesRule,
-		CSSScopeRule: requireCSSScopeRule().CSSScopeRule,
-		CSSLayerBlockRule: requireCSSLayerBlockRule().CSSLayerBlockRule,
-		CSSLayerStatementRule: requireCSSLayerStatementRule().CSSLayerStatementRule
-	};
-	// Use cssstyle if available
-	try {
-		CSSOM.CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration;
-	} catch (e) {
-		// ignore
+		for (const d of declarations) addDeclarationRecursive(d, true);
+		return createStyleProxy(this);
 	}
-	///CommonJS
-
-
-	/**
-	 * Produces a deep copy of stylesheet — the instance variables of stylesheet are copied recursively.
-	 * @param {CSSStyleSheet|CSSOM.CSSStyleSheet} stylesheet
-	 * @nosideeffects
-	 * @return {CSSOM.CSSStyleSheet}
-	 */
-	CSSOM.clone = function clone(stylesheet) {
-
-		var cloned = new CSSOM.CSSStyleSheet();
-
-		var rules = stylesheet.cssRules;
-		if (!rules) {
-			return cloned;
+	_addDeclaration(d) {
+		const shorthand = SHORTHANDS[d.name];
+		if (shorthand) {
+			for (const lh of shorthand.longhands) if (this._declMap.has(lh)) {
+				const existing = this._declMap.get(lh);
+				if (existing.important && !d.important) continue;
+				const index = this._declarations.indexOf(existing);
+				if (index !== -1) this._declarations.splice(index, 1);
+				this._declMap.delete(lh);
+			}
 		}
-
-		for (var i = 0, rulesLength = rules.length; i < rulesLength; i++) {
-			var rule = rules[i];
-			var ruleClone = cloned.cssRules[i] = new rule.constructor();
-
-			var style = rule.style;
-			if (style) {
-				var styleClone = ruleClone.style = new CSSOM.CSSStyleDeclaration();
-				for (var j = 0, styleLength = style.length; j < styleLength; j++) {
-					var name = style[j];
-					// Consumers can change style[j] directly, so we must use setProperty here to ensure
-					// reserved names are ignored before they can overwrite fields on the clone object
-					styleClone.setProperty(name, style.getPropertyValue(name), style.getPropertyPriority(name));
+		if (this._declMap.has(d.name)) {
+			const existing = this._declMap.get(d.name);
+			if (existing.important && !d.important) return;
+			const index = this._declarations.indexOf(existing);
+			if (index !== -1) this._declarations.splice(index, 1);
+			this._declarations.push(d);
+			this._declMap.set(d.name, d);
+		} else {
+			this._declarations.push(d);
+			this._declMap.set(d.name, d);
+		}
+	}
+	get length() {
+		return this._declarations.length;
+	}
+	item(index) {
+		return this._declarations[index]?.name || "";
+	}
+	/** @internal */
+	_getLonghandForContraction(lh) {
+		const decl = this._getWinningDeclaration(lh);
+		if (decl && decl.value.length > 0) return {
+			value: decl.value,
+			important: decl.important
+		};
+		return null;
+	}
+	getPropertyValue(property) {
+		if (!property.startsWith("--")) property = property.toLowerCase();
+		else if (!isValidDashedIdent(property)) return "";
+		const shorthandLonghands = SHORTHANDS[property]?.longhands || SHORTHANDS_DATA[property];
+		if (shorthandLonghands && shorthandLonghands.length > 0) {
+			let allCssWide = null;
+			let allMatch = true;
+			let firstPrio = null;
+			let allSamePriority = true;
+			for (const lh of shorthandLonghands) {
+				const val = this.getPropertyValue(lh);
+				if (!val) {
+					allMatch = false;
+					break;
+				}
+				const prio = this.getPropertyPriority(lh);
+				if (firstPrio === null) firstPrio = prio;
+				else if (firstPrio !== prio) allSamePriority = false;
+				const trimmed = val.trim().toLowerCase();
+				if ([
+					"initial",
+					"inherit",
+					"unset",
+					"revert",
+					"revert-layer"
+				].includes(trimmed)) {
+					if (allCssWide === null) allCssWide = trimmed;
+					else if (allCssWide !== trimmed) {
+						allMatch = false;
+						break;
+					}
+				} else {
+					allMatch = false;
+					break;
 				}
 			}
-
-			if (rule.hasOwnProperty('keyText')) {
-				ruleClone.keyText = rule.keyText;
+			if (allMatch && allCssWide && allSamePriority) return allCssWide;
+		}
+		const shorthand = SHORTHANDS[property];
+		if (shorthand) {
+			const longhandValues = {};
+			let anySet = false;
+			let important = null;
+			let consistentImportant = true;
+			const allLonghandsToCheck = getShorthandAllLonghands(shorthand);
+			for (const lh of allLonghandsToCheck) {
+				const item = this._getLonghandForContraction(lh);
+				if (item && item.value.length > 0) {
+					anySet = true;
+					longhandValues[lh] = item.value;
+					const isImp = item.important;
+					if (important === null) important = isImp;
+					else if (important !== isImp) consistentImportant = false;
+				}
 			}
-
-			if (rule.hasOwnProperty('selectorText')) {
-				ruleClone.selectorText = rule.selectorText;
+			if (anySet && consistentImportant) {
+				const wm = this.getPropertyValue("writing-mode") || "horizontal-tb";
+				const dir = this.getPropertyValue("direction") || "ltr";
+				const physicalToLogicalSet = /* @__PURE__ */ new Map();
+				for (const lh of Object.keys(longhandValues)) {
+					const physicalProp = resolveLogicalProperty(lh, wm, dir);
+					const decl = this._getWinningDeclaration(lh);
+					if (physicalToLogicalSet.has(physicalProp)) {
+						const other = physicalToLogicalSet.get(physicalProp);
+						if (!(decl?.name === "all" || decl?.fromAll || other.decl?.name === "all" || other.decl?.fromAll)) {
+							if (serialize(longhandValues[lh]).trim() !== serialize(longhandValues[other.lh]).trim()) return "";
+						}
+					}
+					if (decl && decl.name !== "all" && !decl.fromAll) physicalToLogicalSet.set(physicalProp, {
+						lh,
+						decl
+					});
+					else if (!physicalToLogicalSet.has(physicalProp)) physicalToLogicalSet.set(physicalProp, {
+						lh,
+						decl
+					});
+				}
+				const valuesForContractor = {};
+				let anyLogical = false;
+				const allLonghands = shorthand.logicalLonghands ? [...shorthand.longhands, ...shorthand.logicalLonghands] : shorthand.longhands;
+				for (const lh of allLonghands) {
+					const val = longhandValues[lh];
+					if (val) {
+						valuesForContractor[lh] = val;
+						if (resolveLogicalProperty(lh, wm, dir) !== lh) anyLogical = true;
+						if (shorthand.logicalLonghands?.includes(lh)) anyLogical = true;
+					}
+				}
+				const hasAllLonghands = shorthand.longhands.every((lh) => valuesForContractor[lh]);
+				const hasAllLogicals = shorthand.logicalLonghands?.every((lh) => valuesForContractor[lh]);
+				if (hasAllLonghands) {
+					const res = shorthand.contract(valuesForContractor);
+					if (res) return res;
+				}
+				if (hasAllLogicals && anyLogical) {
+					let res = shorthand.contract(valuesForContractor);
+					if (res && !res.startsWith("logical") && LOGICAL_SHORTHANDS.has(property) && !CSS_WIDE_KEYWORDS.has(res.trim().toLowerCase())) res = "logical " + res;
+					return res || "";
+				}
 			}
-
-			if (rule.hasOwnProperty('mediaText')) {
-				ruleClone.mediaText = rule.mediaText;
+			const directDecl = this._getWinningDeclaration(property);
+			if (directDecl) {
+				const directIdx = this._declarations.indexOf(directDecl);
+				const allLonghands = getShorthandAllLonghands(shorthand);
+				if (this._declarations.some((d, idx) => {
+					if (!allLonghands.includes(d.name)) return false;
+					if (d.important && !directDecl.important) return true;
+					if (d.important === directDecl.important && idx > directIdx) return true;
+					return false;
+				})) return "";
+				return serialize(directDecl.value).trim();
 			}
-
-			if (rule.hasOwnProperty('supportsText')) {
-				ruleClone.supports = rule.supports;
+			return "";
+		}
+		const winner = this._getWinningDeclaration(property);
+		if (winner) {
+			if (winner.name === "all") return serialize(winner.value);
+			const isCustom = winner.name.startsWith("--");
+			if (isCustom) {
+				if (winner.raw !== void 0 && winner.raw.includes("/*")) return winner.raw.trim();
+				const serialized = serialize(winner.value, isCustom).trim();
+				if (serialized === "") return " ";
+				return serialized;
 			}
-
-			if (rule.hasOwnProperty('conditionText')) {
-				ruleClone.conditionText = rule.conditionText;
-			}
-
-			if (rule.hasOwnProperty('layerName')) {
-				ruleClone.layerName = rule.layerName;
-			}
-
-			if (rule.hasOwnProperty('href')) {
-				ruleClone.href = rule.href;
-			}
-
-			if (rule.hasOwnProperty('name')) {
-				ruleClone.name = rule.name;
-			}
-
-			if (rule.hasOwnProperty('nameList')) {
-				ruleClone.nameList = rule.nameList;
-			}
-
-			if (rule.hasOwnProperty('cssRules')) {
-				ruleClone.cssRules = clone(rule).cssRules;
+			if (winner.name === "font-family") return serializeFontFamily(winner.value);
+			if (winner.name === "flex-basis" && serialize(winner.value).trim() === "0") return "0px";
+			return serialize(winner.value, isCustom);
+		}
+		return "";
+	}
+	/** @internal */
+	_getExactWinningDeclaration(property) {
+		if (!property.startsWith("--")) property = property.toLowerCase();
+		const isCoveredByAll = !property.startsWith("--") && property !== "direction" && property !== "unicode-bidi" && property !== "all";
+		let winner = null;
+		for (let i = this._declarations.length - 1; i >= 0; i--) {
+			const d = this._declarations[i];
+			const isMatch = d.name === property;
+			const isAll = d.name === "all" && isCoveredByAll;
+			if (isMatch || isAll) {
+				if (!winner || d.important && !winner.important) {
+					winner = d;
+					if (winner.important) break;
+				}
 			}
 		}
-
-		return cloned;
-
-	};
-
-	//.CommonJS
-	clone.clone = CSSOM.clone;
-	///CommonJS
-	return clone;
+		return winner;
+	}
+	/** @internal */
+	_getWinningDeclaration(property) {
+		const exact = this._getExactWinningDeclaration(property);
+		const shorthands = LONGHAND_TO_SHORTHAND[property];
+		if (shorthands) for (const sh of shorthands) {
+			const shDecl = this._getExactWinningDeclaration(sh);
+			if (shDecl) {
+				if (shDecl.important && (!exact || !exact.important)) return null;
+				if (exact && !exact.important && !shDecl.important) {
+					if (this._declarations.indexOf(shDecl) > this._declarations.indexOf(exact)) return null;
+				}
+			}
+		}
+		return exact;
+	}
+	getPropertyPriority(property) {
+		if (!property.startsWith("--")) property = property.toLowerCase();
+		const shorthand = SHORTHANDS[property];
+		if (shorthand) {
+			if (this.getPropertyValue(property) === "") return "";
+			const checkSet = (longhands) => {
+				let importantCount = 0;
+				const values = {};
+				for (const lh of longhands) {
+					const item = this._getLonghandForContraction(lh);
+					if (item && item.value.length > 0) {
+						values[lh] = item.value;
+						if (item.important) importantCount++;
+					}
+				}
+				return {
+					importantCount,
+					values
+				};
+			};
+			const primaryResult = checkSet(shorthand.longhands);
+			if (primaryResult.importantCount === shorthand.longhands.length && shorthand.longhands.length > 0) {
+				if (shorthand.contract(primaryResult.values)) return "important";
+			}
+			if (shorthand.logicalLonghands) {
+				const logicalResult = checkSet(shorthand.logicalLonghands);
+				if (logicalResult.importantCount === shorthand.logicalLonghands.length && shorthand.logicalLonghands.length > 0) {
+					if (shorthand.contract(logicalResult.values)) return "important";
+				}
+			}
+			if (shorthand.physicalLonghands) {
+				const physicalResult = checkSet(shorthand.physicalLonghands);
+				if (physicalResult.importantCount === shorthand.physicalLonghands.length && shorthand.physicalLonghands.length > 0) {
+					if (shorthand.contract(physicalResult.values)) return "important";
+				}
+			}
+			const directDecl = this._getWinningDeclaration(property);
+			if (directDecl && directDecl.important) return "important";
+			return "";
+		}
+		const winner = this._getWinningDeclaration(property);
+		return winner && winner.important ? "important" : "";
+	}
+	setProperty(property, value, priority = "") {
+		this._setPropertyInternal(property, value, priority, true, false);
+	}
+	/** @internal */
+	_setPropertyInternal(property, value, priority = "", notify = true, fromAll = false) {
+		if (this._readonly) throw new DOMException("Modification is disallowed", "NoModificationAllowedError");
+		if (property === "--") return;
+		if (property.startsWith("--") && !this._allowCustomProperties) return;
+		if (!property.startsWith("--")) property = property.toLowerCase();
+		if (!property.startsWith("--") && !this._isPropertySupported(property)) return;
+		const normalizedPriority = (priority ?? "").trim().toLowerCase();
+		if (normalizedPriority !== "" && normalizedPriority !== "important") return;
+		const isImportant = normalizedPriority === "important";
+		if (isImportant && !this._allowImportant) return;
+		if (value === null || value === "") {
+			this.removeProperty(property);
+			return;
+		}
+		if (value === void 0 && !property.startsWith("--") && !CUSTOM_IDENT_PROPERTIES.has(property)) return;
+		const valueStr = typeof value === "string" ? value : String(value);
+		if (property.startsWith("--")) {
+			if (!isValidDashedIdent(property)) return;
+			const tokens = tokenize(valueStr);
+			if (tokens.some((t) => t.type === "bad-string" || t.type === "bad-url")) return;
+			if (!validateCustomPropertyValue(parseComponentValues(tokens))) return;
+		}
+		const tokens = tokenize(valueStr, property === "unicode-range");
+		if (tokens.some((t) => t.type === "bad-string" || t.type === "bad-url")) return;
+		if (property === "all") {
+			this._declarations = this._declarations.filter((d) => d.name !== "all");
+			this._declMap.delete("all");
+		}
+		const compVals = parseComponentValues(tokens);
+		if (!property.startsWith("--")) {
+			if (!validateDeclarationValue(compVals)) return;
+		}
+		const shorthand = SHORTHANDS[property];
+		if (shorthand) {
+			const hasVar = valueStr.includes("var(") || valueStr.includes("env(");
+			if (!hasVar) {
+				const expanded = shorthand.expand(compVals);
+				if (expanded) {
+					if (ParseHooks.validatePropertyValue) {
+						for (const [lh, val] of Object.entries(expanded)) if (!ParseHooks.validatePropertyValue(lh, serialize(val), val)) ;
+					}
+					for (const [lh, val] of Object.entries(expanded)) this._setPropertyInternal(lh, serialize(val), normalizedPriority, false, property === "all" || fromAll);
+					if (notify) {
+						const allLh = getShorthandAllLonghands(shorthand);
+						this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property && !allLh.includes(d.name));
+						this._rawDeclarations.push({
+							type: "declaration",
+							name: property,
+							value: compVals,
+							important: isImportant
+						});
+						this._onChange?.();
+					}
+					return;
+				}
+			}
+			if (hasVar && validateDeclarationValue(compVals)) for (const lh of shorthand.longhands) this.removeProperty(lh);
+			else if (!shorthand.stub) return;
+		}
+		const existing = this._declMap.get(property);
+		const componentValues = parseComponentValues(tokens);
+		if (property === "unicode-range") {
+			const assembled = assembleUnicodeRanges(componentValues);
+			if (!assembled) return;
+			componentValues.splice(0, componentValues.length, ...assembled);
+		}
+		if (existing) {
+			existing.value = componentValues;
+			existing.important = isImportant;
+			existing.fromAll = fromAll;
+			if (property.startsWith("--")) existing.raw = valueStr ?? void 0;
+			const idx = this._declarations.indexOf(existing);
+			if (idx !== -1) {
+				const info = LOGICAL_PROPERTY_INFO[property];
+				if (this._declarations.slice(idx + 1).some((d) => {
+					if (d.name === "all") return true;
+					if (!info) return false;
+					const otherInfo = LOGICAL_PROPERTY_INFO[d.name];
+					return otherInfo && otherInfo.group === info.group && otherInfo.logic !== info.logic;
+				})) {
+					this._declarations.splice(idx, 1);
+					this._declarations.push(existing);
+				}
+			}
+		} else {
+			const decl = {
+				type: "declaration",
+				name: property,
+				value: componentValues,
+				important: isImportant,
+				fromAll: fromAll || void 0,
+				raw: property.startsWith("--") ? valueStr ?? void 0 : void 0
+			};
+			this._declarations.push(decl);
+			this._declMap.set(property, decl);
+		}
+		if (notify) {
+			this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property);
+			this._rawDeclarations.push({
+				type: "declaration",
+				name: property,
+				value: componentValues,
+				important: isImportant,
+				raw: property.startsWith("--") ? valueStr ?? void 0 : void 0
+			});
+			this._onChange?.();
+		}
+	}
+	removeProperty(property) {
+		if (this._readonly) throw new DOMException("Modification is disallowed", "NoModificationAllowedError");
+		if (!property.startsWith("--")) property = property.toLowerCase();
+		if (property === "all") {
+			const value = this.getPropertyValue("all");
+			let changed = false;
+			this._rawDeclarations = this._rawDeclarations.filter((d) => d.name === "direction" || d.name === "unicode-bidi" || d.name.startsWith("--"));
+			for (let i = this._declarations.length - 1; i >= 0; i--) {
+				const d = this._declarations[i];
+				if (d.name !== "direction" && d.name !== "unicode-bidi" && !d.name.startsWith("--")) {
+					this._declarations.splice(i, 1);
+					this._declMap.delete(d.name);
+					changed = true;
+				}
+			}
+			if (changed) this._onChange?.();
+			return value;
+		}
+		const shorthand = SHORTHANDS[property];
+		if (shorthand) {
+			const value = this.getPropertyValue(property);
+			const allLh = shorthand.logicalLonghands ? [...shorthand.longhands, ...shorthand.logicalLonghands] : shorthand.longhands;
+			this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property && !allLh.includes(d.name));
+			let changed = false;
+			for (const lh of allLh) if (this._declMap.has(lh)) {
+				const index = this._declarations.findIndex((d) => d.name === lh);
+				if (index !== -1) {
+					this._declarations.splice(index, 1);
+					this._declMap.delete(lh);
+					changed = true;
+				}
+			}
+			const index = this._declarations.findIndex((d) => d.name === property);
+			if (index !== -1) {
+				this._declarations.splice(index, 1);
+				this._declMap.delete(property);
+				changed = true;
+			}
+			if (changed) this._onChange?.();
+			return value;
+		}
+		const value = this.getPropertyValue(property);
+		this._rawDeclarations = this._rawDeclarations.filter((d) => d.name !== property);
+		const index = this._declarations.findIndex((d) => d.name === property);
+		if (index !== -1) {
+			this._declarations.splice(index, 1);
+			this._declMap.delete(property);
+			this._onChange?.();
+			return value;
+		}
+		return "";
+	}
+	get cssText() {
+		if (this._declarations.length === 0) return "";
+		return serializeDeclarations(this._declarations);
+	}
+	_applyCssText(value) {
+		const tokens = tokenize(value);
+		let newStyle;
+		try {
+			newStyle = parseStyleAttribute(tokens);
+		} catch {
+			return false;
+		}
+		if (!newStyle) return false;
+		this._declarations.length = 0;
+		this._rawDeclarations = newStyle._rawDeclarations.filter((d) => {
+			if (d.important && !this._allowImportant) return false;
+			if (d.name.startsWith("--")) return this._allowCustomProperties;
+			return this._isPropertySupported(d.name.toLowerCase());
+		});
+		this._declMap.clear();
+		for (const d of newStyle._declarations) {
+			if (d.name === "--") continue;
+			if (d.important && !this._allowImportant) continue;
+			const normalizedName = d.name.startsWith("--") ? d.name : d.name.toLowerCase();
+			if (normalizedName.startsWith("--") && !this._allowCustomProperties) continue;
+			if (!normalizedName.startsWith("--") && !this._isPropertySupported(normalizedName)) continue;
+			d.name = normalizedName;
+			const shorthand = SHORTHANDS[d.name];
+			if (shorthand) {
+				if (!(serialize(d.value).includes("var(") || serialize(d.value).includes("env("))) {
+					const expanded = shorthand.expand(d.value);
+					if (expanded) {
+						for (const [lh, val] of Object.entries(expanded)) this._addDeclaration({
+							type: "declaration",
+							name: lh,
+							value: val,
+							important: d.important,
+							fromAll: d.name === "all" || d.fromAll
+						});
+						continue;
+					}
+				}
+			}
+			this._addDeclaration(d);
+		}
+		return true;
+	}
+	set cssText(value) {
+		if (this._readonly) throw new DOMException("Modification is disallowed", "NoModificationAllowedError");
+		if (this._applyCssText(value)) this._onChange?.(true);
+	}
+	/** @internal */
+	_isPropertySupported(property) {
+		return SUPPORTED_PROPERTIES.has(property);
+	}
+	*[Symbol.iterator]() {
+		for (let i = 0; i < this.length; i++) yield this.item(i);
+	}
+};
+applyWebIDLInterface(CSSStyleDeclaration);
+var CSSKeyframeStyleDeclaration = class extends CSSStyleDeclaration {
+	/** @internal */
+	get _filterDeclarationsInConstructor() {
+		return true;
+	}
+	/** @internal */
+	_isPropertySupported(property) {
+		return property !== "animation-name" && super._isPropertySupported(property);
+	}
+};
+var CSSFontFaceDescriptors = class extends CSSStyleDeclaration {
+	/** @internal */
+	_isPropertySupported(property) {
+		return super._isPropertySupported(property) || FONT_FACE_DESCRIPTORS.has(property);
+	}
+};
+const PAGE_DESCRIPTORS_INTERNAL = Symbol("CSSPageDescriptors.internal");
+var CSSPageDescriptors = class extends CSSStyleDeclaration {
+	/** @internal */
+	get _filterDeclarationsInConstructor() {
+		return true;
+	}
+	constructor(declarations, internalToken) {
+		if (internalToken !== PAGE_DESCRIPTORS_INTERNAL) throw new TypeError("Illegal constructor");
+		super(declarations);
+	}
+	/** @internal */
+	_isPropertySupported(property) {
+		return PAGE_ALLOWED_PROPERTIES.has(property);
+	}
+};
+function defineDescriptorProperties(proto, dashedProps, skip) {
+	for (const cssProp of dashedProps) {
+		if (cssProp === skip) continue;
+		const desc = {
+			get() {
+				return this.getPropertyValue(cssProp);
+			},
+			set(val) {
+				this.setProperty(cssProp, val === null || val === void 0 ? "" : String(val));
+			},
+			enumerable: true,
+			configurable: true
+		};
+		Object.defineProperty(proto, cssProp, desc);
+		if (cssProp.includes("-")) {
+			const camelProp = cssProp.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+			Object.defineProperty(proto, camelProp, desc);
+		}
+	}
 }
-
-var hasRequiredLib;
-
-function requireLib () {
-	if (hasRequiredLib) return lib;
-	hasRequiredLib = 1;
-
-	lib.setup = requireCSSOM().setup;
-
-	requireErrorUtils();
-	requireRegexPatterns();
-
-	lib.CSSStyleDeclaration = requireCSSStyleDeclaration().CSSStyleDeclaration;
-
-	requireCssstyleTryCatchBlock();
-
-	lib.CSSRule = requireCSSRule().CSSRule;
-	lib.CSSRuleList = requireCSSRuleList().CSSRuleList;
-	lib.CSSNestedDeclarations = requireCSSNestedDeclarations().CSSNestedDeclarations;
-	lib.CSSGroupingRule = requireCSSGroupingRule().CSSGroupingRule;
-	lib.CSSCounterStyleRule = requireCSSCounterStyleRule().CSSCounterStyleRule;
-	lib.CSSPropertyRule = requireCSSPropertyRule().CSSPropertyRule;
-	lib.CSSConditionRule = requireCSSConditionRule().CSSConditionRule;
-	lib.CSSStyleRule = requireCSSStyleRule().CSSStyleRule;
-	lib.MediaList = requireMediaList().MediaList;
-	lib.CSSMediaRule = requireCSSMediaRule().CSSMediaRule;
-	lib.CSSContainerRule = requireCSSContainerRule().CSSContainerRule;
-	lib.CSSSupportsRule = requireCSSSupportsRule().CSSSupportsRule;
-	lib.CSSImportRule = requireCSSImportRule().CSSImportRule;
-	lib.CSSNamespaceRule = requireCSSNamespaceRule().CSSNamespaceRule;
-	lib.CSSFontFaceRule = requireCSSFontFaceRule().CSSFontFaceRule;
-	lib.CSSHostRule = requireCSSHostRule().CSSHostRule;
-	lib.CSSStartingStyleRule = requireCSSStartingStyleRule().CSSStartingStyleRule;
-	lib.StyleSheet = requireStyleSheet().StyleSheet;
-	lib.CSSStyleSheet = requireCSSStyleSheet().CSSStyleSheet;
-	lib.CSSKeyframesRule = requireCSSKeyframesRule().CSSKeyframesRule;
-	lib.CSSKeyframeRule = requireCSSKeyframeRule().CSSKeyframeRule;
-	lib.MatcherList = requireMatcherList().MatcherList;
-	lib.CSSDocumentRule = requireCSSDocumentRule().CSSDocumentRule;
-	lib.CSSValue = requireCSSValue().CSSValue;
-	lib.CSSValueExpression = requireCSSValueExpression().CSSValueExpression;
-	lib.CSSScopeRule = requireCSSScopeRule().CSSScopeRule;
-	lib.CSSLayerBlockRule = requireCSSLayerBlockRule().CSSLayerBlockRule;
-	lib.CSSLayerStatementRule = requireCSSLayerStatementRule().CSSLayerStatementRule;
-	lib.CSSPageRule = requireCSSPageRule().CSSPageRule;
-	lib.parse = requireParse().parse;
-	lib.clone = requireClone().clone;
-	return lib;
-}
-
-var libExports = requireLib();
+defineDescriptorProperties(CSSPageDescriptors.prototype, PAGE_DESCRIPTOR_PROPERTIES);
+var CSSPositionTryDescriptors = class extends CSSStyleDeclaration {
+	/** @internal */
+	get _filterDeclarationsInConstructor() {
+		return true;
+	}
+	/** @internal */
+	get _allowCustomProperties() {
+		return false;
+	}
+	/** @internal */
+	get _allowImportant() {
+		return false;
+	}
+	constructor(declarations, internalToken) {
+		if (internalToken !== PAGE_DESCRIPTORS_INTERNAL) throw new TypeError("Illegal constructor");
+		super(declarations);
+	}
+	/** @internal */
+	_isPropertySupported(property) {
+		return POSITION_TRY_ALLOWED_PROPERTIES.has(property);
+	}
+};
+defineDescriptorProperties(CSSPositionTryDescriptors.prototype, POSITION_TRY_ALLOWED_PROPERTIES, "inset-area");
+var CSSMarginDescriptors = class extends CSSStyleDeclaration {};
+applyWebIDLInterface(CSSFontFaceDescriptors);
+applyWebIDLInterface(CSSPageDescriptors);
+applyWebIDLInterface(CSSPositionTryDescriptors);
+applyWebIDLInterface(CSSMarginDescriptors);
 
 const tagName$e = 'style';
 
@@ -16074,7 +18068,7 @@ class HTMLStyleElement extends TextElement {
     if (sheet !== null) {
       return sheet;
     }
-    return this[SHEET] = libExports.parse(this.textContent);
+    return this[SHEET] = parse$1(this.textContent);
   }
 
   get innerHTML() {
@@ -17290,7 +19284,7 @@ const globalExports = assign(
   }
 );
 
-const window$1 = new WeakMap;
+const window = new WeakMap;
 
 /**
  * @implements globalThis.Document
@@ -17313,8 +19307,8 @@ let Document$1 = class Document extends NonElementParentNode {
    * @type {globalThis.Document['defaultView']}
    */
   get defaultView() {
-    if (!window$1.has(this))
-      window$1.set(this, new Proxy(globalThis, {
+    if (!window.has(this))
+      window.set(this, new Proxy(globalThis, {
         set: (target, name, value) => {
           switch (name) {
             case 'addEventListener':
@@ -17349,7 +19343,7 @@ let Document$1 = class Document extends NonElementParentNode {
               };
             /* c8 ignore stop */
             case 'window':
-              return window$1.get(this);
+              return window.get(this);
             case 'customElements':
               if (!this[CUSTOM_ELEMENTS].registry)
                 this[CUSTOM_ELEMENTS] = new CustomElementRegistry(this);
@@ -17372,7 +19366,7 @@ let Document$1 = class Document extends NonElementParentNode {
                   globalThis[name];
         }
       }));
-    return window$1.get(this);
+    return window.get(this);
   }
 
   get doctype() {
