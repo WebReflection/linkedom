@@ -1,5 +1,7 @@
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
+import {DISPATCH_TARGET} from '../shared/symbols.js';
+
 const wm = new WeakMap();
 
 function dispatch(event, listener) {
@@ -69,12 +71,13 @@ class DOMEventTarget {
 
   dispatchEvent(event) {
     let node = this;
+    const target = this[DISPATCH_TARGET] || this;
     event.eventPhase = event.CAPTURING_PHASE;
 
     // intentionally simplified, specs imply way more code: https://dom.spec.whatwg.org/#event-path
     while (node) {
       if (node.dispatchEvent)
-        event._path.push({currentTarget: node, target: this});
+        event._path.push({currentTarget: node, target});
       node = event.bubbles && node._getParent && node._getParent();
     }
     event._path.some(invokeListeners, event);

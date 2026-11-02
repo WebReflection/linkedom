@@ -210,3 +210,15 @@ callCount = 0;
 buttonTarget.click();
 assert(callCount, 4, '4 (2 are set before previous tests) and 2 here listeners should be called');
 assert(evBtn, 0, 'default click event button should be 0 (left click)')
+
+// defaultView events must report the actual view as their target (#298)
+let viewCalls = 0;
+for (const name of ['document', 'window']) {
+  const view = window[name];
+  view.addEventListener('direct', event => {
+    assert(event.target === view, true, `${name} is the event target`);
+    viewCalls++;
+  }, { once: true });
+  view.dispatchEvent(new Event('direct'));
+}
+assert(viewCalls, 2, 'defaultView direct dispatch should invoke its listeners')

@@ -35,6 +35,10 @@ exports.END = END;
 const EVENT_TARGET = Symbol('EventTarget');
 exports.EVENT_TARGET = EVENT_TARGET;
 
+// used in EventTarget to report a different target (e.g. defaultView)
+const DISPATCH_TARGET = Symbol('dispatchTarget');
+exports.DISPATCH_TARGET = DISPATCH_TARGET;
+
 // used to augment a created document defaultView
 const GLOBALS = Symbol('globals');
 exports.GLOBALS = GLOBALS;

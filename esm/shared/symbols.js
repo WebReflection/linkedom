@@ -25,6 +25,9 @@ export const END = Symbol('end');
 // used in Document to make the globalThis an event target
 export const EVENT_TARGET = Symbol('EventTarget');
 
+// used in EventTarget to report a different target (e.g. defaultView)
+export const DISPATCH_TARGET = Symbol('dispatchTarget');
+
 // used to augment a created document defaultView
 export const GLOBALS = Symbol('globals');
 

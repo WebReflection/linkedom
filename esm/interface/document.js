@@ -1,8 +1,8 @@
 import {DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_TYPE_NODE, ELEMENT_NODE, SVG_NAMESPACE} from '../shared/constants.js';
 
 import {
-  CUSTOM_ELEMENTS, DOM_PARSER, GLOBALS, IMAGE, MUTATION_OBSERVER,
-  DOCTYPE, END, NEXT, MIME, EVENT_TARGET, UPGRADE
+  CUSTOM_ELEMENTS, DISPATCH_TARGET, DOM_PARSER, GLOBALS, IMAGE,
+  MUTATION_OBSERVER, DOCTYPE, END, NEXT, MIME, EVENT_TARGET, UPGRADE
 } from '../shared/symbols.js';
 
 import {Facades, illegalConstructor} from '../shared/facades.js';
@@ -98,6 +98,7 @@ export class Document extends NonElementParentNode {
             case 'dispatchEvent':
               if (!this[EVENT_TARGET]) {
                 const et = this[EVENT_TARGET] = new EventTarget;
+                et[DISPATCH_TARGET] = window.get(this);
                 et.dispatchEvent = et.dispatchEvent.bind(et);
                 et.addEventListener = et.addEventListener.bind(et);
                 et.removeEventListener = et.removeEventListener.bind(et);
