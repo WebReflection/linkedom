@@ -41,10 +41,6 @@ function invokeListeners({currentTarget, target}) {
  */
 class DOMEventTarget {
 
-  constructor() {
-    wm.set(this, new Map);
-  }
-
   /**
    * @protected
    */
@@ -53,7 +49,10 @@ class DOMEventTarget {
   }
 
   addEventListener(type, listener, options) {
-    const map = wm.get(this);
+    // the listeners map is created on demand: most nodes never get a listener
+    let map = wm.get(this);
+    if (!map)
+      wm.set(this, map = new Map);
     if (!map.has(type)) 
       map.set(type, new Map);
     map.get(type).set(listener, options);
@@ -61,7 +60,7 @@ class DOMEventTarget {
 
   removeEventListener(type, listener) {
     const map = wm.get(this);
-    if (map.has(type)) {
+    if (map && map.has(type)) {
       const listeners = map.get(type);
       if (listeners.delete(listener) && !listeners.size)
         map.delete(type);
