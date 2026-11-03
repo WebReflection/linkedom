@@ -233,4 +233,55 @@ let {document: newDoc} = parseHTML('<html />');
     true,
     'MutationObserver addedNodes on html'
   );
+  args = null;
+  observer.disconnect();
+  const bodyTarget = newDoc.body;
+  observer.observe(newDoc, {
+    childList: true,
+    subtree: true
+  });
+  bodyTarget.appendChild(newDoc.createTextNode(''));
+  await milliseconds(10);
+
+  assert(
+    checkRecord(
+      {target: bodyTarget, type: "childList", addedNodes: [bodyTarget.lastChild]},
+      args[0]
+    ),
+    true,
+    'MutationObserver target is the parent of an inserted text node'
+  );
+  args = null;
+  const nestedDiv = newDoc.createElement('div');
+  bodyTarget.appendChild(nestedDiv);
+  await milliseconds(10);
+  args = null;
+  const spanChild = newDoc.createElement('span');
+  nestedDiv.appendChild(spanChild);
+  await milliseconds(10);
+
+  assert(
+    checkRecord(
+      {target: nestedDiv, type: "childList", addedNodes: [spanChild]},
+      args[0]
+    ),
+    true,
+    'MutationObserver target is the parent of an inserted element'
+  );
+  args = null;
+  const removedChild = newDoc.createElement('b');
+  bodyTarget.appendChild(removedChild);
+  await milliseconds(10);
+  args = null;
+  bodyTarget.removeChild(removedChild);
+  await milliseconds(10);
+
+  assert(
+    checkRecord(
+      {target: bodyTarget, type: "childList", removedNodes: [removedChild]},
+      args[0]
+    ),
+    true,
+    'MutationObserver target is the old parent of a removed child'
+  );
 })();

@@ -91,7 +91,7 @@ const moCallback = (element, parentNode) => {
           ) {
             const {callback, records, scheduled} = observer;
             records.push(createRecord(
-              'childList', target, element,
+              'childList', parentNode || element.parentNode, element,
               parentNode ? [] : [element], parentNode ? [element] : []
             ));
             if (!scheduled) {
