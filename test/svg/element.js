@@ -32,6 +32,14 @@ document = (new DOMParser).parseFromString(`<!doctype html><html><svg><rect /></
 
 assert('ownerSVGElement' in document.querySelector('svg rect'), true, 'svg restored');
 
+// https://github.com/WebReflection/linkedom/issues/344
+assert(document.querySelector('svg').tagName, 'svg', '<svg> tagName keeps its case in an HTML document');
+assert(document.querySelector('svg rect').tagName, 'rect', '<rect> tagName keeps its case in an HTML document');
+assert(document.querySelector('svg rect').nodeName, 'rect', '<rect> nodeName keeps its case in an HTML document');
+assert(document.createElementNS('http://www.w3.org/2000/svg', 'path').tagName, 'path', 'createElementNS tagName keeps its case');
+assert(document.createElementNS('http://www.w3.org/2000/svg', 'path').nodeName, 'path', 'createElementNS nodeName keeps its case');
+assert(document.documentElement.tagName, 'HTML', 'HTML elements are still upper-cased');
+
 svg.className.what = 'ever';
 
 assert(svg.className.what, 'ever', '<svg>.className');

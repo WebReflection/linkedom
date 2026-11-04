@@ -40,6 +40,11 @@ export class SVGElement extends Element {
     return 'http://www.w3.org/2000/svg';
   }
 
+  // https://dom.spec.whatwg.org/#element-html-uppercased-qualified-name
+  // only elements in the HTML namespace are upper-cased in an HTML document
+  get nodeName() { return this.localName; }
+  get tagName() { return this.localName; }
+
   getAttribute(name) {
     return name === 'class' ?
       [...this.classList].join(' ') :
