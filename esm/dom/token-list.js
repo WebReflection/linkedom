@@ -72,7 +72,7 @@ export class DOMTokenList extends Set {
       this.delete(token);
       update(this);
     }
-    else if (force || arguments.length === 1) {
+    else if (force || force === undefined) {
       super.add(token);
       update(this);
       return true;

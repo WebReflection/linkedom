@@ -75,6 +75,11 @@ node.classList.toggle('test', true);
 assert(node.classList.contains('test'), true, 'test class still in');
 node.classList.toggle('test', false);
 node.classList.toggle('test', true);
+// issue #277: explicit undefined force must behave like an omitted argument
+assert(node.classList.toggle('test', undefined), false, 'toggle(test, undefined) when present removes and returns false');
+assert(node.classList.contains('test'), false, 'no test class after toggle(test, undefined)');
+assert(node.classList.toggle('test', undefined), true, 'toggle(test, undefined) when absent adds and returns true');
+assert(node.classList.contains('test'), true, 'test class added by toggle(test, undefined)');
 node.classList.remove('test');
 assert(node.classList.contains('test'), false, 'no test class one more time');
 assert(node.classList.replace('b', 'c'), true, 'replace happened');
