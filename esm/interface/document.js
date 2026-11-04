@@ -34,6 +34,13 @@ import {Range} from './range.js';
 import {Text} from './text.js';
 import {TreeWalker} from './tree-walker.js';
 
+const boundGlobals = new WeakMap;
+const boundGlobal = fn => {
+  if (!boundGlobals.has(fn))
+    boundGlobals.set(fn, fn.bind(globalThis));
+  return boundGlobals.get(fn);
+};
+
 const query = (method, ownerDocument, selectors) => {
   let {[NEXT]: next, [END]: end} = ownerDocument;
   return method.call({ownerDocument, [NEXT]: next, [END]: end}, selectors);
@@ -130,9 +137,14 @@ export class Document extends NonElementParentNode {
                 this[MUTATION_OBSERVER] = new MutationObserverClass(this);
               return this[MUTATION_OBSERVER].class;
           }
-          return (this[GLOBALS] && this[GLOBALS][name]) ||
-                  globalExports[name] ||
-                  globalThis[name];
+          const value = (this[GLOBALS] && this[GLOBALS][name]) ||
+                        globalExports[name] ||
+                        globalThis[name];
+          // a native function called through the proxy runs with the proxy
+          // as receiver, which browsers reject ("Illegal invocation"):
+          // bind it to the global, once, and leave constructors as they are
+          return typeof value === 'function' && !('prototype' in value) && value === globalThis[name] ?
+                  boundGlobal(value) : value;
         }
       }));
     return window.get(this);

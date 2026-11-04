@@ -70,6 +70,13 @@ assert(window.addEventListener, null);
 
 assert(typeof window.performance.now(), 'number');
 
+// https://github.com/WebReflection/linkedom/issues/345
+globalThis.receiver = {receiver() { return this; }}.receiver;
+assert(window.receiver() === globalThis, true, 'a native function runs with the global as receiver');
+assert(window.receiver === window.receiver, true, 'bound once');
+assert(window.URL === URL, true, 'constructors keep their identity');
+delete globalThis.receiver;
+
 assert(parseHTML('<html><body><div>asdf</div></body></html>').document.body.outerHTML, '<body><div>asdf</div></body>');
 
 const location = {href: 'http://ok'};
