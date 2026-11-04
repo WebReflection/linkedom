@@ -92,6 +92,18 @@ emptyClass.getElementById('b').className = 'x';
 emptyClass.getElementById('b').classList.remove('x');
 assert(emptyClass.querySelectorAll('[class=""]').map(({id}) => id).join(','), 'b,c', '[class=""] follows class mutations');
 
+const {document: compiled} = parseHTML('<div><p class="a"></p></div>');
+const compiledP = compiled.querySelector('p');
+assert(compiledP.matches('div .a'), true, 'matches() compiles a selector');
+compiledP.className = 'b';
+assert(compiledP.matches('div .a'), false, 'a compiled selector follows mutations');
+const compiledXML = (new DOMParser).parseFromString('<div><p class="a"/></div>', 'text/xml');
+assert(compiledXML.querySelector('p').matches('DIV P'), false, 'compiled selectors are kept per document kind');
+assert(compiledP.matches('DIV P'), true, 'compiled selectors are kept per document kind');
+for (let i = 0; i < 1100; i++)
+  compiledP.matches(`.b, .c${i}`);
+assert(compiledP.matches('div .b'), true, 'the oldest compiled selectors are dropped');
+
 assert((new DOMParser).parseFromString('...', 'text/html').firstElementChild.localName, 'html');
 
 const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></head><body></body></html>`, 'text/html').defaultView.window.document;
