@@ -35,6 +35,36 @@ node.replaceWith(amp);
 assert(amp.wholeText, 'before&after');
 assert(document.toString(), '<!DOCTYPE html><html lang="en" id="html" class="live">before&amp;after<input><p></p>ab</html>', '.before() and after()');
 
+{
+  const {document} = parseHTML('<div>a<i></i>b</div>');
+  const div = document.firstChild;
+  const i = div.querySelector('i');
+  i.after('x', i);
+  assert(div.outerHTML, '<div>ax<i></i>b</div>', '.after() with itself among the nodes');
+  i.before(i, 'y');
+  assert(div.outerHTML, '<div>ax<i></i>yb</div>', '.before() with itself among the nodes');
+  const b = div.lastChild;
+  i.after(b, 'z');
+  assert(div.outerHTML, '<div>ax<i></i>bzy</div>', '.after() moving the next sibling');
+  i.before(div.firstChild, i);
+  assert(div.outerHTML, '<div>xa<i></i>bzy</div>', '.before() moving the first child and itself');
+  i.before(i.previousSibling, 'p');
+  assert(div.outerHTML, '<div>xap<i></i>bzy</div>', '.before() moving the previous sibling');
+  i.after(i.nextSibling, 'n');
+  assert(div.outerHTML, '<div>xap<i></i>bnzy</div>', '.after() moving the next sibling first');
+}
+
+{
+  const {document} = parseHTML('<p>a<b></b>c</p>');
+  const p = document.firstChild;
+  const b = p.querySelector('b');
+  b.before(b.previousSibling);
+  b.after(b.nextSibling);
+  b.before(b, p.lastChild);
+  b.after(p.firstChild, b);
+  assert(p.outerHTML, '<p>a<b></b>c</p>', '.before() and .after() without a viable sibling');
+}
+
 let div = document.createElement('div');
 let rect = div.getBoundingClientRect();
 

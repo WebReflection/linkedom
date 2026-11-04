@@ -16,23 +16,34 @@ const asFragment = (ownerDocument, nodes) => {
   return fragment;
 };
 
+// `node` itself can be one of `nodes`, so the insertion point is the nearest
+// sibling that is not moved (the spec's viable previous/next sibling).
 const before = (node, nodes) => {
   const {ownerDocument, parentNode} = node;
-  if (parentNode)
+  if (parentNode) {
+    let prev = node.previousSibling;
+    while (prev && nodes.includes(prev))
+      prev = prev.previousSibling;
+    const fragment = asFragment(ownerDocument, nodes);
     parentNode.insertBefore(
-      asFragment(ownerDocument, nodes),
-      node
+      fragment,
+      prev ? prev.nextSibling : parentNode.firstChild
     );
+  }
 };
 exports.before = before;
 
 const after = (node, nodes) => {
   const {ownerDocument, parentNode} = node;
-  if (parentNode)
+  if (parentNode) {
+    let next = getEnd(node)[NEXT];
+    while (next && nodes.includes(next))
+      next = getEnd(next)[NEXT];
     parentNode.insertBefore(
       asFragment(ownerDocument, nodes),
-      getEnd(node)[NEXT]
+      next
     );
+  }
 };
 exports.after = after;
 
