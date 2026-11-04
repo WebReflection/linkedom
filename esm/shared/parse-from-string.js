@@ -1,6 +1,6 @@
 import * as HTMLParser2 from 'htmlparser2';
 
-import {ELEMENT_NODE, SVG_NAMESPACE} from './constants.js';
+import {ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE} from './constants.js';
 import {CUSTOM_ELEMENTS, PREV, END, VALUE} from './symbols.js';
 import {keys} from './object.js';
 
@@ -93,7 +93,11 @@ export const parseFromString = (document, isHTML, markupLanguage) => {
       if (parsingCData) {
         append(node, document.createCDATASection(text), active);
       } else {
-        append(node, document.createTextNode(text), active);
+        const prev = node[END][PREV];
+        if (prev.nodeType === TEXT_NODE)
+          prev[VALUE] += text;
+        else
+          append(node, document.createTextNode(text), active);
       }
     },
 

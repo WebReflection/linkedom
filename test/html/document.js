@@ -98,3 +98,40 @@ const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></h
 issue187.body.innerHTML = '<span></span>';
 let span = issue187.body.firstElementChild;
 assert(span.ownerDocument.body, issue187.body);
+
+// @issue 353: the parser must merge consecutive ontext pieces into one Text node.
+// htmlparser2 with decodeEntities:true calls ontext once per piece around each
+// character reference; adjacent pieces under the same parent must be merged into
+// a single Text node (per the HTML parsing algorithm "insert a character").
+{
+  const parse = html => (new DOMParser).parseFromString(`<!DOCTYPE html><html><body>${html}</body></html>`, 'text/html');
+
+  // entity split: "a &amp; b" -> one Text node "a & b"
+  let p = parse('<p>a &amp; b</p>').querySelector('p');
+  assert(p.childNodes.length, 1, 'entity split merged into one Text node');
+  assert(p.firstChild.data, 'a & b', 'entity split data');
+
+  // multi-entity: "x &lt; y &gt; z &#169;" -> one Text node
+  p = parse('<p>x &lt; y &gt; z &#169;</p>').querySelector('p');
+  assert(p.childNodes.length, 1, 'multi-entity merged into one Text node');
+  assert(p.firstChild.data, 'x < y > z ©', 'multi-entity data');
+
+  // plain text unchanged (still one node)
+  p = parse('<p>plain text</p>').querySelector('p');
+  assert(p.childNodes.length, 1, 'plain text stays one node');
+  assert(p.firstChild.data, 'plain text', 'plain text data');
+
+  // text after an element boundary is NOT merged across it
+  p = parse('<p>a &amp;<b>x</b> &amp; b</p>').querySelector('p');
+  assert(p.childNodes.length, 3, 'text not merged across element boundary');
+  assert(p.firstChild.data, 'a &', 'first run before element');
+  assert(p.lastChild.data, ' & b', 'last run after element');
+  assert(p.querySelector('b').childNodes.length, 1, 'element own text still one node');
+  assert(p.querySelector('b').firstChild.data, 'x', 'element own text data');
+
+  // text after a comment boundary is NOT merged across it
+  p = parse('<p>a <!-- c --> &amp; b</p>').querySelector('p');
+  assert(p.childNodes.length, 3, 'text not merged across comment boundary');
+  assert(p.firstChild.data, 'a ', 'first run before comment');
+  assert(p.lastChild.data, ' & b', 'last run after comment');
+}

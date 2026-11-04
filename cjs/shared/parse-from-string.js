@@ -1,7 +1,7 @@
 'use strict';
 const HTMLParser2 = require('htmlparser2');
 
-const {ELEMENT_NODE, SVG_NAMESPACE} = require('./constants.js');
+const {ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE} = require('./constants.js');
 const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('./symbols.js');
 const {keys} = require('./object.js');
 
@@ -95,7 +95,11 @@ const parseFromString = (document, isHTML, markupLanguage) => {
       if (parsingCData) {
         append(node, document.createCDATASection(text), active);
       } else {
-        append(node, document.createTextNode(text), active);
+        const prev = node[END][PREV];
+        if (prev.nodeType === TEXT_NODE)
+          prev[VALUE] += text;
+        else
+          append(node, document.createTextNode(text), active);
       }
     },
 
