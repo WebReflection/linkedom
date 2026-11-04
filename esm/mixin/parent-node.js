@@ -24,8 +24,6 @@ import {NodeList} from '../interface/node-list.js';
 import {moCallback} from '../interface/mutation-observer.js';
 import {connectedCallback} from '../interface/custom-element-registry.js';
 
-import {nextElementSibling} from './non-document-type-child-node.js';
-
 const isNode = node => node instanceof Node;
 
 const insert = (parentNode, child, nodes) => {
@@ -63,20 +61,37 @@ export class ParentNode extends Node {
 
   get childNodes() {
     const childNodes = new NodeList;
-    let {firstChild} = this;
-    while (firstChild) {
-      childNodes.push(firstChild);
-      firstChild = nextSibling(firstChild);
+    // walk the list once: an element is followed by its whole subtree, so jump over it
+    const {[END]: end} = this;
+    let next = this[NEXT];
+    while (next !== end) {
+      switch (next.nodeType) {
+        case ATTRIBUTE_NODE:
+          next = next[NEXT];
+          break;
+        case ELEMENT_NODE:
+          childNodes.push(next);
+          next = next[END][NEXT];
+          break;
+        default:
+          childNodes.push(next);
+          next = next[NEXT];
+      }
     }
     return childNodes;
   }
 
   get children() {
     const children = new NodeList;
-    let {firstElementChild} = this;
-    while (firstElementChild) {
-      children.push(firstElementChild);
-      firstElementChild = nextElementSibling(firstElementChild);
+    const {[END]: end} = this;
+    let next = this[NEXT];
+    while (next !== end) {
+      if (next.nodeType === ELEMENT_NODE) {
+        children.push(next);
+        next = next[END][NEXT];
+      }
+      else
+        next = next[NEXT];
     }
     return children;
   }
