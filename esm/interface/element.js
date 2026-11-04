@@ -178,6 +178,13 @@ export class Element extends ParentNode {
     return text.join('');
   }
 
+  set innerText(text) {
+    text = text === null ? '' : String(text);
+    this.replaceChildren();
+    if (text !== '')
+      this.appendChild(new Text(this.ownerDocument, text));
+  }
+
   /**
    * @returns {String}
    */

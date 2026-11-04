@@ -159,3 +159,18 @@ assert(node.innerHTML, '<video src="" controls></video>');
 node.innerHTML = '<div>The <strong>quick</strong> brown fox</div><div>Jumped over<br>The lazy\ndog</div>';
 assert(node.innerText, 'The quick brown fox\nJumped over\nThe lazy dog', 'innerText newlines');
 assert(node.textContent, 'The quick brown foxJumped overThe lazy\ndog', 'textContent no newlines');
+
+// non-string coercion (issue #308)
+node.innerHTML = 1;
+assert(node.innerHTML, '1', 'innerHTML coerces number');
+node.innerHTML = null;
+assert(node.innerHTML, '', 'innerHTML coerces null');
+node.innerHTML = undefined;
+assert(node.innerHTML, 'undefined', 'innerHTML coerces undefined');
+
+node.innerText = 1;
+assert(node.innerText, '1', 'innerText coerces number');
+node.innerText = null;
+assert(node.innerText, '', 'innerText coerces null');
+node.innerText = 'sanity';
+assert(node.innerText, 'sanity', 'innerText normal string');
