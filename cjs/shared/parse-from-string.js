@@ -2,7 +2,7 @@
 const HTMLParser2 = require('htmlparser2');
 
 const {ELEMENT_NODE, SVG_NAMESPACE} = require('./constants.js');
-const {CUSTOM_ELEMENTS, PREV, END, VALUE} = require('./symbols.js');
+const {CUSTOM_ELEMENTS, PREV, END, VALUE, CONTENT, PRIVATE} = require('./symbols.js');
 const {keys} = require('./object.js');
 
 const {knownBoundaries, knownSiblings} = require('./utils.js');
@@ -19,6 +19,10 @@ const {Parser} = HTMLParser2;
 let notParsing = true;
 
 const append = (self, node, active) => {
+  if (self && self.localName === 'template' && self[CONTENT]) {
+    self = self[CONTENT];
+  }
+  if (!self) return node; // null 체크 추가
   const end = self[END];
   node.parentNode = self;
   knownBoundaries(end[PREV], node, end);
@@ -107,6 +111,9 @@ const parseFromString = (document, isHTML, markupLanguage) => {
     onclosetag() {
       if (isHTML && node === ownerSVGElement)
         ownerSVGElement = null;
+      if (node && node[PRIVATE]) {
+        node = node[PRIVATE];
+      }
       node = node.parentNode;
     }
   }, {
