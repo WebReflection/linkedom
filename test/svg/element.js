@@ -47,3 +47,19 @@ assert(svg.getAttribute('class'), 'a b c');
 svg.setAttribute('class', 'd e');
 assert(svg.getAttribute('class'), 'd e');
 assert(svg.namespaceURI, 'http://www.w3.org/2000/svg');
+
+// https://github.com/WebReflection/linkedom/issues/326
+({document} = parseHTML('<!doctype html><html><body><svg></svg></body></html>'));
+svg = document.querySelector('svg');
+svg.innerHTML = '<circle r="1"/><circle r="2"/>';
+assert(svg.childNodes.length, 2, 'self-closing children are siblings');
+assert(svg.firstChild instanceof SVGElement, true, 'innerHTML children are SVG elements');
+assert(svg.firstChild.ownerSVGElement, svg, 'innerHTML children ownerSVGElement');
+assert(svg.innerHTML, '<circle r="1" /><circle r="2" />');
+
+svg.innerHTML = '<g></g>';
+const g = svg.firstChild;
+g.innerHTML = '<rect/><g><path d="M0 0"/></g>';
+assert(g.toString(), '<g><rect /><g><path d="M0 0" /></g></g>', 'nested innerHTML');
+assert(g.firstChild.ownerSVGElement, svg, 'nested innerHTML ownerSVGElement');
+assert(g.lastChild.firstChild.ownerSVGElement, svg, 'deep innerHTML ownerSVGElement');
