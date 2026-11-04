@@ -4,14 +4,12 @@ const {CHANGED, VALUE} = require('../shared/symbols.js');
 const {String, ignoreCase} = require('../shared/utils.js');
 const {attrAsJSON} = require('../shared/jsdon.js');
 const {emptyAttributes} = require('../shared/attributes.js');
+const {escapeHtmlAttributeValue, escapeXmlAttributeValue} = require('../shared/text-escaper.js');
 
 const {attributeChangedCallback: moAttributes} = require('./mutation-observer.js');
 const {attributeChangedCallback: ceAttributes} = require('./custom-element-registry.js');
 
 const {Node} = require('./node.js');
-const {escape} = require('../shared/text-escaper.js');
-
-const QUOTE = /"/g;
 
 /**
  * @implements globalThis.Attr
@@ -46,7 +44,7 @@ class Attr extends Node {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = ignoreCase(this) ? escapeHtmlAttributeValue(value) : escapeXmlAttributeValue(value);
     return `${name}="${escapedValue}"`;
   }
 
