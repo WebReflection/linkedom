@@ -52,6 +52,8 @@ class HTMLDocument extends Document {
    */
   get head() {
     const {documentElement} = this;
+    if (documentElement && documentElement.tagName === 'HEAD')
+      return documentElement;
     let {firstElementChild} = documentElement;
     if (!firstElementChild || firstElementChild.tagName !== 'HEAD') {
       firstElementChild = this.createElement('head');
@@ -64,6 +66,9 @@ class HTMLDocument extends Document {
    * @type HTMLBodyElement
    */
   get body() {
+    const {documentElement} = this;
+    if (documentElement && documentElement.tagName === 'BODY')
+      return documentElement;
     const {head} = this;
     let {nextElementSibling} = head;
     if (!nextElementSibling || nextElementSibling.tagName !== 'BODY') {

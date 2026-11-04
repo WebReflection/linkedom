@@ -98,3 +98,10 @@ const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></h
 issue187.body.innerHTML = '<span></span>';
 let span = issue187.body.firstElementChild;
 assert(span.ownerDocument.body, issue187.body);
+
+const issue283 = parseHTML('<body><div class="whatever"></div></body>');
+assert(issue283.document.querySelectorAll('body').length, 1, 'only one body element exists');
+assert(issue283.document.querySelector('body'), issue283.document.body, 'document.body is the real body element');
+
+const issue283Head = parseHTML('<head><title>t</title></head>');
+assert(issue283Head.document.querySelector('head'), issue283Head.document.head, 'document.head is the real head element');
