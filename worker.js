@@ -2998,6 +2998,8 @@ const pe = m => esca[m];
 const escape = es => replace.call(es, ca, pe);
 
 const QUOTE = /"/g;
+const AMP_OR_NBSP = /[&\xA0]/g;
+const escapeHTML = value => value.replace(AMP_OR_NBSP, c => c === '&' ? '&amp;' : '&#160;');
 
 /**
  * @implements globalThis.Attr
@@ -3032,7 +3034,7 @@ let Attr$1 = class Attr extends Node$1 {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = (ignoreCase(this) ? escapeHTML(value) : escape(value)).replace(QUOTE, '&quot;');
     return `${name}="${escapedValue}"`;
   }
 
