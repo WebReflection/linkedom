@@ -110,6 +110,7 @@ exports.prepareMatch = prepareMatch;
 
 // matches() is called once per element and selector pair, so the selector
 // is compiled once and kept, instead of parsed again on every call.
+// DOM results must stay fresh: css-select may otherwise memoize ancestors.
 // :scope depends on the element, so those are compiled each time.
 const compiled = new Map;
 const MAX_COMPILED = 1024;
@@ -128,7 +129,7 @@ const matches = (element, selectors) => {
   if (!test) {
     if (compiled.size === MAX_COMPILED)
       compiled.delete(compiled.keys().next().value);
-    test = CSSselect.compile(selectors, {strict: true, xmlMode, adapter});
+    test = CSSselect.compile(selectors, {strict: true, xmlMode, adapter, cacheResults: false});
     compiled.set(key, test);
   }
   return test(element);
