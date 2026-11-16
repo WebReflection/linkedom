@@ -2998,6 +2998,8 @@ const pe = m => esca[m];
 const escape = es => replace.call(es, ca, pe);
 
 const QUOTE = /"/g;
+const AMP = /&/g;
+const NBSP = /\xA0/g;
 
 /**
  * @implements globalThis.Attr
@@ -3032,7 +3034,7 @@ let Attr$1 = class Attr extends Node$1 {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = (ignoreCase(this) ? value.replace(AMP, '&amp;').replace(NBSP, '&nbsp;') : escape(value)).replace(QUOTE, '&quot;');
     return `${name}="${escapedValue}"`;
   }
 
@@ -8400,7 +8402,8 @@ class TextElement extends HTMLElement {
 
   toString() {
     const outerHTML = toString.call(this.cloneNode());
-    return outerHTML.replace('><', () => `>${this.textContent}<`);
+    const at = outerHTML.lastIndexOf('><');
+    return `${outerHTML.slice(0, at + 1)}${this.textContent}${outerHTML.slice(at + 1)}`;
   }
 }
 
@@ -14698,7 +14701,7 @@ var CSSStyleSheet = class CSSStyleSheet extends StyleSheet {
 		}
 	}
 	_unregisterProperties() {
-		for (const name of this._registeredProperties) ParseHooks.unregisterPropertyRule(name);
+		for (const name of this._registeredProperties) ParseHooks.unregisterPropertyRule();
 		this._registeredProperties = [];
 	}
 	constructor(options = {}) {
@@ -17708,7 +17711,7 @@ var CSSStyleDeclaration = class extends CSSStyleProperties {
 				const expanded = shorthand.expand(compVals);
 				if (expanded) {
 					if (ParseHooks.validatePropertyValue) {
-						for (const [lh, val] of Object.entries(expanded)) if (!ParseHooks.validatePropertyValue(lh, serialize(val), val)) ;
+						for (const [lh, val] of Object.entries(expanded)) if (!ParseHooks.validatePropertyValue(lh, serialize(val))) ;
 					}
 					for (const [lh, val] of Object.entries(expanded)) this._setPropertyInternal(lh, serialize(val), normalizedPriority, false, property === "all" || fromAll);
 					if (notify) {

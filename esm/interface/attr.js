@@ -11,6 +11,8 @@ import {Node} from './node.js';
 import {escape} from '../shared/text-escaper.js';
 
 const QUOTE = /"/g;
+const AMP = /&/g;
+const NBSP = /\xA0/g;
 
 /**
  * @implements globalThis.Attr
@@ -45,7 +47,7 @@ export class Attr extends Node {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = (ignoreCase(this) ? value.replace(AMP, '&amp;').replace(NBSP, '&nbsp;') : escape(value)).replace(QUOTE, '&quot;');
     return `${name}="${escapedValue}"`;
   }
 

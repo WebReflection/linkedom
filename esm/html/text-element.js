@@ -9,6 +9,7 @@ export class TextElement extends HTMLElement {
 
   toString() {
     const outerHTML = toString.call(this.cloneNode());
-    return outerHTML.replace('><', () => `>${this.textContent}<`);
+    const at = outerHTML.lastIndexOf('><');
+    return `${outerHTML.slice(0, at + 1)}${this.textContent}${outerHTML.slice(at + 1)}`;
   }
 }
