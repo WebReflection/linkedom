@@ -28,3 +28,12 @@ assert(xmlDoc.toString(), '<?xml version="1.0" encoding="utf-8"?><element attr="
 assert(xmlDoc.firstElementChild.toString(), '<element attr="a&quot;b&quot;c" />');
 assert(xmlDoc.firstElementChild.outerHTML, '<element attr="a&quot;b&quot;c" />');
 assert(xmlDoc.firstElementChild.attributes.attr.value, 'a"b"c');
+
+// https://github.com/WebReflection/linkedom/issues/340
+const {document: htmlDoc} = parseHTML('<!doctype html><html><body><div id="t"></div></body></html>');
+const div = htmlDoc.getElementById('t');
+div.setAttribute('data-x', 'A &amp; B');
+assert(div.outerHTML, '<div id="t" data-x="A &amp;amp; B"></div>', 'HTML attribute & is escaped');
+assert(parseHTML(`<!doctype html><html><body>${div.outerHTML}</body></html>`).document.getElementById('t').getAttribute('data-x'), 'A &amp; B', 'HTML attribute round trip');
+div.setAttribute('data-x', 'a b "c"');
+assert(div.outerHTML, '<div id="t" data-x="a&nbsp;b &quot;c&quot;"></div>', 'HTML attribute U+00A0 is escaped');
