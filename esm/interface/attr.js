@@ -9,8 +9,13 @@ import {attributeChangedCallback as ceAttributes} from './custom-element-registr
 
 import {Node} from './node.js';
 import {escape} from '../shared/text-escaper.js';
+import {decodeHTMLAttribute} from 'entities/decode';
 
 const QUOTE = /"/g;
+const AMP = /&/g;
+
+// HTML keeps a raw & (e.g. ?a=1&b=2) unless the parser would read a character reference.
+const escapeAmpersands = value => decodeHTMLAttribute(value) === value ? value : value.replace(AMP, '&amp;');
 
 /**
  * @implements globalThis.Attr
@@ -45,7 +50,7 @@ export class Attr extends Node {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = (ignoreCase(this) ? escapeAmpersands(value) : escape(value)).replace(QUOTE, '&quot;');
     return `${name}="${escapedValue}"`;
   }
 

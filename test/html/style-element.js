@@ -38,3 +38,9 @@ assert(style.sheet.cssRules[0].style.color, 'blue');
 assert(style.sheet.cssRules[0].cssRules.length, 1);
 assert(style.sheet.cssRules[0].cssRules[0].selectorText, '& .child');
 assert(style.sheet.cssRules[0].cssRules[0].style.color, 'red');
+
+// https://github.com/WebReflection/linkedom/issues/341
+style = parseHTML('<!doctype html><html><head></head><body></body></html>').document.createElement('style');
+style.setAttribute('data-src', 'a><b.css');
+style.textContent = '.caption{color:red}';
+assert(style.toString(), '<style data-src="a><b.css">.caption{color:red}</style>', 'style with >< in an attribute value');
