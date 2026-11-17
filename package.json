@@ -72,6 +72,7 @@
   "dependencies": {
     "css-select": "^7.0.0",
     "cssomnom": "^0.1.11",
+    "entities": "^7.0.1",
     "html-escaper": "^3.0.3",
     "htmlparser2": "^10.1.0",
     "uhyphen": "^0.2.0"

@@ -604,6 +604,38 @@ class EntityDecoder {
     }
 }
 /**
+ * Creates a function that decodes entities in a string.
+ *
+ * @param decodeTree The decode tree.
+ * @returns A function that decodes entities in a string.
+ */
+function getDecoder(decodeTree) {
+    let returnValue = "";
+    const decoder = new EntityDecoder(decodeTree, (data) => (returnValue += fromCodePoint(data)));
+    return function decodeWithTrie(input, decodeMode) {
+        let lastIndex = 0;
+        let offset = 0;
+        while ((offset = input.indexOf("&", offset)) >= 0) {
+            returnValue += input.slice(lastIndex, offset);
+            decoder.startEntity(decodeMode);
+            const length = decoder.write(input, 
+            // Skip the "&"
+            offset + 1);
+            if (length < 0) {
+                lastIndex = offset + decoder.end();
+                break;
+            }
+            lastIndex = offset + length;
+            // If `length` is 0, skip the current `&` and continue.
+            offset = length === 0 ? lastIndex + 1 : lastIndex;
+        }
+        const result = returnValue + input.slice(lastIndex);
+        // Make sure we don't keep a reference to the final string.
+        returnValue = "";
+        return result;
+    };
+}
+/**
  * Determines the branch of the current node that is taken given the current
  * character. This function is used to traverse the trie.
  *
@@ -651,6 +683,16 @@ function determineBranch(decodeTree, current, nodeIndex, char) {
         }
     }
     return -1;
+}
+const htmlDecoder = /* #__PURE__ */ getDecoder(htmlDecodeTree);
+/**
+ * Decodes an HTML string in an attribute.
+ *
+ * @param htmlAttribute The string to decode.
+ * @returns The decoded string.
+ */
+function decodeHTMLAttribute(htmlAttribute) {
+    return htmlDecoder(htmlAttribute, DecodingMode.Attribute);
 }
 
 var CharCodes;
@@ -2999,7 +3041,9 @@ const escape = es => replace.call(es, ca, pe);
 
 const QUOTE = /"/g;
 const AMP = /&/g;
-const NBSP = /\xA0/g;
+
+// HTML keeps a raw & (e.g. ?a=1&b=2) unless the parser would read a character reference.
+const escapeAmpersands = value => decodeHTMLAttribute(value) === value ? value : value.replace(AMP, '&amp;');
 
 /**
  * @implements globalThis.Attr
@@ -3034,7 +3078,7 @@ let Attr$1 = class Attr extends Node$1 {
     if (emptyAttributes.has(name) && !value) {
       return ignoreCase(this) ? name : `${name}=""`;
     }
-    const escapedValue = (ignoreCase(this) ? value.replace(AMP, '&amp;').replace(NBSP, '&nbsp;') : escape(value)).replace(QUOTE, '&quot;');
+    const escapedValue = (ignoreCase(this) ? escapeAmpersands(value) : escape(value)).replace(QUOTE, '&quot;');
     return `${name}="${escapedValue}"`;
   }
 
