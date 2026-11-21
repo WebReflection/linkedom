@@ -92,6 +92,42 @@ emptyClass.getElementById('b').className = 'x';
 emptyClass.getElementById('b').classList.remove('x');
 assert(emptyClass.querySelectorAll('[class=""]').map(({id}) => id).join(','), 'b,c', '[class=""] follows class mutations');
 
+const {document: compiled} = parseHTML('<div><p class="a"></p></div>');
+const compiledP = compiled.querySelector('p');
+assert(compiledP.matches('div .a'), true, 'matches() compiles a selector');
+compiledP.className = 'b';
+assert(compiledP.matches('div .a'), false, 'a compiled selector follows mutations');
+// A retained selector must not retain css-select's ancestor result caches.
+// Keep the exact same selector through attribute and tree mutations, and
+// reuse it on a second document whose first result is positive.
+const hasSelector = 'div:has(.yes) p';
+const {document: hasDocument} = parseHTML('<div><p></p><span></span></div>');
+const hasP = hasDocument.querySelector('p');
+const hasSpan = hasDocument.querySelector('span');
+const hasResults = [hasP.matches(hasSelector)];
+hasSpan.className = 'yes';
+hasResults.push(hasP.matches(hasSelector));
+hasSpan.removeAttribute('class');
+hasResults.push(hasP.matches(hasSelector));
+hasSpan.className = 'yes';
+hasSpan.remove();
+hasResults.push(hasP.matches(hasSelector));
+hasP.parentNode.appendChild(hasSpan);
+hasResults.push(hasP.matches(hasSelector));
+const {document: initiallyHas} = parseHTML('<div><p></p><span class="yes"></span></div>');
+const initiallyHasP = initiallyHas.querySelector('p');
+hasResults.push(initiallyHasP.matches(hasSelector));
+initiallyHas.querySelector('span').remove();
+hasResults.push(initiallyHasP.matches(hasSelector));
+assert(hasResults.join(','), 'false,true,false,false,true,true,false', 'compiled :has() selectors follow positive and negative DOM mutations');
+
+const compiledXML = (new DOMParser).parseFromString('<div><p class="a"/></div>', 'text/xml');
+assert(compiledXML.querySelector('p').matches('DIV P'), false, 'compiled selectors are kept per document kind');
+assert(compiledP.matches('DIV P'), true, 'compiled selectors are kept per document kind');
+for (let i = 0; i < 1100; i++)
+  compiledP.matches(`.b, .c${i}`);
+assert(compiledP.matches('div .b'), true, 'the oldest compiled selectors are dropped');
+
 assert((new DOMParser).parseFromString('...', 'text/html').firstElementChild.localName, 'html');
 
 const issue187 = (new DOMParser).parseFromString(`<!DOCTYPE html><html><head></head><body></body></html>`, 'text/html').defaultView.window.document;
