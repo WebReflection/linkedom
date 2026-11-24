@@ -53,3 +53,22 @@ assert(Array.from(divWithStyle.style).join(','), 'display', 'Array.from after ch
 divWithStyle.style.setProperty('color', 'green');
 assert([...divWithStyle.style].join(','), 'display,color', 'iterable after adding property');
 assert(Array.from(divWithStyle.style).join(','), 'display,color', 'Array.from after adding property');
+
+const divWithSemicolons = document.createElement('div');
+divWithSemicolons.setAttribute('style', 'background-image: url(data:image/png;base64,AAAA); color: blue');
+assert(divWithSemicolons.style.backgroundImage, 'url(data:image/png;base64,AAAA)', 'style value with ; inside url()');
+assert(divWithSemicolons.style.color, 'blue', 'style value after url()');
+assert(divWithSemicolons.style.length, 2, 'style.length with ; inside url()');
+divWithSemicolons.style.color = 'red';
+assert(divWithSemicolons.getAttribute('style'), 'background-image:url(data:image/png;base64,AAAA);color:red', 'url() with ; kept after a change');
+divWithSemicolons.setAttribute('style', `content: "a;\\"b"; font-family: 'c;d', serif; width: 1px); color: blue`);
+assert(divWithSemicolons.style.content, '"a;\\"b"', 'style value with ; inside double quotes');
+assert(divWithSemicolons.style.fontFamily, "'c;d', serif", 'style value with ; inside single quotes');
+assert(divWithSemicolons.style.color, 'blue', 'stray ) does not swallow the next declaration');
+divWithSemicolons.setAttribute('style', `color: red; /* don't; */ background: blue; width: 1px`);
+assert(divWithSemicolons.style.width, '1px', 'quote and ; inside a comment do not swallow later declarations');
+assert(divWithSemicolons.style.color, 'red', 'declaration before a comment');
+divWithSemicolons.setAttribute('style', `background: url(//example.com/*.png); color: red`);
+assert(divWithSemicolons.style.color, 'red', '/* inside url() is not a comment');
+divWithSemicolons.setAttribute('style', `width: 1px; /* it's`);
+assert(divWithSemicolons.style.width, '1px', 'unterminated comment');
