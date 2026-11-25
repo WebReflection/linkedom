@@ -6,13 +6,44 @@ const refs = new WeakMap;
 
 const getKeys = style => [...style.keys()].filter(key => key !== PRIVATE);
 
+// split on ; but not within quotes, parentheses or comments, e.g. url(data:...;base64,...)
+const splitRules = value => {
+  const rules = [];
+  let start = 0, depth = 0, quote = '';
+  for (let i = 0; i < value.length; i++) {
+    const c = value[i];
+    if (c === '\\')
+      i++;
+    else if (quote) {
+      if (c === quote)
+        quote = '';
+    }
+    else if (c === '/' && value[i + 1] === '*' && !depth) {
+      const end = value.indexOf('*/', i + 2);
+      i = end < 0 ? value.length : end + 1;
+    }
+    else if (c === '"' || c === "'")
+      quote = c;
+    else if (c === '(')
+      depth++;
+    else if (c === ')' && depth)
+      depth--;
+    else if (c === ';' && !depth) {
+      rules.push(value.slice(start, i));
+      start = i + 1;
+    }
+  }
+  rules.push(value.slice(start));
+  return rules;
+};
+
 const updateKeys = style => {
   const attr = refs.get(style).getAttributeNode('style');
   if (!attr || attr[CHANGED] || style.get(PRIVATE) !== attr) {
     style.clear();
     if (attr) {
       style.set(PRIVATE, attr);
-      for (const rule of attr[VALUE].split(/\s*;\s*/)) {
+      for (const rule of splitRules(attr[VALUE])) {
         let [key, ...rest] = rule.split(':');
         if (rest.length > 0) {
           key = key.trim();
